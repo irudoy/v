@@ -26,8 +26,10 @@ from tools.can_dashboard import (
     PRODUCT_SLUG,
     __version__,
 )
+from tools.can_dashboard import excerpt as replay_excerpt
 from tools.can_dashboard import logfile as dashboard_log
 from tools.can_dashboard import settings as dashboard_settings
+from tools.can_dashboard.descriptions import describe
 from tools.can_dashboard.feed_dialog import FeedDialog
 from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
 from tools.can_dashboard.model import (
@@ -260,12 +262,14 @@ HERO_METRICS = (
     Metric("injection_average_ms", "INJECTION CALC", "ms", 2),
     Metric("coolant_deg_c", "COOLANT", "degC", 0),
     Metric("gear", "SELECTOR", "", 0),
+    Metric("tcm_gear", "GEAR", "", 0),
     Metric("selected_map", "SELECTED MAP", "", 0),
     Metric("zero_to_100_s", "0-100 KM/H", "s", 2),
     Metric("hundred_to_200_s", "100-200 KM/H", "s", 2),
 )
 OPTIONAL_HERO_KEYS = frozenset({
     "gear",
+    "tcm_gear",
     "selected_map",
     "zero_to_100_s",
     "hundred_to_200_s",
@@ -324,6 +328,8 @@ PANELS = (
         Metric("oil_temperature_deg_c", "Oil temperature", "degC", 0),
         Metric("stock_rpm", "Stock CAN RPM", "RPM", 0),
         Metric("gear", "Selector"),
+        Metric("tcm_gear", "Gear", "", 0),
+        Metric("selected_map", "Selected map", "", 0),
         Metric("ascd_button", "ASCD input"),
         Metric("dashboard_state", "Dashboard state"),
         Metric("context_name", "Last context"),
@@ -385,7 +391,12 @@ def _hero_catalog():
     """Every metric a hero card can show, the dedicated hero metrics first."""
     metrics = {metric.key: metric for metric in HERO_METRICS}
     choices = [
-        HeroChoice(metric.key, metric.label.title(), "Summary")
+        HeroChoice(
+            metric.key,
+            metric.label.title(),
+            "Summary",
+            describe(metric.key),
+        )
         for metric in HERO_METRICS
     ]
     for _tab, panels in TABS:
@@ -394,7 +405,14 @@ def _hero_catalog():
                 if metric.key in metrics:
                     continue
                 metrics[metric.key] = metric
-                choices.append(HeroChoice(metric.key, metric.label, title))
+                choices.append(
+                    HeroChoice(
+                        metric.key,
+                        metric.label,
+                        title,
+                        describe(metric.key),
+                    )
+                )
     return metrics, tuple(choices)
 
 
@@ -454,7 +472,9 @@ class HeroCard(tk.Frame):
     which would resize the cards and re-elide their values without end.
     """
 
-    def __init__(self, master, metric, color, palette, history=None):
+    def __init__(
+        self, master, metric, color, palette, history=None, description=None
+    ):
         super().__init__(
             master,
             bg=palette.panel,
@@ -462,6 +482,7 @@ class HeroCard(tk.Frame):
             highlightthickness=1,
         )
         self.metric = metric
+        self._description = description
         self._title = metric.label.upper()
         self._value = "--"
         self._width = 0
@@ -525,7 +546,9 @@ class HeroCard(tk.Frame):
 
     def tooltip_text(self):
         unit = f" [{self.metric.unit}]" if self.metric.unit else ""
-        return f"{self._title}{unit}\n{self._value}"
+        text = f"{self._title}{unit}\n{self._value}"
+        description = self._description() if self._description else ""
+        return f"{text}\n\n{description}" if description else text
 
     @property
     def unit_shown(self):
@@ -613,10 +636,10 @@ class DataPanel(tk.Frame):
     A narrow cell takes width from the value column down to
     PANEL_VALUE_MIN_WIDTH and then elides the labels in the middle, which
     keeps a trailing bank or channel suffix; the tooltip of a label carries
-    its full text.
+    its full text and what the metric means.
     """
 
-    def __init__(self, master, title, metrics, palette):
+    def __init__(self, master, title, metrics, palette, describe=None):
         super().__init__(
             master,
             bg=palette.panel,
@@ -627,6 +650,7 @@ class DataPanel(tk.Frame):
         self.labels = []
         self.fields = []
         self._fitted = None
+        self._describe = describe
         self._label_font = tkfont.Font(root=self, font=ui_font(9))
         tk.Label(
             self,
@@ -660,7 +684,7 @@ class DataPanel(tk.Frame):
             )
             label.tooltip = Tooltip(
                 label,
-                lambda text=metric.label: text,
+                lambda metric=metric: self.label_tooltip(metric),
                 **palette.tooltip_options(),
             )
             self.labels.append((label, metric.label))
@@ -687,6 +711,10 @@ class DataPanel(tk.Frame):
             )
             self.fields.append(field)
         self.bind("<Configure>", self._on_configure, add="+")
+
+    def label_tooltip(self, metric):
+        description = self._describe(metric.key) if self._describe else ""
+        return f"{metric.label}\n\n{description}" if description else metric.label
 
     def _on_configure(self, event):
         self.fit(event.width)
@@ -739,18 +767,13 @@ RECORD_CAPTIONS = {False: "\u25cf REC", True: "\u25a0 REC"}
 THEME_CAPTIONS = {"dark": "LIGHT", "light": "DARK"}
 PLAY_CAPTIONS = {False: "\u25b6 PLAY", True: "\u2016 PAUSE"}
 REPLAY_STEP_SECONDS = 5.0
+REPLAY_NOTE_CHARACTERS = 28
 REPLAY_FILETYPES = (
     ("Replay files", "*.trc *.mlg *.log *.txt"),
     ("PEAK trace", "*.trc"),
     ("Dashboard MLG recording", "*.mlg"),
     ("candump log", "*.log *.txt"),
     ("All files", "*.*"),
-)
-MAP_TOOLTIP = (
-    "The telemetry stream does not carry the active map index. The dashboard "
-    "sets Map 1 when it observes a controller start, and Map N when a "
-    "SET + CANCEL selector gesture is answered by N feedback pulses of the "
-    "CRUISE and SET lamps."
 )
 RUN_TOOLTIPS = {
     "0-100": (
@@ -817,7 +840,6 @@ class DashboardApp:
         self.picker = None
         self.feed_dialog = None
         self.status_dot_color = None
-        self.map_color = None
         self.run_colors = {}
         self.scrub_position = None
         self._create_variables()
@@ -862,7 +884,6 @@ class DashboardApp:
         self.control_var = tk.StringVar(self.root, value="Control: idle")
         self.record_var = tk.StringVar(self.root, value="MLG: idle")
         self.feed_var = tk.StringVar(self.root, value="Feed: off")
-        self.map_var = tk.StringVar(self.root, value="MAP ?")
         self.run_value_vars = {
             name: tk.StringVar(self.root, value="--")
             for name in RUN_TOOLTIPS
@@ -872,6 +893,7 @@ class DashboardApp:
             for name in RUN_TOOLTIPS
         }
         self.replay_time_var = tk.StringVar(self.root, value="0:00.0 / 0:00.0")
+        self.replay_note_var = tk.StringVar(self.root, value="")
         self.health_vars = {
             key: tk.StringVar(self.root, value=f"{key}=--")
             for key, _title, _sample in HEALTH_FIELDS
@@ -890,18 +912,18 @@ class DashboardApp:
         self.feed_dialog = None
         self.source_button_active = None
         self.status_dot_color = None
-        self.map_color = None
         self.run_colors = {}
         self.root.configure(bg=self.palette.bg)
         self._configure_styles()
         self._build_header()
         self._build_status_bar()
-        self._build_drive_bar()
+        self._build_timer_bar()
         self._build_replay_bar()
         self._build_health_bar()
         self._build_content()
         self._sync_source_button()
         self._sync_record_button()
+        self._sync_timer_bar()
         self._sync_replay_bar()
 
     def _apply_initial_geometry(self):
@@ -1061,6 +1083,14 @@ class DashboardApp:
             ),
             align="right",
         )
+        self.timer_button = self._tool_button(
+            header,
+            "0-100",
+            self.toggle_timer,
+            "Show or hide the 0-100 and 100-200 km/h timers",
+            lit=self.settings.timer,
+        )
+        header.add(self.timer_button, align="right")
         self.theme_button = self._tool_button(
             header,
             THEME_CAPTIONS[palette.name],
@@ -1082,6 +1112,7 @@ class DashboardApp:
             pad_y=4,
         )
         bar.pack(side="top", fill="x", padx=12, pady=(0, 7))
+        self.status_bar = bar
         for name, title, role, align, sample in STATUS_FIELDS:
             if name == "feed_var" and self.feed is None:
                 sample = self.feed_var.get()
@@ -1119,25 +1150,11 @@ class DashboardApp:
                 )
             )
 
-    def _build_drive_bar(self):
-        """Selected map and the acceleration timers, under the status bar."""
+    def _build_timer_bar(self):
+        """The acceleration timers; the 0-100 button shows the bar."""
         palette = self.palette
         bar = FlowBar(self.root, bg=palette.bg, spacing_x=18, spacing_y=4)
-        bar.pack(side="top", fill="x", padx=12, pady=(0, 6))
-        self.drive_bar = bar
-        badge = tk.Frame(bar, bg=palette.border)
-        self.map_label = tk.Label(
-            badge,
-            textvariable=self.map_var,
-            width=6,
-            bg=palette.panel_alt,
-            fg=palette.muted,
-            font=ui_font(15, bold=True),
-            padx=8,
-        )
-        self.map_label.pack(padx=1, pady=1)
-        Tooltip(self.map_label, self._map_tooltip, **palette.tooltip_options())
-        bar.add(badge)
+        self.timer_bar = bar
         self.run_value_labels = {}
         for name, tooltip in RUN_TOOLTIPS.items():
             cluster = Cluster(bar, bg=palette.bg)
@@ -1225,6 +1242,14 @@ class DashboardApp:
             "to clear it",
             pady=1,
         )
+        self.save_loop_button = self._tool_button(
+            controls,
+            "SAVE LOOP",
+            self.save_loop,
+            "Save the region between IN and OUT, or the whole replay, to a "
+            "new file in the format of the replay",
+            pady=1,
+        )
         self.speed_button = self._tool_button(
             controls,
             "1x",
@@ -1237,6 +1262,7 @@ class DashboardApp:
             self.loop_button,
             self.loop_in_button,
             self.loop_out_button,
+            self.save_loop_button,
             self.speed_button,
         ):
             button.pack(side="left", padx=(0, 4))
@@ -1250,6 +1276,18 @@ class DashboardApp:
             font=mono_font(9),
         )
         self.replay_time_label.pack(side="right", padx=(0, 8))
+        self.replay_note = StatusField(
+            bar,
+            self.replay_note_var,
+            title="Saved loop",
+            background=palette.panel_alt,
+            foreground=palette.amber,
+            font=mono_font(9),
+            copy_feedback=palette.green,
+            anchor="e",
+            sample="0" * REPLAY_NOTE_CHARACTERS,
+            tooltip_options=palette.tooltip_options(),
+        )
         self.timeline_canvas = tk.Canvas(
             bar,
             width=160,
@@ -1275,6 +1313,24 @@ class DashboardApp:
         self.timeline_canvas.bind(
             "<ButtonRelease-1>", self._on_timeline_release, add="+"
         )
+        self._sync_replay_note()
+
+    def _sync_timer_bar(self):
+        bar = getattr(self, "timer_bar", None)
+        if bar is None:
+            return
+        shown = self.settings.timer
+        if shown and not bar.winfo_manager():
+            bar.pack(
+                side="top",
+                fill="x",
+                padx=12,
+                pady=(0, 6),
+                after=self.status_bar,
+            )
+        elif not shown and bar.winfo_manager():
+            bar.pack_forget()
+        self.timer_button.configure(lit=shown)
 
     def _sync_replay_bar(self):
         bar = getattr(self, "replay_bar", None)
@@ -1285,14 +1341,29 @@ class DashboardApp:
                 bar.pack_forget()
             return
         if not bar.winfo_manager():
+            above = (
+                self.timer_bar
+                if self.timer_bar.winfo_manager()
+                else self.status_bar
+            )
             bar.pack(
                 side="top",
                 fill="x",
                 padx=12,
                 pady=(0, 7),
-                after=self.drive_bar,
+                after=above,
             )
         self._sync_replay_controls()
+
+    def _sync_replay_note(self):
+        note = getattr(self, "replay_note", None)
+        if note is None:
+            return
+        shown = bool(self.replay_note_var.get())
+        if shown and not note.winfo_manager():
+            note.pack(side="right", padx=(0, 8), before=self.timeline_canvas)
+        elif not shown and note.winfo_manager():
+            note.pack_forget()
 
     def _sync_replay_controls(self):
         player = self.player
@@ -1308,9 +1379,12 @@ class DashboardApp:
         self.speed_button.configure(text=f"{player.speed:g}x")
         self._refresh_replay()
 
-    def _map_tooltip(self):
-        tracker = self.model.drive.map
-        return f"{tracker.reason}.\n\n{MAP_TOOLTIP}"
+    def _describe(self, key):
+        """What a metric means; the selected map adds its last observation."""
+        text = describe(key)
+        if key == "selected_map":
+            text = f"{text}\n\nLast observation: {self.model.drive.map.reason}."
+        return text
 
     def _timeline_bounds(self):
         width = self.timeline_canvas.winfo_width()
@@ -1390,16 +1464,11 @@ class DashboardApp:
         )
         self._draw_timeline()
 
-    def _refresh_drive(self):
+    def _refresh_timers(self):
+        if not self.settings.timer:
+            return
         palette = self.palette
-        drive = self.model.drive
-        number = drive.map.number
-        self.map_var.set("MAP ?" if number is None else f"MAP {number}")
-        color = palette.muted if number is None else palette.heading
-        if color != self.map_color:
-            self.map_color = color
-            self.map_label.configure(fg=color)
-        for run in drive.acceleration.runs:
+        for run in self.model.drive.acceleration.runs:
             elapsed = run.elapsed()
             if elapsed is not None:
                 text, color = f"{elapsed:.2f} s", palette.amber
@@ -1452,7 +1521,9 @@ class DashboardApp:
             self.panel_grids.append(panels)
             tab_panels = []
             for title, metrics in definitions:
-                panel = panels.add(DataPanel(panels, title, metrics, palette))
+                panel = panels.add(
+                    DataPanel(panels, title, metrics, palette, self._describe)
+                )
                 tab_panels.append((panel, metrics))
                 self.data_panels.append((panel, metrics))
             self.tab_panels.append(tuple(tab_panels))
@@ -1486,6 +1557,7 @@ class DashboardApp:
                 traces[index % len(traces)],
                 self.palette,
                 self.hero_history[key],
+                lambda key=key: self._describe(key),
             )
             for index, key in enumerate(keys)
         }
@@ -1512,6 +1584,7 @@ class DashboardApp:
             "theme": self.settings.theme,
             "hero": self.settings.hero,
             "feed": self.settings.feed,
+            "timer": self.settings.timer,
             **changes,
         })
         if self.settings_path is None:
@@ -1533,6 +1606,11 @@ class DashboardApp:
     def toggle_active(self):
         self.active_var.set(not self.active_var.get())
         self.active_button.configure(lit=self.active_var.get())
+
+    def toggle_timer(self):
+        self._store_settings(timer=not self.settings.timer)
+        self._sync_timer_bar()
+        self._sync_replay_bar()
 
     def open_hero_picker(self):
         if self.picker is not None and self.picker.winfo_exists():
@@ -1887,6 +1965,8 @@ class DashboardApp:
             self.args.replay_speed,
             loop=getattr(self.args, "replay_loop", False),
         )
+        self.replay_note_var.set("")
+        self._sync_replay_note()
         self._replay_seek(0.0, keep_recording=True)
         self.player.play(time.monotonic())
         self._set_source_status(
@@ -1978,6 +2058,58 @@ class DashboardApp:
         else:
             player.loop_out = None
         self._sync_replay_controls()
+
+    def save_loop(self, path=None):
+        """Write the loop region of the replay to a file in its format."""
+        player = self.player
+        if player is None:
+            return
+        timeline = player.timeline
+        start, stop = player.region()
+        interactive = path is None
+        if interactive:
+            suffix = timeline.path.suffix
+            path = filedialog.asksaveasfilename(
+                title="Save the loop region",
+                defaultextension=suffix,
+                initialdir=str(timeline.path.parent),
+                initialfile=replay_excerpt.default_name(
+                    timeline.path, start, stop
+                ),
+                filetypes=(
+                    (f"{timeline.kind} replay", f"*{suffix}"),
+                    ("All files", "*.*"),
+                ),
+            )
+            if not path:
+                return
+        output = Path(path)
+        force = False
+        if output.exists() and interactive:
+            force = messagebox.askyesno(
+                "Replace file",
+                f"Replace existing file?\n{output}",
+            )
+            if not force:
+                return
+        try:
+            saved = replay_excerpt.save_excerpt(
+                timeline, start, stop, output, force=force
+            )
+        except replay_excerpt.ExcerptError as error:
+            self.replay_note_var.set(f"loop not saved: {error}")
+            LOG.error("loop not saved: %s", error)
+        else:
+            self.replay_note_var.set(f"saved {output.name}")
+            LOG.info(
+                "loop %s..%s of %s saved to %s, %d records",
+                format_replay_time(start),
+                format_replay_time(stop),
+                timeline.path,
+                output,
+                saved.records,
+            )
+        self._sync_replay_note()
 
     def cycle_speed(self):
         player = self.player
@@ -2222,6 +2354,8 @@ class DashboardApp:
             return self.model.vehicle_speed_kmh
         if key == "gear":
             return self.model.gear
+        if key == "tcm_gear":
+            return self.model.tcm_gear
         if key == "ascd_button":
             return self.model.ascd_button
         if key == "dashboard_state":
@@ -2314,7 +2448,7 @@ class DashboardApp:
                 value if new_group and isinstance(value, (int, float)) else None,
             )
         self._refresh_panels(self.active_tab)
-        self._refresh_drive()
+        self._refresh_timers()
         self._refresh_replay()
 
         flags = self.model.telemetry_status_flags

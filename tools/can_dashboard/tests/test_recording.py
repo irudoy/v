@@ -122,11 +122,12 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 87)
+        self.assertEqual(validation.fields, 88)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed", names)
         self.assertIn("Stock CAN RPM", names)
+        self.assertIn("Gear", names)
         self.assertIn("Intake CVTC target", names)
         self.assertIn("Exhaust CVTC target", names)
         self.assertIn("Knock timing state", names)
@@ -215,6 +216,8 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             0,
         )
         self.assertGreater(records[-1]["Stock CAN RPM"], 0)
+        self.assertEqual(records[-1]["Gear"], dashboard.tcm_gear)
+        self.assertIn(dashboard.tcm_gear, model.TCM_GEARS)
 
     def test_inserts_hold_last_records_for_timestamp_wrap_detection(self):
         generator = model.DemoGenerator()

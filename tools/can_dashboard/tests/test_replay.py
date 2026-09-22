@@ -127,6 +127,8 @@ class RecordingReplayTest(unittest.TestCase):
         self.assertEqual(target.stats(10.0).completed_groups, 6)
         self.assertEqual(target.missed_snapshots, 0)
         self.assertEqual(target.stock_rpm, source.stock_rpm)
+        self.assertIsNotNone(source.tcm_gear)
+        self.assertEqual(target.tcm_gear, source.tcm_gear)
         self.assertAlmostEqual(
             target.vehicle_speed_kmh,
             source.vehicle_speed_kmh,

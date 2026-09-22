@@ -9,8 +9,10 @@ import unittest
 from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
 from tools.can_dashboard import replay
+from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
 from tools.can_dashboard import widgets
+from tools.can_dashboard.descriptions import describe
 
 
 try:
@@ -47,6 +49,22 @@ class HeroCatalogTest(unittest.TestCase):
             for metric in metrics
         }
         self.assertIn("gear", panel_keys)
+
+    def test_the_transmission_gear_and_the_selected_map_are_optional_rows(self):
+        for key in ("tcm_gear", "selected_map"):
+            with self.subTest(key=key):
+                self.assertIn(key, app.HERO_CATALOG)
+                self.assertNotIn(key, app.DEFAULT_HERO_KEYS)
+        context = dict(app.PANELS)["Temperatures and context"]
+        labels = {metric.key: metric.label for metric in context}
+        self.assertEqual(labels["tcm_gear"], "Gear")
+        self.assertEqual(labels["selected_map"], "Selected map")
+
+    def test_every_offered_metric_carries_its_description(self):
+        for choice in app.HERO_CHOICES:
+            with self.subTest(key=choice.key):
+                self.assertEqual(choice.description, describe(choice.key))
+                self.assertTrue(choice.description)
 
     def test_every_panel_metric_is_offered_once(self):
         keys = [choice.key for choice in app.HERO_CHOICES]
@@ -418,30 +436,138 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.window.update_idletasks()
         return timeline
 
-    def test_the_drive_bar_starts_with_an_unknown_map_and_no_times(self):
+    def panel_value(self, key):
+        for panel, _metrics in self.dashboard.data_panels:
+            if key in panel.variables:
+                return panel.variables[key].get()
+        raise KeyError(key)
+
+    def stored(self):
+        path = self.directory / "settings.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def test_the_timer_bar_is_hidden_until_the_0_100_button_shows_it(self):
         dashboard = self.dashboard
         dashboard._refresh(0.0)
-        self.assertEqual(dashboard.map_var.get(), "MAP ?")
+        self.assertEqual(dashboard.timer_bar.winfo_manager(), "")
+        self.assertFalse(dashboard.timer_button.lit)
+        self.assertEqual(dashboard.replay_bar.winfo_manager(), "")
+
+        dashboard.toggle_timer()
+        dashboard._refresh(0.0)
+        self.assertEqual(dashboard.timer_bar.winfo_manager(), "pack")
+        self.assertTrue(dashboard.timer_button.lit)
+        self.assertIs(self.stored()["timer"], True)
         for name in app.RUN_TOOLTIPS:
             self.assertEqual(dashboard.run_value_vars[name].get(), "--")
             self.assertEqual(dashboard.run_best_vars[name].get(), "best --")
-        self.assertEqual(dashboard.replay_bar.winfo_manager(), "")
 
-    def test_the_drive_bar_shows_the_map_and_the_run_times(self):
+        dashboard.toggle_theme()
+        self.assertEqual(dashboard.timer_bar.winfo_manager(), "pack")
+        dashboard.toggle_timer()
+        self.assertEqual(dashboard.timer_bar.winfo_manager(), "")
+        self.assertIs(self.stored()["timer"], False)
+
+    def test_the_timer_bar_shows_the_run_times(self):
         dashboard = self.dashboard
-        drive = dashboard.model.drive
-        drive.map.number = 3
-        zero_to_100 = drive.acceleration.run("0-100")
+        dashboard.toggle_timer()
+        zero_to_100 = dashboard.model.drive.acceleration.run("0-100")
         zero_to_100.last = zero_to_100.best = acceleration.RunResult(8.5, 1.0)
         dashboard._refresh(0.0)
-        self.assertEqual(dashboard.map_var.get(), "MAP 3")
         self.assertEqual(dashboard.run_value_vars["0-100"].get(), "8.50 s")
         self.assertEqual(dashboard.run_best_vars["0-100"].get(), "best 8.50 s")
-        self.assertEqual(dashboard._metric_value("selected_map"), 3)
         self.assertEqual(dashboard._metric_value("zero_to_100_s"), 8.5)
         dashboard.reset_acceleration()
         dashboard._refresh(0.0)
         self.assertEqual(dashboard.run_value_vars["0-100"].get(), "--")
+
+    def test_the_replay_bar_follows_the_timer_bar(self):
+        dashboard = self.dashboard
+        self.open_replay()
+        order = dashboard.root.pack_slaves()
+        self.assertEqual(
+            order.index(dashboard.replay_bar),
+            order.index(dashboard.status_bar) + 1,
+        )
+        dashboard.toggle_timer()
+        order = dashboard.root.pack_slaves()
+        self.assertEqual(
+            order.index(dashboard.timer_bar),
+            order.index(dashboard.status_bar) + 1,
+        )
+        self.assertEqual(
+            order.index(dashboard.replay_bar),
+            order.index(dashboard.timer_bar) + 1,
+        )
+
+    def test_the_selected_map_and_the_gear_are_panel_values(self):
+        dashboard = self.dashboard
+        dashboard._refresh(0.0)
+        self.assertEqual(self.panel_value("selected_map"), "--")
+        self.assertEqual(self.panel_value("tcm_gear"), "--")
+        dashboard.model.drive.map.number = 3
+        dashboard.model.tcm_gear = 4
+        dashboard._refresh(0.0)
+        self.assertEqual(self.panel_value("selected_map"), "3")
+        self.assertEqual(self.panel_value("tcm_gear"), "4")
+        self.assertEqual(dashboard._metric_value("selected_map"), 3)
+        self.assertEqual(dashboard._metric_value("tcm_gear"), 4)
+
+    def test_hover_over_a_metric_name_describes_the_metric(self):
+        dashboard = self.dashboard
+        for panel, metrics in dashboard.data_panels:
+            for metric in metrics:
+                with self.subTest(key=metric.key):
+                    text = panel.label_tooltip(metric)
+                    if metric.key == "selected_map":
+                        self.assertEqual(
+                            text,
+                            f"Selected map\n\n{describe('selected_map')}"
+                            "\n\nLast observation: "
+                            f"{selected_map.UNKNOWN_REASON}.",
+                        )
+                    else:
+                        self.assertEqual(
+                            text,
+                            f"{metric.label}\n\n{describe(metric.key)}",
+                        )
+        card = dashboard.hero_cards["rpm"]
+        self.assertEqual(
+            card.tooltip_text(),
+            f"ENGINE SPEED [RPM]\n--\n\n{describe('rpm')}",
+        )
+
+    def test_save_loop_writes_the_loop_region_as_a_new_trace(self):
+        dashboard = self.dashboard
+        self.open_replay()
+        dashboard.toggle_play()
+        self.assertEqual(dashboard.replay_note.winfo_manager(), "")
+        dashboard._replay_seek(0.2)
+        dashboard.toggle_loop_in()
+        dashboard._replay_seek(0.4)
+        dashboard.toggle_loop_out()
+        output = self.directory / "loop.trc"
+        dashboard.save_loop(output)
+        self.assertEqual(dashboard.replay_note_var.get(), "saved loop.trc")
+        self.assertEqual(dashboard.replay_note.winfo_manager(), "pack")
+
+        saved = replay.load_timeline(output, dashboard.model.can_id)
+        self.assertEqual(list(saved.times), [0.0, 0.1, 0.2])
+        self.assertEqual(
+            [int.from_bytes(data[4:6], "big") for data in saved.payloads],
+            [1000, 2000, 3000],
+        )
+
+        dashboard.save_loop(output)
+        self.assertEqual(
+            dashboard.replay_note_var.get(),
+            "loop not saved: loop.trc already exists",
+        )
+        dashboard.toggle_theme()
+        self.assertEqual(dashboard.replay_note.winfo_manager(), "pack")
+        self.open_replay()
+        self.assertEqual(dashboard.replay_note_var.get(), "")
+        self.assertEqual(dashboard.replay_note.winfo_manager(), "")
 
     def test_a_loaded_replay_shows_its_transport_and_plays(self):
         dashboard = self.dashboard

@@ -12,6 +12,7 @@ from tools.can_dashboard.widgets import ToolButton
 LIST_WIDTH_CHARS = 46
 PICKER_MIN_WIDTH = 900
 PICKER_MIN_HEIGHT = 440
+DESCRIPTION_LINES = 4
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,7 @@ class HeroChoice:
     key: str
     label: str
     group: str
+    description: str = ""
 
     @property
     def caption(self):
@@ -78,7 +80,10 @@ class HeroSelection:
 
 
 class HeroPicker(tk.Toplevel):
-    """Two lists: the catalog on the left, the shown cards on the right."""
+    """Two lists: the catalog on the left, the shown cards on the right.
+
+    The line under the lists describes the metric chosen last in either list.
+    """
 
     def __init__(
         self,
@@ -106,6 +111,7 @@ class HeroPicker(tk.Toplevel):
         self._colors = colors
         self._available_keys = ()
         self.count_var = tk.StringVar(self)
+        self.description_var = tk.StringVar(self)
 
         tk.Label(
             self,
@@ -155,6 +161,21 @@ class HeroPicker(tk.Toplevel):
         ):
             button(middle, text, command, tooltip).pack(fill="x", pady=(0, 4))
 
+        self.description_label = tk.Label(
+            self,
+            textvariable=self.description_var,
+            bg=colors["bg"],
+            fg=colors["text"],
+            font=fonts["label"],
+            anchor="nw",
+            justify="left",
+            height=DESCRIPTION_LINES,
+        )
+        self.description_label.pack(fill="x", padx=12, pady=(8, 0))
+        self.description_label.bind(
+            "<Configure>", self._wrap_description, add="+"
+        )
+
         actions = tk.Frame(self, bg=colors["bg"])
         actions.pack(fill="x", padx=12, pady=10)
         button(
@@ -179,6 +200,20 @@ class HeroPicker(tk.Toplevel):
 
         self.available_list.bind("<Double-Button-1>", self._on_add, add="+")
         self.shown_list.bind("<Double-Button-1>", self._on_remove, add="+")
+        self.available_list.bind(
+            "<<ListboxSelect>>",
+            lambda _event: self._describe_current(
+                self.available_list, self._available_keys
+            ),
+            add="+",
+        )
+        self.shown_list.bind(
+            "<<ListboxSelect>>",
+            lambda _event: self._describe_current(
+                self.shown_list, self.selection.selected
+            ),
+            add="+",
+        )
         self.bind("<Escape>", lambda _event: self.destroy(), add="+")
         self.render()
 
@@ -245,6 +280,22 @@ class HeroPicker(tk.Toplevel):
         if not chosen or chosen[0] >= len(keys):
             return None, None
         return chosen[0], keys[chosen[0]]
+
+    def _describe_current(self, listbox, keys):
+        _index, key = self._current(listbox, keys)
+        if key is None:
+            return
+        choice = self.selection.choice(key)
+        self.description_var.set(
+            f"{choice.label}: {choice.description}"
+            if choice.description
+            else choice.label
+        )
+
+    def _wrap_description(self, event):
+        wrap = max(200, event.width - 4)
+        if wrap != self.description_label.cget("wraplength"):
+            self.description_label.configure(wraplength=wrap)
 
     def add_selected(self):
         index, key = self._current(self.available_list, self._available_keys)

@@ -302,6 +302,7 @@ class DashboardModelTest(unittest.TestCase):
         for frame in generator.stock_context(10):
             dashboard.process_frame(frame, now=1.03)
         self.assertEqual(dashboard.gear, "D")
+        self.assertIn(dashboard.tcm_gear, model.TCM_GEARS)
         self.assertEqual(dashboard.ascd_button, "RELEASE")
         self.assertIn(dashboard.dashboard_state, {"STOCK", "ASCD STATE 7"})
         self.assertIsNotNone(dashboard.stock_rpm)
@@ -350,6 +351,36 @@ class DashboardModelTest(unittest.TestCase):
         )
         self.assertEqual(dashboard.vehicle_speed_raw, 6854)
         self.assertEqual(dashboard.vehicle_speed_kmh, 68.54)
+
+    def test_the_transmission_gear_is_the_low_nibble_of_frame_0x174(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        for code, gear in (
+            (0x11, 1),
+            (0x33, 3),
+            (0x34, 4),
+            (0x77, 7),
+            (0xAA, None),
+            (0x99, None),
+            (0x00, None),
+            (0x38, None),
+        ):
+            with self.subTest(code=code):
+                data = bytearray(8)
+                data[3] = code
+                dashboard.process_frame(
+                    model.FrameRecord(model.TCM_GEAR_ID, bytes(data)),
+                    now=1.0,
+                )
+                self.assertEqual(dashboard.tcm_gear, gear)
+        dashboard.process_frame(
+            model.FrameRecord(model.TCM_GEAR_ID, bytes((0, 0, 0, 0x22))),
+            now=1.1,
+        )
+        dashboard.process_frame(
+            model.FrameRecord(model.TCM_GEAR_ID, bytes((0, 0, 0x55))),
+            now=1.2,
+        )
+        self.assertEqual(dashboard.tcm_gear, 2)
 
     def test_status_bits_and_decoder_errors_are_exposed(self):
         generator = model.DemoGenerator()

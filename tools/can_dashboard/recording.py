@@ -292,6 +292,13 @@ def build_bindings(
             ),
             FieldBinding(
                 mlvlg.FieldSpec(
+                    "Gear", "", "Context", mlvlg.MLG_F32, digits=0
+                ),
+                "tcm_gear",
+                "attribute",
+            ),
+            FieldBinding(
+                mlvlg.FieldSpec(
                     "ASCD input code", "raw", "Context", mlvlg.MLG_F32, digits=0
                 ),
                 "ascd_button_raw",

@@ -81,9 +81,9 @@ The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
 
 The default hardware filter accepts custom telemetry plus stock context IDs
-`0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an RPM
-cross-check over the stock transmit path, vehicle speed, ASCD input, selector
-state, and dashboard indication state.
+`0x174`, `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide the
+transmission gear, an RPM cross-check over the stock transmit path, vehicle
+speed, ASCD input, selector state, and dashboard indication state.
 
 `Engine speed` and `Stock CAN RPM` come from one ECU word. `FUN_000384FE`
 shifts the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 6
@@ -325,9 +325,10 @@ distinct snapshots share one timestamp. An interface clock that steps
 backwards, or ahead of the host clock by more than one second, is abandoned
 without breaking elapsed time.
 
-The `tuning` MLG schema has 87 channels: time, schema state, every fixed and
+The `tuning` MLG schema has 88 channels: time, schema state, every fixed and
 rotating custom-telemetry field, a decoded high-detonation-surface selector,
-stock CAN RPM, vehicle speed, selector code, ASCD input, and dashboard state.
+stock CAN RPM, vehicle speed, selector code, transmission gear, ASCD input,
+and dashboard state.
 Decoded telemetry and context values use F32, so a rotating context that has
 not arrived yet can be represented as `NaN` rather than a fabricated zero.
 
@@ -369,7 +370,8 @@ dashboard held, so the replayed engineering values equal the recorded
 channels. A rotating context that had not arrived when the record was written
 stays `--`.
 
-While a replay is loaded, a transport bar appears under the drive bar:
+While a replay is loaded, a transport bar appears under the status fields,
+or under the timer bar while it is shown:
 
 | Control | Function |
 | --- | --- |
@@ -379,6 +381,7 @@ While a replay is loaded, a transport bar appears under the drive bar:
 | `Home` | returns to the loop start |
 | `LOOP` | repeats the whole replay, or the region between `IN` and `OUT`; lit while on |
 | `IN`, `OUT` | start or end the loop region at the current position; lit while set, and a second press clears the point |
+| `SAVE LOOP` | writes the region between `IN` and `OUT`, or the whole replay, to a new file in the format of the replay |
 | speed | cycles through 0.25x, 0.5x, 1x, 2x, 4x, and 8x |
 
 The keys act in the main window outside the `CH` and `ID` entries, and a tool
@@ -386,6 +389,24 @@ button that holds the keyboard focus takes `Space` for itself.
 `--replay-speed` sets the starting speed and `--replay-loop` starts with
 `LOOP` on. A paused
 replay reports `PAUSED` as its link state.
+
+`SAVE LOOP` offers a name made of the source name and the region in seconds,
+such as `drive_12.5-40.0s.trc`, in the directory of the source. The output
+keeps the reader of the source: its suffix must select the same reader, and it
+cannot replace the source. The excerpt holds the records whose replay time
+lies inside the region, and its replay time starts at zero on its first
+record:
+
+| Source | Excerpt |
+| --- | --- |
+| PEAK TRC 1.1 | every record of the region, including the frames the dashboard does not read and the PEAK status rows, numbered again from 1; the offsets drop by the offset of the first kept record, `$STARTTIME` and the `Start time` comment move forward by the same amount, and a comment names the source and its offset range |
+| candump | the lines of the region, unchanged, because the replay counts candump time from the first line |
+| dashboard MLG | the data blocks of the region; `Elapsed` and the block timestamps drop by the elapsed time of the first kept snapshot and the header start moves forward by its whole seconds, `Date` keeps the recorded second, a bridge record is kept only after a kept snapshot, and marker blocks are left out |
+
+The excerpt is written to a temporary file in the output directory, checked
+by the validator of its format, and then renamed, so a failed save leaves no
+partial file. The note beside the replay time names the saved file or the
+reason a save failed, and the next replay clears it.
 
 A position change rebuilds the model at the target. The model replays the
 3 s before the target, so rotating contexts and stock frames are current when
@@ -396,16 +417,27 @@ processes, playback falls behind the window clock instead of skipping items.
 An MLG recording holds one continuous time line, so a position change or a
 loop jump ends a running recording.
 
-## Drive bar
+## Drive context
 
-The drive bar under the status fields shows the selected map and the 0-100
-and 100-200 km/h timers. `SELECTED MAP`, `0-100 KM/H`, and `100-200 KM/H` are
-also available as hero cards.
+The `Gear` and `Selected map` rows of the `Temperatures and context` panel
+show the transmission gear and the selected map, and the optional timer bar
+shows the 0-100 and 100-200 km/h times. `GEAR`, `SELECTED MAP`, `0-100 KM/H`,
+and `100-200 KM/H` are also available as hero cards.
+
+### Transmission gear
+
+`Gear` is the current gear that the transmission control module reports in
+the low nibble of frame `0x174` byte 3, which the TCM sends every 10 ms. The
+row follows the gear in D and DS as well as in manual mode. The ECU reads the
+nibble values 1 through 7 as gears, and the high nibble holds the target gear,
+which changes first in a shift. P and N report `0xAA` and R reports `0x99`,
+which carry no forward gear, so the row reads `--`. The MLG recording stores
+the value as the `Gear` channel, `NaN` where the TCM reports no forward gear.
 
 ### Selected map
 
-The telemetry stream does not carry the active map index, so `MAP N` is an
-inference from the stock bus under the runtime contract of
+The telemetry stream does not carry the active map index, so `Selected map` is
+an inference from the stock bus under the runtime contract of
 [`../../patches/map-switching-selector.md`](../../patches/map-switching-selector.md):
 every controller start selects Map 1, a SET + CANCEL gesture with N CANCEL
 taps commits Map N, and the runtime answers the commit with N pulses of ASCD
@@ -413,17 +445,22 @@ display state 4 on frame `0x551` byte 5 while it ignores selector input.
 
 | Observation | Shown |
 | --- | --- |
-| a telemetry run that opens with tick16 at most `0xFF` after at least 1 s without any frame, or a tick16 restart inside the stream | `MAP 1` |
-| a gesture on frame `0x239` byte 3 answered within 0.6 s of the release by exactly as many ON phases of at most 0.45 s as it counted CANCEL taps, closed by 0.45 s of state 0 | `MAP N` |
-| a gesture answered by another pulse count, or by an ON state that cannot be counted | `MAP ?` |
+| a telemetry run that opens with tick16 at most `0xFF` after at least 1 s without any frame, or a tick16 restart inside the stream | `1` |
+| a gesture on frame `0x239` byte 3 answered within 0.6 s of the release by exactly as many ON phases of at most 0.45 s as it counted CANCEL taps, closed by 0.45 s of state 0 | `N` |
+| a gesture answered by another pulse count, or by an ON state that cannot be counted | `--` |
 | a gesture without feedback | unchanged |
 
-A source that joins a controller run in progress shows `MAP ?` until the next
-controller start or confirmed selection. Hover over the value names the
-observation behind it. The index stays an inference: a selection the bus does
-not show, such as a commit whose frames were lost, is not followed.
+A source that joins a controller run in progress shows `--` until the next
+controller start or confirmed selection. Hover over the row name adds the
+observation behind the value to the description of the map. The index stays
+an inference: a selection the bus does not show, such as a commit whose frames
+were lost, is not followed.
 
 ### Acceleration timer
+
+The `0-100` header button shows the timer bar under the status fields. The
+bar is hidden by default, and the choice persists with the other settings.
+The timers run while the bar is hidden, so the hero cards keep their results.
 
 The timers read the ABS vehicle speed of frame `0x280`, which reads 0 below
 about 1.5 km/h, at its 20 ms period. A 0-100 run arms at standstill and
@@ -436,9 +473,9 @@ peak, gains nothing for 2 s, exceeds 30 s for 0-100 or 60 s for 100-200, or
 when samples stop for more than 0.5 s.
 
 The value is amber while a run is timed and then shows the last result beside
-the best result of the source. `RESET TIMES` clears both. A new source starts
-empty, and a replay position change restores the results the replay had
-reached at the target.
+the best result of the source. `RESET TIMES` on the timer bar clears both. A
+new source starts empty, and a replay position change restores the results
+the replay had reached at the target.
 
 ## Window layout
 
@@ -454,8 +491,9 @@ version as `VQCT vX.Y.Z`, source state, channel and data-ID entries, and the
 tool buttons; the title of the operating-system window carries the full
 product name. Header controls, status fields, and health counters flow into
 additional rows instead of leaving the window; a flow bar positions its items
-by coordinates inside itself, without row frames. The drive bar follows the
-status fields, and a loaded replay adds its transport bar under it. The card
+by coordinates inside itself, without row frames. The timer bar follows the
+status fields while the `0-100` button shows it, and a loaded replay adds its
+transport bar under the status fields or the timer bar. The card
 and panel area scrolls vertically when the remaining height is short. `PRIMARY` and
 `EXTENDED` select the panel set.
 
@@ -483,7 +521,8 @@ shifts the ring by the offset of the parent and draws it across the text.
 | `REC` | starts and stops the MLG recording | recording |
 | `FEED` | opens the live value feed dialog | feed running |
 | `CARDS` | opens the hero-row card dialog | never |
-| `RESET TIMES` | clears the last and best 0-100 and 100-200 km/h times | never |
+| `0-100` | shows or hides the acceleration timer bar | timer bar shown |
+| `RESET TIMES` | on the timer bar, clears the last and best 0-100 and 100-200 km/h times | never |
 | `LIGHT` / `DARK` | switches to the named color theme | never |
 
 ### Hero row
@@ -503,8 +542,10 @@ does not fit is elided instead of widening every card of the row.
 cards, left to right, on the right. Every metric of the primary and extended
 panels can be a card, and the row holds 0 to 12 cards. `DEFAULTS` restores
 engine speed, vehicle speed, calculated load, timing command, total airflow,
-calculated injection, and coolant temperature. The selector position is a row
-of the `Temperatures and context` panel and remains available as a card.
+calculated injection, and coolant temperature. The selector position, the
+transmission gear, and the selected map are rows of the
+`Temperatures and context` panel and remain available as cards. The line
+under the lists describes the metric chosen last in either list.
 
 ### Themes and settings
 
@@ -512,8 +553,8 @@ The dark theme is a black high-contrast scheme; the light theme is a white
 scheme for daylight. The theme button rebuilds the window in the other theme
 and leaves the source, the recording, and the displayed values in place.
 
-The theme, the card list, and the live value feed persist in a per-user JSON
-file:
+The theme, the card list, the live value feed, and the timer bar choice
+persist in a per-user JSON file:
 
 | Platform | File |
 | --- | --- |
@@ -579,6 +620,11 @@ longer than its reserve is elided, and hover and click still report it in full.
 
 ## Display semantics
 
+Hover over a panel row name or a card title describes the metric: the
+quantity the ECU or the bus carries, the direction of its scale where it
+matters, and the evidence boundary of the conversion. The texts live in
+`descriptions.py`, and a test requires one for every metric the window offers.
+
 The decoder retains the latest values from the paired page-9 and page-10
 contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
@@ -626,6 +672,7 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
+| transmission gear | `0x174` byte 3 low nibble | 1..7 as the gear, every other value `--` | the ECU reads the nibble values 1 through 7 as gears, and the high nibble is the target gear; the captures carry `0xAA` in P and N and `0x99` in R, and in the 2026-09-22 road captures the `0x176` speed ratio matches the current gear in 20,640 of 20,741 stable-gear TCM groups |
 | vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; the firmware divides the word by 10, filters it, divides by 20, and publishes twice that byte as J1979 PID 0x0D km/h |
 | APP 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 and 60..1000 counts, which is 0.30..4.82 V and 0.30..5.00 V against factory bands of 0.5..1.0 V released and 4.2..4.8 V depressed; a 5.0 V full-scale reading would fault sensors inside those bands |
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 counts, which is 0.30..4.82 V against factory terminal criteria of more than 0.36 V released and less than 4.75 V depressed |

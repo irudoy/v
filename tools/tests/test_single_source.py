@@ -215,12 +215,12 @@ def test_a_signed_view_the_profile_does_not_declare_fails(
         ),
         (
             "tools/can_dashboard/README.md",
+            "has 88 channels",
             "has 87 channels",
-            "has 86 channels",
         ),
         (
             "tools/logs/README.md",
-            "contains 87 fields",
+            "contains 88 fields",
             "contains every field",
         ),
     ],

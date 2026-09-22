@@ -1,8 +1,9 @@
 """Persistent presentation settings of the telemetry dashboard.
 
 The file holds what the operator chose in the window: the color theme, the
-ordered metric keys of the hero row, and the live value feed. It never holds
-CAN connection parameters or anything that changes what is sent to the bus.
+ordered metric keys of the hero row, the live value feed, and whether the
+acceleration timer bar is shown. It never holds CAN connection parameters or
+anything that changes what is sent to the bus.
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ class Settings:
     theme: str = DEFAULT_THEME
     hero: tuple[str, ...] = ()
     feed: FeedSettings = FeedSettings()
+    timer: bool = False
 
 
 def default_path(product_name, product_slug, *, platform=None, environ=None):
@@ -100,6 +102,7 @@ def normalize(document, *, catalog, default_hero, limit=HERO_LIMIT):
         theme,
         normalize_hero(hero, catalog, limit=limit),
         normalize_feed(document.get("feed")),
+        timer=document.get("timer") is True,
     )
 
 
@@ -132,6 +135,7 @@ def save(path, settings):
             "host": settings.feed.host,
             "port": settings.feed.port,
         },
+        "timer": settings.timer,
     }
     handle, temporary = tempfile.mkstemp(
         prefix=path.name + ".",

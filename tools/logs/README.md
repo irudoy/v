@@ -313,8 +313,8 @@ than assigned an implicit daylight-saving fold. Existing outputs are rejected
 unless `--force` is supplied, and the output path may never resolve to the
 source trace.
 
-The `tuning` output contains 87 fields: `Date`, `Elapsed`, schema state, every
-fixed and rotating telemetry value, and five stock-CAN context values. Missing
+The `tuning` output contains 88 fields: `Date`, `Elapsed`, schema state, every
+fixed and rotating telemetry value, and six stock-CAN context values. Missing
 rotating contexts use IEEE 754 `NaN`. Candidate engineering transforms carry
 `*` in the channel units, matching the dashboard.
 

@@ -13,6 +13,7 @@ from tools.can_dashboard.selected_map import MapTracker
 from tools.logs import can_telemetry
 
 
+TCM_GEAR_ID = 0x174
 STOCK_RPM_ID = 0x180
 ASCD_BUTTON_ID = 0x239
 VEHICLE_SPEED_ID = 0x280
@@ -22,6 +23,7 @@ DEFAULT_CAN_ID = 0x6F0
 DEFAULT_BITRATE = 500_000
 BASE_TICK_SECONDS = 0.01024
 OBSERVED_IDS = (
+    TCM_GEAR_ID,
     STOCK_RPM_ID,
     ASCD_BUTTON_ID,
     VEHICLE_SPEED_ID,
@@ -41,6 +43,10 @@ PRND_CODES = {
     0x98: "M4",
     0xA0: "M5",
 }
+# 0x174 byte 3 carries the target gear in its high nibble and the current gear
+# in its low nibble. The ECU reads nibbles 1 through 7 as gears; P and N read
+# 0xAA and R reads 0x99.
+TCM_GEARS = range(1, 8)
 ASCD_BUTTON_CODES = {
     0x20: "RELEASE",
     0x10: "RES",
@@ -355,6 +361,7 @@ class DashboardModel:
         self.vehicle_speed_kmh = None
         self.gear = "?"
         self.gear_raw = None
+        self.tcm_gear = None
         self.ascd_button = "?"
         self.ascd_button_raw = None
         self.dashboard_state = "?"
@@ -514,6 +521,10 @@ class DashboardModel:
         else:
             self.gear = PRND_CODES.get(code, f"0x{code:02X}")
 
+    def _set_tcm_gear(self, code):
+        current = code & 0x0F
+        self.tcm_gear = current if current in TCM_GEARS else None
+
     def _set_ascd_button(self, code):
         self.ascd_button_raw = code
         self.ascd_button = ASCD_BUTTON_CODES.get(code, f"0x{code:02X}")
@@ -526,6 +537,8 @@ class DashboardModel:
         data = bytes(frame.data)
         if frame.arbitration_id == STOCK_RPM_ID and len(data) >= 2:
             self.stock_rpm = int.from_bytes(data[0:2], "big") / 8
+        elif frame.arbitration_id == TCM_GEAR_ID and len(data) >= 4:
+            self._set_tcm_gear(data[3])
         elif frame.arbitration_id == VEHICLE_SPEED_ID and len(data) >= 6:
             self.vehicle_speed_raw = int.from_bytes(data[4:6], "big")
             self.vehicle_speed_kmh = self.vehicle_speed_raw / 100
@@ -552,6 +565,12 @@ class DashboardModel:
             code = values.get(name)
             if _finite(code):
                 setter(int(code))
+        if "tcm_gear" in values:
+            # A recording stores NaN where the TCM reports no forward gear.
+            gear = values["tcm_gear"]
+            self.tcm_gear = (
+                int(gear) if _finite(gear) and int(gear) in TCM_GEARS else None
+            )
 
     def stats(self, now=None):
         now = time.monotonic() if now is None else now
@@ -781,7 +800,11 @@ class DemoGenerator:
         speed[4:6] = int(speed_kmh * 100).to_bytes(2, "big")
         dashboard = bytearray(8)
         dashboard[5] = 0x72 if rpm > 3200 else 0x02
+        tcm = bytearray(8)
+        gear = min(5, 1 + int(speed_kmh // 12))
+        tcm[3] = gear << 4 | gear
         return (
+            FrameRecord(TCM_GEAR_ID, bytes(tcm), elapsed),
             FrameRecord(STOCK_RPM_ID, bytes(rpm_payload), elapsed),
             FrameRecord(PRND_ID, bytes(prnd), elapsed),
             FrameRecord(ASCD_BUTTON_ID, bytes(button), elapsed),

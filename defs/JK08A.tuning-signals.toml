@@ -23,7 +23,7 @@ sources = [0xFFFF11F4]
 widths = [2]
 dids = [0x1201]
 evidence = "exact-code"
-note = "The custom stream carries the exact RPM/12.5 word every scheduler pass; stock CAN 0x180 provides an independent copy."
+note = "The custom stream carries the exact RPM/12.5 word every scheduler pass; stock CAN 0x180 carries the same event-interval engine speed 0xFFFF1196 at 3.125 RPM per count in its own transmit slot, so it cross-checks the stock transmit path rather than measuring the speed independently."
 
 [[signal]]
 id = "airflow_banks"

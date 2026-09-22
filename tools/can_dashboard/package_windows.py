@@ -34,6 +34,8 @@ SOURCE_FILES = (
     "tools/can_dashboard/__init__.py",
     "tools/can_dashboard/acceleration.py",
     "tools/can_dashboard/app.py",
+    "tools/can_dashboard/descriptions.py",
+    "tools/can_dashboard/excerpt.py",
     "tools/can_dashboard/feed_dialog.py",
     "tools/can_dashboard/hero_picker.py",
     "tools/can_dashboard/live_feed.py",

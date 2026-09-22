@@ -197,7 +197,10 @@ class WindowLayoutTest(unittest.TestCase):
                     app.PANEL_MIN_WIDTH,
                     full,
                 )
-                self.assertEqual(label.tooltip.provider(), full)
+                self.assertTrue(
+                    label.tooltip.provider().startswith(full + "\n\n"),
+                    full,
+                )
         self.assertGreater(elided, 0)
 
     def test_a_widened_panel_restores_its_labels(self):
