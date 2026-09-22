@@ -166,7 +166,8 @@ producer `FUN_00077892` sets it for any target/current mismatch only when
 `0xFFFF418F.bit4` is set and its independent inhibit aggregate is clear.
 Bit 4 is the scheduler latch of `0xFFFF419B.bit4`, which `FUN_0007724C` sets
 when TCM field `0xFFFF3A2E` (CAN `0x174` byte 4 bits 5 through 7) equals 3;
-whether the TCM transmits that value is a live-capture question.
+the 2026-09-22 road captures carry that value in 4-3 and 3-2 downshifts
+([`JK08A.can.md`](JK08A.can.md#transmission-request-interface)).
 
 The full state machine, calibration inventory, exact integer boundaries, and
 auxiliary outputs are specified in
@@ -175,12 +176,14 @@ auxiliary outputs are specified in
 `FUN_00077892` also uses `0x0942C` as the upper cap in a gear-indexed
 transmission-request calculation. The resulting signed word `0xFFFF4162` can
 reach `FUN_00079030` only while `0xFFFF41A6.bit3` is set. The selected function
-sets that bit only from the lifecycle-inert forced-neutral state or retained
-byte `0xFFFF4413`; the retained byte can itself be loaded only on the same
-inert branch. The secondary result is therefore calculated but excluded from
-the stock request boundary. A calibration-only A/B change to `0x0942C` remains
-isolated from this secondary path unless external diagnostics or another patch
-mutate those state bytes.
+sets that bit from the forced-neutral state or from retained byte
+`0xFFFF4413`, which it loads only on the same branch and `FUN_0002040C`
+decrements, so the bit covers a gear change with TCM status 3 and the 307.2 ms
+hold after it. The 2026-09-22 road captures show such episodes in 4-3 and 3-2
+downshifts, where the secondary result bounds the shared request. A
+calibration-only A/B change to `0x0942C` is isolated from this secondary path
+only outside those episodes and only while external diagnostics or another
+patch do not mutate those state bytes.
 
 The exact downstream chain is:
 

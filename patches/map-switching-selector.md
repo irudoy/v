@@ -136,12 +136,13 @@ The selected `0x942C` word is present both inside the complete throttle-cluster
 shadow and at `0xFFFF1796`, the dynamic-threshold state consumed by
 `FUN_0007584E`. The existing scalar hook at `0x77BAC` also exposes the selected
 word to `FUN_00077892`, which calculates a transmission-derived signed request.
-Exact whole-program tracing establishes that its downstream selector
-`FFFF41A6.bit3` is cleared before common request publication throughout the
-recovered stock lifecycle. The secondary calculation therefore cannot affect
-the shared request unless external diagnostics or another patch mutate the
-transition state. Controlled `0x942C` A/B profiles rely on this explicit state
-boundary.
+Its downstream selector `FFFF41A6.bit3` is set during a gear change with TCM
+status 3 and for the 307.2 ms hold after it, and the 2026-09-22 road captures
+show such episodes in 4-3 and 3-2 downshifts
+([`../defs/JK08A.can.md`](../defs/JK08A.can.md#transmission-request-interface)).
+A map with a lowered `0x942C` slot can therefore also lower the shared request
+in those downshifts, and controlled `0x942C` A/B profiles compare the primary
+limiter outside those episodes.
 
 ## VQ37 projected variant
 

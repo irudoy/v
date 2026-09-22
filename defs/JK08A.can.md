@@ -141,14 +141,18 @@ The following payload claims are sufficiently narrow for use as cross-checks:
   snapshots it for request-limiter use.
 - `0x174` byte 4 bits 5 through 7 are a TCM status field published to
   `0xFFFF3A2E` by `FUN_000C47EA`; `FUN_0007724C` maps value 3 to
-  `0xFFFF419B.bit4`, the source of transition-neutralizer latch
-  `0xFFFF418F.bit4`. Byte 4 bits 0 through 3 and byte 5 bits 6 and 7 feed two
-  further status bytes. The moving-load capture `new-log-full.trc` holds value
-  3 for 850 ms inside one closed-pedal 4-3 downshift and value 0 everywhere
-  else, including the 19 other gear changes. The field meaning is not
-  established.
+  `0xFFFF419B` bits 3 and 4, and bit 4 is the source of transition-neutralizer
+  latch `0xFFFF418F.bit4`. Byte 4 bits 0 through 3 and byte 5 bits 6 and 7 feed
+  two further status bytes. The moving-load capture `new-log-full.trc` holds
+  value 3 for 850 ms inside one closed-pedal 4-3 downshift and value 0
+  everywhere else, including the 19 other gear changes.
+  [Transmission request interface](#transmission-request-interface) gives the
+  path of value 3 to shared request `0xFFFF19C6` and the road captures of
+  2026-09-22. The TCM-side meaning of the field is not established.
 - `0x177` byte 2 bits 0 through 2 are a zero-based TCM gear-phase index decoded
-  by `FUN_000C4ACE`. Higher bits are independent status flags.
+  by `FUN_000C4ACE`. Higher bits are independent status flags. The same
+  decoder stores byte 4 in `0xFFFF283E` and the shift-code index of byte 5 in
+  `0xFFFF282C`: 15 when bit 7 is set and bits 3 through 6 otherwise.
 
 - `0x180` bytes 2 through 4 and `0x160` bytes 0 through 2 carry four 12-bit
   torque-domain words; the next section gives their code path.
@@ -281,6 +285,104 @@ Each scale requires a road grade:
 - Gross state `0xFFFF18CC` still contains base term `0xFFFF2408`, and read as
   flywheel torque at `0.1 Nm` it requires a median uphill grade of 9.35 percent.
 
+## Transmission request interface
+
+The TCM sends frames `0x174`, `0x176`, and `0x177` back to back every 10 ms.
+Besides the gear pair, `0x174` carries two words in the packed torque domain,
+word A in byte 0 and byte 1 bits 7..4 and word B in byte 1 bits 3..0 and
+byte 2, and the status byte 4 with a rolling counter in bits 0..3 and the
+status field in bits 5..7. `0x177` carries byte 4 and the shift code of byte 5.
+
+- `FUN_000C47EA` stores words A and B in `0xFFFF3F8C` and `0xFFFF3F8E`.
+  `FUN_0007724C` writes `min(5 * word - 4000, 0x7FFF)`, the inverse of the
+  packing above, to `0xFFFF2872` and `0xFFFF2874`, and ORs `0x18` into
+  `0xFFFF419B` for status value 3.
+- `FUN_00020DFE` copies 260 bytes `0xFFFF277E -> 0xFFFF267A` and 12 bytes
+  `0xFFFF4194 -> 0xFFFF4188` on every scheduler pass, so `0xFFFF2770` is the
+  latch of word B, `0xFFFF2728` of shift-code index `0xFFFF282C`,
+  `0xFFFF273A` of `0x177` byte 4 `0xFFFF283E`, and `0xFFFF418F` of
+  `0xFFFF419B`.
+
+Stock `ROM8[0x83C1] = 0x2C` and `ROM8[0x870C] = 0x44` select coordinator
+`FUN_00077892`. It and common completion `FUN_000777FA`, which it tail-calls,
+feed request boundary `FUN_00079030` on every pass:
+
+1. `0xFFFF4252.bit1` is set on a pass in which `0xFFFF418F.bit4` is set,
+   current gear index `0xFFFF1082` differs from target gear index
+   `0xFFFF1083`, and inhibit `0xFFFF4253.bit6` is clear. Such a pass loads
+   hold byte `0xFFFF4413` with `ROM8[0x8B07] = 30` and advances counter
+   `0xFFFF3443`, limited to 255; every other pass clears the counter.
+   `FUN_0002040C` decrements the hold byte with its 10.24 ms block, so the hold
+   ends 307.2 ms after the last bit-1 pass.
+2. `0xFFFF41A6.bit3` is set while bit 1 is set or the hold byte is nonzero.
+3. With code `min(0xFFFF2728, 15)`, floor `0xFFFF34DA` is
+   `ROM16[0x144F2 + 2 * code] - 0x8000` and `0xFFFF41FD.bit4` is set while bit
+   1 is set, the counter is at most `ROM8[0x11E01 + code]`, and
+   `0xFFFF245D.bit2` is set or `0xFFFF1210` is at most `ROM16[0x94B6] = 91`;
+   otherwise the floor is -32768.
+4. On a bit-1 pass, candidate `0xFFFF4162` is the maximum of the floor and the
+   target term built from `0xFFFF32EC`, limited to `0xFFFF4138` and, under
+   `ROM8[0x8B08].bit0`, to the word B latch `0xFFFF2770`. On every other pass
+   it is `min(0xFFFF34A4, 0xFFFF2770)`.
+5. While bit 3 is set, `FUN_000777FA` publishes `min(0xFFFF34C8, candidate)`
+   as lower bound `0xFFFF3484` and, under `ROM8[0x89C5].bit0`, the candidate as
+   upper bound `0xFFFF3480`. `FUN_00079030` raises its working request to the
+   lower bound and caps it at the upper bound before its remaining bounds and
+   the store to `0xFFFF19C6`.
+
+The stock option bytes `ROM8[0x8B08] = 0x01` and `ROM8[0x89C5] = 0x19` enable
+both terms. The stock floor table gives 300 for code 4 and 500 for codes 6, 8,
+9, and 11, for 30, 20, 20, 30, and 20 passes; every other code has no floor.
+The target term caps `0xFFFF32EC` at the throttle-limit scalar
+`ROM16[0x942C]`. `FUN_0006425A` copies the latched byte 4 `0xFFFF273A` to
+`0xFFFF3373` under `ROM8[0x8B3F].bit4`, set in stock `0x18`; the path from
+`0xFFFF3373` to the timing command is not traced.
+
+The road audit `tools/logs/tcm_shift_audit.py`, recorded under
+`transmission_interface.vehicle_2026_09_22` in
+`../patches/hardware-results.toml`, checks the instruction bytes of this path
+in the image that ran and replays two Map 3 captures with 49 shift events
+through gears 1..5 in D and in M1..M5:
+
+- The byte 4 counter advances by one modulo 16 in all 34,187 consecutive TCM
+  group pairs, and bit 4 stays clear.
+- The status field carries only 0 and 3. Value 3 fills 798 frames of 5
+  episodes, all in 4-3 and 3-2 downshifts at 2200..3987.5 RPM, beginning
+  30..40 ms after the target change and lasting 1.05..2.051 s. The 6
+  downshifts of the same types at 700..1087.5 RPM and the 13 downshifts of
+  other types carry none.
+- Word A stays 4094. Word B holds 1820 outside the episode windows; it reads
+  940 in the one D episode and restarts at 976..1084 after each episode, with
+  steps of 4..24 for 0.63..4.232 s.
+- The `0x180` request word equals the packed `0xFFFF19C6` in all but 80 of
+  33,373 passes. In those passes the packed `0xFFFF19C6` lies below the
+  `0x180` request; they form 9 runs inside the episode windows and lie at most
+  0.306 s after the latest value-3 frame, inside the 307.2 ms hold.
+- `0xFFFF19C6` equals the unpacked word B in 20 of the 22 passes in which that
+  word lies below the `0x180` request. In the first episode, a 4-3 downshift at
+  2512.5 RPM, `0xFFFF19C6` holds the code-9 floor of 500 for 30 consecutive
+  passes from 44.864 s while the `0x180` request reads 1455..1855.
+- The `0x160` limited word equals the `0x180` request in all 33,373 passes.
+- The 32 bursts of `0x177` byte 4 lie inside shift events. The `0x180`
+  actual-torque word falls below the `0x160` parallel word 18..29 ms after the
+  onset of each of the 20 upshift bursts; the 12 downshift bursts and the 5
+  upshifts without a burst show no divergence, and all 613 divergence passes
+  lie in burst or episode windows.
+- The `0x177` byte 5 code stays constant through each of the 49 shift events
+  and holds `0x78` outside them. The observed codes are 0, 1, 2, and 3 for
+  upshifts 1-2 through 4-5, 4 for 2-1, 5 for 3-1, 6 for 3-2, 9 for 4-3, and 13
+  for 5-4.
+- The highest APP1 at the 19 downshifts in D is 152 raw, and the shared
+  throttle target rises by at most 244 raw in the 17 closed-pedal downshifts.
+
+The status path therefore lowers the shared request in these downshifts and
+is not seen to raise it. The captures contain no kickdown and no downshift in
+D with the pedal pressed. The bound terms `0xFFFF4162`, `0xFFFF3480`, and
+`0xFFFF3484`, the floor gate inputs, and target word `0xFFFF32EC` are not
+streamed, so a floor or a target bound is visible only where the `0x180`
+request exceeds it. The image reads the throttle-limit scalar from
+map-switching word `0xFFFF5D28` instead of `ROM16[0x942C]`.
+
 ## Passive vehicle capture evidence
 
 Three PEAK PCAN-View TRC 1.1 captures recorded on 2026-08-16 provide the
@@ -389,8 +491,8 @@ mapping:
 | `0x80` | M1 | saved trace and operator confirmation |
 | `0x88` | M2 | saved trace and operator confirmation |
 | `0x90` | M3 | saved trace and operator confirmation |
-| `0x98` | M4 | operator confirmation outside saved trace |
-| `0xA0` | M5 | operator confirmation outside saved trace |
+| `0x98` | M4 | 2026-09-22 saved trace and operator confirmation |
+| `0xA0` | M5 | 2026-09-22 saved trace and operator confirmation |
 
 Transient zero appears between some detents and is not a stable selector
 position. No M6 or M7 code is inferred from the numeric pattern.
@@ -406,7 +508,11 @@ of selector frame `0x421`:
 
 The high nibble therefore represents target gear and changes before the
 low-nibble current gear for both shift directions. In stable first through
-fourth gear, the `0x177` value equals current gear minus one. Its intermediate
+fourth gear, the `0x177` value equals current gear minus one; the 2026-09-22
+road captures extend this to all 24,009 stable-gear TCM groups of gears 1..5,
+where the `0x176` speed ratio matches the current gear in 20,640 of 20,741
+groups and another gear in none, and the `0x421` manual position equals the
+target gear in all 1,955 manual frames. Its intermediate
 timing establishes an operational TCM phase index but does not prove the exact
 mechanical engagement boundary. These payloads are received by the ECM:
 stock mailbox records `0x9786=01 08 2E 80` and `0x9782=01 06 2E E0` encode

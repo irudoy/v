@@ -499,6 +499,68 @@ The output is one `key = value` line per figure in TOML syntax. The captures
 do not measure road grade, vehicle mass, tire radius, or true vehicle speed,
 so the audit bounds the scale and does not determine it.
 
+## JK08A transmission interface audit
+
+`tcm_shift_audit.py` replays strict schema-2 `tuning` TRC captures against the
+TCM frames `0x174`, `0x176`, and `0x177` and the ECU frames `0x180` and
+`0x160`. `--rom` names the image that ran during the captures; the default is
+the stock JK08A ROM.
+
+```bash
+python3 tools/logs/tcm_shift_audit.py \
+  --rom tmp/1JK08A-tune-v3-1.bin \
+  tmp/logs-09-22/5-shifts-map-3.trc \
+  tmp/logs-09-22/5-downshifts-map-3.trc
+```
+
+- The ROM check compares the exact instruction bytes of the path from the TCM
+  frames to shared request `0xFFFF19C6` in `FUN_000C47EA`, `FUN_0007724C`,
+  `FUN_00020DFE`, `FUN_0002040C`, `FUN_00077892`, `FUN_000777FA`,
+  `FUN_00079030`, `FUN_000C4ACE`, and `FUN_0006425A`, and derives the `code_`
+  addresses, tables, and option bytes from the literals of those
+  instructions. `code_matches_stock` compares them with the stock ROM.
+  `scalar_source` is the literal from which `FUN_00077892` reads the
+  throttle-limit scalar of its gear-indexed target, so a map-switching image
+  that redirects it still matches the stock path.
+- A TCM group is a `0x174` frame followed by one `0x176` and one `0x177`
+  frame within 2 ms; an incomplete or late group stops the audit. A telemetry
+  snapshot pairs with the last `0x180` and `0x160` frames between the first
+  pages of the next two snapshots, and only snapshots of consecutive ticks
+  form a pass.
+- A status episode is a run of value-3 frames of the `0x174` byte 4 status
+  field whose frames lie at most 0.1 s apart. Word B has settled when 10
+  consecutive frames carry its default, the most frequent word B of the
+  capture. An episode window runs from 0.03 s before the first value-3 frame
+  to 0.05 s after word B settles, and an episode outside a completed shift
+  event stops the audit.
+- A floor pass lies in an episode window, and its `0xFFFF19C6` equals the
+  floor-table entry of the shift code of the episode and differs from the
+  `0x180` request.
+- A burst is a run of nonzero `0x177` byte 4 frames that ends at the first
+  gap of more than 1 zero frame. Its window runs from 0.03 s before its first
+  to 0.5 s after its last nonzero frame. A pass diverges when the `0x180`
+  actual-torque word differs from the `0x160` parallel word. The pedal and
+  timing references of a burst come from the 0.3 s before it. An upshift
+  without a burst is checked for divergence from the target change to 0.3 s
+  after its shift window closes.
+- Word B binds a pass when the last 4 TCM groups at most 0.03 s before it
+  carry a word B other than the default and every such word unpacks below the
+  unpacked `0x180` request. Passes in which the `0x180` request differs from
+  the packed `0xFFFF19C6` form one run while they lie at most 0.03 s apart.
+- The gear signal uses stable-gear groups in D, DS, or M1..M5 whose target
+  and current gear agree in gears 1..5 and whose `0x177` byte 5 holds `0x78`.
+  The gear phase must equal the current gear minus one. A speed ratio matches
+  a gear when output over turbine speed lies within 2 percent of the inverse
+  RE5R05A ratio of that gear, counted with turbine speed 800 or more and output
+  speed 300 or more raw. Each manual `0x421` frame compares its position with
+  the target gear of the latest TCM group.
+- A downshift counts as closed-pedal when APP1 stays at 160 raw or less from
+  its target change to the end of its shift window.
+
+The output is one `key = value` line per figure in TOML syntax. Every figure
+is a raw CAN or software quantity; the TCM-side meaning of the status field
+and of words A and B is outside the captures.
+
 ## MLG field restamping
 
 `mlg_restamp.py` rewrites the field descriptors of an existing MLVLG file from

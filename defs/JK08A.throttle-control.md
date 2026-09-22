@@ -249,10 +249,12 @@ FFFF4253.bit6 == 0
 `FFFF419B.bit4` exactly when TCM field `FFFF3A2E`, CAN `0x174` byte 4 bits 5
 through 7 decoded by `000C47EA`, equals 3. Primary startup clears `FFFF418F`,
 and its direct writers change bits 0 and 1 only. The forced-neutral branch is
-therefore active only on a pass that follows TCM field value 3; whether the
-TCM transmits that value is a live-capture question. It is a transition
-mismatch condition rather than an upshift-only condition; direction-specific
-behavior uses the separate `target > current` comparisons above.
+therefore active only on a pass that follows TCM field value 3; the 2026-09-22
+road captures carry that value in 4-3 and 3-2 downshifts at 2200..3987.5 RPM
+([`JK08A.can.md`](JK08A.can.md#transmission-request-interface)). It is a
+transition mismatch condition rather than an upshift-only condition;
+direction-specific behavior uses the separate `target > current` comparisons
+above.
 
 ## Secondary use of `0x942C`
 
@@ -272,14 +274,17 @@ The downstream activation chain is exact:
 ```
 
 Before common completion, `00077892` sets `FFFF41A6.bit3` only when
-`FFFF4252.bit1` is set or retained byte `FFFF4413` is nonzero. It can write
-`FFFF4413=ROM8[0x8B07]=0x1E` only on the same bit-1 branch. Startup clears the
-byte, and a whole-program census found no other exact access on the selected
-implementation. Both prerequisites follow TCM field `FFFF3A2E == 3` through
-latch `FFFF418F.bit4`, so the secondary candidate constrains `FFFF19C6` only
-after such a pass and is otherwise calculated without effect. A
-calibration-only `0x942C` A/B test is isolated from this secondary path as
-long as the TCM field stays away from value 3 and external diagnostics or
+`FFFF4252.bit1` is set or retained byte `FFFF4413` is nonzero. It writes
+`FFFF4413=ROM8[0x8B07]=0x1E` only on the same bit-1 branch, startup clears the
+byte, and `0002040C` decrements it with its 10.24 ms byte block, so bit 3 stays
+set for 307.2 ms after the last bit-1 pass. Both prerequisites follow TCM field
+`FFFF3A2E == 3` through latch `FFFF418F.bit4`, so the secondary candidate
+constrains `FFFF19C6` only during such an episode and its hold. The 2026-09-22
+road captures carry the field value in 4-3 and 3-2 downshifts, and
+`FFFF19C6` lies below the pre-limiter request in 80 passes inside those
+episodes ([`JK08A.can.md`](JK08A.can.md#transmission-request-interface)). A
+calibration-only `0x942C` A/B test is isolated from this secondary path only
+outside such episodes and their holds, and only while external diagnostics or
 another patch do not mutate these state bytes.
 
 ## Shared signed-request arbitration
@@ -471,10 +476,12 @@ nor opening polarity is asserted in the definition layer.
 
 - `0x942C` can reduce the shared throttle/airflow request before the hard fuel
   cut, but it is not a fuel-cut threshold. Its secondary transmission-request
-  calculation reaches the common request boundary only after TCM field
-  `FFFF3A2E` (CAN `0x174` byte 4 bits 5 through 7) reads 3; an A/B test must
-  not externally force `FFFF418F.bit4`, `FFFF4252.bit1`, `FFFF4413`, or
-  `FFFF41A6.bit3` and must record that CAN field.
+  calculation reaches the common request boundary during a gear change in
+  which TCM field `FFFF3A2E` (CAN `0x174` byte 4 bits 5 through 7) reads 3 and
+  for the 307.2 ms hold after it, which the road captures show in 4-3 and 3-2
+  downshifts. An A/B test must not externally force `FFFF418F.bit4`,
+  `FFFF4252.bit1`, `FFFF4413`, or `FFFF41A6.bit3`, must record that CAN field,
+  and compares the primary limiter outside those episodes.
 - `0x1465A`, `0x1469A`, `0x92FC`, `FFFF120E`, and the lower/upper target bounds
   participate in the lift-off target even when the APP-derived request is at
   its minimum.

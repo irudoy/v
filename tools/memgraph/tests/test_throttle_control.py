@@ -145,12 +145,12 @@ class ThrottleControlContractTest(unittest.TestCase):
             "ffff32ec": ("0x942c", "ffff4162"),
             "ffff3480": ("ffff4162", "ffff19c6"),
             "ffff3484": ("ffff4162", "ffff19c6"),
-            "ffff4162": ("stock-lifecycle", "ffff41a6"),
+            "ffff4162": ("ffff41a6", "307.2 ms", "4-3 and 3-2 downshifts"),
             "ffff418f": ("ffff419b", "byte 4", "0x174"),
             "ffff41a6": ("ffff4252", "ffff4413", "bit 3"),
-            "ffff4252": ("current gear", "target gear", "stock-lifecycle"),
+            "ffff4252": ("current gear", "target gear", "4-3 and 3-2 downshifts"),
             "ffff4253": ("bit 6", "inhibit"),
-            "ffff4413": ("0x1e", "remains zero"),
+            "ffff4413": ("0x1e", "0002040c", "307.2 ms"),
         }
         for address, tokens in required_variables.items():
             text = (
@@ -164,8 +164,8 @@ class ThrottleControlContractTest(unittest.TestCase):
         for token in (
             "0x44 -> 0x34 -> 0x33",
             "0x22 -> 0x32 -> 0x33",
-            "secondary candidate constrains `ffff19c6` only after such a pass",
-            "calibration-only `0x942c` a/b test is isolated",
+            "secondary candidate constrains `ffff19c6` only during such an episode and its hold",
+            "calibration-only `0x942c` a/b test is isolated from this secondary path only outside such episodes",
         ):
             with self.subTest(contract_token=token):
                 self.assertIn(token, normalized_contract)

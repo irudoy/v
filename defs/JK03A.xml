@@ -2036,19 +2036,19 @@
          The stock word is 0x2580, or 7500 RPM, between fuel-cut release 7450 RPM and activation
          7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and 7200..7800
          RPM at four APP requests; after 20 measured 10.24 ms passes, APP 10000 yields 10000 at
-         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate is
-         calculated but stock-lifecycle inactive: 00077892 clears ffff41a6.bit3 because startup-
-         zero ffff418f.bit4 has no producer and retained ffff4413 can be loaded only on the same
-         unreachable transition branch. Calibration-only A/B testing is isolated from that
-         secondary path unless external diagnostics or another patch mutate those state bytes.
-         The limiter never enters fuel mask ffff22e0. A controlled vehicle comparison of three
-         JK03A map slots on 2026-09-21 fixes the RPM multiplier and the throttle action: slot
-         value 0x1900 closes both throttle sensors from 369/371 to 166/171 counts from 5000 RPM
-         under a rising pedal and holds 4915..5137 RPM, slot value 0x2580 closes them from 838
-         to 209/214 counts from 7466..7488 RPM with the pedal held at 4.70 V and holds
-         7412..7565 RPM, and slot value 0xffff leaves them at 835..837 counts until the 7650 RPM
-         fuel cut; no limiter interval sets ffff22e0. Plate response time, channel-to-bank
-         identity, and ECM terminals remain outside that measurement.
+         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate bounds the
+         shared request only while 00077892 holds ffff41a6.bit3 set, during a gear change with
+         TCM field ffff3a2e == 3 and the 307.2 ms hold after it; the 2026-09-22 road captures
+         show such episodes in 4-3 and 3-2 downshifts, so calibration-only A/B testing is
+         isolated from that secondary path only outside them. The limiter never enters fuel mask
+         ffff22e0. A controlled vehicle comparison of three JK03A map slots on 2026-09-21 fixes
+         the RPM multiplier and the throttle action: slot value 0x1900 closes both throttle
+         sensors from 369/371 to 166/171 counts from 5000 RPM under a rising pedal and holds
+         4915..5137 RPM, slot value 0x2580 closes them from 838 to 209/214 counts from
+         7466..7488 RPM with the pedal held at 4.70 V and holds 7412..7565 RPM, and slot value
+         0xffff leaves them at 835..837 counts until the 7650 RPM fuel cut; no limiter interval
+         sets ffff22e0. Plate response time, channel-to-bank identity, and ECM terminals remain
+         outside that measurement.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Engine Speed Limit - Throttle Request"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2467,19 +2467,19 @@
          The stock word is 0x2580, or 7500 RPM, between fuel-cut release 7450 RPM and activation
          7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and 7200..7800
          RPM at four APP requests; after 20 measured 10.24 ms passes, APP 10000 yields 10000 at
-         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate is
-         calculated but stock-lifecycle inactive: 00077892 clears ffff41a6.bit3 because startup-
-         zero ffff418f.bit4 has no producer and retained ffff4413 can be loaded only on the same
-         unreachable transition branch. Calibration-only A/B testing is isolated from that
-         secondary path unless external diagnostics or another patch mutate those state bytes.
-         The limiter never enters fuel mask ffff22e0. A controlled vehicle comparison of three
-         JK03A map slots on 2026-09-21 fixes the RPM multiplier and the throttle action: slot
-         value 0x1900 closes both throttle sensors from 369/371 to 166/171 counts from 5000 RPM
-         under a rising pedal and holds 4915..5137 RPM, slot value 0x2580 closes them from 838
-         to 209/214 counts from 7466..7488 RPM with the pedal held at 4.70 V and holds
-         7412..7565 RPM, and slot value 0xffff leaves them at 835..837 counts until the 7650 RPM
-         fuel cut; no limiter interval sets ffff22e0. Plate response time, channel-to-bank
-         identity, and ECM terminals remain outside that measurement.
+         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate bounds the
+         shared request only while 00077892 holds ffff41a6.bit3 set, during a gear change with
+         TCM field ffff3a2e == 3 and the 307.2 ms hold after it; the 2026-09-22 road captures
+         show such episodes in 4-3 and 3-2 downshifts, so calibration-only A/B testing is
+         isolated from that secondary path only outside them. The limiter never enters fuel mask
+         ffff22e0. A controlled vehicle comparison of three JK03A map slots on 2026-09-21 fixes
+         the RPM multiplier and the throttle action: slot value 0x1900 closes both throttle
+         sensors from 369/371 to 166/171 counts from 5000 RPM under a rising pedal and holds
+         4915..5137 RPM, slot value 0x2580 closes them from 838 to 209/214 counts from
+         7466..7488 RPM with the pedal held at 4.70 V and holds 7412..7565 RPM, and slot value
+         0xffff leaves them at 835..837 counts until the 7650 RPM fuel cut; no limiter interval
+         sets ffff22e0. Plate response time, channel-to-bank identity, and ECM terminals remain
+         outside that measurement.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Engine Speed Limit - Throttle Request"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2898,19 +2898,19 @@
          The stock word is 0x2580, or 7500 RPM, between fuel-cut release 7450 RPM and activation
          7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and 7200..7800
          RPM at four APP requests; after 20 measured 10.24 ms passes, APP 10000 yields 10000 at
-         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate is
-         calculated but stock-lifecycle inactive: 00077892 clears ffff41a6.bit3 because startup-
-         zero ffff418f.bit4 has no producer and retained ffff4413 can be loaded only on the same
-         unreachable transition branch. Calibration-only A/B testing is isolated from that
-         secondary path unless external diagnostics or another patch mutate those state bytes.
-         The limiter never enters fuel mask ffff22e0. A controlled vehicle comparison of three
-         JK03A map slots on 2026-09-21 fixes the RPM multiplier and the throttle action: slot
-         value 0x1900 closes both throttle sensors from 369/371 to 166/171 counts from 5000 RPM
-         under a rising pedal and holds 4915..5137 RPM, slot value 0x2580 closes them from 838
-         to 209/214 counts from 7466..7488 RPM with the pedal held at 4.70 V and holds
-         7412..7565 RPM, and slot value 0xffff leaves them at 835..837 counts until the 7650 RPM
-         fuel cut; no limiter interval sets ffff22e0. Plate response time, channel-to-bank
-         identity, and ECM terminals remain outside that measurement.
+         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate bounds the
+         shared request only while 00077892 holds ffff41a6.bit3 set, during a gear change with
+         TCM field ffff3a2e == 3 and the 307.2 ms hold after it; the 2026-09-22 road captures
+         show such episodes in 4-3 and 3-2 downshifts, so calibration-only A/B testing is
+         isolated from that secondary path only outside them. The limiter never enters fuel mask
+         ffff22e0. A controlled vehicle comparison of three JK03A map slots on 2026-09-21 fixes
+         the RPM multiplier and the throttle action: slot value 0x1900 closes both throttle
+         sensors from 369/371 to 166/171 counts from 5000 RPM under a rising pedal and holds
+         4915..5137 RPM, slot value 0x2580 closes them from 838 to 209/214 counts from
+         7466..7488 RPM with the pedal held at 4.70 V and holds 7412..7565 RPM, and slot value
+         0xffff leaves them at 835..837 counts until the 7650 RPM fuel cut; no limiter interval
+         sets ffff22e0. Plate response time, channel-to-bank identity, and ECM terminals remain
+         outside that measurement.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Engine Speed Limit - Throttle Request"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3329,19 +3329,19 @@
          The stock word is 0x2580, or 7500 RPM, between fuel-cut release 7450 RPM and activation
          7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and 7200..7800
          RPM at four APP requests; after 20 measured 10.24 ms passes, APP 10000 yields 10000 at
-         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate is
-         calculated but stock-lifecycle inactive: 00077892 clears ffff41a6.bit3 because startup-
-         zero ffff418f.bit4 has no producer and retained ffff4413 can be loaded only on the same
-         unreachable transition branch. Calibration-only A/B testing is isolated from that
-         secondary path unless external diagnostics or another patch mutate those state bytes.
-         The limiter never enters fuel mask ffff22e0. A controlled vehicle comparison of three
-         JK03A map slots on 2026-09-21 fixes the RPM multiplier and the throttle action: slot
-         value 0x1900 closes both throttle sensors from 369/371 to 166/171 counts from 5000 RPM
-         under a rising pedal and holds 4915..5137 RPM, slot value 0x2580 closes them from 838
-         to 209/214 counts from 7466..7488 RPM with the pedal held at 4.70 V and holds
-         7412..7565 RPM, and slot value 0xffff leaves them at 835..837 counts until the 7650 RPM
-         fuel cut; no limiter interval sets ffff22e0. Plate response time, channel-to-bank
-         identity, and ECM terminals remain outside that measurement.
+         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate bounds the
+         shared request only while 00077892 holds ffff41a6.bit3 set, during a gear change with
+         TCM field ffff3a2e == 3 and the 307.2 ms hold after it; the 2026-09-22 road captures
+         show such episodes in 4-3 and 3-2 downshifts, so calibration-only A/B testing is
+         isolated from that secondary path only outside them. The limiter never enters fuel mask
+         ffff22e0. A controlled vehicle comparison of three JK03A map slots on 2026-09-21 fixes
+         the RPM multiplier and the throttle action: slot value 0x1900 closes both throttle
+         sensors from 369/371 to 166/171 counts from 5000 RPM under a rising pedal and holds
+         4915..5137 RPM, slot value 0x2580 closes them from 838 to 209/214 counts from
+         7466..7488 RPM with the pedal held at 4.70 V and holds 7412..7565 RPM, and slot value
+         0xffff leaves them at 835..837 counts until the 7650 RPM fuel cut; no limiter interval
+         sets ffff22e0. Plate response time, channel-to-bank identity, and ECM terminals remain
+         outside that measurement.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Engine Speed Limit - Throttle Request"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3760,19 +3760,19 @@
          The stock word is 0x2580, or 7500 RPM, between fuel-cut release 7450 RPM and activation
          7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and 7200..7800
          RPM at four APP requests; after 20 measured 10.24 ms passes, APP 10000 yields 10000 at
-         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate is
-         calculated but stock-lifecycle inactive: 00077892 clears ffff41a6.bit3 because startup-
-         zero ffff418f.bit4 has no producer and retained ffff4413 can be loaded only on the same
-         unreachable transition branch. Calibration-only A/B testing is isolated from that
-         secondary path unless external diagnostics or another patch mutate those state bytes.
-         The limiter never enters fuel mask ffff22e0. A controlled vehicle comparison of three
-         JK03A map slots on 2026-09-21 fixes the RPM multiplier and the throttle action: slot
-         value 0x1900 closes both throttle sensors from 369/371 to 166/171 counts from 5000 RPM
-         under a rising pedal and holds 4915..5137 RPM, slot value 0x2580 closes them from 838
-         to 209/214 counts from 7466..7488 RPM with the pedal held at 4.70 V and holds
-         7412..7565 RPM, and slot value 0xffff leaves them at 835..837 counts until the 7650 RPM
-         fuel cut; no limiter interval sets ffff22e0. Plate response time, channel-to-bank
-         identity, and ECM terminals remain outside that measurement.
+         7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The secondary candidate bounds the
+         shared request only while 00077892 holds ffff41a6.bit3 set, during a gear change with
+         TCM field ffff3a2e == 3 and the 307.2 ms hold after it; the 2026-09-22 road captures
+         show such episodes in 4-3 and 3-2 downshifts, so calibration-only A/B testing is
+         isolated from that secondary path only outside them. The limiter never enters fuel mask
+         ffff22e0. A controlled vehicle comparison of three JK03A map slots on 2026-09-21 fixes
+         the RPM multiplier and the throttle action: slot value 0x1900 closes both throttle
+         sensors from 369/371 to 166/171 counts from 5000 RPM under a rising pedal and holds
+         4915..5137 RPM, slot value 0x2580 closes them from 838 to 209/214 counts from
+         7466..7488 RPM with the pedal held at 4.70 V and holds 7412..7565 RPM, and slot value
+         0xffff leaves them at 835..837 counts until the 7650 RPM fuel cut; no limiter interval
+         sets ffff22e0. Plate response time, channel-to-bank identity, and ECM terminals remain
+         outside that measurement.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Engine Speed Limit - Throttle Request"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
