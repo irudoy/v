@@ -270,7 +270,7 @@ class LogparamDeclarationTest(unittest.TestCase):
             )
             for source, calibration in table.items()
         }
-        checked = set()
+        checked = {}
         for row in tracked_axes().values():
             parameter = emit_def.axis_logparam(row, overrides)
             if not parameter:
@@ -305,10 +305,16 @@ class LogparamDeclarationTest(unittest.TestCase):
                             calibration.apply(raw),
                             eval(declared, {"__builtins__": {}}, {"x": raw}),
                         )
-            checked.add(row["addr"])
-        # The throttle target axis, a load axis, and a speed axis whose core
-        # multiplies each point by four.
-        self.assertLessEqual({"000155a0", "00011ebe", "00011cf0"}, checked)
+            checked[row["addr"]] = (operand, round(multiplier))
+        # Every declaration whose operand the stream carries reaches the check
+        # through its axes, which include the throttle target axis and an axis
+        # whose core multiplies each point by a power of two above one.
+        self.assertEqual(
+            {operand for operand, _ in checked.values()},
+            {operand for operand in declarations if int(operand, 16) in fields},
+        )
+        self.assertIn("000155a0", checked)
+        self.assertTrue(any(power > 1 for _, power in checked.values()))
 
     def test_every_tracked_declaration_binds_an_axis(self):
         overrides = tracked_overrides()
