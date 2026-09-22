@@ -47,7 +47,8 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `maps/build_tracker.py` | Emit the reviewable map ledger projection |
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
 | `can_dashboard/app.py` | Tkinter live view for strict custom telemetry and stock CAN context |
-| `can_dashboard/widgets.py` | Responsive flow, grid, scroll, and copyable status widgets |
+| `can_dashboard/widgets.py` | Responsive flow, grid, scroll, copyable status, and tool button widgets |
+| `can_dashboard/icons.py` | Vector button icons drawn on a Tk canvas at the caption size |
 | `can_dashboard/package_windows.py` | Reproducible portable Windows source-package generator |
 | `can_dashboard/package_macos.py` | Native arm64 macOS application and ZIP generator |
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
@@ -77,7 +78,7 @@ and fails when the table or another tool document carries a different value.
 | `mcp-memgraph` | 0.4.1 | `../.mcp.json`; machine-local and untracked, so the gate checks it only where it exists |
 | GNU SH toolchain | GCC 13.3.0, binutils 2.44, GDB SH simulator 16.3 | Image built from `sh-elf-run/Dockerfile`; the simulator version is required by `sh-elf-run/verify_map_switching.py` |
 | Python | 3.11 | `../pyproject.toml` and `../uv.lock` |
-| CAN dashboard | 8.5.0 | `can_dashboard/__init__.py` |
+| CAN dashboard | 8.6.0 | `can_dashboard/__init__.py` |
 | PyInstaller | 6.21.0 | `can_dashboard/requirements-macos-build.txt` |
 | `python-can` | 4.6.1 | The three `can_dashboard/requirements-*.txt` pins |
 | `tzdata` | 2026.3 | `can_dashboard/requirements-windows.txt` |

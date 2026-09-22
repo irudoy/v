@@ -259,11 +259,6 @@ DESCRIPTIONS = {
         "frame 0x551 byte 5. The runtime pulses state 4 to confirm a map "
         "selection and holds it while Rolling Launch is active."
     ),
-    "context_name": (
-        "Rotating context of the last decoded telemetry group. The stream "
-        "cycles five contexts, so the context fields refresh at one fifth of "
-        "the snapshot rate. A replayed MLG record carries no context."
-    ),
     "gps_lat": (
         "No latitude signal is decoded on the primary CAN network, so the "
         "row reads --."

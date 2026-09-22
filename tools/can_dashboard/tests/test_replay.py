@@ -226,6 +226,18 @@ class ReplayPlayerTest(unittest.TestCase):
         self.assertFalse(player.advance(1.5)[2])
         self.assertAlmostEqual(player.position, 4.5)
 
+    def test_the_region_end_bounds_the_position_inside_the_loop(self):
+        player = ReplayPlayer(self.timeline)
+        player.seek(10.0, 0.0)
+        self.assertTrue(player.past_region())
+        player.seek(4.0, 0.0)
+        player.set_loop_out()
+        self.assertTrue(player.past_region())
+        player.seek(3.9, 0.0)
+        self.assertFalse(player.past_region())
+        player.seek(6.0, 0.0)
+        self.assertTrue(player.past_region())
+
     def test_loop_points_never_cross(self):
         player = ReplayPlayer(self.timeline)
         player.seek(3.0, 0.0)

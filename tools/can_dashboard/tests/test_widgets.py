@@ -621,9 +621,19 @@ class ToolButtonTest(unittest.TestCase):
             text="CONNECT",
             command=lambda: self.calls.append("pressed"),
             colors=BUTTON_COLORS,
+            icon="plug",
             tooltip="Open the PCAN channel",
         )
         self.addCleanup(self.button.destroy)
+
+    def items(self, tag, button=None):
+        face = (button or self.button).face
+        return face.find_withtag(tag)
+
+    def caption(self, button=None):
+        face = (button or self.button).face
+        (item,) = face.find_withtag("caption")
+        return face.itemcget(item, "text")
 
     def test_invoke_runs_the_command(self):
         self.button.invoke()
@@ -655,22 +665,22 @@ class ToolButtonTest(unittest.TestCase):
         self.addCleanup(record.destroy)
         self.assertEqual(record.cget("bg"), BUTTON_COLORS["record"])
 
-    def test_the_label_draws_no_ring_of_its_own(self):
-        label = self.button.label
-        self.assertEqual(label.winfo_class(), "Label")
-        self.assertEqual(int(label.cget("highlightthickness")), 0)
-        self.assertEqual(int(label.cget("borderwidth")), 0)
+    def test_the_face_draws_no_ring_of_its_own(self):
+        face = self.button.face
+        self.assertEqual(face.winfo_class(), "Canvas")
+        self.assertEqual(int(face.cget("highlightthickness")), 0)
+        self.assertEqual(int(face.cget("borderwidth")), 0)
         self.assertEqual(int(tk.Frame.cget(self.button, "highlightthickness")), 0)
 
     def test_the_frame_background_is_the_one_pixel_border(self):
         self.assertEqual(self.button.border_color(), BUTTON_COLORS["border"])
         self.assertEqual(
             self.button.winfo_reqwidth(),
-            self.button.label.winfo_reqwidth() + 2,
+            self.button.face.winfo_reqwidth() + 2,
         )
         self.assertEqual(
             self.button.winfo_reqheight(),
-            self.button.label.winfo_reqheight() + 2,
+            self.button.face.winfo_reqheight() + 2,
         )
         self.button.configure(lit=True)
         self.assertEqual(self.button.border_color(), BUTTON_COLORS["lit"])
@@ -681,18 +691,98 @@ class ToolButtonTest(unittest.TestCase):
         self.button._on_focus_out()
         self.assertEqual(self.button.border_color(), BUTTON_COLORS["border"])
 
-    def test_label_and_frame_options_share_configure_and_cget(self):
-        self.button.configure({"text": "ACK"}, cursor="arrow")
+    def test_face_and_frame_options_share_configure_and_cget(self):
+        self.button.configure({"text": "ACK"}, cursor="arrow", icon="exchange")
         self.assertEqual(self.button.cget("text"), "ACK")
-        self.assertEqual(self.button.label.cget("text"), "ACK")
+        self.assertEqual(self.caption(), "ACK")
+        self.assertEqual(self.button.cget("icon"), "exchange")
         self.assertEqual(str(self.button.cget("cursor")), "arrow")
 
-    def test_the_pointer_reaches_the_button_through_its_label(self):
-        for widget in (self.button, self.button.label):
+    def test_the_pointer_reaches_the_button_through_its_face(self):
+        for widget in (self.button, self.button.face):
             for sequence in ("<Button-1>", "<Enter>", "<Leave>"):
                 with self.subTest(widget=str(widget), sequence=sequence):
                     self.assertTrue(widget.bind(sequence))
-        self.assertIs(self.button.tooltip.widget, self.button.label)
+        self.assertIs(self.button.tooltip.widget, self.button.face)
+
+    def test_the_icon_precedes_the_caption_and_takes_its_color(self):
+        left, top, right, bottom = self.button.icon_box()
+        face = self.button.face
+        (caption,) = self.items("caption")
+        self.assertLess(right, face.coords(caption)[0])
+        self.assertGreater(top, 0)
+        self.assertLess(bottom, face.winfo_reqheight())
+        ink = self.items(widgets.icons.INK_FILL)
+        self.assertGreater(len(ink), 1)
+        for item in ink:
+            self.assertEqual(face.itemcget(item, "fill"), BUTTON_COLORS["text"])
+        self.button.configure(lit=True)
+        for item in ink:
+            self.assertEqual(
+                face.itemcget(item, "fill"), BUTTON_COLORS["lit_text"]
+            )
+
+    def test_a_cut_takes_the_face_color_of_every_state(self):
+        moon = widgets.ToolButton(
+            ROOT,
+            text="DARK",
+            command=lambda: None,
+            colors=BUTTON_COLORS,
+            icon="moon",
+        )
+        self.addCleanup(moon.destroy)
+        (cut,) = self.items(widgets.icons.CUT_FILL, moon)
+        self.assertEqual(moon.face.itemcget(cut, "fill"), BUTTON_COLORS["face"])
+        moon._on_enter()
+        self.assertEqual(moon.face.itemcget(cut, "fill"), BUTTON_COLORS["hover"])
+        moon.configure(lit=True)
+        self.assertEqual(moon.face.itemcget(cut, "fill"), BUTTON_COLORS["lit"])
+
+    def test_the_icon_and_its_gap_widen_the_button(self):
+        plain = widgets.ToolButton(
+            ROOT,
+            text="CONNECT",
+            command=lambda: None,
+            colors=BUTTON_COLORS,
+        )
+        self.addCleanup(plain.destroy)
+        self.assertIsNone(plain.icon_box())
+        left, _top, right, _bottom = self.button.icon_box()
+        side = right - left
+        self.assertEqual(
+            self.button.winfo_reqwidth() - plain.winfo_reqwidth(),
+            side + round(side * widgets.ToolButton.ICON_GAP),
+        )
+        self.button.configure(text="")
+        self.assertEqual(self.items("caption"), ())
+        self.assertEqual(
+            self.button.face.winfo_reqwidth(),
+            side + 2 * (8 + 2),
+        )
+
+    def test_an_unknown_icon_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.button.configure(icon="rocket")
+        self.assertEqual(self.button.cget("icon"), "plug")
+
+    def test_a_stretched_face_centers_the_icon_and_the_caption(self):
+        window = tk.Toplevel(ROOT)
+        self.addCleanup(window.destroy)
+        button = widgets.ToolButton(
+            window,
+            text="ADD",
+            command=lambda: None,
+            colors=BUTTON_COLORS,
+            icon="plus",
+        )
+        button.pack(fill="x")
+        window.geometry("300x60")
+        window.update()
+        face = button.face
+        left = button.icon_box()[0]
+        (caption,) = self.items("caption", button)
+        right = face.bbox(caption)[2]
+        self.assertAlmostEqual(left, face.winfo_width() - right, delta=3)
 
     def test_hover_never_repaints_a_lit_button(self):
         self.button.configure(lit=True)

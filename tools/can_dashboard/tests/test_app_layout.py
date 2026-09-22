@@ -98,7 +98,7 @@ class WindowLayoutTest(unittest.TestCase):
                 self.assertEqual(button.winfo_class(), "Frame")
                 self.assertEqual(
                     button.winfo_reqwidth(),
-                    button.label.winfo_reqwidth() + 2,
+                    button.face.winfo_reqwidth() + 2,
                 )
 
     def test_a_hero_card_asks_for_a_width_its_value_cannot_change(self):

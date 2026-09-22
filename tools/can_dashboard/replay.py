@@ -354,6 +354,10 @@ class ReplayPlayer:
     def at_stop(self):
         return self.position >= self._stop()
 
+    def past_region(self):
+        """Whether the position lies at or after the end of the loop region."""
+        return self.position >= self.region()[1]
+
     def _anchor(self, host_now):
         self._anchor_host = host_now
         self._anchor_position = self.position

@@ -106,6 +106,22 @@ class FeedDialogTest(unittest.TestCase):
         )
         return dialog
 
+    def test_every_button_carries_an_icon(self):
+        dialog = self.dialog()
+        icons = {}
+        pending = [dialog]
+        while pending:
+            widget = pending.pop()
+            pending.extend(widget.winfo_children())
+            if isinstance(widget, feed_dialog.ToolButton):
+                icons[widget.cget("text")] = widget.cget("icon")
+        self.assertEqual(icons, {
+            "PUBLISH": "share",
+            "INSTALL PLUGIN": "download",
+            "CANCEL": "cross",
+            "APPLY": "check",
+        })
+
     def test_the_dialog_shows_the_current_feed(self):
         dialog = self.dialog(FeedSettings(True, "127.0.0.1", 5000))
         self.assertTrue(dialog.publish_button.lit)

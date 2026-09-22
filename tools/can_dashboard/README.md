@@ -379,7 +379,7 @@ or under the timer bar while it is shown:
 | timeline | a click or drag previews a position, and the release moves the replay there |
 | `Left`, `Right` | move 5 s back or forward |
 | `Home` | returns to the loop start |
-| `LOOP` | repeats the whole replay, or the region between `IN` and `OUT`; lit while on |
+| `LOOP` | repeats the whole replay, or the region between `IN` and `OUT`; lit while on, and turned on at or after the end of the region, it moves the replay to the region start |
 | `IN`, `OUT` | start or end the loop region at the current position; lit while set, and a second press clears the point |
 | `SAVE LOOP` | writes the region between `IN` and `OUT`, or the whole replay, to a new file in the format of the replay |
 | speed | cycles through 0.25x, 0.5x, 1x, 2x, 4x, and 8x |
@@ -505,25 +505,40 @@ width from its value column first, from 19 down to 13 characters, and then
 elides its labels in the middle, which keeps a trailing bank or channel suffix
 readable. Hover over a label reports its full text.
 
-Tool buttons are flat, carry a lit state, and are drawn the same on every
-platform. A button is a label inside a frame whose background is the
+Tool buttons are flat, carry an icon and a lit state, and are drawn the same
+on every platform. A button is a canvas inside a frame whose background is the
 one-pixel border, and the border takes the focus color under keyboard focus.
-No label of the window has a highlight ring of its own: macOS Tk 9 draws the
-ring of a label in the coordinates of its parent instead of the window, which
-shifts the ring by the offset of the parent and draws it across the text.
+The canvas draws a vector icon of `icons.py` before the caption. The icon is
+1.1 em on a side, centered on the capital height of the caption, and drawn in
+the text color of the button, so it stays sharp at every display scale and
+follows the lit state; a button wider than its content centers the icon and
+the caption together. No label or button face of the window has a highlight
+ring of its own: macOS Tk 9 draws the ring of a label in the coordinates of
+its parent instead of the window, which shifts the ring by the offset of the
+parent and draws it across the text.
 
-| Button | Function | Lit |
-| --- | --- | --- |
-| `ACK` | selects the active/ACK state for the next PCAN connection | active/ACK selected |
-| `CONNECT` / `DISCONNECT` | one button that follows whether a source worker runs | source running |
-| `DEMO`, `REPLAY` | replace the running source directly | never |
-| `STREAM` | sends START, then STOP once START is confirmed | STOP offered |
-| `REC` | starts and stops the MLG recording | recording |
-| `FEED` | opens the live value feed dialog | feed running |
-| `CARDS` | opens the hero-row card dialog | never |
-| `0-100` | shows or hides the acceleration timer bar | timer bar shown |
-| `RESET TIMES` | on the timer bar, clears the last and best 0-100 and 100-200 km/h times | never |
-| `LIGHT` / `DARK` | switches to the named color theme | never |
+| Button | Icon | Function | Lit |
+| --- | --- | --- | --- |
+| `ACK` | `exchange` | selects the active/ACK state for the next PCAN connection | active/ACK selected |
+| `CONNECT` / `DISCONNECT` | `plug` | one button that follows whether a source worker runs | source running |
+| `DEMO` | `flask` | replaces the running source with the demo source | never |
+| `REPLAY` | `folder` | replaces the running source with a replay file | never |
+| `STREAM` | `broadcast`; `stop` while STOP is offered | sends START, then STOP once START is confirmed | STOP offered |
+| `REC` | `dot`; `stop` while recording | starts and stops the MLG recording | recording |
+| `FEED` | `share` | opens the live value feed dialog | feed running |
+| `CARDS` | `grid` | opens the hero-row card dialog | never |
+| `0-100` | `stopwatch` | shows or hides the acceleration timer bar | timer bar shown |
+| `RESET TIMES` | `circular-arrow` | on the timer bar, clears the last and best 0-100 and 100-200 km/h times | never |
+| `LIGHT` / `DARK` | `sun` / `moon` | switches to the named color theme | never |
+
+A transport button shows the icon of the action it takes next. The replay bar
+uses `play` for `PLAY`, `pause` for `PAUSE`, `repeat` for `LOOP`, `mark-in`
+for `IN`, `mark-out` for `OUT`, `floppy` for `SAVE LOOP`, and `fast-forward`
+for the speed button, and the tabs use `gauge` for `PRIMARY` and `list` for
+`EXTENDED`. The dialogs use `plus` for `ADD`, `minus` for `REMOVE`, `up` for
+`UP`, `down` for `DOWN`, `circular-arrow` for `DEFAULTS`, `cross` for
+`CANCEL`, `check` for `APPLY`, `share` for `PUBLISH`, and `download` for
+`INSTALL PLUGIN`.
 
 ### Hero row
 

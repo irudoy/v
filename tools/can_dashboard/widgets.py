@@ -7,6 +7,8 @@ import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import ttk
 
+from tools.can_dashboard import icons
+
 
 ELLIPSIS = "..."
 SCROLLBAR_RESERVE = 14
@@ -572,35 +574,36 @@ class ResponsiveGrid(tk.Frame):
 
 
 class ToolButton(tk.Frame):
-    """Flat toolbar button with a lit state, drawn the same on every OS.
+    """Flat toolbar button with an icon and a lit state, drawn the same on every OS.
 
-    A native button ignores its colors on macOS, so the button is a label
+    A native button ignores its colors on macOS, so the button is a canvas
     inside a frame, and the frame background is the one-pixel border. The
-    label draws no highlight ring of its own: macOS Tk places that ring in
-    the coordinates of the parent instead of the window, which shifts it by
-    the offset of the parent and draws it across the text.
+    canvas draws the vector icon of `icons.ICONS` beside the caption, both
+    centered as a label centers its text, and no highlight ring of its own:
+    macOS Tk places that ring in the coordinates of the parent instead of
+    the window, which shifts it by the offset of the parent and draws it
+    across the text. One canvas takes the pointer and the tooltip, so the
+    pointer never crosses between the icon and the caption.
 
-    `configure` and `cget` accept the label options and `lit` beside the
-    frame options; a lit button reports an active link, stream, recording,
-    or mode.
+    `configure` and `cget` accept `text`, `icon`, `font`, `padx`, `pady`, and
+    `lit` beside the frame options, and `cget` also reports the face `bg`
+    and `fg`; a lit button reports an active link, stream, recording, or
+    mode.
     """
 
-    LABEL_OPTIONS = frozenset({
-        "anchor",
-        "bg",
-        "background",
-        "fg",
-        "foreground",
-        "font",
-        "justify",
-        "padx",
-        "pady",
-        "text",
-        "textvariable",
-        "underline",
-        "wraplength",
-    })
+    FACE_OPTIONS = frozenset({"text", "icon", "font", "padx", "pady"})
+    COLOR_OPTIONS = {
+        "bg": "background",
+        "background": "background",
+        "fg": "foreground",
+        "foreground": "foreground",
+    }
     BORDER = 1
+    # Icon side and caption gap, in em and in icon sides; the icon centers
+    # on the capital height, taken as 0.7 em.
+    ICON_EM = 1.1
+    ICON_GAP = 0.4
+    CAP_EM = 0.7
 
     def __init__(
         self,
@@ -609,6 +612,7 @@ class ToolButton(tk.Frame):
         text,
         command,
         colors,
+        icon=None,
         tooltip=None,
         tooltip_options=None,
         font=("Segoe UI Semibold", 9),
@@ -617,13 +621,26 @@ class ToolButton(tk.Frame):
         padx=8,
         pady=3,
     ):
+        if icon is not None and icon not in icons.ICONS:
+            raise ValueError(f"unknown icon {icon!r}")
         self._colors = dict(colors)
         self._lit_role = lit_role
         self._lit = bool(lit)
         self._hover = False
         self._focused = False
         self._command = command
-        self.label = None
+        self._face_options = {
+            "text": str(text),
+            "icon": icon,
+            "font": font,
+            "padx": padx,
+            "pady": pady,
+        }
+        self._painted = {"background": None, "foreground": None}
+        self._metrics = None
+        self._drawn_size = None
+        self._icon_box = None
+        self.face = None
         super().__init__(
             master,
             borderwidth=0,
@@ -631,33 +648,33 @@ class ToolButton(tk.Frame):
             cursor="hand2",
             takefocus=1,
         )
-        self.label = tk.Label(
+        self.face = tk.Canvas(
             self,
-            text=text,
-            font=font,
-            padx=padx + 2,
-            pady=pady + 2,
+            width=1,
+            height=1,
             borderwidth=0,
             highlightthickness=0,
             cursor="hand2",
+            takefocus=0,
         )
-        self.label.pack(
+        self.face.pack(
             fill="both",
             expand=True,
             padx=self.BORDER,
             pady=self.BORDER,
         )
-        self._paint()
-        for widget in (self, self.label):
+        self._measure()
+        for widget in (self, self.face):
             widget.bind("<Button-1>", self._on_click, add="+")
             widget.bind("<Enter>", self._on_enter, add="+")
             widget.bind("<Leave>", self._on_leave, add="+")
+        self.face.bind("<Configure>", self._on_face_configure, add="+")
         self.bind("<Return>", self._on_click, add="+")
         self.bind("<space>", self._on_click, add="+")
         self.bind("<FocusIn>", self._on_focus_in, add="+")
         self.bind("<FocusOut>", self._on_focus_out, add="+")
         self.tooltip = (
-            Tooltip(self.label, tooltip, **(tooltip_options or {}))
+            Tooltip(self.face, tooltip, **(tooltip_options or {}))
             if tooltip
             else None
         )
@@ -667,7 +684,7 @@ class ToolButton(tk.Frame):
         return self._lit
 
     def configure(self, cnf=None, **options):
-        if self.label is None:
+        if self.face is None:
             return super().configure(cnf, **options)
         if isinstance(cnf, dict):
             options = {**cnf, **options}
@@ -676,13 +693,18 @@ class ToolButton(tk.Frame):
         result = None
         if cnf is not None or (not options and lit is None):
             result = super().configure(cnf)
-        label_options = {
+        face = {
             key: options.pop(key)
             for key in tuple(options)
-            if key in self.LABEL_OPTIONS
+            if key in self.FACE_OPTIONS
         }
-        if label_options:
-            self.label.configure(**label_options)
+        if "text" in face:
+            face["text"] = str(face["text"])
+        if face.get("icon") is not None and face["icon"] not in icons.ICONS:
+            raise ValueError(f"unknown icon {face['icon']!r}")
+        if any(self._face_options[key] != value for key, value in face.items()):
+            self._face_options.update(face)
+            self._measure()
         if options:
             super().configure(**options)
         if lit is not None and bool(lit) != self._lit:
@@ -693,8 +715,11 @@ class ToolButton(tk.Frame):
     config = configure
 
     def cget(self, key):
-        if self.label is not None and key in self.LABEL_OPTIONS:
-            return self.label.cget(key)
+        if self.face is not None:
+            if key in self.FACE_OPTIONS:
+                return self._face_options[key]
+            if key in self.COLOR_OPTIONS:
+                return self._painted[self.COLOR_OPTIONS[key]]
         return super().cget(key)
 
     def invoke(self):
@@ -702,13 +727,78 @@ class ToolButton(tk.Frame):
 
     def winfo_reqwidth(self):
         """Requested width, known before the packer propagates it at idle."""
-        return self.label.winfo_reqwidth() + 2 * self.BORDER
+        return self.face.winfo_reqwidth() + 2 * self.BORDER
 
     def winfo_reqheight(self):
-        return self.label.winfo_reqheight() + 2 * self.BORDER
+        return self.face.winfo_reqheight() + 2 * self.BORDER
 
     def border_color(self):
         return super().cget("bg")
+
+    def icon_box(self):
+        """Canvas bounds of the icon square, or None without an icon."""
+        return self._icon_box
+
+    def _measure(self):
+        """Size the face for the caption, the icon, and the padding."""
+        options = self._face_options
+        font = options["font"]
+        size = float(self.tk.call("font", "actual", font, "-size"))
+        em = -size if size < 0 else size * self.winfo_fpixels("1p")
+        ascent = int(self.tk.call("font", "metrics", font, "-ascent"))
+        linespace = int(self.tk.call("font", "metrics", font, "-linespace"))
+        text = options["text"]
+        text_width = int(self.tk.call("font", "measure", font, text)) if text else 0
+        side = max(8, round(em * self.ICON_EM)) if options["icon"] else 0
+        gap = round(side * self.ICON_GAP) if side and text else 0
+        self._metrics = {
+            "side": side,
+            "gap": gap,
+            "text_width": text_width,
+            "linespace": linespace,
+            "icon_center": ascent - self.CAP_EM * em / 2,
+        }
+        self.face.configure(
+            width=side + gap + text_width + 2 * (options["padx"] + 2),
+            height=max(linespace, side) + 2 * (options["pady"] + 2),
+        )
+        self._draw()
+
+    def _draw(self, width=None, height=None):
+        """Draw the icon and the caption centered in the face."""
+        face = self.face
+        if width is None:
+            width = face.winfo_width()
+            if width <= 1:
+                width = face.winfo_reqwidth()
+        if height is None:
+            height = face.winfo_height()
+            if height <= 1:
+                height = face.winfo_reqheight()
+        self._drawn_size = (width, height)
+        metrics = self._metrics
+        side = metrics["side"]
+        text_top = (height - metrics["linespace"]) / 2
+        left = round(
+            (width - side - metrics["gap"] - metrics["text_width"]) / 2
+        )
+        face.delete("all")
+        self._icon_box = None
+        if side:
+            top = round(text_top + metrics["icon_center"] - side / 2)
+            icons.draw(face, self._face_options["icon"], left, top, side)
+            self._icon_box = (left, top, left + side, top + side)
+        text = self._face_options["text"]
+        if text:
+            face.create_text(
+                left + side + metrics["gap"],
+                text_top,
+                text=text,
+                anchor="nw",
+                font=self._face_options["font"],
+                tags=("caption", icons.INK_FILL),
+            )
+        self._paint()
 
     def _paint(self):
         colors = self._colors
@@ -722,8 +812,14 @@ class ToolButton(tk.Frame):
             border = colors["border"]
         if self._focused:
             border = colors["focus"]
-        self.label.configure(bg=background, fg=foreground)
+        self._painted = {"background": background, "foreground": foreground}
+        self.face.configure(bg=background)
+        icons.paint(self.face, foreground, background)
         super().configure(bg=border)
+
+    def _on_face_configure(self, event):
+        if (event.width, event.height) != self._drawn_size:
+            self._draw(event.width, event.height)
 
     def _on_click(self, _event=None):
         self.invoke()

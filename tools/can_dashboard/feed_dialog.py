@@ -95,6 +95,7 @@ class FeedDialog(tk.Toplevel):
             "PUBLISH",
             self.toggle_enabled,
             "Publish the values of every received snapshot",
+            icon="share",
             lit=self.enabled,
         )
         self.publish_button.pack(side="left")
@@ -116,6 +117,7 @@ class FeedDialog(tk.Toplevel):
             "INSTALL PLUGIN",
             self.install_plugin,
             f"Write {self.plugin_path}",
+            icon="download",
         ).pack(side="left")
         self.plugin_label = tk.Label(
             plugin,
@@ -151,12 +153,14 @@ class FeedDialog(tk.Toplevel):
             "CANCEL",
             self.destroy,
             "Close without changes",
+            icon="cross",
         ).pack(side="right")
         button(
             actions,
             "APPLY",
             self.apply,
             "Use these settings now and remember them",
+            icon="check",
             lit=True,
         ).pack(side="right", padx=(0, 6))
         self.bind("<Escape>", lambda _event: self.destroy(), add="+")

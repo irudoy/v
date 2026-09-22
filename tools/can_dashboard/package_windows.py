@@ -38,6 +38,7 @@ SOURCE_FILES = (
     "tools/can_dashboard/excerpt.py",
     "tools/can_dashboard/feed_dialog.py",
     "tools/can_dashboard/hero_picker.py",
+    "tools/can_dashboard/icons.py",
     "tools/can_dashboard/live_feed.py",
     "tools/can_dashboard/logfile.py",
     "tools/can_dashboard/model.py",

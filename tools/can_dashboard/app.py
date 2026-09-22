@@ -332,7 +332,6 @@ PANELS = (
         Metric("selected_map", "Selected map", "", 0),
         Metric("ascd_button", "ASCD input"),
         Metric("dashboard_state", "Dashboard state"),
-        Metric("context_name", "Last context"),
         Metric("gps_lat", "GPS latitude", "deg", 6),
         Metric("gps_lon", "GPS longitude", "deg", 6),
         Metric("gps_status", "GPS source"),
@@ -762,10 +761,14 @@ STATUS_FIELDS = (
     ("feed_var", "Live value feed", "muted", "right",
      "Feed: udp 127.0.0.1:47809, 999999 sent"),
 )
-STREAM_CAPTIONS = {"start": "\u25b6 STREAM", "stop": "\u25a0 STREAM"}
-RECORD_CAPTIONS = {False: "\u25cf REC", True: "\u25a0 REC"}
+# A transport button shows the icon of the action it takes next.
+STREAM_ICONS = {"start": "broadcast", "stop": "stop"}
+RECORD_ICONS = {False: "dot", True: "stop"}
 THEME_CAPTIONS = {"dark": "LIGHT", "light": "DARK"}
-PLAY_CAPTIONS = {False: "\u25b6 PLAY", True: "\u2016 PAUSE"}
+THEME_ICONS = {"dark": "sun", "light": "moon"}
+PLAY_CAPTIONS = {False: "PLAY", True: "PAUSE"}
+PLAY_ICONS = {False: "play", True: "pause"}
+TAB_ICONS = {"Primary": "gauge", "Extended": "list"}
 REPLAY_STEP_SECONDS = 5.0
 REPLAY_NOTE_CHARACTERS = 28
 REPLAY_FILETYPES = (
@@ -1021,6 +1024,7 @@ class DashboardApp:
             "Active/ACK PCAN state: the adapter acknowledges frames and can "
             "send START and STOP. Off selects listen-only. It applies at the "
             "next connect.",
+            icon="exchange",
             lit=self.active_var.get(),
         )
         header.add(self.active_button, align="right")
@@ -1029,6 +1033,7 @@ class DashboardApp:
             "CONNECT",
             self.toggle_source,
             "Open or close the PCAN channel",
+            icon="plug",
         )
         header.add(self.source_button, align="right")
         header.add(
@@ -1037,6 +1042,7 @@ class DashboardApp:
                 "DEMO",
                 self.start_demo,
                 "Run the deterministic demo source",
+                icon="flask",
             ),
             align="right",
         )
@@ -1047,22 +1053,25 @@ class DashboardApp:
                 self.select_replay,
                 "Replay a PEAK TRC 1.1 trace, a dashboard MLG recording, or a "
                 "compact candump log",
+                icon="folder",
             ),
             align="right",
         )
         self.stream_button = self._tool_button(
             header,
-            self._stream_button_text(),
+            "STREAM",
             self.toggle_stream,
             "Send START or STOP to the ECU telemetry stream",
+            icon=STREAM_ICONS[self.stream_command],
             lit=self.stream_command == "stop",
         )
         header.add(self.stream_button, align="right")
         self.record_button = self._tool_button(
             header,
-            RECORD_CAPTIONS[False],
+            "REC",
             self.toggle_recording,
             "Record the telemetry to an MLG file",
+            icon=RECORD_ICONS[False],
             lit_role="record",
         )
         header.add(self.record_button, align="right")
@@ -1071,6 +1080,7 @@ class DashboardApp:
             "FEED",
             self.open_feed_dialog,
             "Send live values to RomRaider Logger for the table overlay",
+            icon="share",
             lit=self.feed is not None,
         )
         header.add(self.feed_button, align="right")
@@ -1080,6 +1090,7 @@ class DashboardApp:
                 "CARDS",
                 self.open_hero_picker,
                 "Choose the cards of the top row",
+                icon="grid",
             ),
             align="right",
         )
@@ -1088,6 +1099,7 @@ class DashboardApp:
             "0-100",
             self.toggle_timer,
             "Show or hide the 0-100 and 100-200 km/h timers",
+            icon="stopwatch",
             lit=self.settings.timer,
         )
         header.add(self.timer_button, align="right")
@@ -1096,6 +1108,7 @@ class DashboardApp:
             THEME_CAPTIONS[palette.name],
             self.toggle_theme,
             "Switch between the dark theme and the daylight theme",
+            icon=THEME_ICONS[palette.name],
         )
         header.add(self.theme_button, align="right")
 
@@ -1196,6 +1209,7 @@ class DashboardApp:
                 "RESET TIMES",
                 self.reset_acceleration,
                 "Clear the last and best 0-100 and 100-200 km/h times",
+                icon="circular-arrow",
             ),
             align="right",
         )
@@ -1217,6 +1231,7 @@ class DashboardApp:
             PLAY_CAPTIONS[False],
             self.toggle_play,
             "Play or pause the replay (Space)",
+            icon=PLAY_ICONS[False],
             pady=1,
         )
         self.loop_button = self._tool_button(
@@ -1224,6 +1239,7 @@ class DashboardApp:
             "LOOP",
             self.toggle_loop,
             "Repeat the replay, or the region between IN and OUT",
+            icon="repeat",
             pady=1,
         )
         self.loop_in_button = self._tool_button(
@@ -1232,6 +1248,7 @@ class DashboardApp:
             self.toggle_loop_in,
             "Start the loop region at the current position; click again "
             "to clear it",
+            icon="mark-in",
             pady=1,
         )
         self.loop_out_button = self._tool_button(
@@ -1240,6 +1257,7 @@ class DashboardApp:
             self.toggle_loop_out,
             "End the loop region at the current position; click again "
             "to clear it",
+            icon="mark-out",
             pady=1,
         )
         self.save_loop_button = self._tool_button(
@@ -1248,6 +1266,7 @@ class DashboardApp:
             self.save_loop,
             "Save the region between IN and OUT, or the whole replay, to a "
             "new file in the format of the replay",
+            icon="floppy",
             pady=1,
         )
         self.speed_button = self._tool_button(
@@ -1255,6 +1274,7 @@ class DashboardApp:
             "1x",
             self.cycle_speed,
             "Replay speed; click for the next of 0.25x to 8x",
+            icon="fast-forward",
             pady=1,
         )
         for button in (
@@ -1371,6 +1391,7 @@ class DashboardApp:
             return
         self.play_button.configure(
             text=PLAY_CAPTIONS[player.playing],
+            icon=PLAY_ICONS[player.playing],
             lit=player.playing,
         )
         self.loop_button.configure(lit=player.loop)
@@ -1504,6 +1525,7 @@ class DashboardApp:
                 tab_name.upper(),
                 lambda index=index: self.select_tab(index),
                 f"Show the {tab_name.lower()} panels",
+                icon=TAB_ICONS[tab_name],
                 pady=2,
             )
             button.pack(side="left", padx=(0, 4))
@@ -1818,7 +1840,7 @@ class DashboardApp:
     def _sync_record_button(self):
         recording = self.recorder is not None
         self.record_button.configure(
-            text=RECORD_CAPTIONS[recording],
+            icon=RECORD_ICONS[recording],
             lit=recording,
         )
 
@@ -1859,13 +1881,10 @@ class DashboardApp:
     def toggle_stream(self):
         self.send_stream_command(self.stream_command)
 
-    def _stream_button_text(self):
-        return STREAM_CAPTIONS[self.stream_command]
-
     def _set_stream_command(self, command):
         self.stream_command = command
         self.stream_button.configure(
-            text=self._stream_button_text(),
+            icon=STREAM_ICONS[command],
             lit=command == "stop",
         )
 
@@ -2035,9 +2054,15 @@ class DashboardApp:
         self._sync_replay_controls()
 
     def toggle_loop(self):
-        if self.player is not None:
-            self.player.loop = not self.player.loop
-            self._sync_replay_controls()
+        player = self.player
+        if player is None:
+            return
+        player.loop = not player.loop
+        if player.loop and player.past_region():
+            # A loop turned on after the region plays the region, instead of
+            # running to the end of the replay first.
+            self._replay_seek(player.region()[0])
+        self._sync_replay_controls()
 
     def toggle_loop_in(self):
         player = self.player
@@ -2360,8 +2385,6 @@ class DashboardApp:
             return self.model.ascd_button
         if key == "dashboard_state":
             return self.model.dashboard_state
-        if key == "context_name":
-            return self.model.context_name
         if key in {"gps_lat", "gps_lon", "gps_status"}:
             return getattr(self.model, key)
         if key == "injection_average_ms":

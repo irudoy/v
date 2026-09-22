@@ -8,6 +8,7 @@ import unittest
 
 from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
+from tools.can_dashboard import icons
 from tools.can_dashboard import replay
 from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
@@ -27,6 +28,16 @@ TK_AVAILABLE = ROOT is not None
 def tearDownModule():
     if ROOT is not None:
         ROOT.destroy()
+
+
+def tool_buttons(widget):
+    """Every tool button under widget, in creation order."""
+    found = []
+    for child in widget.winfo_children():
+        if isinstance(child, widgets.ToolButton):
+            found.append(child)
+        found.extend(tool_buttons(child))
+    return found
 
 
 class HeroCatalogTest(unittest.TestCase):
@@ -144,6 +155,56 @@ class DashboardWindowTest(unittest.TestCase):
 
     def stored(self):
         return json.loads(self.path.read_text(encoding="utf-8"))
+
+    def test_every_button_carries_an_icon(self):
+        dashboard = self.dashboard()
+        buttons = tool_buttons(self.window)
+        self.assertEqual(
+            [(button.cget("text"), button.cget("icon")) for button in buttons],
+            [
+                ("ACK", "exchange"),
+                ("CONNECT", "plug"),
+                ("DEMO", "flask"),
+                ("REPLAY", "folder"),
+                ("STREAM", "broadcast"),
+                ("REC", "dot"),
+                ("FEED", "share"),
+                ("CARDS", "grid"),
+                ("0-100", "stopwatch"),
+                ("LIGHT", "sun"),
+                ("RESET TIMES", "circular-arrow"),
+                ("PLAY", "play"),
+                ("LOOP", "repeat"),
+                ("IN", "mark-in"),
+                ("OUT", "mark-out"),
+                ("SAVE LOOP", "floppy"),
+                ("1x", "fast-forward"),
+                ("PRIMARY", "gauge"),
+                ("EXTENDED", "list"),
+            ],
+        )
+        for button in buttons:
+            with self.subTest(button=button.cget("text")):
+                self.assertIn(button.cget("icon"), icons.ICONS)
+        self.assertEqual(dashboard.theme_button.cget("icon"), "sun")
+        self.assertEqual(
+            [button.cget("icon") for button in dashboard.tab_buttons],
+            ["gauge", "list"],
+        )
+        dashboard.toggle_theme()
+        self.assertEqual(dashboard.theme_button.cget("icon"), "moon")
+
+    def test_the_record_button_shows_the_action_it_takes_next(self):
+        dashboard = self.dashboard()
+        button = dashboard.record_button
+        self.assertEqual((button.cget("icon"), button.lit), ("dot", False))
+        dashboard.recorder = object()
+        dashboard._sync_record_button()
+        self.assertEqual((button.cget("icon"), button.lit), ("stop", True))
+        self.assertEqual(button.cget("bg"), dashboard.palette.red)
+        dashboard.recorder = None
+        dashboard._sync_record_button()
+        self.assertEqual((button.cget("icon"), button.lit), ("dot", False))
 
     def test_first_start_shows_the_default_cards_in_the_dark_theme(self):
         dashboard = self.dashboard()
@@ -579,6 +640,7 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.assertEqual(
             dashboard.play_button.cget("text"), app.PLAY_CAPTIONS[True]
         )
+        self.assertEqual(dashboard.play_button.cget("icon"), "pause")
         self.assertTrue(dashboard.source_is_active())
 
         dashboard.toggle_play()
@@ -588,6 +650,7 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.assertEqual(
             dashboard.play_button.cget("text"), app.PLAY_CAPTIONS[False]
         )
+        self.assertEqual(dashboard.play_button.cget("icon"), "play")
 
         dashboard.toggle_loop()
         dashboard.cycle_speed()
@@ -635,6 +698,38 @@ class DashboardReplayWindowTest(unittest.TestCase):
         dashboard._advance_replay(dashboard.player._anchor_host + 5.0)
         self.assertTrue(dashboard.player.playing)
         self.assertEqual(dashboard.player.position, 0.0)
+
+    def test_turning_the_loop_on_after_the_region_jumps_to_its_start(self):
+        dashboard = self.dashboard
+        self.open_replay()
+        player = dashboard.player
+        dashboard._replay_seek(0.2)
+        dashboard.toggle_loop_in()
+        dashboard._replay_seek(0.4)
+        dashboard.toggle_loop_out()
+        dashboard._replay_seek(0.3)
+        dashboard.toggle_loop()
+        self.assertTrue(player.loop)
+        self.assertEqual(player.position, 0.3)
+        dashboard.toggle_loop()
+        dashboard._replay_seek(0.5)
+        dashboard.toggle_loop()
+        self.assertTrue(player.loop)
+        self.assertTrue(player.playing)
+        self.assertEqual(player.position, 0.2)
+        self.assertEqual(dashboard.model.vehicle_speed_kmh, 10.0)
+        dashboard._replay_seek(0.5)
+        dashboard.toggle_loop()
+        self.assertFalse(player.loop)
+        self.assertEqual(player.position, 0.5)
+
+        dashboard.toggle_loop_in()
+        dashboard.toggle_loop_out()
+        dashboard._advance_replay(player._anchor_host + 5.0)
+        self.assertFalse(player.playing)
+        dashboard.toggle_loop()
+        self.assertFalse(player.playing)
+        self.assertEqual(player.position, 0.0)
 
     def test_a_theme_change_keeps_the_replay_bar(self):
         dashboard = self.dashboard

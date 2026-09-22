@@ -153,13 +153,19 @@ class HeroPicker(tk.Toplevel):
 
         middle = tk.Frame(lists, bg=colors["bg"])
         middle.grid(row=1, column=1, padx=8, sticky="n")
-        for text, command, tooltip in (
-            ("ADD", self.add_selected, "Show the chosen metric as a card"),
-            ("REMOVE", self.remove_selected, "Take the chosen card away"),
-            ("UP", lambda: self.move_selected(-1), "Move the card to the left"),
-            ("DOWN", lambda: self.move_selected(1), "Move the card to the right"),
+        for text, icon, command, tooltip in (
+            ("ADD", "plus", self.add_selected,
+             "Show the chosen metric as a card"),
+            ("REMOVE", "minus", self.remove_selected,
+             "Take the chosen card away"),
+            ("UP", "up", lambda: self.move_selected(-1),
+             "Move the card to the left"),
+            ("DOWN", "down", lambda: self.move_selected(1),
+             "Move the card to the right"),
         ):
-            button(middle, text, command, tooltip).pack(fill="x", pady=(0, 4))
+            button(middle, text, command, tooltip, icon=icon).pack(
+                fill="x", pady=(0, 4)
+            )
 
         self.description_label = tk.Label(
             self,
@@ -183,18 +189,21 @@ class HeroPicker(tk.Toplevel):
             "DEFAULTS",
             self.restore_defaults,
             "Restore the default cards",
+            icon="circular-arrow",
         ).pack(side="left")
         button(
             actions,
             "CANCEL",
             self.destroy,
             "Close without changes",
+            icon="cross",
         ).pack(side="right")
         button(
             actions,
             "APPLY",
             self.apply,
             "Show these cards and remember the choice",
+            icon="check",
             lit=True,
         ).pack(side="right", padx=(0, 6))
 

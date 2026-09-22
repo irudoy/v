@@ -128,6 +128,24 @@ class HeroPickerTest(unittest.TestCase):
     def rows(self, listbox):
         return list(listbox.get(0, "end"))
 
+    def test_every_button_carries_an_icon(self):
+        icons = {}
+        pending = [self.picker]
+        while pending:
+            widget = pending.pop()
+            pending.extend(widget.winfo_children())
+            if isinstance(widget, hero_picker.ToolButton):
+                icons[widget.cget("text")] = widget.cget("icon")
+        self.assertEqual(icons, {
+            "ADD": "plus",
+            "REMOVE": "minus",
+            "UP": "up",
+            "DOWN": "down",
+            "DEFAULTS": "circular-arrow",
+            "CANCEL": "cross",
+            "APPLY": "check",
+        })
+
     def test_the_lists_are_wide_enough_for_the_catalog_captions(self):
         self.assertGreaterEqual(hero_picker.LIST_WIDTH_CHARS, 46)
         for listbox in (self.picker.available_list, self.picker.shown_list):

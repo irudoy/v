@@ -1,22 +1,61 @@
 """The README states the replay, map, and timer constants the code runs."""
 
 from pathlib import Path
+import tempfile
 import unittest
 
 from tools.can_dashboard import acceleration, replay, selected_map
 from tools.logs.can_telemetry import PRODUCER_RUN_TICK_MAX
 
 try:
-    from tools.can_dashboard import app
+    import tkinter as tk
+    from tools.can_dashboard import app, widgets
 except ImportError:  # pragma: no cover - Tk is unavailable
     app = None
+
+try:
+    ROOT = tk.Tk() if app is not None else None
+    if ROOT is not None:
+        ROOT.withdraw()
+except tk.TclError:  # pragma: no cover - no display
+    ROOT = None
 
 
 README = Path(__file__).resolve().parents[1] / "README.md"
 
 
+def tearDownModule():
+    if ROOT is not None:
+        ROOT.destroy()
+
+
 def readme_text():
     return " ".join(README.read_text(encoding="utf-8").split())
+
+
+def header_button_rows():
+    """Rows of the tool button table, keyed by their Button cell."""
+    rows = {}
+    lines = iter(README.read_text(encoding="utf-8").splitlines())
+    for line in lines:
+        if line.startswith("| Button | Icon |"):
+            next(lines)
+            break
+    for line in lines:
+        if not line.startswith("| "):
+            break
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        rows[cells[0]] = cells
+    return rows
+
+
+def tool_buttons(widget):
+    found = []
+    for child in widget.winfo_children():
+        if isinstance(child, widgets.ToolButton):
+            found.append(child)
+        found.extend(tool_buttons(child))
+    return found
 
 
 class ReadmeContractTest(unittest.TestCase):
@@ -64,6 +103,57 @@ class ReadmeContractTest(unittest.TestCase):
             f"{hundred.max_seconds:g} s for 100-200",
             "samples stop for more than "
             f"{acceleration.MAX_SAMPLE_GAP_SECONDS:g} s",
+        )
+
+    @unittest.skipIf(ROOT is None, "Tk is unavailable")
+    def test_button_icons(self):
+        self.assert_states(
+            f"The icon is {widgets.ToolButton.ICON_EM:g} em on a side",
+        )
+        window = tk.Toplevel(ROOT)
+        window.withdraw()
+        self.addCleanup(window.destroy)
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        args = app.build_parser().parse_args([
+            "--no-auto-connect",
+            "--settings",
+            str(Path(directory.name) / "settings.json"),
+        ])
+        dashboard = app.DashboardApp(window, args)
+        dashboard.open_hero_picker()
+        dashboard.open_feed_dialog()
+        rows = header_button_rows()
+        text = readme_text()
+        buttons = tool_buttons(window)
+        self.assertGreater(len(buttons), 25)
+        for button in buttons:
+            caption, icon = button.cget("text"), button.cget("icon")
+            row = next(
+                (
+                    cells
+                    for key, cells in rows.items()
+                    if f"`{caption}`" in key
+                ),
+                None,
+            )
+            with self.subTest(caption=caption):
+                if row is not None:
+                    self.assertIn(f"`{icon}`", row[1])
+                elif button is dashboard.speed_button:
+                    self.assertIn(f"`{icon}` for the speed button", text)
+                else:
+                    self.assertIn(f"`{icon}` for `{caption}`", text)
+        stream = rows["`STREAM`"][1]
+        self.assertIn(f"`{app.STREAM_ICONS['stop']}` while STOP is offered", stream)
+        record = rows["`REC`"][1]
+        self.assertIn(f"`{app.RECORD_ICONS[True]}` while recording", record)
+        self.assertEqual(
+            rows["`LIGHT` / `DARK`"][1],
+            f"`{app.THEME_ICONS['dark']}` / `{app.THEME_ICONS['light']}`",
+        )
+        self.assertIn(
+            f"`{app.PLAY_ICONS[True]}` for `{app.PLAY_CAPTIONS[True]}`", text
         )
 
 

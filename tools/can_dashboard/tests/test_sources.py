@@ -387,11 +387,11 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.events = app.queue.Queue()
         dashboard.source_generation = 3
         dashboard.stream_command = "start"
-        texts = []
+        shown = []
         lit = []
 
         def configure(**options):
-            texts.append(options["text"])
+            shown.append(options["icon"])
             lit.append(options["lit"])
 
         dashboard.stream_button = types.SimpleNamespace(configure=configure)
@@ -409,7 +409,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard._poll()
 
         self.assertEqual(dashboard.stream_command, "stop")
-        self.assertEqual(texts, [app.STREAM_CAPTIONS["stop"]])
+        self.assertEqual(shown, [app.STREAM_ICONS["stop"]])
         self.assertEqual(lit, [True])
 
     def test_source_toggle_connects_and_disconnects(self):

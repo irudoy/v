@@ -349,7 +349,6 @@ class DashboardModel:
         self.engineering = {}
         self.updated_at = {}
         self.schema_verified = False
-        self.context_name = None
         self.last_tick = None
         self.last_run = None
         self.last_snapshot_monotonic = None
@@ -500,7 +499,6 @@ class DashboardModel:
         self.last_snapshot_monotonic = now
         self._snapshot_times.append(now)
         self.schema_verified = snapshot.schema_verified
-        self.context_name = snapshot.context_name
         fields = {
             name: value
             for name, value in snapshot.fields.items()
