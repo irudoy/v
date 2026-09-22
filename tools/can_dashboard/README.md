@@ -381,7 +381,8 @@ replay reports `PAUSED` as its link state.
 
 `SAVE LOOP` offers a name made of the source name and the region in seconds,
 such as `drive_12.5-40.0s.trc`, in the directory of the source. The output
-keeps the reader of the source: its suffix must select the same reader, and it
+keeps the reader of the source: a name chosen in the dialog whose suffix
+selects another reader receives the suffix of the source, and the output
 cannot replace the source. The excerpt holds the records whose replay time
 lies inside the region, and its replay time starts at zero on its first
 record:

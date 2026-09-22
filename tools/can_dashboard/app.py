@@ -2116,21 +2116,19 @@ class DashboardApp:
         start, stop = player.region()
         interactive = path is None
         if interactive:
-            suffix = timeline.path.suffix
+            # No filetypes and no defaultextension: either one gives the
+            # macOS save panel of Tk 9 an allowed content type, and the panel
+            # then shows the offered name with its suffix twice.
             path = filedialog.asksaveasfilename(
                 title="Save the loop region",
-                defaultextension=suffix,
                 initialdir=str(timeline.path.parent),
                 initialfile=replay_excerpt.default_name(
                     timeline.path, start, stop
                 ),
-                filetypes=(
-                    (f"{timeline.kind} replay", f"*{suffix}"),
-                    ("All files", "*.*"),
-                ),
             )
             if not path:
                 return
+            path = replay_excerpt.with_source_suffix(path, timeline.path)
         output = Path(path)
         force = False
         if output.exists() and interactive:

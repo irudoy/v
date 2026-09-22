@@ -76,6 +76,15 @@ def default_name(path, start, stop):
     return f"{path.stem}_{start:.1f}-{stop:.1f}s{path.suffix}"
 
 
+def with_source_suffix(path, source):
+    """The chosen path, with the source suffix added when it selects another reader."""
+    path = Path(path)
+    source = Path(source)
+    if _reader_kind(path) == _reader_kind(source):
+        return path
+    return path.with_name(path.name + source.suffix)
+
+
 def _reader_kind(path):
     suffix = Path(path).suffix.lower()
     return {".trc": "TRC", ".mlg": "MLG"}.get(suffix, "candump")

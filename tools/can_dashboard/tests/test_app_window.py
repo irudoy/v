@@ -5,6 +5,7 @@ import tempfile
 import tkinter as tk
 import types
 import unittest
+from unittest import mock
 
 from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
@@ -696,6 +697,28 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.open_replay()
         self.assertEqual(dashboard.replay_note_var.get(), "")
         self.assertEqual(dashboard.replay_note.winfo_manager(), "")
+
+    def test_save_loop_offers_the_source_suffix_once_and_keeps_it(self):
+        dashboard = self.dashboard
+        timeline = self.open_replay()
+        start, stop = dashboard.player.region()
+        chosen = self.directory / "excerpt"
+        with mock.patch.object(
+            app.filedialog, "asksaveasfilename", return_value=str(chosen)
+        ) as dialog:
+            dashboard.save_loop()
+
+        options = dialog.call_args.kwargs
+        self.assertEqual(
+            options["initialfile"],
+            f"drive_{start:.1f}-{stop:.1f}s.trc",
+        )
+        self.assertEqual(options["initialdir"], str(timeline.path.parent))
+        self.assertNotIn("filetypes", options)
+        self.assertNotIn("defaultextension", options)
+        self.assertEqual(dashboard.replay_note_var.get(), "saved excerpt.trc")
+        self.assertTrue((self.directory / "excerpt.trc").is_file())
+        self.assertFalse(chosen.exists())
 
     def test_a_loaded_replay_shows_its_transport_and_plays(self):
         dashboard = self.dashboard
