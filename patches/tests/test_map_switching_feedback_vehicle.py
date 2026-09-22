@@ -216,8 +216,11 @@ class MapFeedbackVehicleSessionTest(unittest.TestCase):
     def test_lamp_statements_follow_the_registered_status(self):
         result = self.result
         both_lamps = result["map_feedback_lamp_status"] == "pass"
-        cruise_alone_open = (
-            result["failed_held_attempt_lamp_status"] == "untested"
+        # A later session may observe the CRUISE-alone lamp of state 5.
+        section, name = KEY_2026_09_22.split(".")
+        cruise_alone_open = all(
+            record["failed_held_attempt_lamp_status"] == "untested"
+            for record in (result, self.registry[section][name])
         )
         statements = (
             (
@@ -380,11 +383,40 @@ class MapFeedbackVehicle20260922Test(unittest.TestCase):
             with self.subTest(statement=statement):
                 self.assertIn(statement, self.can_defs)
 
-    def test_lamp_statuses_stay_open(self):
-        # The capture carries no operator observation of the lamps.
-        self.assertEqual(self.result["map_feedback_lamp_status"], "untested")
-        self.assertEqual(self.result["failed_held_attempt_lamp_status"], "untested")
-        self.assertIn("the lamp response to state 5 is not separately observed", self.can_defs)
+    def test_operator_observation_is_published(self):
+        result = self.result
+        self.assertEqual(result["map_feedback_lamp_status"], "pass")
+        self.assertEqual(result["failed_held_attempt_lamp_status"], "pass")
+        self.assertIs(result["ascd_engaged"], False)
+        # The observed pulse trains are the selections with more than one pulse.
+        selections = [index for maps in result["selected_maps"].values() for index in maps]
+        pulsed = list(dict.fromkeys(index for index in selections if index >= 2))
+        held = result["held_attempt_map"]
+        self.assertIn(
+            "Operator observation in the same session establishes that the "
+            + " and ".join(f"Map {index}" for index in pulsed)
+            + " pulses light SET together with CRUISE, that the CANCEL hold on "
+            f"Map {held} lights CRUISE alone, and that ASCD does not engage.",
+            self.can_defs,
+        )
+        self.assertIn(
+            f"In the {result['recorded_on']} road session a CANCEL hold on Map {held} "
+            "shows state 5 for its whole length and lights CRUISE alone; "
+            "`hardware-results.toml` records the observation under "
+            f"`{KEY_2026_09_22}`.",
+            _normalized(ROLLING_LAUNCH),
+        )
+        self.assertIn(f"`{KEY_2026_09_22}`", _normalized(SELECTOR))
+
+    def test_dtc_read_is_the_uncleared_session_read(self):
+        session = self.registry["can_telemetry"]["schema2_profile5_drive_2026_09_22"]
+        self.assertIs(session["dtc_cleared_before_session"], False)
+        self.assertEqual(session["dtc_read_after_session"], ["U1000", "U1001"])
+        self.assertIn("not dated to the session", session["dtc_read_boundary"])
+        self.assertIn(
+            "can_telemetry.schema2_profile5_drive_2026_09_22", self.result["evidence_boundary"]
+        )
+        self.assertIn("TCM behavior is not observed", self.result["evidence_boundary"])
 
     @unittest.skipUnless(LOGS_2026_09_22.is_dir(), "road captures are local and untracked")
     def test_trace_reproduces_the_record(self):

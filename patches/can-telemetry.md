@@ -410,12 +410,13 @@ Registry entry `can_telemetry.schema2_transport_2026_09_22` measures the
 profile 5 stream at divisor 1 in three moving TRC captures of the 2026-09-22
 road session, 519.5 s in total. Per capture, the whole-bus average lies within
 `63.671%..77.402%` and the highest 100 ms window within `65.600%..79.760%`, so
-neither exceeds its planning bound. The captures contain no error, warning, or
-remote frame. Each of the 44 stock identifiers of the stationary baselines
-keeps its median period within 0.3 ms, `0x551` at `102.4 ms`, and its longest
-interval within 1.5 ms of the baseline maximum. Every group that the capture
-end does not truncate arrives complete with a `tick16` step of 1, and page 10
-follows page 0 after 3.5..3.6 ms in the median and at most 8.8 ms.
+neither exceeds its planning bound. With PCAN-View error-frame recording
+enabled, the captures contain no error, warning, or remote frame. Each of the
+44 stock identifiers of the stationary baselines keeps its median period within
+0.3 ms, `0x551` at `102.4 ms`, and its longest interval within 1.5 ms of the
+baseline maximum. Every group that the capture end does not truncate arrives
+complete with a `tick16` step of 1, and page 10 follows page 0 after
+3.5..3.6 ms in the median and at most 8.8 ms.
 
 ## Evidence and acceptance boundary
 

@@ -460,8 +460,7 @@ pulses as the selected map number, each two frames ON and two frames OFF. Each
 of the six moving CANCEL holds of the mixed Map 3 drive appears as one `0x42`
 interval, and switching CRUISE MAIN leaves byte 5 at `0x02`. Operator
 observation in the same session establishes that each state-4 map feedback
-pulse lights SET together with CRUISE; the lamp response to state 5 is not
-separately observed.
+pulse lights SET together with CRUISE.
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
 the observation under `map_switching.feedback_vehicle_2026_09_21`.
 
@@ -474,7 +473,9 @@ OFF. The first ON frame follows SET release by 73.6 to 113.6 ms, and the pulse
 starts of one selection lie 407.9 to 409.9 ms apart on average. A 3.196 s
 CANCEL hold on Map 1, where Rolling Launch is disabled, shows 31 frames of
 `0x52` and no `0x42`, and presses inside the Rolling Launch rearm period keep
-byte 5 at `0x02`.
+byte 5 at `0x02`. Operator observation in the same session establishes that
+the Map 5 and Map 2 pulses light SET together with CRUISE, that the CANCEL hold
+on Map 1 lights CRUISE alone, and that ASCD does not engage.
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
 the observation under `map_switching.feedback_vehicle_2026_09_22`.
 

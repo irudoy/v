@@ -175,7 +175,7 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
             f"{span:.1f} s in total",
             f"the whole-bus average lies within {_percent_range(*average)}",
             f"the highest 100 ms window within {_percent_range(*peak)}",
-            "The captures contain no error, warning, or remote frame.",
+            "the captures contain no error, warning, or remote frame.",
         ):
             self.assertIn(text, self.published)
 
@@ -220,8 +220,23 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         status = self.result["term_status"]
         for term in CONTROL_TERMS:
             self.assertEqual(status[term], "untested")
-        self.assertEqual(status["bus_error_records"], "zero_recorded")
+        self.assertEqual(status["bus_error_records"], "pass")
         self.assertIn("no frame was transmitted", self.result["evidence_boundary"])
+        # PCAN-View stores no trace of its error-frame setting in the TRC file.
+        self.assertEqual(self.result["error_frame_recording"], "enabled")
+        self.assertIn(
+            "error-frame recording was enabled for all three captures by operator report",
+            self.result["evidence_boundary"],
+        )
+        self.assertEqual(len(self.result["captures"]), 3)
+        for row in self.result["captures"]:
+            self.assertEqual(row["error_record_count"], 0)
+            self.assertEqual(row["warning_record_count"], 0)
+        self.assertIn(
+            "With PCAN-View error-frame recording enabled, the captures contain no "
+            "error, warning, or remote frame.",
+            self.published,
+        )
         self.assertIn(
             "On the vehicle they remain untested: registry entry "
             f"`{KEY}` records that no capture carries a control frame.",

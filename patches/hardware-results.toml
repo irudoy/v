@@ -313,8 +313,10 @@ capture_name = "11-map-2-rl.trc"
 rolling_launch_record = "rolling_launch.map_2_vehicle_2026_09_22"
 software_status = "pass"
 bus_status = "pass"
-map_feedback_lamp_status = "untested"
-failed_held_attempt_lamp_status = "untested"
+map_feedback_lamp_status = "pass"
+failed_held_attempt_lamp_status = "pass"
+operator_observation = "the state-4 pulses of the Map 5 and Map 2 selections light SET together with CRUISE, the CANCEL hold on Map 1 lights CRUISE alone, ASCD does not engage, and the operator reports no new DTC after the session"
+ascd_engaged = false
 status_mask = 0x70
 stock_byte5 = 0x02
 dashboard_frame_count = 1733
@@ -342,7 +344,7 @@ held_attempt_active_frames = 0
 rearm_refusal_press_count = 3
 rearm_refusal_byte5_values = [0x02]
 result = "four selections show one two- or three-frame state-5 run per CANCEL tap while SET is held and, after SET release, as many state-4 pulses as the selected map number, each two frames ON and two frames OFF; a CANCEL hold on Map 1 shows state 5 for its whole length and no state 4, and presses inside the Rolling Launch rearm period leave byte 5 at the stock value"
-evidence_boundary = "frame counts and times come from the TRC; lamp states, ASCD engagement, TCM behavior, and DTCs are not observed in the capture"
+evidence_boundary = "frame counts and times come from the TRC, while the lamp states and ASCD engagement rest on operator observation; the DTC read is the session read recorded under can_telemetry.schema2_profile5_drive_2026_09_22, which followed no clearing and does not name the modules read; TCM behavior is not observed"
 
 [map_switching.feedback_vehicle_2026_09_22.selected_maps]
 "11-map-2-rl.trc" = [5, 2, 1, 2]
@@ -1333,6 +1335,9 @@ telemetry_status_nonzero_record_count = 1
 telemetry_status_nonzero_value = 0x08
 trc_error_count = 0
 trc_warning_count = 0
+dtc_cleared_before_session = false
+dtc_read_after_session = ["U1000", "U1001"]
+dtc_read_boundary = "the codes come from the operator's DTC read after the drives; the DTCs were not cleared before the session, and the read names neither the modules read nor whether 1st-trip DTCs were included, so U1000 and U1001 are not dated to the session"
 result = "every record that carries the identity page reports profile 5 with CRC 0xE144 and a verified schema, the six records without it are the first records of two converted TRC captures, overrun and abort counters stay at zero, the three TRC captures convert without errors or warnings, and the cold-start capture holds one missed snapshot followed by one post-ACK preemption latch"
 
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
@@ -1440,6 +1445,7 @@ audit_tool = "tools/logs/peak_trc_audit.py"
 nominal_bitrate = 500000
 candidate_id = 0x6F0
 stream_theoretical_load_percent = [23.848, 29.004]
+error_frame_recording = "enabled"
 planning_baseline_capture = "startup.trc"
 planning_baseline_average_bus_load_percent = [39.889, 48.402]
 planning_baseline_peak_100ms_bus_load_percent = [43.260, 52.500]
@@ -1459,7 +1465,7 @@ dashboard_state_maximum_period_ms = [105.7, 106.0, 105.9]
 dashboard_state_baseline_p99_period_ms_max = 105.792
 dashboard_state_baseline_maximum_period_ms_max = 106.3
 result = "the three moving captures hold no error, warning, remote, or transmitted frame; the whole-bus average and the highest 100 ms window of each capture stay inside the planning bounds; each of the 44 stock identifiers of the stationary baselines keeps its median period within 0.3 ms, 0x551 at 102.4 ms, its 99th percentile within 0.2 ms of the baselines, and its longest interval within 1.5 ms of the baseline maximum; every group that the capture end does not truncate arrives complete with a tick16 step of 1"
-evidence_boundary = "load figures bound the unknown stuff bits between the unstuffed and the maximum-stuffed frame length; the captures do not state whether PCAN-View recorded error frames; no frame was transmitted, which leaves STOP, START, the rejection of invalid control frames, the priority of the runtime override over the startup flag, and the mailbox 31 reinitialization after an HCAN1 recovery untested"
+evidence_boundary = "load figures bound the unknown stuff bits between the unstuffed and the maximum-stuffed frame length; PCAN-View error-frame recording was enabled for all three captures by operator report, which the TRC files do not store; no frame was transmitted, which leaves STOP, START, the rejection of invalid control frames, the priority of the runtime override over the startup flag, and the mailbox 31 reinitialization after an HCAN1 recovery untested"
 
 [[can_telemetry.schema2_transport_2026_09_22.captures]]
 capture_name = "5-shifts-map-3.trc"
@@ -1531,7 +1537,7 @@ page_0_to_10_max_ms = 8.5
 whole_bus_load = "pass"
 stock_frame_cadence = "pass"
 group_continuity = "pass"
-bus_error_records = "zero_recorded"
+bus_error_records = "pass"
 stop_start_control = "untested"
 invalid_control_rejection = "untested"
 override_priority = "untested"

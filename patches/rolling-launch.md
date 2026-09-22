@@ -139,8 +139,10 @@ CANCEL tap of a map-selection gesture shows `0x52` for the tap.
 `hardware-results.toml` records the observation under
 `map_switching.feedback_vehicle_2026_09_21`. Operator observation of the map
 feedback pulses establishes that state 4 lights SET together with CRUISE on the
-exact target, and `ACTIVE` sends the same state as a steady level. The
-CRUISE-alone result of state 5 remains a hardware acceptance item.
+exact target, and `ACTIVE` sends the same state as a steady level. In the
+2026-09-22 road session a CANCEL hold on Map 1 shows state 5 for its whole
+length and lights CRUISE alone; `hardware-results.toml` records the observation
+under `map_switching.feedback_vehicle_2026_09_22`.
 
 The full-field isolation correction from firmware `1.9` is present in this
 runtime: both feedback paths clear mask `0x70` with immediate `0x8F` before

@@ -224,9 +224,10 @@ state 0; firmware `1.11` emits that state as byte 5 value `0x62`. The injected
 field is constant for the whole ON phase, so the delay originates in the meter,
 which is consistent with a meter-side blink timer for state 6. State 4 is the
 only stock state with both lamps steadily lit, and exact-target observation of
-the 2026-09-21 map feedback pulses shows SET lighting together with CRUISE;
-`hardware-results.toml` records it under
-`map_switching.feedback_vehicle_2026_09_21`. The meter firmware is not
+the 2026-09-21 and 2026-09-22 map feedback pulses shows SET lighting together
+with CRUISE; `hardware-results.toml` records it under
+`map_switching.feedback_vehicle_2026_09_21` and
+`map_switching.feedback_vehicle_2026_09_22`. The meter firmware is not
 analyzed.
 
 ### Timing
