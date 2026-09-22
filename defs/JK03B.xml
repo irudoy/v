@@ -930,13 +930,12 @@
          Code proves the cold intake-cam target role, raw coolant selection, centered byte
          representation, and column coordinate at raw*100/128 percent of the fixed BFS
          reference. The target-vehicle capture stays above the warm threshold. The cold-start
-         replay in JK03B.cvtc.md validates this surface through the coolant blend, while its
-         stationary cold band follows idle source byte ffff1553 and leaves the direct cold
-         lookup dynamically untested. The output conversion (x-128)*0.5 crank degrees follows
-         the intake edge-phase unit shared with 0000b43a: the cold target enters the same
-         ffff2326 path that FUN 0004d2a6 compares with actual bytes ffff2442/ffff2443. The
-         Cylinder Filling physical name remains a source-derived candidate. Result disposition:
-         consumer.
+         replays in JK03B.cvtc.md validate this surface through the coolant blend and by direct
+         lookup in the cold band of the moving cold start; the stationary cold band follows idle
+         source byte ffff1553. The output conversion (x-128)*0.5 crank degrees follows the
+         intake edge-phase unit shared with 0000b43a: the cold target enters the same ffff2326
+         path that FUN 0004d2a6 compares with actual bytes ffff2442/ffff2443. The Cylinder
+         Filling physical name remains a source-derived candidate. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target - Cold"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"

@@ -124,6 +124,8 @@ class CvtcSample:
     reference_b_raw: int
     intake_actual_b1_raw: int
     intake_actual_b2_raw: int
+    # Index of the MLG record that carries the snapshot; None for a TRC.
+    record_index: int | None = None
 
 
 @dataclass(frozen=True)
@@ -724,6 +726,7 @@ def _recording_samples(recording, profile: str):
                 reference_b_raw=values["exhaust_cvtc_target_raw"],
                 intake_actual_b1_raw=values["intake_cvtc_actual_b1_raw"],
                 intake_actual_b2_raw=values["intake_cvtc_actual_b2_raw"],
+                record_index=index,
             )
         )
     return event_records, bridge_records, samples

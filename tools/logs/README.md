@@ -186,8 +186,9 @@ over the comparisons in which both bytes differ from `0x80`
 (`alternate_ffff1553_active_to_active`). `FUN_000BDB66` forms the byte from
 engine-speed table `0x122EA` and coolant-index weight `0x122F2`, and
 `FUN_000BDC66` conditions it in place of the coolant-selected map byte while
-`0xFFFF24A7` bit 1 is set. The tool does not reconstruct that bit or the
-rising-value ramp of the conditioner.
+`0xFFFF24A7` bit 1 is set. `cvtc_intake_state_audit.py` reconstructs that bit
+and the operating bit that neutralizes the target, and it identifies the
+rising-value ramp of the conditioner by its countdown period.
 
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,
@@ -196,6 +197,70 @@ follows `0xFFFF1553` does not exercise the cold surface. Agreement in raw
 software coordinates also does not prove the physical camshaft response. Both
 degree conversions are code-proven through the 0.5-degree edge-phase count of
 the capture handlers and the raw-unit comparison of target and actual bytes.
+
+## JK08A intake-CVTC state audit
+
+`cvtc_intake_state_audit.py` replays the two bits of `FUN_000BD20A` that
+decide the source of intake target `0xFFFF2326` for each verified snapshot of
+a dashboard MLG recording and partitions the intake comparisons of
+`cvtc_target_audit.py` by the predicted path.
+
+```bash
+python3 tools/logs/cvtc_intake_state_audit.py \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  dashboard-recording.mlg
+```
+
+Idle-source bit `0xFFFF24A7` bit 1 sets while every idle-source term passes:
+engine-speed byte `0xFFFF11B2` at least `ROM8[0x8715]` plus `ROM8[0x8716]`
+and held down to `ROM8[0x8715]`, BFS word `0xFFFF1024` at least
+`ROM16[0x921E]`, raw coolant above `ROM8[0x871C]` and at most `ROM8[0x871B]`,
+raw oil temperature above `ROM8[0x871A]` and at most `ROM8[0x8719]` while
+`ROM8[0x8616]` bit 0 is set, raw IAT from `ROM8[0x8718]` to below
+`ROM8[0x8717]` while `ROM8[0x870F]` bit 0 is set, battery snapshot
+`0xFFFF1108` above `ROM8[0x8E0A]` and at most `ROM8[0x8E07]`, `CLSD THL POS`,
+and vehicle-speed byte `0xFFFF110E` at most `ROM8[0x871D]`. Each temperature
+term carries a hysteresis of 3 counts. A
+failing pass reloads re-arm counter `0xFFFF2527` from `ROM8[0x8713]`; after
+the first activation of a producer run the bit stays clear until that counter
+expires.
+
+Operating bit `0xFFFF246B` bit 6 is set while the idle-source bit is set or
+while the battery term, the pedal off `CLSD THL POS` (with
+`ROM8[0x8940]` bit 1 clear), raw coolant at most `ROM8[0x8E00]`, engine-speed
+byte at least `ROM8[0x8DE9]` with a release offset of 16, and a coolant floor
+all pass. Latch `0xFFFF5B2C` bit 6 selects the floor: raw coolant above
+`ROM8[0x8E06]` while the latch is set and above `ROM8[0x8E03]` while it is
+clear, both with a hysteresis of 3. The latch sets at raw coolant 125 and
+clears below 65. While the operating bit is clear, `FUN_000BDC66` stores
+neutral `0x80` unless active test IOLID 0x19 runs.
+
+The recording carries neither the pedal idle position, the speed byte, the
+fault and inhibit terms, the start delay, the re-arm decrementer, nor the
+latch. `--app1-released-max` bounds `CLSD THL POS` by APP1 raw (default 153),
+the speed byte is `floor(10 * vehicle_speed_kmh) // 20` of the dashboard
+`0x280` speed, the unobservable terms pass, `--rearm-snapshots` sets the
+re-arm wait in snapshot ticks (default 988), and `--latch` selects the
+initial latch state (default both). Every constant comes from the calibration
+image, and the rise rule requires reload table `0x12EFE` (or `0x12F06`) to
+hold one nonzero countdown period.
+
+The report gives the engine-speed byte of the first snapshot and, for each
+coolant band, the elapsed and raw-coolant extent of the source snapshots of
+its comparisons and their maximum vehicle speed. For each band it gives the
+model-free discriminating count: among
+the comparisons whose coolant-selected byte differs from `0x80`, from the
+main-surface byte, and from the replayed `0xFFFF1553` byte, how many targets
+equal each of the four. For each initial latch state it gives the class of
+every comparison: `start_unresolved` for the leading comparisons that only
+the start delay decides, `neutral_*` for a predicted clear operating bit,
+`idle_exact`, `idle_rise`, and `idle_other` for a predicted set idle-source
+bit, and `map_*` for the map path with its agreement. A rise is a run of at
+least three one-count target steps spaced exactly one countdown period apart,
+together with the period before its first step. The report also lists the
+failing idle-source terms of each predicted-neutral comparison whose
+`0xFFFF1553` byte is active and the comparisons that differ from the replayed
+`0xFFFF1553` byte or from both replays.
 
 ## JK08A ignition timing-state audit
 

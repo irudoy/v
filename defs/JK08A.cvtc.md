@@ -337,11 +337,88 @@ once `0xFFFF1553` is at or below `0xFFFF2326`, so after `0xFFFF24A7` bit 1
 sets the target climbs to `0xFFFF1553` one count per countdown period.
 
 `FUN 000BD20A` writes `0xFFFF24A7` bit 1 on every call through its single
-exit. It sets the bit at `0xBD994` only on a path that requires, among other
-conditions, `CLSD THL POS` copy `0xFFFF2458` bit 5 and vehicle-speed byte
-`0xFFFF110E` at most `ROM8[0x871D] = 2`, and clears it at `0xBD9C0` or
-`0xBD9C6` on every other path. `0xFFFF1553` therefore replaces the map target
-only with the pedal at its idle position and the vehicle-speed byte at most 2.
+exit. It sets the bit at `0xBD994` only on a pass on which every term below
+holds, and clears it at `0xBD9C0` or `0xBD9C6` on every other path. The same
+call refreshes the hysteresis flags first; each temperature flag moves its
+threshold by 3 counts while it is set, and the engine-speed flag needs 8
+counts more to set than to hold:
+
+```text
+ffff248b bit 1                                          electrical enable
+ffff2490 bit 3 = (ffff1071 + 3) >  ROM8[0x871C] = 55    raw coolant
+ffff2490 bit 4 = (ffff1071 - 3) <= ROM8[0x871B] = 100   raw coolant
+ffff2490 bit 6 = (ffff2772 + 3) >  ROM8[0x871A] = 55    oil, ROM8[0x8616] bit 0
+ffff2490 bit 7 = (ffff2772 - 3) <= ROM8[0x8719] = 255   oil, ROM8[0x8616] bit 0
+ffff248f bit 0 = (ffff2733 + 3) >= ROM8[0x8718] = 55    IAT, ROM8[0x870F] bit 0
+ffff248f bit 1 = (ffff2733 - 3) <  ROM8[0x8717] = 100   IAT, ROM8[0x870F] bit 0
+ffff2490 bit 5 = ffff1024 >= ROM16[0x921E] = 0x1400     normalized BFS
+ffff2458 bit 5                                          CLSD THL POS
+ffff110e <= ROM8[0x871D] = 2                            vehicle-speed byte
+ffff248f bit 2 = ffff11b2 >= ROM8[0x8715] = 112         engine speed
+```
+
+While bit 2 is clear the engine-speed floor rises by `ROM8[0x8716] = 8` to
+120, so the flag sets at 1500 RPM and holds down to 1400 RPM. Both
+configuration bytes hold `0x01` on stock, so the oil and intake-air terms
+apply. The pass also requires `0xFFFF41D1` bit 7, `0xFFFF41D0` bit 0,
+`0xFFFF41BE` bit 6, `0xFFFF4250` bit 7, `0xFFFF245C` bit 4, and bits 0 and 1
+of `0xFFFF2F64` and `0xFFFF14B8` clear, and the stored-fault bit of
+`FUN 00025E20` clear for records `0x8D..0x96`, `0xFC..0xFF`, `0x127`,
+`0x128`, and `0x153..0x156`, for `0xDD`, `0xDE`, and `0xE4` under
+`ROM8[0x8616]` bit 0, and for `0x12E` under `ROM8[0x870F]` bit 0. The terms
+under `ROM8[0x870C]` bit 5 and `ROM8[0x870E]` bit 4 are skipped with the
+stock bytes `0x44` and `0x28`.
+
+Start event `0xFFFF4184` bit 6 loads start countdown `0xFFFF2528` from
+`ROM8[0x8714] = 30` at `0xBD5F6`, sets `0xFFFF248F` bit 3, and clears
+`0xFFFF248F` bits 2 and 4. The engine-speed flag and the BFS flag stay clear
+while `0xFFFF2528` is nonzero or `0xFFFF248F` bit 3 is clear. Each pass
+through `0xBD9C2` reloads re-arm countdown `0xFFFF2527` from
+`ROM8[0x8713] = 100` at `0xBD9C8`, and the set path stores 0 to it at
+`0xBD9CA` and sets `0xFFFF248F` bit 4 at `0xBD9A4`. With every term holding,
+the bit stays clear at `0xBD9C0` without the reload while `0xFFFF248D` bit 3
+is set or, once `0xFFFF248F` bit 4 is set, while `0xFFFF2527` is nonzero.
+`0xFFFF1553` therefore replaces the map target only with the pedal at its idle
+position and the vehicle-speed byte at most 2.
+
+### Intake operating bit `0xFFFF246B` bit 6
+
+`FUN 000BD20A` stores register `r10` to `0xFFFF246B` bit 6 at `0xBD9D6`. It
+clears `r10` at `0xBD224` and sets it at `0xBD41E` only while start counter
+`0xFFFF19AA` exceeds `0xFFFF17F0`, `FUN 00025E4E` returns zero, the
+stored-fault bits of records `0x14B` and `0x14C` are clear, battery snapshot
+`0xFFFF1108` lies above `ROM8[0x8E0A] = 125` and at most
+`ROM8[0x8E07] = 200`, `0xFFFF244F` bit 5 is set, and `0xFFFF3622` bits 0 and
+1 are clear. The start event zeroes `0xFFFF19AA` and loads `0xFFFF17F0` from
+`0x12A8A` by oil temperature `0xFFFF2772` while `ROM8[0x8616]` bit 0 is set,
+30 in each stock cell; later calls count `0xFFFF19AA` up to 255 while
+`0xFFFF84C3` bit 7 is set. `0xBD432` stores the result as intake electrical
+enable `0xFFFF248B` bit 1.
+
+`r10` returns to 0 at `0xBD462` when `CLSD THL POS` copy `0xFFFF2458` bit 5
+is set while `ROM8[0x8940]` bit 1 is clear (stock `0x01`), or when
+`0xFFFF248D` bit 3, `0xFFFF41D1` bit 7, `0xFFFF41D0` bit 0, or `0xFFFF41BE`
+bit 6 is set. It returns to 0 at `0xBD492` unless coolant ceiling flag
+`0xFFFF24A9` bit 6, the coolant floor, and engine-speed flag `0xFFFF24A8`
+bit 4 are all set. The function refreshes these flags in its prologue with
+the thresholds of "Enable bits of `0xFFFF248B`" below, and `0xFFFF24A9` bit 0
+as raw coolant above `ROM8[0x8E06] = 70`, adding 3 while set. The floor is
+`0xFFFF24A9` bit 0 while latch `0xFFFF5B2C` bit 6 is set and `0xFFFF24A9`
+bit 3, raw coolant above 106, while it is clear. The function sets the latch
+at raw coolant `0xFFFF1071` of 125 and above (`0xBD2B6`..`0xBD2C6`) and
+clears it below 65 (`0xBD2C8`..`0xBD2D4`), so raw coolant from 65 to 124
+leaves the latch unchanged. The idle-source path sets `r10` again at
+`0xBD988`, so the operating bit is set whenever `0xFFFF24A7` bit 1 is.
+
+`FUN 000BDC66` tests the operating bit at `0xBDCDE`. While it is set, the
+function continues at `0xBDD80` with the coolant selection, and from
+`0xFFFF1553` while `0xFFFF24A7` bit 1 is also set. While it is clear, the
+function stores neutral `0x80` to `0xFFFF2326` through `0xBDCF6` and
+`0xBDECA` unless `0xFFFF248B` bit 1 and IOLID `0x19` active-test bit
+`0xFFFF41FA` bit 0 are both set. Below raw coolant 107 the direct cold lookup
+of `0xB53A` therefore needs `0xFFFF24A7` bit 1 clear, the electrical enable,
+the pedal off its idle position, 900 RPM, and the latch set; with the latch
+clear the map path opens only in the blend band.
 
 ## Target-vehicle replay
 
@@ -418,12 +495,15 @@ byte differs from the main-surface byte.
 | exhaust | warm | map without downstream neutralization | 18,501 / 22,240 |
 | exhaust | warm | map, unchanged 16-cycle active | 7,530 / 7,992 |
 
-The cold band is stationary, and there the intake target follows
-`0xFFFF1553` rather than cold surface `0xB53A`, so the recording does not
-test the direct cold lookup. The tool reconstructs neither `0xFFFF24A7` bit 1,
-the conditions that neutralize the target, nor the rising ramp, so the 1,411
-cold-band comparisons that differ from the replayed byte stay unassigned. The
-blend band tests cold surface `0xB53A` through the blend: 5,882 of its 6,197
+The cold band is stationary, and there the intake target follows `0xFFFF1553`
+rather than cold surface `0xB53A`, so the recording does not test the direct
+cold lookup. The state replay of "Moving cold-start replay" below divides the
+cold band into 10,746 neutral `0x80` targets, 6,108 exact idle-source targets,
+199 targets on a rise, and 28 other idle-source targets for either latch
+state, so the 1,411 cold-band comparisons that differ from the replayed byte
+are 1,184 neutral targets while the engine-speed term of the idle source
+fails, 199 on a rise, and 28 on the idle-source path outside a rise. The blend
+band tests cold surface `0xB53A` through the blend: 5,882 of its 6,197
 cold-dependent comparisons are exact, and a replay from main surface `0xB43A`
 alone misses each of them.
 
@@ -437,9 +517,104 @@ comparisons, 7,742 of them against a blend value other than `0x80`, and every
 cell of exhaust cold surface `0xB2FA` is `0x80`, so the recording discriminates
 neither the exhaust cold surface nor the exhaust blend. Conditional
 corrections stay unexercised, and raw target agreement does not show the
-physical camshaft response. The direct cold lookup of `0xB53A` needs
-cold-band comparisons with `0xFFFF24A7` bit 1 clear, such as the pedal
-applied or the vehicle moving before coolant exceeds raw 106.
+physical camshaft response. The moving cold start below tests the direct
+cold lookup of `0xB53A`.
+
+### Moving cold-start replay
+
+Registry record `can_telemetry.cvtc_cold_start_2026_09_22` holds the replay of
+dashboard recording `10-map-1-cold.mlg`, SHA-256
+`10071d018b6f1c956cf2600447b290b13c5e5e59f365d44f0d80c2577dc3328f`, with the
+same image. Its bytes `0xBD170..0xBE217`, which hold `FUN 000BD170` through
+`FUN 000BDF5C` and every literal these functions load, equal stock, and so do
+the constants of the state replay. The recording holds 52,622 records, all of
+them snapshots, and its first snapshot carries 1,675 RPM (`0xFFFF11F4` = 134),
+so the engine was already running. Coolant rises from raw 68 to 139,
+`ffff2466.bit6` stays clear, and `ascd_button_raw` stays `0x20`, so the
+exhaust main surface is canonical `0xB33A`.
+
+| Band | Elapsed | Coolant raw | Comparisons | Maximum vehicle speed |
+|---|---|---|---:|---:|
+| cold | 0.000..154.916 s | 68..106 | 15,125 | 46.47 km/h |
+| blend | 154.924..303.884 s | 107..131 | 14,545 | 83.01 km/h |
+| warm | 303.894..538.890 s | 132..139 | 22,950 | 96.83 km/h |
+
+| Target | Band | Check | Exact / comparisons |
+|---|---|---|---:|
+| intake | cold | coolant-selected map | 2,313 / 15,125 |
+| intake | cold | coolant-selected map, active | 2,201 / 5,413 |
+| intake | cold | coolant-selected map, cold-dependent | 2,177 / 5,389 |
+| intake | cold | replayed `0xFFFF1553` | 9,677 / 15,125 |
+| intake | cold | replayed `0xFFFF1553`, active | 2,832 / 4,421 |
+| intake | blend | map without downstream neutralization | 8,410 / 8,881 |
+| intake | blend | map, active | 7,285 / 7,755 |
+| intake | blend | map, cold-dependent | 6,497 / 6,951 |
+| intake | blend | map, unchanged 16-cycle active | 4,505 / 4,572 |
+| intake | warm | map without downstream neutralization | 17,131 / 17,899 |
+| intake | warm | map, unchanged 16-cycle active | 6,251 / 6,307 |
+| exhaust | cold | map | 15,125 / 15,125 |
+| exhaust | blend | map without downstream neutralization | 5,868 / 5,868 |
+| exhaust | warm | map without downstream neutralization | 13,180 / 16,261 |
+| exhaust | warm | map, unchanged 16-cycle active | 3,321 / 3,655 |
+
+A discriminating comparison has a coolant-selected byte that differs from
+`0x80`, from the main-surface byte, and from the replayed `0xFFFF1553` byte,
+so a target equal to it follows the cold path without any reconstructed bit.
+
+| Recording | Band | Discriminating | Coolant-selected | `0x80` | `0xFFFF1553` | Main | Other |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `10-map-1-cold.mlg` | cold | 14,578 | 2,110 | 9,258 | 2,765 | 0 | 445 |
+| `10-map-1-cold.mlg` | blend | 12,401 | 6,497 | 5,450 | 0 | 10 | 444 |
+| `1-crank-cold.mlg` | cold | 15,963 | 11 | 9,945 | 5,803 | 0 | 204 |
+
+Of the 2,110 cold-band targets of `10-map-1-cold.mlg` that carry the
+coolant-selected byte, 2,099 are moving, 2,098 have APP1 raw above 153, and
+483 carry a byte that no cell of `0xB53A` holds, so they follow its
+interpolation.
+
+`tools/logs/cvtc_intake_state_audit.py` replays `0xFFFF24A7` bit 1 and the
+operating bit. The recording carries neither `CLSD THL POS`, the
+vehicle-speed byte, the start terms, the fault and inhibit terms, the
+`0xFFFF2527` countdown, nor the latch. The replay takes `CLSD THL POS` as APP1
+raw at most 153, forms the speed byte from the `0x280` vehicle speed, takes
+the unobservable terms as passing, uses a re-arm wait of 988 snapshots, and
+runs both latch states:
+
+| Cold-band class | Latch set | Latch clear |
+|---|---:|---:|
+| before the first rise, decided by the start terms | 189 | 189 |
+| operating bit clear, target `0x80` | 9,271 | 9,509 |
+| operating bit clear, target active | 2 | 2,305 |
+| idle source, exact | 2,770 | 2,770 |
+| idle source, on a rise | 350 | 350 |
+| idle source, other | 2 | 2 |
+| map path, exact and active | 2,183 | 0 |
+| map path, exact at `0x80` | 106 | 0 |
+| map path, within 3 | 120 | 0 |
+| map path, target `0x80` | 132 | 0 |
+| map path, other | 0 | 0 |
+
+With the latch clear the replay puts 2,305 cold-band comparisons whose target
+is active on the neutral path, against 2 with the latch set. The cold band
+holds raw coolant 68..106, inside the range in which `FUN 000BD20A` leaves the
+latch unchanged, so the latch was set when the recording started. With the
+latch set, 2,160 of the 2,408 cold-dependent cold-band comparisons on the map
+path are exact, and none equals the main-surface byte. Of the 3,304 cold-band
+comparisons that differ from both replayed bytes, the replay places 2,571 on
+the neutral path and 340 on a rise; 189 precede the first rise, 120 lie within
+3 counts of the coolant-selected byte, 83 carry `0x80` on the map path, and 1
+lies on the idle-source path outside a rise. With a re-arm wait of 977
+snapshots, 13 idle-source targets outside a rise differ from the replayed
+byte, against 2 at 988 and 996; at 996, 5 neutral-path targets are active. As
+the APP1 bound rises from 153 to 175, the map-path targets at `0x80` fall from
+132 to 4 and the neutral-path active targets rise from 2 to 69. The blend and
+warm bands are identical for both latch states.
+
+The exhaust target stays `0x80` in all 29,670 cold- and blend-band
+comparisons, 8,677 of them against a blend value other than `0x80`, and every
+cell of `0xB2FA` is `0x80`, so the recording discriminates neither the exhaust
+cold surface nor the exhaust blend. Conditional corrections stay unexercised,
+and raw target agreement does not show the physical camshaft response.
 
 ## Exhaust duty controller and disable path
 
