@@ -196,6 +196,17 @@ class TorqueScaleRecordTest(unittest.TestCase):
             f"spans {pair_low}..{pair_high} Nm per raw count over the six gear pairs", published)
         self.assertEqual(len(result["gear_pair_segment"]), 6)
 
+    def test_operator_report_names_the_comparison_runs(self):
+        result = self.result
+        comparisons = [name for name in result["capture_name"] if name.startswith("xxx-")]
+        self.assertEqual(len(comparisons), 7)
+        self.assertEqual({name.split("-map-")[1].split("-")[0] for name in comparisons}, {"1", "3"})
+        observation = result["operator_observation"]
+        self.assertTrue(observation.startswith("the xxx captures are Map 1 and Map 3 acceleration comparisons"))
+        self.assertIn("the roads of the runs have grade", observation)
+        self.assertIn("neither vehicle mass nor tire pressure is known", observation)
+        self.assertIn(f"By operator report, {observation.replace('xxx', '`xxx`', 1)}.", self.published)
+
     def test_readme_states_the_tool_thresholds(self):
         readme = self.readme
         self.assertIn("## JK08A engine-torque scale audit", README.read_text(encoding="utf-8"))

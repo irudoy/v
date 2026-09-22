@@ -1654,6 +1654,7 @@ audit_tool = "tools/logs/torque_scale_audit.py"
 software_status = "pass"
 hardware_status = "partial"
 hardware_scope = "full-pedal runs in M2, D, and DS, manual third-gear pulls, and neutral coasts on public roads of unrecorded grade and direction"
+operator_observation = "the xxx captures are Map 1 and Map 3 acceleration comparisons on several road stretches, the roads of the runs have grade, and neither vehicle mass nor tire pressure is known"
 field = "engine_torque_state_raw"
 state_address = 0xFFFF18CC
 net_torque_address = 0xFFFF240C

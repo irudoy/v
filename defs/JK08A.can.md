@@ -281,7 +281,10 @@ Each scale requires a road grade:
   pairs and the box, so scale `0.125 Nm` lies above every pair.
 - Scales `0.08 Nm` and `0.1 Nm` stay compatible. Road grade, vehicle mass,
   driveline efficiency, and the CAN speed scale are not measured, and the runs
-  do not separate the two scales.
+  do not separate the two scales. By operator report, the `xxx` captures are
+  Map 1 and Map 3 acceleration comparisons on several road stretches, the
+  roads of the runs have grade, and neither vehicle mass nor tire pressure is
+  known.
 - Gross state `0xFFFF18CC` still contains base term `0xFFFF2408`, and read as
   flywheel torque at `0.1 Nm` it requires a median uphill grade of 9.35 percent.
 
