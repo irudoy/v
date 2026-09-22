@@ -620,7 +620,7 @@
           "name": "throttle_target_channel_0_raw",
           "offset": 3,
           "page": 8,
-          "scale": "raw / 800 V above the learned closed position of the throttle position sensor",
+          "scale": "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor",
           "signed": false,
           "width": 2
         },
@@ -628,7 +628,7 @@
           "name": "throttle_target_channel_1_raw",
           "offset": 5,
           "page": 8,
-          "scale": "raw / 800 V above the learned closed position of the throttle position sensor",
+          "scale": "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor",
           "signed": false,
           "width": 2
         },

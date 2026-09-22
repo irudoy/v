@@ -137,14 +137,14 @@ CHANNELS = (
         "battery_voltage_v",
     ),
     FeedChannel(
-        "throttle_angle_deg",
-        "VQ Throttle Angle",
-        "deg",
+        "throttle_target_pct",
+        "VQ Throttle Target",
+        "%",
         "0.00",
         0,
-        90,
+        100,
         10,
-        "throttle_angle_target_deg",
+        "throttle_target_b1_percent",
     ),
 )
 

@@ -307,21 +307,16 @@ DESCRIPTIONS = {
         "Target opening area of both throttle bodies, candidate 0.0008 cm2 "
         "per count; the channel targets derive from it."
     ),
-    "throttle_target_b1_v": (
-        "Target of the bank 1 throttle position sensor above its learned "
-        "closed position, in volts. In steady state it reads the TPS voltage "
-        "minus the closed position."
+    "throttle_target_b1_percent": (
+        "Bank 1 throttle target as throttle opening above the learned closed "
+        "position, on the percent scale the ECU publishes as J1979 absolute "
+        "throttle. It is the coordinate of the throttle opening tables, and "
+        "the live value feed publishes it for RomRaider Overlay Log."
     ),
-    "throttle_target_b2_v": (
-        "Target of the bank 2 throttle position sensor above its learned "
-        "closed position, in volts. In steady state it reads the TPS voltage "
-        "minus the closed position."
-    ),
-    "throttle_angle_target_deg": (
-        "Channel 0 throttle target in the coordinate domain of the "
-        "angle-to-area table, at the candidate 0.0275 degrees per count. The "
-        "live value feed publishes it for RomRaider Overlay Log, which "
-        "compares it with the stored points of that table."
+    "throttle_target_b2_percent": (
+        "Bank 2 throttle target as throttle opening above the learned closed "
+        "position, on the percent scale the ECU publishes as J1979 absolute "
+        "throttle."
     ),
     "injection_end_angle_deg": (
         "End of injection in crank degrees after intake TDC of the injected "

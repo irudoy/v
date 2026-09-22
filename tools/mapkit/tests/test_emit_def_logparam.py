@@ -246,20 +246,16 @@ class LogparamDeclarationTest(unittest.TestCase):
             with self.subTest(operand=operand):
                 self.assertIn(binding.id, published)
 
-    def test_tracked_declaration_scale_matches_the_published_conversion(self):
-        # A declared scale states that the feed publishes the operand in the domain
-        # of the stored points it is compared with. The chain is checked end to end:
-        # the operand address names a stream field, the dashboard converts that field
-        # into the value the channel publishes, and the conversion is the declared
-        # expression.
-        bindings = {
-            operand: binding
-            for operand, binding in emit_def.logparam_bindings(
-                tracked_overrides()
-            ).items()
-            if binding.scale
-        }
-        self.assertTrue(bindings)
+    def test_tracked_declarations_publish_the_domain_of_their_axes(self):
+        # Overlay Log places the published value on the stored points of every
+        # axis a declaration binds. Where the operand is a stream field, the chain
+        # is checked end to end: the operand address names the field, the
+        # dashboard converts that field into the value the channel publishes, and
+        # the axis expression is that conversion of the stored point times the
+        # power of two its interpolation core multiplies each point by. A declared
+        # scale is the conversion itself, so its multiplier is one.
+        overrides = tracked_overrides()
+        declarations = emit_def.logparam_bindings(overrides)
         fields = {
             field["source"]: field["name"]
             for field in stream_fields()
@@ -271,22 +267,48 @@ class LogparamDeclarationTest(unittest.TestCase):
             for table in (
                 can_telemetry.RAW_CALIBRATIONS,
                 model.DASHBOARD_CALIBRATIONS,
-                model.OVERLAY_CALIBRATIONS,
             )
             for source, calibration in table.items()
         }
-        for operand, binding in bindings.items():
-            with self.subTest(operand=operand):
-                field = fields[int(operand, 16)]
-                source, calibration = conversions[channels[binding.id].source]
+        checked = set()
+        for row in tracked_axes().values():
+            parameter = emit_def.axis_logparam(row, overrides)
+            if not parameter:
+                continue
+            (operand,) = [
+                token.target_addr
+                for token in emit_def.provenance.parse_evidence(
+                    row["scale_evidence"], "scale_conf"
+                )
+                if token.role == "indexed_by"
+            ]
+            field = fields.get(int(operand, 16))
+            if field is None:
+                continue
+            with self.subTest(axis=row["addr"], operand=operand):
+                source, calibration = conversions[channels[parameter].source]
                 self.assertEqual(source, field)
-                for raw in (0, 1, 1000, 3172):
-                    self.assertAlmostEqual(
-                        calibration.apply(raw),
-                        eval(  # the scaling vocabulary the ledger validates
-                            binding.scale, {"__builtins__": {}}, {"x": raw}
-                        ),
-                    )
+                self.assertEqual(calibration.offset, 0)
+                point = eval(  # the scaling vocabulary the ledger validates
+                    row["scale_expr"], {"__builtins__": {}}, {"x": 1}
+                )
+                multiplier = point / calibration.factor
+                declared = declarations[operand].scale
+                self.assertIn(
+                    round(multiplier),
+                    (1,) if declared else tuple(1 << shift for shift in range(8)),
+                )
+                self.assertAlmostEqual(multiplier, round(multiplier))
+                if declared:
+                    for raw in (0, 1, 1000, 3172):
+                        self.assertAlmostEqual(
+                            calibration.apply(raw),
+                            eval(declared, {"__builtins__": {}}, {"x": raw}),
+                        )
+            checked.add(row["addr"])
+        # The throttle target axis, a load axis, and a speed axis whose core
+        # multiplies each point by four.
+        self.assertLessEqual({"000155a0", "00011ebe", "00011cf0"}, checked)
 
     def test_every_tracked_declaration_binds_an_axis(self):
         overrides = tracked_overrides()

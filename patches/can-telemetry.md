@@ -319,8 +319,8 @@ and the live duty pair it latches, the exhaust duty words, the four
 temperatures, battery voltage, absolute throttle, the pedal and throttle
 sensor voltages, the APC command at `110 - raw` degrees BTDC, the
 ignition-timing adjustment `FFFF564C` in degrees, both final channel throttle
-targets at `raw / 800 V` above the learned closed position, and the front A/F
-sensor voltage at `raw / 200 V`. Engine torque state, the bounded throttle
+targets at `raw * 34285 / 1114112` percent of throttle opening above the
+learned closed position, and the front A/F sensor voltage at `raw / 200 V`. Engine torque state, the bounded throttle
 request, the shared throttle target area, and both A/F adjustment states keep
 candidate conversions. The A/F adjustment words and the ignition-timing
 adjustment `FFFF564C` occupy signed slots, because their producers are

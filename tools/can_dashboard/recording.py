@@ -98,10 +98,10 @@ RAW_FIELD_DISPLAY = {
         "Shared throttle target", "cm2*", 2, "Throttle"
     ),
     "throttle_target_channel_0_raw": (
-        "Throttle target channel 0", "V", 3, "Throttle"
+        "Throttle target channel 0", "%", 2, "Throttle"
     ),
     "throttle_target_channel_1_raw": (
-        "Throttle target channel 1", "V", 3, "Throttle"
+        "Throttle target channel 1", "%", 2, "Throttle"
     ),
     "coolant_raw": ("Coolant", "degC", 0, "Temperature"),
     "iat_raw": ("Intake air", "degC", 0, "Temperature"),

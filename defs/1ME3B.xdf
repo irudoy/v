@@ -1895,15 +1895,15 @@
     <CATEGORYMEM index="0" category="5" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16E86" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>Throttle Valve Opening [deg] [cand]</units>
+      <units>Throttle Valve Opening [%] [cand]</units>
       <indexcount>32</indexcount>
-      <decimalpl>0</decimalpl>
+      <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.0275">
+      <MATH equation="X*34285/1114112">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -1937,15 +1937,15 @@
     <CATEGORYMEM index="0" category="5" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1BC58" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>Throttle Valve Opening [deg] [cand]</units>
+      <units>Throttle Valve Opening [%] [cand]</units>
       <indexcount>32</indexcount>
-      <decimalpl>0</decimalpl>
+      <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.0275">
+      <MATH equation="X*34285/1114112">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

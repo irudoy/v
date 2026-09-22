@@ -260,12 +260,12 @@ without changing the settings file.
 | `stft_b1_pct`, `stft_b2_pct` | `X_VQ_STFT_B1`, `X_VQ_STFT_B2` | % | `raw / 256 - 100` |
 | `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
 | `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
-| `throttle_angle_deg` | `X_VQ_Throttle_Angle` | deg | `throttle_target_channel_0_raw * 0.0275` |
+| `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw * 34285 / 1114112` |
 
-`throttle_angle_deg` carries the channel 0 throttle target in the coordinate
-domain of the angle-to-area table. Its factor repeats the expression of that
-table's axis, so Overlay Log compares the live value with the stored points
-directly; the degree scale itself stays a catalog candidate.
+`throttle_target_pct` carries the channel 0 throttle target, which is the
+coordinate of throttle opening table `0x155A0`. Its factor is the code scale of
+that axis, so Overlay Log compares the live value with the stored points
+directly.
 
 ### RomRaider table overlay
 
@@ -741,7 +741,7 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count, advance positive; recordings keep the actual bytes within two counts of a steady target in 95 to 100 percent of samples |
 | intake CVTC duty live pair and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion; the command pair is the scheduler block-copy latch of the live pair, both pairs share context tag 1 and come from one capture pass, and profile 5 recordings hold them equal in every record |
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
-| throttle target above closed B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw / 800 V` | each target is `4 * (TPS counts - learned closed position)`, so one count is 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
+| throttle target B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw * 34285 / 1114112 percent` | each target is `4 * (TPS counts - learned closed position)`, the coordinate of throttle opening table `0x155A0`; `FUN_0006F236` publishes that coordinate, divided by four and less idle base `0xFFFF28F8`, as J1979 PID 0x11 absolute throttle at gradient `0x505B / 65536`, so one count is `34285 / 1114112` percent of throttle opening and 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
 | throttle area request | `0xFFFF19B2` word | candidate `raw * 0.0008 cm2` | opening area of both throttle bodies in the counts of table `0x13202`; the unit rests on the catalog scale of that table |
 | torque request | `0xFFFF19C6` signed word | candidate `raw * 0.1 Nm` | output of table `0xE98E` minus `0x8000`; at full pedal the recorded request follows the maximum of the table row at the recorded engine speed |
 | A/F sensor 1 B1/B2 | `0xFFFF2780`, `0xFFFF2782` | `raw / 200 V` | the ADC count re-based so that the filtered sensor reference reads 440, which is 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm; lower is richer; under sustained enrichment both words read lean of 440, which is unexplained, so the channel does not validate full-load fuelling without an independent wideband |

@@ -138,11 +138,14 @@ DASHBOARD_CALIBRATIONS = {
     "throttle_target_shared_raw": can_telemetry.Calibration(
         "throttle_area_request_cm2", 0.0008
     ),
+    # One target count is one count of throttle opening coordinate table
+    # 0x155A0, whose code scale is the J1979 PID 0x11 gradient
+    # 0x505B / 65536 / 4 * 100 / 255 percent.
     "throttle_target_channel_0_raw": can_telemetry.Calibration(
-        "throttle_target_b1_v", 1 / 800
+        "throttle_target_b1_percent", 34285 / 1114112
     ),
     "throttle_target_channel_1_raw": can_telemetry.Calibration(
-        "throttle_target_b2_v", 1 / 800
+        "throttle_target_b2_percent", 34285 / 1114112
     ),
     "front_af_sensor_b1_word_raw": can_telemetry.Calibration(
         "af_sensor_b1_v", 1 / 200
@@ -160,18 +163,6 @@ DASHBOARD_CALIBRATIONS = {
     # index + 1; the runtime reads an index outside the slots as Map 1.
     "active_map_index": can_telemetry.Calibration(
         "selected_map_number", 1.0, 1
-    ),
-}
-
-# Values published for RomRaider Overlay Log in the domain of a definition axis.
-# The factor repeats the expression of the axis the parameter is compared with, so
-# the live value and the stored points are one domain whatever the physical
-# quantity is. Channel 0 of the throttle target indexes angle coordinate table
-# 000155a0, and defs/JK08A.overrides.toml declares the same expression in
-# [logparam.ffff28bc]. The dashboard reads the same targets in volts.
-OVERLAY_CALIBRATIONS = {
-    "throttle_target_channel_0_raw": can_telemetry.Calibration(
-        "throttle_angle_target_deg", 0.0275
     ),
 }
 
@@ -219,8 +210,7 @@ def profile_field_names(profile):
 def _dashboard_engineering_values(raw):
     values = {
         calibration.target: calibration.apply(raw[source])
-        for table in (DASHBOARD_CALIBRATIONS, OVERLAY_CALIBRATIONS)
-        for source, calibration in table.items()
+        for source, calibration in DASHBOARD_CALIBRATIONS.items()
         if source in raw
     }
     if "knock_surface_state" in raw:

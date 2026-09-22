@@ -92,8 +92,10 @@ oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
 injected cylinder, the APC command at `110 - raw` degrees BTDC, the
 ignition-timing adjustment `FFFF564C` as a signed byte in degrees, the final
-channel throttle targets at `raw / 800 V` above the learned closed position,
-and the front A/F sensor words at `raw / 200 V`. The
+channel throttle targets at `raw * 34285 / 1114112` percent of throttle opening
+above the learned closed position, which is the J1979 PID 0x11 gradient of
+their coordinate table `0x155A0`, and the front A/F sensor words at
+`raw / 200 V`. The
 command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
 pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
 torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared

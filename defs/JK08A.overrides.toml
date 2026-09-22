@@ -87,13 +87,12 @@ units = "Normalized BFS [%]"
 [logparam.ffff28bc]
 # Channel 0 of the throttle target array that FUN 0006f48c publishes. FUN
 # 00072c3c passes it unscaled to wrapper 00026524, whose word core 00026984
-# compares each point of angle coordinate table 000155a0 with it directly, so
-# one stored count is one count of this word. The catalog degree scale is a
-# candidate, and the feed publishes the same expression, so the overlay
-# compares one domain.
-id = "X_VQ_Throttle_Angle"
-units = "Throttle Valve Opening [deg]"
-scale = "x*0.0275"
+# compares each point of opening coordinate table 000155a0 with it directly, so
+# one stored count is one count of this word, 34285/1114112 percent of throttle
+# opening by the code scale that the J1979 absolute-throttle publication of FUN
+# 0006f236 establishes for that axis.
+id = "X_VQ_Throttle_Target"
+units = "Throttle Valve Opening [%]"
 
 [logparam.ffff11b2]
 # Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It
@@ -2076,6 +2075,9 @@ format = "0.000"
 fine = 0.01
 coarse = 0.1
 
+[axis.000155a0]
+format = "0.0"
+
 [table.00018766]
 name = "Throttle Angle-to-Area Conversion - Validation Copy"
 category = "Electronic Throttle Control / Throttle Geometry"
@@ -2083,6 +2085,9 @@ order = 123
 format = "0.000"
 fine = 0.01
 coarse = 0.1
+
+[axis.000190d0]
+format = "0.0"
 
 [table.00014114]
 name = "QH0 Flow Potential Coordinate"

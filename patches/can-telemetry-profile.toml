@@ -450,7 +450,7 @@ source = 0xFFFF28BC
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 800 V above the learned closed position of the throttle position sensor"
+scale = "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor"
 
 [[field]]
 name = "throttle_target_channel_1_raw"
@@ -461,7 +461,7 @@ source = 0xFFFF28BE
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 800 V above the learned closed position of the throttle position sensor"
+scale = "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor"
 
 [[field]]
 name = "exhaust_cvtc_actual_b2_raw"

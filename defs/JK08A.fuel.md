@@ -231,7 +231,7 @@ The target byte is a Q7 fuel-multiplier command against the stoichiometric base
 schedule, `128` = closed-loop stoichiometric target:
 
 ```text
-wot   = 0xFFFF2468.bit3            # 0xFFFF3528 >= 200 (+8 hysteresis), ~70 deg TVO
+wot   = 0xFFFF2468.bit3            # 0xFFFF3528 >= 200 (+8 hysteresis), 78.4 % opening
 load  = wot ? 0xFF : uint8[0xFFFF102C]
 m     = map8x8(0xA9AA; rpm axis 0x11CC0 vs uint16[0xFFFF11BC], load axis 0x11AC7)
 if 0xFFFF2466.bit6:                # high-detonation surface selected
@@ -242,8 +242,11 @@ rich  = 0xFFFF24A2.bit7            # m + (rich ? 1 : 0) >= ROM8[0x8B9B] = 130
 ```
 
 `0xFFFF3528` is `min(255, uint16[0xFFFF40C6] * 0x505B >> 16)` from
-`FUN_00054EB8`, the first stage of the coordinator. The 70-degree figure
-inherits the candidate `0.0275` degree scale of axis `0x155A0`.
+`FUN_00054EB8`, the first stage of the coordinator. `FUN_0006F236` applies the
+same gradient, after subtracting idle base `0xFFFF28F8`, to the byte it
+publishes as J1979 PID 0x11 absolute throttle, so `0xFFFF3528` is throttle
+opening from coordinate zero at 100/255 percent per count, and the latch
+threshold 200 is 78.4 percent.
 
 Request byte `0xFFFF1411` and state byte `0xFFFF1410` select how the word
 moves toward the target: `8` while coolant `0xFFFF1071` is below

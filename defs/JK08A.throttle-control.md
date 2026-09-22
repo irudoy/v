@@ -45,6 +45,20 @@ AN10 / AN17
 converts `FFFF183E / 2` through the `0x155A0`/`0x13202` inverse pair and divides
 the result by four. It is a derived common opening-coordinate monitor.
 
+The opening coordinate that axis `0x155A0` stores, and that `FFFF28BC`,
+`FFFF28BE`, `FFFF3374`, and four times `FFFF40C6` carry, has an exact percent
+scale. `0003E548` converts both throttle-position channels through the same
+pair, averages the opening areas, converts back, and writes the quarter
+coordinate `FFFF3F7C`. `0006F236` writes
+`min(255, (FFFF3F7C - FFFF28F8) * 0x505B >> 16)` to `FFFF1075`, which
+`00035856` returns for J1979 Mode 01 PID 0x11 as `A * 100 / 255` percent. One
+coordinate count is therefore `0x505B / 65536 / 4 * 100 / 255 = 34285 / 1114112`
+percent of throttle opening: 100 percent is 3249.6 counts, and the stored axis
+points `0..3172` span `0..97.6` percent. The published byte measures from idle
+base `FFFF28F8`, the coordinate from zero. No ECM diagnostic item publishes the
+coordinate in degrees, so the catalog `0.0275` degree scale remains a
+candidate.
+
 ## Accelerator-pedal front end
 
 `0002862C` obtains aligned A/D results for AN10 and AN17 from `0002DF5C`, shifts

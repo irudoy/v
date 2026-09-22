@@ -346,8 +346,8 @@ EXTENDED_PANELS = (
         Metric("engine_torque_state_nm", "Engine torque state", "Nm*", 1),
         Metric("torque_request_nm", "Torque request", "Nm*", 1),
         Metric("throttle_area_request_cm2", "Throttle area request", "cm2*", 2),
-        Metric("throttle_target_b1_v", "Throttle target above closed B1", "V", 3),
-        Metric("throttle_target_b2_v", "Throttle target above closed B2", "V", 3),
+        Metric("throttle_target_b1_percent", "Throttle target B1", "%", 2),
+        Metric("throttle_target_b2_percent", "Throttle target B2", "%", 2),
         Metric(
             "injection_end_angle_deg",
             "End of injection after intake TDC",

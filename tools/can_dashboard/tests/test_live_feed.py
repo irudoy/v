@@ -27,7 +27,6 @@ class ChannelTableTest(unittest.TestCase):
             for table in (
                 can_telemetry.RAW_CALIBRATIONS,
                 model.DASHBOARD_CALIBRATIONS,
-                model.OVERLAY_CALIBRATIONS,
             )
             for calibration in table.values()
         }
@@ -49,26 +48,26 @@ class ChannelTableTest(unittest.TestCase):
         ids = {channel.key: channel.logger_id for channel in live_feed.CHANNELS}
         self.assertEqual(ids["rpm"], "X_VQ_Engine_Speed")
         self.assertEqual(ids["load"], "X_VQ_Engine_Load")
-        self.assertEqual(ids["throttle_angle_deg"], "X_VQ_Throttle_Angle")
+        self.assertEqual(ids["throttle_target_pct"], "X_VQ_Throttle_Target")
 
-    def test_the_throttle_angle_channel_carries_the_axis_expression(self):
+    def test_the_throttle_target_channel_carries_the_axis_scale(self):
         # Overlay Log compares the published value with the stored points of
-        # angle coordinate table 000155a0, so the factor is the axis expression
-        # that defs/JK08A.overrides.toml declares for operand ffff28bc.
+        # opening coordinate table 000155a0, whose code scale is the gradient
+        # that FUN 0006f236 applies before J1979 publishes the byte as percent.
         sources = {channel.key: channel.source for channel in live_feed.CHANNELS}
-        calibration = model.OVERLAY_CALIBRATIONS[
+        calibration = model.DASHBOARD_CALIBRATIONS[
             "throttle_target_channel_0_raw"
         ]
-        self.assertEqual(sources["throttle_angle_deg"], calibration.target)
-        self.assertEqual(calibration.apply(1), 0.0275)
+        self.assertEqual(sources["throttle_target_pct"], calibration.target)
+        self.assertEqual(calibration.factor, 0x505B / 65536 / 4 * 100 / 255)
         self.assertEqual(calibration.apply(0), 0.0)
-        angle = next(
+        target = next(
             channel
             for channel in live_feed.CHANNELS
-            if channel.key == "throttle_angle_deg"
+            if channel.key == "throttle_target_pct"
         )
         # The stored points span 0..3172 counts, the range the channel declares.
-        self.assertLessEqual(calibration.apply(3172), angle.maximum)
+        self.assertLessEqual(calibration.apply(3172), target.maximum)
 
 
 class EngineLoadTest(unittest.TestCase):

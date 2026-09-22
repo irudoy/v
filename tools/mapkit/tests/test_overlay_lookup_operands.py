@@ -10,6 +10,7 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 AXES = ROOT / "defs" / "JK08A.axes.csv"
 FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
+FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 INTERP = ROOT / "defs" / "JK08A.interp.csv"
 OVERRIDES = ROOT / "defs" / "JK08A.overrides.toml"
 FUEL = ROOT / "defs" / "JK08A.fuel.md"
@@ -1203,6 +1204,215 @@ class OverlayLookupOperandTest(unittest.TestCase):
         ):
             with self.subTest(statement=statement[:40]):
                 self.assertIn(statement, self.throttle)
+
+
+class ThrottleOpeningScaleTest(unittest.TestCase):
+    """Bind the percent scale of opening coordinate table 0x155A0 to the ROM."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rom = ROM.read_bytes()
+        cls.axes = rows(AXES)
+        cls.findings = rows(FINDINGS)
+        cls.vars = rows(VARS)
+        cls.funcs = rows(FUNCS)
+        with OVERRIDES.open("rb") as source:
+            cls.overrides = tomllib.load(source)
+        cls.fuel = " ".join(FUEL.read_text(encoding="utf-8").split())
+        cls.throttle = " ".join(THROTTLE.read_text(encoding="utf-8").split())
+
+    def test_monitor_averages_both_channels_in_the_area_domain(self):
+        rom = self.rom
+        # FUN_0003E548: GBR = ffff277e.
+        self.assertEqual(mov_l_literal(rom, 0x3E554), 0xFFFF277E)
+        self.assertEqual(u16(rom, 0x3E556), 0x401E)  # ldc r0,gbr
+        # r6 = min(0xFFFF, 4 * ffff284e) and r14 = min(0xFFFF, 4 * ffff2850).
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x3E5BE, 0x3E5DA, 2)],
+            [
+                0xC568, 0xE2FF, 0x622D, 0x660D, 0xC569, 0x4608, 0x650D,
+                0x3626, 0x8F01, 0x4508, 0x6623, 0x3526, 0x8900, 0x6253,
+            ],
+        )  # mov.w @(0xd0,gbr),r0 ... cmp/hi r2,r5; bt; mov r5,r2
+        self.assertEqual(0xFFFF277E + 0xD0, 0xFFFF284E)
+        self.assertEqual(0xFFFF277E + 0xD2, 0xFFFF2850)
+        self.assertEqual(mov_l_literal(rom, 0x3E5DA), 0x13202)  # r11
+        self.assertEqual(mov_l_literal(rom, 0x3E5DE), 0x155A0)  # r13
+        self.assertEqual(mov_l_literal(rom, 0x3E5E2), 0x26524)  # r12
+        # Both channels read the areas of 0x13202 over 0x155A0, and their
+        # mean reads back through the reversed pair.
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x3E5E4, 0x3E608, 2)],
+            [
+                0x64B3, 0x4C0B, 0x65D3, 0x66ED, 0x81F4, 0x64B3, 0x4C0B,
+                0x65D3, 0x6203, 0x85F4, 0x622D, 0x64D3, 0x670D, 0x65B3,
+                0x372C, 0x4701, 0x4C0B, 0x667D,
+            ],
+        )  # mov r11,r4; jsr @r12; mov r13,r5 ... add r2,r7; shlr r7; jsr @r12
+        # ffff3f7c = the coordinate divided by four.
+        self.assertEqual(u16(rom, 0x3E608), 0x620D)  # extu.w r0,r2
+        self.assertEqual(mov_l_literal(rom, 0x3E60A), 0xFFFF39C4)  # r6
+        self.assertEqual(0xFFFF39C4 + mov_w_literal(rom, 0x3E60C), 0xFFFF3F7C)
+        self.assertEqual(u16(rom, 0x3E60E), 0x4209)  # shlr2 r2
+        self.assertEqual(u16(rom, 0x3E610), 0x0625)  # mov.w r2,@(r0,r6)
+
+    def test_absolute_throttle_scales_the_monitor_by_0x505b(self):
+        rom = self.rom
+        # FUN_0006F236: r2 = ffff4250 & 0x40.
+        self.assertEqual(mov_l_literal(rom, 0x6F23C), 0xFFFF424C)  # r6
+        self.assertEqual(u16(rom, 0x6F244), 0x8464)  # mov.b @(4,r6),r0
+        self.assertEqual(u16(rom, 0x6F24E), 0xC940)  # and #0x40,r0
+        self.assertEqual(u16(rom, 0x6F252), 0x6203)  # mov r0,r2
+        # It takes the idle-base branch while bit 0 of ROM8[0x8B2C] is clear
+        # and ffff4250 bit 6 is clear.
+        self.assertEqual(mov_l_literal(rom, 0x6F280), 0x8B2C)  # r5
+        self.assertEqual(u16(rom, 0x6F282), 0x6050)  # mov.b @r5,r0
+        self.assertEqual(u16(rom, 0x6F284), 0xC801)  # tst #1,r0
+        self.assertEqual(conditional_target(rom, 0x6F286), 0x6F2B6)  # bf
+        self.assertEqual(rom[0x8B2C], 0x02)
+        self.assertEqual(u16(rom, 0x6F288), 0x2228)  # tst r2,r2
+        self.assertEqual(conditional_target(rom, 0x6F28A), 0x6F2CE)  # bf
+        # r5 = max(0, ffff3f7c - ffff28f8).
+        self.assertEqual(mov_l_literal(rom, 0x6F28C), 0xFFFF39C4)  # r6
+        self.assertEqual(0xFFFF39C4 + mov_w_literal(rom, 0x6F28E), 0xFFFF3F7C)
+        self.assertEqual(mov_l_literal(rom, 0x6F290), 0xFFFF28F8)  # r2
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x6F292, 0x6F2A4, 2)],
+            [0x056D, 0x6421, 0x655D, 0x644D, 0x3543, 0x8901, 0xA001, 0xE500, 0x3548],
+        )  # mov.w @(r0,r6),r5; mov.w @r2,r4 ... cmp/ge r4,r5 ... sub r4,r5
+        # r6 = r5 * 0x505b >> 16.
+        self.assertEqual(mov_w_literal(rom, 0x6F2A4), 0x505B)  # r2
+        self.assertEqual(u16(rom, 0x6F2A6), 0x0257)  # mul.l r5,r2
+        self.assertEqual(u16(rom, 0x6F2A8), 0x061A)  # sts macl,r6
+        self.assertEqual(branch_target(rom, 0x6F2AA), 0x6F2D4)
+        self.assertEqual(u16(rom, 0x6F2AC), 0x4629)  # shlr16 r6
+        # The branch without the idle base applies the same gradient.
+        self.assertEqual(0xFFFF39C4 + mov_w_literal(rom, 0x6F2BC), 0xFFFF3F7C)
+        self.assertEqual(mov_w_literal(rom, 0x6F2C0), 0x505B)  # r6
+        self.assertEqual(u16(rom, 0x6F2C4), 0x0627)  # mul.l r2,r6
+        # While ffff4250 bit 6 is set the byte is ROM8[0x864E].
+        self.assertEqual(mov_l_literal(rom, 0x6F2CE), 0x864E)  # r2
+        self.assertEqual(u16(rom, 0x6F2D0), 0x6620)  # mov.b @r2,r6
+        self.assertEqual(rom[0x864E], 0x0C)
+        # ffff1075 = min(255, r6).
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x6F2D4, 0x6F2E0, 2)],
+            [0xE2FF, 0x622C, 0x3626, 0x8900, 0x6263, 0x6023],
+        )  # mov #-1,r2; extu.b r2,r2; cmp/hi r2,r6; bt; mov r6,r2; mov r2,r0
+        self.assertEqual(mov_l_literal(rom, 0x6F2E0), 0xFFFF1072)  # r2
+        self.assertEqual(u16(rom, 0x6F2E2), 0x8023)  # mov.b r0,@(3,r2)
+
+    def test_pid_0x11_returns_the_absolute_throttle_byte(self):
+        rom = self.rom
+        # FUN_00035856 answers J1979 Mode 01 PID 0x11 with ffff1075.
+        self.assertEqual(u16(rom, 0x35DDA), 0x8811)  # cmp/eq #0x11,r0
+        self.assertEqual(conditional_target(rom, 0x35DDC), 0x35DEC)  # bf
+        self.assertEqual(mov_l_literal(rom, 0x35DDE), 0xFFFF1072)  # r2
+        self.assertEqual(u16(rom, 0x35DE2), 0x8423)  # mov.b @(3,r2),r0
+        self.assertEqual(u16(rom, 0x35DE4), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x35DE6), 0x6403)  # mov r0,r4
+
+    def test_wide_open_monitor_applies_the_same_gradient(self):
+        rom = self.rom
+        # FUN_00054EB8: ffff3528 = min(255, ffff40c6 * 0x505b >> 16).
+        self.assertEqual(mov_l_literal(rom, 0x54EBA), 0xFFFF40C6)  # r6
+        self.assertEqual(u16(rom, 0x54EBC), 0x6261)  # mov.w @r6,r2
+        self.assertEqual(mov_w_literal(rom, 0x54EBE), 0x505B)  # r6
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x54EC0, 0x54ED6, 2)],
+            [
+                0x622D, 0x0627, 0x021A, 0x6629, 0xE2FF, 0x666F, 0x622C,
+                0x3626, 0x8B00, 0x6623, 0x6263,
+            ],
+        )  # extu.w r2,r2; mul.l r2,r6 ... cmp/hi r2,r6; bf; mov r2,r6
+        self.assertEqual(mov_l_literal(rom, 0x54ED6), 0xFFFF28F8)  # r6
+        self.assertEqual(0xFFFF28F8 + mov_w_literal(rom, 0x54ED8), 0xFFFF3528)
+        self.assertEqual(u16(rom, 0x54EDA), 0x0624)  # mov.b r2,@(r0,r6)
+
+    def test_one_coordinate_count_is_the_published_gradient(self):
+        # 0x505b / 65536 per quarter coordinate, 100 / 255 percent per byte.
+        per_count = Fraction(0x505B, 65536) / 4 * Fraction(100, 255)
+        self.assertEqual(per_count, Fraction(34285, 1114112))
+        self.assertEqual(round(100 / per_count, 1), Fraction("3249.6"))
+        self.assertEqual(round(3172 * per_count, 1), Fraction("97.6"))
+        self.assertEqual(round(Fraction(200 * 100, 255), 1), Fraction("78.4"))
+        stored = [u16(self.rom, 0x155A0 + 2 * index) for index in range(32)]
+        self.assertEqual((stored[0], stored[-1]), (0, 3172))
+        self.assertEqual(
+            self.rom[0x155A0:0x155E0], self.rom[0x190D0:0x19110]
+        )
+        for table, conf in (("000155a0", "code"), ("000190d0", "candidate")):
+            for ledger in (self.axes, self.findings):
+                with self.subTest(table=table, ledger=ledger is self.axes):
+                    record = ledger[table]
+                    self.assertEqual(
+                        (
+                            record["units"],
+                            record["scale_expr"],
+                            record["to_byte"],
+                            record["scale_conf"],
+                        ),
+                        (
+                            "Throttle Valve Opening [%]",
+                            "x*34285/1114112",
+                            "x*1114112/34285",
+                            conf,
+                        ),
+                    )
+        tokens = evidence(self.axes["000155a0"], "scale_evidence")
+        for token in (
+            "indexed_by:ffff28bc@structural",
+            "trace:0003e548@structural",
+            "trace:0006f236@structural",
+            "consumer:00035856@confidence",
+            "rom_const:0006f2ae=0x505b",
+            "rom_const:00054f2e=0x505b",
+            "site:0003e610",
+            "site:0006f2a4",
+            "site:0006f2e2",
+        ):
+            self.assertIn(token, tokens)
+        publisher = evidence(self.funcs["0006f236"])
+        for token in (
+            "consumer:ffff3f7c@structural",
+            "base:ffff28f8@structural",
+            "writes:ffff1075@structural",
+            "rom_const:00008b2c=0x02",
+            "rom_const:0006f2ae=0x505b",
+            "rom_const:0006f306=0x505b",
+            "rom_const:0000864e=0x0c",
+        ):
+            self.assertIn(token, publisher)
+        self.assertEqual(self.vars["ffff1075"]["units"], "percent*255/100")
+        self.assertIn("rom_const:0006f2ae=0x505b", evidence(self.vars["ffff3f7c"]))
+        self.assertIn("rom_const:00054f2e=0x505b", evidence(self.vars["ffff3528"]))
+        self.assertEqual(
+            self.overrides["logparam"]["ffff28bc"],
+            {"id": "X_VQ_Throttle_Target", "units": "Throttle Valve Opening [%]"},
+        )
+
+    def test_published_statements(self):
+        for statement in (
+            "`0006F236` writes `min(255, (FFFF3F7C - FFFF28F8) * 0x505B >> 16)` "
+            "to `FFFF1075`, which `00035856` returns for J1979 Mode 01 PID 0x11 "
+            "as `A * 100 / 255` percent.",
+            "`0x505B / 65536 / 4 * 100 / 255 = 34285 / 1114112` percent of "
+            "throttle opening: 100 percent is 3249.6 counts, and the stored "
+            "axis points `0..3172` span `0..97.6` percent.",
+            "No ECM diagnostic item publishes the coordinate in degrees, so the "
+            "catalog `0.0275` degree scale remains a candidate.",
+        ):
+            with self.subTest(statement=statement[:40]):
+                self.assertIn(statement, self.throttle)
+        for statement in (
+            "`FUN_0006F236` applies the same gradient, after subtracting idle "
+            "base `0xFFFF28F8`, to the byte it publishes as J1979 PID 0x11 "
+            "absolute throttle, so `0xFFFF3528` is throttle opening from "
+            "coordinate zero at 100/255 percent per count, and the latch "
+            "threshold 200 is 78.4 percent.",
+        ):
+            with self.subTest(statement=statement[:40]):
+                self.assertIn(statement, self.fuel)
 
 
 if __name__ == "__main__":
