@@ -420,6 +420,27 @@ of `0xB53A` therefore needs `0xFFFF24A7` bit 1 clear, the electrical enable,
 the pedal off its idle position, 900 RPM, and the latch set; with the latch
 clear the map path opens only in the blend band.
 
+The latch byte lies in the retained RAM region `0xFFFF4514..0xFFFF5CF3`.
+Application startup `FUN 00027E24` waits for `PLDR` bit 4 (`0xFFFFF75E`) and
+runs initializers `FUN 00027AC0` and `FUN 00027C50`, whose zero loops and
+initialized-data copy write only below `0xFFFF4514` and from `0xFFFF8000`
+upward. `FUN 00026F30` zeroes the region: it stores zero longwords from
+`ROM32[0x22624] = 0xFFFF4514` while the address lies below
+`ROM32[0x22628] = 0xFFFF5CF2`. Only `FUN 00026F08` calls it; that function
+then runs the retained-memory default initializers of `FUN 0002C254` and
+writes marker `0xAA55` to `0xFFFF5CF6`. With `PLDR` bit 4 set,
+`FUN 00026E1C`, which `FUN 00027AC0` runs first, calls `FUN 00026F08` when
+the marker, checksum byte `0xFFFF5CF4`, or the checks of `FUN 00026EA0`,
+`FUN 00067188`, and `FUN 00026FD0` reject the region; `FUN 00027C50` calls it
+when range check `FUN 00026EA0` fails, and `FUN 000CD85C` calls it at
+`0xCE7DA` while `0xFFFF41B0` bit 4 is set. Conditional clear service
+`FUN 0002FC24` and recovery loop `FUN 00034B70` also zero
+`0xFFFF1000..0xFFFF5CF3`. Among the direct writers of the byte, only
+`FUN 000BD20A` changes bit 6. The latch therefore keeps its state across
+engine starts while the RAM keeps its contents: a start between raw coolant
+65 and 124 inherits the latch of earlier operation, and the clear-latch path
+needs a start below raw 65 or a zeroed region.
+
 ## Target-vehicle replay
 
 The replay reads constants, axes, and surfaces directly from tested image
@@ -597,18 +618,20 @@ runs both latch states:
 With the latch clear the replay puts 2,305 cold-band comparisons whose target
 is active on the neutral path, against 2 with the latch set. The cold band
 holds raw coolant 68..106, inside the range in which `FUN 000BD20A` leaves the
-latch unchanged, so the latch was set when the recording started. With the
-latch set, 2,160 of the 2,408 cold-dependent cold-band comparisons on the map
-path are exact, and none equals the main-surface byte. Of the 3,304 cold-band
-comparisons that differ from both replayed bytes, the replay places 2,571 on
-the neutral path and 340 on a rise; 189 precede the first rise, 120 lie within
-3 counts of the coolant-selected byte, 83 carry `0x80` on the map path, and 1
-lies on the idle-source path outside a rise. With a re-arm wait of 977
-snapshots, 13 idle-source targets outside a rise differ from the replayed
-byte, against 2 at 988 and 996; at 996, 5 neutral-path targets are active. As
-the APP1 bound rises from 153 to 175, the map-path targets at `0x80` fall from
-132 to 4 and the neutral-path active targets rise from 2 to 69. The blend and
-warm bands are identical for both latch states.
+latch unchanged, so the latch was set when the recording started. The drive
+reaches raw coolant 125 only after the cold band, so the set latch is retained
+from earlier operation. With the latch set, 2,160 of the 2,408 cold-dependent
+cold-band comparisons on the map path are exact, and none equals the
+main-surface byte. Of the 3,304 cold-band comparisons that differ from both
+replayed bytes, the replay places 2,571 on the neutral path and 340 on a rise;
+189 precede the first rise, 120 lie within 3 counts of the coolant-selected
+byte, 83 carry `0x80` on the map path, and 1 lies on the idle-source path
+outside a rise. With a re-arm wait of 977 snapshots, 13 idle-source targets
+outside a rise differ from the replayed byte, against 2 at 988 and 996; at 996,
+5 neutral-path targets are active. As the APP1 bound rises from 153 to 175, the
+map-path targets at `0x80` fall from 132 to 4 and the neutral-path active
+targets rise from 2 to 69. The blend and warm bands are identical for both
+latch states.
 
 The exhaust target stays `0x80` in all 29,670 cold- and blend-band
 comparisons, 8,677 of them against a blend value other than `0x80`, and every

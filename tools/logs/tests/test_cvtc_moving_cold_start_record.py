@@ -488,10 +488,26 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
             "latch was set when the recording started.",
             text,
         )
+        # The cold band ends below the set threshold, so no pass of this drive
+        # set the latch before or during the band.
+        self.assertLess(cold_high, state_audit.LATCH_SET_COOLANT)
+        retained = (
+            f"The drive reaches raw coolant {state_audit.LATCH_SET_COOLANT} only "
+            "after the cold band, so the set latch is retained from earlier "
+            "operation."
+        )
+        self.assertIn(retained, text)
         self.assertIn(
             f"inside the {state_audit.LATCH_CLEAR_COOLANT}.."
             f"{state_audit.LATCH_SET_COOLANT - 1} range in which FUN 000BD20A "
             "leaves the latch unchanged",
+            result["state_latch_basis"],
+        )
+        self.assertIn(
+            f"the drive reaches raw coolant {state_audit.LATCH_SET_COOLANT} only "
+            "after the cold band, and the latch lies in retained RAM region "
+            "0xFFFF4514..0xFFFF5CF3, which startup leaves unzeroed, so the set "
+            "latch is retained from earlier operation",
             result["state_latch_basis"],
         )
         self.assertIn(

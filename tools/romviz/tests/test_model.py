@@ -218,7 +218,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     rom = model.build_rom_model(model.resolve_manifest("JK08A"))
 
     assert rom["size"] == 0x100000
-    assert rom["reviewedFunctions"] == 666
+    assert rom["reviewedFunctions"] == 669
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
     assert rom["counts"]["maps"] == 516
     assert rom["counts"]["axes"] == 79
