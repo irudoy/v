@@ -86,12 +86,14 @@ with stock bounds `ROM8[0x821E] = 50` and `ROM8[0x8221] = 0xF9`, where `0xF9`
 is `-7` as `int8`. `0xFFFF12D6` is the engine-event correction of
 `0x0004D99C`, which carries the previous-pass timing state `0xFFFF2378`, the
 negated retard request `0xFFFF11D6`, the bounded correction `0xFFFF2356`, and
-the scaled `0x147DA` subtraction. `0xFFFF564C` is the `-5..0` mode offset of
-`0x0004AAD0`, added only while bits 1..5 of mode byte `0xFFFF5B31` are clear:
-coolant raw at or above 110, RPM/25 within `ROM8[0x8897]..ROM8[0x8896] =
-48..128`, and load within `ROM8[0x8768]..ROM8[0x8767] = 64..96`, each with
-hysteresis. The sum then moves from the previous `0xFFFF11D4` by at most
-`ROM8[0x828A..0x828E] = 4` counts upward per pass (`15` in the flagged modes)
+the scaled `0x147DA` subtraction. `0xFFFF564C` is the `-5..0` work-support
+timing adjustment `TARGET IGN TIM ADJ` of `0x0004AAD0`, published as DID
+`0x112D` and specified in `JK08A.work-support.md`. It is added only while bits
+1..5 of mode byte `0xFFFF5B31` are clear: coolant raw at or above 110, RPM/25
+within `ROM8[0x8897]..ROM8[0x8896] = 48..128`, and load within
+`ROM8[0x8768]..ROM8[0x8767] = 64..96`, each with hysteresis. The sum then
+moves from the previous `0xFFFF11D4` by at most `ROM8[0x828A..0x828E] = 4`
+counts upward per pass (`15` in the flagged modes)
 and `ROM8[0x8291] = 15` downward, is re-clamped to `-7..50`, is bounded below
 by `-(129 - coolant raw)` while coolant raw is below 130 and above by
 `ROM8[0x83D5] - 40 = 70`, and is written to `0xFFFF11D4`. Stock

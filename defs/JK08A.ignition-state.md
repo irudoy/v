@@ -109,9 +109,10 @@ count of the low-seven field is therefore one crank degree while the field
 stays above threshold `0xFFFF11AF`, and raw `64` is the zero adjustment
 relative to the base angle and the other terms. The cam
 term `0xFFFF1A7D` is centered at 64. The retard terms `0xFFFF23C5`,
-`0xFFFF12DC`, `0xFFFF15EA`, and `0xFFFF11F9` are neutral at zero. The mode
-offset `0xFFFF564C` lies within `-5..0` and is added only while the warm,
-mid-RPM, mid-load window flags in `0xFFFF5B31` are clear. Threshold
+`0xFFFF12DC`, `0xFFFF15EA`, and `0xFFFF11F9` are neutral at zero. The
+work-support timing adjustment `0xFFFF564C` (`JK08A.work-support.md`) lies
+within `-5..0` and is added only while the warm, mid-RPM, mid-load window
+flags in `0xFFFF5B31` are clear. Threshold
 `0xFFFF11AF` is the scheduler snapshot of `0xFFFF11E7`, a rate-limited follower
 of `0xFFFF2363` written by `0x0004E0C2`. The surrounding terms, limits, and
 mode selection prevent treating one surface cell as the final command.

@@ -276,6 +276,9 @@ as the curve value or as a stepped approach to it from 50.0.
 - `JK08A.start-signal-temperature-selector.md` models the computed START
   SIGNAL, battery-voltage acquisition, and the coolant temperature latched at
   engine start.
+- `JK08A.work-support.md` models service `0x3B`, its session status, and the
+  stored work-support timing and idle-speed adjustments behind DIDs `0x112D`
+  and `0x112E`.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
 - `JK08A.tuning-telemetry.md` defines schema-2 custom-CAN coverage, stock-CAN
   context, closed-loop observation groups, and measurements that still require

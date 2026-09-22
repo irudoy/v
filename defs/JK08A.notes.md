@@ -115,6 +115,8 @@ The following documents own complete current subsystem models:
   throttle feedback, fixed-point regulation, and the ATU-II PWM boundary;
 - `JK08A.ignition-output.md` - final timing coordinate, late-retard insertion,
   APC scheduling, and fallback gate;
+- `JK08A.work-support.md` - service `0x3B`, its session status, and the
+  stored work-support timing and idle-speed adjustments;
 - `JK08A.diagnostics.md` - UDS publication, diagnostic bindings, rear-O2,
   catalyst, EVAP, and P0128 monitor boundaries;
 - `patches/map-switching-selector.md` - current five-slot runtime and gates;
@@ -206,6 +208,9 @@ This index points to structured rows without reproducing their fields.
   summarized in `JK08A.diagnostics.md`.
 - Duplicate DTC codes retain separate exact descriptor records and paths.
   Definition controls come only from `JK08A.dtc.csv`.
+- Service `0x3B` LIDs 1 and 2 adjust the timing byte behind DID `0x112D` and
+  the idle byte behind DID `0x112E`; the session status, stored records, and
+  the dormant automatic branch are modeled in `JK08A.work-support.md`.
 
 ### Research-only calculations
 
