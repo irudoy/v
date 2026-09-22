@@ -1657,7 +1657,7 @@
     <!-- 0x0A3EE  16x16 uint8  common-definition Map 1 storage projected from 0x0A3EE [code]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [candidate]; X Axis 0x14029 load
+         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [code]; X Axis 0x14029 load
          [candidate]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
@@ -1675,8 +1675,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FC5" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FC5" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2122,7 +2122,7 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [candidate]; X Axis 0x14029 load
+         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [code]; X Axis 0x14029 load
          [candidate]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
@@ -2140,8 +2140,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FC5" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FC5" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2597,7 +2597,7 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [candidate]; X Axis 0x14029 load
+         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [code]; X Axis 0x14029 load
          [candidate]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
@@ -2615,8 +2615,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FC5" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FC5" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -3072,7 +3072,7 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [candidate]; X Axis 0x14029 load
+         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [code]; X Axis 0x14029 load
          [candidate]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
@@ -3090,8 +3090,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FC5" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FC5" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -3547,7 +3547,7 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [candidate]; X Axis 0x14029 load
+         scaling x*0.78125 % [candidate]; Y Axis 0x13FC5 rpm [code]; X Axis 0x14029 load
          [candidate]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
@@ -3565,8 +3565,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FC5" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FC5" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 

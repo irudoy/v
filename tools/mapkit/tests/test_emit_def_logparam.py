@@ -328,6 +328,8 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
             "Map 5 - DFCO Hold RPM Threshold": "X_VQ_Coolant_Temperature",
             "Map 1 - Timing-State Addend - Default/Post-Transition":
                 "X_VQ_Engine_Speed",
+            "End of Injection Angle - Base": "X_VQ_Engine_Speed",
+            "End of Injection Angle - Conditional": "X_VQ_Engine_Speed",
         }
         found = {}
         for table in self.rom.findall("table"):
@@ -339,14 +341,7 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
             with self.subTest(table=name):
                 self.assertEqual(found.get(name), parameter)
 
-    def test_ignition_and_cam_surfaces_support_the_overlay(self):
-        expected = {
-            "Ignition Timing Surface - Cold State",
-            "Map 1 - Ignition Timing Surface - High-Octane State",
-            "Map 5 - Ignition Timing Surface - High-Detonation State",
-            "Target Mixture - Main",
-            "Intake CVTC Target - Main",
-        }
+    def surface_parameters(self):
         params = {}
         for table in self.rom.findall("table"):
             if table.get("type") == "3D":
@@ -357,11 +352,32 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
                 params[table.get("name")] = (
                     axes.get("X Axis"), axes.get("Y Axis")
                 )
+        return params
+
+    def test_load_and_speed_surfaces_support_the_overlay(self):
+        expected = {
+            "Ignition Timing Surface - Cold State",
+            "Map 1 - Ignition Timing Surface - High-Octane State",
+            "Map 5 - Ignition Timing Surface - High-Detonation State",
+            "Target Mixture - Main",
+            "Intake CVTC Target - Main",
+            "Engine Torque Surface",
+        }
+        params = self.surface_parameters()
         for name in sorted(expected):
             with self.subTest(table=name):
                 self.assertEqual(
                     params[name], ("X_VQ_Engine_Load", "X_VQ_Engine_Speed")
                 )
+
+    def test_fuel_compensation_rows_follow_engine_speed(self):
+        # The column coordinate 0xFFFF1170 has no feed parameter, so the
+        # surfaces follow engine speed on the rows alone.
+        params = self.surface_parameters()
+        for index in range(1, 6):
+            name = f"Map {index} - Fuel Compensation - Main"
+            with self.subTest(table=name):
+                self.assertEqual(params[name], (None, "X_VQ_Engine_Speed"))
 
 
 if __name__ == "__main__":

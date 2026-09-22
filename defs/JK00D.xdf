@@ -4125,7 +4125,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xA53B" flags="0x0">
     <title>Map 1 - Fuel Compensation - Main</title>
-    <description>Exact JK00D. Address 0xA3EE; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology.</description>
+    <description>Exact JK00D. Address 0xA3EE; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14029" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -4143,7 +4143,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FC5" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -8927,7 +8927,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1702" flags="0x0">
     <title>Map 2 - Fuel Compensation - Main</title>
-    <description>Exact JK00D. Address 0xDF800; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 2 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology.</description>
+    <description>Exact JK00D. Address 0xDF800; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 2 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14029" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -8945,7 +8945,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FC5" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -13729,7 +13729,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x7D35" flags="0x0">
     <title>Map 3 - Fuel Compensation - Main</title>
-    <description>Exact JK00D. Address 0xDF900; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 3 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology.</description>
+    <description>Exact JK00D. Address 0xDF900; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 3 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14029" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -13747,7 +13747,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FC5" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -18531,7 +18531,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x23D" flags="0x0">
     <title>Map 4 - Fuel Compensation - Main</title>
-    <description>Exact JK00D. Address 0xDFA00; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 4 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology.</description>
+    <description>Exact JK00D. Address 0xDFA00; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 4 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14029" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -18549,7 +18549,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FC5" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23333,7 +23333,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xBC64" flags="0x0">
     <title>Map 5 - Fuel Compensation - Main</title>
-    <description>Exact JK00D. Address 0xDFB00; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 5 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology.</description>
+    <description>Exact JK00D. Address 0xDFB00; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 5 storage is projected from 0xA3EE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK00D.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14029" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -23351,7 +23351,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FC5" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>

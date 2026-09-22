@@ -44,14 +44,40 @@ units = "RPM"
 id = "X_VQ_Engine_Speed"
 units = "RPM"
 
+[logparam.ffff11f4]
+# Current engine-speed word in 12.5 RPM counts, the row input of Fuel
+# Compensation Main.
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff11b6]
+# Snapshot of engine speed in 3.125 RPM counts, the row input of the Engine
+# Torque Map.
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
 [logparam.ffff102c]
 # Snapshot of the Q7 normalized Base Fuel Schedule byte,
 # min(255, floor(BFS * 128 / ROM16[0x9534])), 128 counts = 100 percent.
 id = "X_VQ_Engine_Load"
 units = "Normalized BFS [%]"
 
+[logparam.ffff15c4]
+# Engine Torque Map column coordinate min(65535, floor(BFS * 40960 /
+# ROM16[0x9534])), 40960 counts = 100 percent. It is the ratio that the feed
+# publishes from Q7 byte ffff102c at a finer resolution; the coordinate
+# saturates at 160 percent and the byte at 199.2 percent.
+id = "X_VQ_Engine_Load"
+units = "Normalized BFS [%]"
+
 [logparam.ffff11b2]
 # Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It
+# indexes implicit-axis maps whose reviewed labels are engine speed in RPM.
+id = "X_VQ_Engine_Speed"
+static_axis_name = "Engine Speed [RPM]"
+
+[logparam.ffff11b3]
+# Scheduler copy of the saturated engine-speed byte in 25 RPM counts. It
 # indexes implicit-axis maps whose reviewed labels are engine speed in RPM.
 id = "X_VQ_Engine_Speed"
 static_axis_name = "Engine Speed [RPM]"
@@ -1613,6 +1639,7 @@ coarse = 16
 name = "End of Injection Angle - Base"
 category = "Fuelling / Injection"
 order = 23
+static_axis_operand = "ffff11b3"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
 format = "0"
@@ -1623,6 +1650,7 @@ coarse = 20
 name = "End of Injection Angle - Conditional"
 category = "Fuelling / Injection"
 order = 24
+static_axis_operand = "ffff11b3"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
 format = "0"

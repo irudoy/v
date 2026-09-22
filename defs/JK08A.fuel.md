@@ -129,11 +129,33 @@ discrepancy is recorded at the finding.
 ## Fuel Compensation Main to BFS
 
 `FUN_0003BE3C` contains the live accessor for Fuel Compensation Main `0xA29A`.
-At `0x3C284..0x3C29C`, the active lookup path uses wrapper `0x261F0`, axes
-`0x11CF0` and `0x11D4C`, RPM-related coordinate `0xFFFF11F4`, and byte
-coordinate `0xFFFF1170`, then writes the uint8 result to `0xFFFF1160`. Runtime
+At `0x3C284..0x3C29C`, the active lookup path uses wrapper `0x261F0` with row
+axis `0x11CF0` over RPM/12.5 word `0xFFFF11F4` and column axis `0x11D4C` over
+byte `0xFFFF1170`, then writes the uint8 result to `0xFFFF1160`. Runtime
 gates can select a bounded bypass value instead of the map result; the common
 destination is unchanged.
+
+Byte core `0x269C4` compares each row point after multiplication by four with
+the RPM/12.5 word, so one row-axis count is 50 RPM. Byte core `0x26944`
+compares each column point with `0xFFFF1170` directly. `FUN_0003B498` writes
+that byte as the high byte of curve `0x15042`, at coordinate `4 * u` below
+`u = 0x3C00`, or of curve `0x15022`, at coordinate `u - 0x3C00` from there:
+
+```text
+u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9)
+             + (0xFFFF120E * 0xFFFF114E >> 11))
+0xFFFF114E = min(65535, 0xDC1D00 / 0xFFFF1F46), or 0 while 0xFFFF1F46 = 0
+0xFFFF1F46 = min(65535, ROM8[0x8D8F] * 0xFFFF11F4)
+```
+
+`FUN_0003B40A` writes `0xFFFF1F46`, and `FUN_0003B436` writes `0xFFFF114E`,
+which is inversely proportional to engine speed. `FUN_0003B468`
+selects `0xFFFF1E60` from ETC-path value `0xFFFF3A76`, which `FUN_0003B520`
+derives through the Throttle Angle-to-Area pair `0x13202`/`0x155A0`, or from
+ROM word `0x916C`. The physical quantity of `u` is not resolved: the A2L names
+the column coordinate QH0 Flow Quantity with a candidate `x * 0.390625`
+percent scale. It is not the normalized Base Fuel Schedule that indexes the
+ignition and CVTC target maps.
 
 The map's code-level representation is Q7:
 

@@ -1151,7 +1151,7 @@
            storagetype="uint8" storageaddress="0x12302" sizex="8" endian="big">
       <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
                fineincrement="4" coarseincrement="20"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>800</data><data>1600</data><data>2400</data>
         <data>3200</data><data>4000</data><data>4800</data><data>5600</data>
       </table>
@@ -1176,7 +1176,7 @@
            storagetype="uint8" storageaddress="0x1230A" sizex="8" endian="big">
       <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
                fineincrement="4" coarseincrement="20"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>800</data><data>1600</data><data>2400</data>
         <data>3200</data><data>4000</data><data>4800</data><data>5600</data>
       </table>
@@ -1568,8 +1568,8 @@
 
     <!-- 0x10B8E  16x16 uint16  map [code]; entry 0x262A8 (explicit, core 0x26984)
          accessor 0x65928; r4 operand: pool
-         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x14B4A rpm [candidate]; X
-         Axis 0x2378C load [code]
+         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x14B4A rpm [code]; X Axis
+         0x2378C load [code]
          FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated
          multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08
          consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map
@@ -1589,13 +1589,13 @@
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1-3276.8" to_byte="x/0.1+32768"
                format="0.0" fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x2378C"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.00244140625"
                  to_byte="x/0.00244140625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
-             storageaddress="0x14B4A" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"/>
+             storageaddress="0x14B4A" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"/>
       </table>
     </table>
 
@@ -1686,8 +1686,10 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
+         static diagnostic context: Engine RPM [code, homologous_community, via axis evidence:
+         indexed_by]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
@@ -1702,8 +1704,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11CF0" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2107,8 +2109,10 @@
          project map-switching patch
          canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
+         static diagnostic context: Engine RPM [code, homologous_community, via axis evidence:
+         indexed_by]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
@@ -2123,8 +2127,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11CF0" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2538,8 +2542,10 @@
          project map-switching patch
          canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
+         static diagnostic context: Engine RPM [code, homologous_community, via axis evidence:
+         indexed_by]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
@@ -2554,8 +2560,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11CF0" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2969,8 +2975,10 @@
          project map-switching patch
          canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
+         static diagnostic context: Engine RPM [code, homologous_community, via axis evidence:
+         indexed_by]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
@@ -2985,8 +2993,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11CF0" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -3400,8 +3408,10 @@
          project map-switching patch
          canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
+         static diagnostic context: Engine RPM [code, homologous_community, via axis evidence:
+         indexed_by]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
@@ -3416,8 +3426,8 @@
                  to_byte="x/0.390625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11CF0" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
