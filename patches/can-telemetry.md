@@ -10,7 +10,9 @@ gate use the same profile identity.
 The generated host schema contains only transport layout, field semantics, and
 profile identity. It contains no ROM name, producer RAM address, physical
 mailbox, or patch location. Host tools load that file directly and do not import
-the JK08A producer manifest. The producer binding retains the exact ROM, RAM,
+the JK08A producer manifest. The schema also carries the frozen host contract
+of every retired profile ID, so recordings of a retired profile stay
+decodable. The producer binding retains the exact ROM, RAM,
 hook, source-address, and mailbox constraints required to build safe firmware.
 The profile CRC covers the wire layout alone: protocol version, profile ID,
 page count, the page, offset, width, and signedness of every fixed field, and
@@ -28,10 +30,12 @@ The endpoint is disabled by default. The complete software gate passes, and
 three road drives on 2026-08-26 accepted schema 2 transport and channel
 coverage. Those drives carried profile 1, the recording of 2026-09-17 carried
 profile 3, and the road session of 2026-09-21 in registry entry
-`can_telemetry.schema2_profile5_drive_2026_09_21` carried the current
-profile 5. The road session of 2026-09-22 in registry entry
+`can_telemetry.schema2_profile5_drive_2026_09_21` carried profile 5. The road
+session of 2026-09-22 in registry entry
 `can_telemetry.schema2_profile5_drive_2026_09_22` carried the same profile,
-and its TRC captures measure the whole-bus load of the stream. The recorded
+and its TRC captures measure the whole-bus load of the stream. The current
+profile 6 sends the same eleven DLC-8 frames per snapshot and has no vehicle
+recording. The recorded
 schema 1 `wide54` result remains useful bus-capacity and mailbox evidence; it
 does not validate schema 2 and is intentionally not accepted by the current
 decoder.
@@ -192,16 +196,16 @@ The 16-byte configuration contains:
 | 0 | 2 | magic `0x4354` |
 | 2 | 1 | protocol version `2` |
 | 3 | 1 | enable byte `0` or `1` |
-| 4 | 1 | profile ID `5` |
+| 4 | 1 | profile ID `6` |
 | 5 | 1 | page count `11` |
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0xE144` |
+| 10 | 2 | profile CRC16 `0xF14E` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 05 0B 01 00 06 F0 E1 44 54 45 4C 32`.
+`43 54 02 00 06 0B 01 00 06 F0 F1 4E 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. The protocol version,
@@ -284,8 +288,8 @@ Pages 0 through 8 are captured at every published snapshot.
 | Page | Fields and exact sources |
 | ---: | --- |
 | 0 | `tick16`; `rpm_raw` `FFFF11F4`; `final_timing_raw` `FFFF11D4`; `apc_command_raw` `FFFF2022`; `fuel_inhibit_mask` `FFFF22E0` |
-| 1 | `maf_b1_raw` `FFFF101C`; `maf_b2_raw` `FFFF101E`; `maf_total_raw` `FFFF3852`; `front_oxygen_sensor_b1_raw` `FFFF22C4` |
-| 2 | `bfs_raw` `FFFF1026`; `front_oxygen_sensor_b2_raw` `FFFF22C5`; `injection_0_raw` `FFFF23C8`; `injection_1_raw` `FFFF23CA` |
+| 1 | `maf_b1_raw` `FFFF101C`; `maf_b2_raw` `FFFF101E`; `maf_total_raw` `FFFF3852`; `normalized_load_raw` `FFFF102C` |
+| 2 | `bfs_raw` `FFFF1026`; `rolling_launch_phase` `FFFF5D40`; `injection_0_raw` `FFFF23C8`; `injection_1_raw` `FFFF23CA` |
 | 3 | `injection_2_raw` `FFFF23CC`; `injection_3_raw` `FFFF23CE`; `injection_4_raw` `FFFF23D0`; `telemetry_status` |
 | 4 | `injection_5_raw` `FFFF23D2`; `knock_timing_state_raw` `FFFF121A`; `knock_surface_state` `FFFF2466`; latched knock count and channel mask |
 | 5 | `app1_raw` `FFFF269E`; `app2_raw` `FFFF26A2`; `tps_b1_raw` `FFFF2756`; `absolute_throttle_raw` `FFFF1075` |
@@ -318,12 +322,20 @@ sensor voltages, the APC command at `110 - raw` degrees BTDC, the timing offset
 above the learned closed position, and the front A/F sensor voltage at
 `raw / 200 V`. Engine torque state, the bounded throttle request, the shared
 throttle target area, and both A/F adjustment states keep candidate
-conversions. The front heated-oxygen-sensor bytes and timing state `FFFF2023`
-have no producer and read 0, and the atmospheric byte holds a fixed
-calibration default because the barometric input is disabled. The word
-`signed` before `raw` reads an unsigned slot as a two's complement value of the
-slot width: the producers of the A/F adjustment words and of `FFFF564C` are
-signed, while the profile and its CRC keep their slots unsigned.
+conversions. The A/F adjustment words and timing offset `FFFF564C` occupy
+signed slots, because their producers are signed.
+
+Normalized load `FFFF102C` is the scheduler snapshot of the Base Fuel Schedule
+as a Q7 ratio to reference word `ROM16[0x9534]`: `raw * 100 / 128` percent,
+saturated at raw 255, and the column coordinate of the ignition and intake-cam
+target maps. The Rolling Launch phase `FFFF5D40` and abort reason `FFFF5D41`
+carry the codes of the `Phase` and `AbortReason` enumerations of
+`rolling_launch.py`, and active map index `FFFF5D00` selects Maps 1 through 5
+with values 0 through 4 and Map 1 with any other value. The front
+heated-oxygen-sensor bytes `FFFF22C4/22C5` and timing state `FFFF2023` have no
+producer, and the atmospheric byte `FFFF4544` holds a fixed calibration
+default because the barometric input is disabled, so none of them is
+streamed.
 
 ### Rotating context pages
 
@@ -334,9 +346,9 @@ rate is `19.53125 Hz`.
 
 | Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
 | ---: | --- | --- |
-| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | atmosphere `FFFF4544`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
+| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | Rolling Launch abort reason `FFFF5D41`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
 | 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
-| 2 | LTFT B1/B2 `FFFF2302/2304`, timing state `FFFF2023`, timing offset `FFFF564C` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
+| 2 | LTFT B1/B2 `FFFF2302/2304`, active map index `FFFF5D00`, timing offset `FFFF564C` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, A/F adjustment B2 `FFFF45A2` |
 | 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 
@@ -351,7 +363,10 @@ or more. At one evaluation of a channel per engine cycle, every tag-4 interval
 at divisor 1 holds an evaluation only above about 2350 rpm.
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 5, and CRC `0xE144`. A later mismatch disables conversions again.
+2 and a profile ID with the CRC that the host schema declares for it: current
+profile 6 with CRC `0xF14E`, or retired profile 5 with CRC `0xE144`, whose
+frozen contract decodes the fields of its recordings. A later mismatch disables
+conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -432,12 +447,13 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 5, and CRC `0xE144` health identity;
+- version 2, profile ID 6, and CRC `0xF14E` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
 The TRC captures of registry entry `can_telemetry.schema2_transport_2026_09_22`
-measure the last criterion for profile 5 on the target vehicle.
+measure the last criterion for profile 5 on the target vehicle; profile 6 has
+no target-vehicle capture.
 
 The acceptance run does not need a shutdown cycle, active diagnostic session,
 DTC comparison, or direct scheduler-slack measurement for this logging use.
@@ -452,8 +468,8 @@ both banks, all pages, all ten context records, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
 flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
-configuration, rejection of profile IDs 0, 4, and 6 by the capture entry and of
-profile ID 4 by the control receiver, active-group stop, corrupt-state
+configuration, rejection of profile IDs 0, 5, and 7 by the capture entry and of
+profile ID 5 by the control receiver, active-group stop, corrupt-state
 fail-closed behavior, a real `TRAPA` exception entry, and the exact ISR `RTE`.
 The knock margin wrapper runs against a simulator-only evaluator stub that
 stores a staged metric and overwrites `r0..r7`, which binds the order of the
@@ -468,7 +484,7 @@ The locked software result is:
 - 720 injected instructions and 770 data bytes;
 - eleven executable entries and 78 dynamic telemetry cases;
 - composition SHA-256
-  `ddd9acfc6a85572efba84d139b87d25f4d78d6e675d3fcd650cf331ac531d608`;
+  `567f7e67166cd87ddbc99e33aafde292598a08887960bb27b3c50e78459a8adb`;
 - 1,922 changed bytes inside a 3,488-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical

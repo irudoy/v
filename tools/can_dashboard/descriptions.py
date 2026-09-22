@@ -48,7 +48,15 @@ DESCRIPTIONS = {
     "calculated_load_percent": (
         "Calculated load value of J1979 PID 0x04: the current airflow "
         "divided by the peak airflow. It is not the normalized Base Fuel "
-        "Schedule that indexes the ignition and CVTC maps."
+        "Schedule that indexes the ignition and CVTC maps; Engine load "
+        "carries that coordinate."
+    ),
+    "normalized_load_percent": (
+        "Engine load that indexes the ignition and CVTC target maps: the "
+        "Base Fuel Schedule as a ratio to the reference constant of the ROM "
+        "in steps of 1/128, as the ECU computes it for the snapshot. 100 "
+        "percent is the reference schedule, and the value saturates at "
+        "199.2 percent. The live value feed sends it as VQ Engine Load."
     ),
     "timing_command_deg": (
         "Final ignition timing coordinate in degrees before TDC. A software "
@@ -78,10 +86,26 @@ DESCRIPTIONS = {
         "carry no forward gear and read --."
     ),
     "selected_map": (
-        "Map selected through the ASCD switch, inferred from the stock bus "
-        "because the telemetry stream does not carry the map index. Every "
-        "controller start selects Map 1, and a SET + CANCEL gesture that the "
-        "CRUISE and SET lamps answer with N pulses selects Map N."
+        "Map selected through the ASCD switch. The telemetry stream carries "
+        "the zero-based index of the map-switching runtime, shown as index + "
+        "1; the runtime reads an index outside Maps 1..5 as Map 1. A stream "
+        "without the index, such as profile 5, infers the map from the stock "
+        "bus: every controller start selects Map 1, and a SET + CANCEL "
+        "gesture that the CRUISE and SET lamps answer with N pulses selects "
+        "Map N."
+    ),
+    "rolling_launch_phase_name": (
+        "Phase of the Rolling Launch runtime: IDLE while it evaluates the "
+        "activation gates, ACTIVE while it owns the launch fuel cut and the "
+        "optional ignition retard, and COOLDOWN after a run ends, until the "
+        "buttons stay released for the rearm period."
+    ),
+    "rolling_launch_abort_name": (
+        "Reason code of the Rolling Launch runtime. In IDLE it names the "
+        "first activation gate that fails, such as MAP DISABLED on a map "
+        "without Rolling Launch or BUTTON INVALID while CANCEL is not held. "
+        "ACTIVE reads NONE, and COOLDOWN keeps the reason that ended the "
+        "run, such as BUTTON RELEASED, TIMEOUT, or MAP REQUEST."
     ),
     "zero_to_100_s": (
         "Last 0-100 km/h time from the ABS speed. A run arms at standstill "
@@ -107,7 +131,8 @@ DESCRIPTIONS = {
         "Base Fuel Schedule: the base injection time in ms for the measured "
         "air charge, before the fuel trims, the target-mixture factor, and "
         "the injector opening time. Normalized to its reference constant, "
-        "it is the load axis of the ignition and CVTC maps."
+        "it is the load axis of the ignition and CVTC maps, which Engine "
+        "load shows."
     ),
     "af_sensor_b1_v": (
         "Front A/F sensor signal of bank 1 in volts, the item the factory "

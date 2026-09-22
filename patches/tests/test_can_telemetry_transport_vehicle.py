@@ -46,14 +46,24 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         cls.captures = _entry(cls.registry, cls.session["capture_registry"])
         cls.by_name = {row["capture_name"]: row for row in cls.captures}
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-        cls.profile = {row["name"]: row for row in schema["profiles"]}["tuning"]
+        # A session recorded under a retired profile ID reads its frozen
+        # contract from the retired list of the same schema.
+        cls.profile = {
+            row["id"]: row
+            for row in (*schema["profiles"], *schema["retired_profiles"])
+            if row["name"] == "tuning"
+        }.get(cls.session["profile_id"])
+        (cls.current_profile_id,) = (
+            row["id"] for row in schema["profiles"] if row["name"] == "tuning"
+        )
         cls.published = _normalized(TELEMETRY)
 
     def test_session_carries_the_tuning_profile_of_the_same_image(self):
         session = self.session
         previous = _entry(self.registry, PREVIOUS_SESSION_KEY)
         self.assertEqual(session["image_sha256"], previous["image_sha256"])
-        self.assertEqual(session["profile_id"], self.profile["id"])
+        self.assertIsNotNone(self.profile)
+        self.assertEqual(session["profile_id"], previous["profile_id"])
         self.assertEqual(session["profile_crc16"], int(self.profile["crc16_ccitt_false"], 16))
         self.assertEqual(len(self.by_name), len(self.captures))
         self.assertEqual(
@@ -244,7 +254,8 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         )
         self.assertIn(
             f"The TRC captures of registry entry `{KEY}` measure the last criterion "
-            "for profile 5 on the target vehicle.",
+            f"for profile {self.session['profile_id']} on the target vehicle; "
+            f"profile {self.current_profile_id} has no target-vehicle capture.",
             self.published,
         )
 

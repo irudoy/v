@@ -53,9 +53,9 @@ RAW_FIELD_DISPLAY = {
     "maf_b1_raw": ("MAF bank 1", "V", 3, "Air"),
     "maf_b2_raw": ("MAF bank 2", "V", 3, "Air"),
     "maf_total_raw": ("Total airflow", "g/s", 2, "Air"),
-    "front_oxygen_sensor_b1_raw": ("Front O2 sensor B1", "raw", 0, "Fuel"),
+    "normalized_load_raw": ("Engine load", "%", 1, "Engine"),
     "bfs_raw": ("Base fuel schedule", "ms", 3, "Fuel"),
-    "front_oxygen_sensor_b2_raw": ("Front O2 sensor B2", "raw", 0, "Fuel"),
+    "rolling_launch_phase": ("Rolling Launch phase", "", 0, "Context"),
     "telemetry_status": ("Telemetry status", "raw", 0, "Transport"),
     "knock_timing_state_raw": ("Knock timing state", "state", 3, "Knock"),
     "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
@@ -118,7 +118,7 @@ RAW_FIELD_DISPLAY = {
     "intake_cvtc_duty_b2_raw": ("CVTC duty B2", "%", 1, "CVTC"),
     "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
     "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
-    "timing_state_2023_raw": ("Timing state 2023", "raw", 0, "Ignition"),
+    "active_map_index": ("Selected map", "", 0, "Context"),
     "timing_state_564c_raw": ("Timing state 564C", "deg", 0, "Ignition"),
     "protocol_version": ("Protocol version", "", 0, "Transport"),
     "profile_id": ("Profile ID", "", 0, "Transport"),
@@ -139,7 +139,9 @@ RAW_FIELD_DISPLAY = {
     "exhaust_cvtc_duty_b2_word_raw": (
         "Exhaust CVTC duty B2 word", "%", 1, "CVTC"
     ),
-    "atmospheric_pressure_raw": ("Atmospheric pressure", "raw", 0, "Air"),
+    "rolling_launch_abort_reason": (
+        "Rolling Launch reason", "", 0, "Context"
+    ),
     "battery_voltage_raw": ("Battery voltage", "V", 2, "Context"),
     "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "V", 3, "Fuel"),
     "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "V", 3, "Fuel"),

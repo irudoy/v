@@ -117,8 +117,10 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
         "intake_cvtc_duty_command_b1_raw",
         "intake_cvtc_duty_command_b2_raw",
         "knock_timing_state_raw",
+        "normalized_load_raw",
     )
     assert "knock_timing_state_raw" not in one.telemetry_source_by_name
+    assert "normalized_load_raw" not in one.telemetry_source_by_name
     assert one.telemetry_zero_source == 0xFFFF0DE0
 
 

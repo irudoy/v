@@ -15,13 +15,18 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
 
 
 DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
+DEFAULT_RETIRED = Path(__file__).with_name("can-telemetry-retired-profiles.json")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
+RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
 PROFILE_NAMES = ("tuning",)
+# Runtime state fields read the active RAM of these runtimes.
+RUNTIME_STATE_OWNERS = ("map_switching", "rolling_launch")
 
 
 @dataclass(frozen=True)
@@ -87,6 +92,7 @@ class Manifest:
     profiles: tuple[Profile, ...]
     fields: tuple[Field, ...]
     contexts: tuple[Context, ...]
+    retired_profiles: tuple[dict, ...] = ()
 
     @property
     def profile_by_name(self):
@@ -135,7 +141,21 @@ def _require_keys(table, required, optional, context):
         )
 
 
-def _parse_field(raw, *, context, page_field):
+def _runtime_state_spans(path=RESERVATIONS):
+    """Return the active RAM spans of the runtimes a state field may read."""
+    with Path(path).open("rb") as source:
+        ledger = tomllib.load(source)
+    spans = tuple(
+        (row["start"], row["end"])
+        for row in ledger["active_ram"]
+        if row["owner"] in RUNTIME_STATE_OWNERS
+    )
+    if len(spans) != len(RUNTIME_STATE_OWNERS):
+        raise ValueError(f"{Path(path).name}: runtime state spans differ")
+    return spans
+
+
+def _parse_field(raw, *, context, page_field, runtime_spans=()):
     required = {
         "name", "width", "source", "kind", "signed", "scale"
     }
@@ -163,7 +183,7 @@ def _parse_field(raw, *, context, page_field):
         or not isinstance(field.scale, str)
         or not field.scale
         or field.kind not in {
-            "ecu_ram", "telemetry_state", "rom_configuration"
+            "ecu_ram", "telemetry_state", "runtime_state", "rom_configuration"
         }
     ):
         raise ValueError(f"{context}: invalid field contract")
@@ -177,6 +197,13 @@ def _parse_field(raw, *, context, page_field):
         and field.source + field.width <= 0xFFFF5E20
     ):
         raise ValueError(f"{context}: telemetry source is outside state RAM")
+    if field.kind == "runtime_state" and not any(
+        start <= field.source and field.source + field.width <= end
+        for start, end in runtime_spans
+    ):
+        raise ValueError(
+            f"{context}: runtime state source is outside the active runtime RAM"
+        )
     if page_field:
         if (
             type(field.page) is not int
@@ -234,7 +261,7 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
     }
 
 
-def load_manifest(path=DEFAULT_SOURCE):
+def load_manifest(path=DEFAULT_SOURCE, retired=DEFAULT_RETIRED):
     path = Path(path)
     with path.open("rb") as source:
         raw = tomllib.load(source)
@@ -268,8 +295,14 @@ def load_manifest(path=DEFAULT_SOURCE):
     ):
         raise ValueError(f"{path.name}: fixed transport contract differs")
 
+    runtime_spans = _runtime_state_spans()
     fields = tuple(
-        _parse_field(item, context=f"field[{index}]", page_field=True)
+        _parse_field(
+            item,
+            context=f"field[{index}]",
+            page_field=True,
+            runtime_spans=runtime_spans,
+        )
         for index, item in enumerate(raw["field"])
     )
     if len({field.name for field in fields}) != len(fields):
@@ -286,6 +319,7 @@ def load_manifest(path=DEFAULT_SOURCE):
                 field,
                 context=f"context[{index}].field[{field_index}]",
                 page_field=False,
+                runtime_spans=runtime_spans,
             )
             for field_index, field in enumerate(item["field"])
         )
@@ -329,7 +363,7 @@ def load_manifest(path=DEFAULT_SOURCE):
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("tuning", 5, 11),)
+    expected_profiles = (("tuning", 6, 11),)
     profiles = []
     for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")
@@ -346,6 +380,7 @@ def load_manifest(path=DEFAULT_SOURCE):
             can_telemetry_schema.crc16_ccitt_false(encoded),
         ))
     profiles = tuple(profiles)
+    retired_profiles = _load_retired_profiles(retired, profiles)
 
     manifest = Manifest(
         schema_version=raw["schema_version"],
@@ -368,9 +403,44 @@ def load_manifest(path=DEFAULT_SOURCE):
         profiles=profiles,
         fields=fields,
         contexts=contexts,
+        retired_profiles=retired_profiles,
     )
     _validate_coverage(manifest)
     return manifest
+
+
+def _load_retired_profiles(path, profiles):
+    """Load the frozen host contracts of the retired profile IDs.
+
+    A retired entry keeps the exact profile object the schema published for
+    its ID. It must retire an ID below the current ID of the same name; the
+    rendered schema is then validated by the host parser, which recomputes
+    every CRC and requires the framing the decoder shares across IDs.
+    """
+    path = Path(path)
+    with path.open("r", encoding="utf-8") as source:
+        raw = json.load(source)
+    if not isinstance(raw, dict) or set(raw) != {"retired_profiles"}:
+        raise ValueError(f"{path.name}: expected one retired_profiles list")
+    rows = raw["retired_profiles"]
+    if not isinstance(rows, list):
+        raise ValueError(f"{path.name}: retired_profiles must be a list")
+    current = {profile.name: profile.profile_id for profile in profiles}
+    seen = set(current.values())
+    for index, row in enumerate(rows):
+        if (
+            not isinstance(row, dict)
+            or row.get("name") not in current
+            or type(row.get("id")) is not int
+            or not 0 <= row["id"] < current[row["name"]]
+            or row["id"] in seen
+        ):
+            raise ValueError(
+                f"{path.name}: retired_profiles[{index}] must retire an "
+                "unused ID below the current ID of its profile"
+            )
+        seen.add(row["id"])
+    return tuple(rows)
 
 
 def _validate_coverage(manifest):
@@ -478,7 +548,12 @@ def render_schema(manifest):
             }
             for profile in manifest.profiles
         ],
+        "retired_profiles": list(manifest.retired_profiles),
     }
+    try:
+        can_telemetry.parse_schema(document)
+    except can_telemetry.DecodeError as error:
+        raise ValueError(f"the host rejects the rendered schema: {error}") from error
     return json.dumps(document, indent=2, sort_keys=True) + "\n"
 
 
@@ -518,6 +593,7 @@ def main(argv=None):
     print(
         "status=PASS"
         f" profiles={len(manifest.profiles)}"
+        f" retired_profiles={len(manifest.retired_profiles)}"
         f" fields={len(manifest.fields)}"
         f" contexts={len(manifest.contexts)}"
         f" table_bytes={len(manifest.page_sources) * 4 + len(manifest.contexts) * 24}"

@@ -14,7 +14,8 @@ def test_catalog_covers_every_current_tuning_field():
         for field in signal.current_fields
     }
     assert owners["rpm_raw"] == "engine_speed"
-    assert owners["front_oxygen_sensor_b1_raw"] == "front_heated_oxygen_sensors"
+    assert owners["normalized_load_raw"] == "normalized_load"
+    assert owners["timing_state_564c_raw"] == "ignition_control_state"
     assert owners["intake_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["exhaust_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["knock_count_latched"] == "knock_event_latches"
@@ -22,7 +23,8 @@ def test_catalog_covers_every_current_tuning_field():
 
 def test_catalog_separates_stream_coverage_from_external_measurement():
     catalog = tuning_signal_coverage.load_catalog()
-    assert catalog.by_id["pressure_context"].coverage == "rotating"
+    assert catalog.by_id["pressure_context"].coverage == "absent"
+    assert catalog.by_id["front_heated_oxygen_sensors"].coverage == "absent"
     assert catalog.by_id["throttle_request_path"].coverage == "fixed"
     assert catalog.by_id["commanded_mixture"].coverage == "rotating"
     assert catalog.by_id["knock_margin"].coverage == "rotating"
@@ -46,14 +48,14 @@ def test_catalog_did_bindings_include_high_value_gaps():
 
 def test_summary_has_stable_coverage_counts():
     report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
-    assert report["signal_count"] == 38
+    assert report["signal_count"] == 39
     assert report["rotating_rate_hz"] == 19.53125
     assert report["coverage"] == {
-        "absent": 2,
+        "absent": 4,
         "external": 1,
         "fixed": 19,
         "latched": 1,
-        "rotating": 14,
+        "rotating": 13,
         "stock-can": 1,
     }
 

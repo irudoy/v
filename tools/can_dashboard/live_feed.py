@@ -10,10 +10,6 @@ The first token names the format and its version. Every other token is
 left out of the datagram, and the receiver keeps its previous value. The
 receiver is a RomRaider Logger external data source that is configured by the
 plugin file this module writes, so both sides share one channel table.
-
-A derived channel depends on the calibration, so the datagram leaves it out:
-the plugin file states its arithmetic, and RomRaider evaluates it with the
-table values of the ROM open in its editor.
 """
 
 from __future__ import annotations
@@ -32,12 +28,6 @@ DEFAULT_PORT = 47809
 DATASOURCE_CLASS = "com.romraider.logger.external.udp.plugin.UdpDataSource"
 DATASOURCE_NAME = PRODUCT_NAME
 LOAD_KEY = "load"
-# The internal map coordinate is a Q7 ratio of the Base Fuel Schedule word to
-# a ROM reference word, saturated at one byte; raw 128 is 100 percent. The
-# datagram carries the schedule in milliseconds, 2048 words each.
-LOAD_EXPRESSION = "min(255, floor(round(bfs_ms*2048)*128/reference))*100/128"
-# RomRaider name of the ROM table that holds the reference word.
-LOAD_REFERENCE_TABLE = "Internal Load Normalization Reference"
 # RomRaider keeps its per-user files in this folder of the home directory and
 # reads external data source plugin files from its plugins folder.
 ROMRAIDER_USER_DIRECTORY = ".RomRaider"
@@ -56,9 +46,7 @@ class FeedChannel:
     minimum: float
     maximum: float
     step: float
-    source: str | None = None
-    expression: str | None = None
-    tables: tuple[tuple[str, str], ...] = ()
+    source: str
 
     @property
     def logger_id(self):
@@ -76,8 +64,7 @@ CHANNELS = (
         0,
         200,
         20,
-        expression=LOAD_EXPRESSION,
-        tables=(("reference", LOAD_REFERENCE_TABLE),),
+        "normalized_load_percent",
     ),
     FeedChannel(
         "bfs_ms", "VQ Base Fuel Schedule", "ms", "0.000", 0, 20, 2, "bfs_ms"
@@ -158,8 +145,6 @@ def feed_values(model):
         return {}
     values = {}
     for channel in CHANNELS:
-        if channel.source is None:
-            continue
         value = model.engineering.get(channel.source)
         if isinstance(value, (int, float)) and math.isfinite(value):
             values[channel.key] = float(value)
@@ -192,10 +177,6 @@ def plugin_properties(host=DEFAULT_HOST, port=DEFAULT_PORT):
             f"{channel.step:g}",
         )
         lines.append(f"udp.item.{index}=" + "|".join(fields))
-        if channel.expression is not None:
-            lines.append(f"udp.item.{index}.expression={channel.expression}")
-        for variable, table in channel.tables:
-            lines.append(f"udp.item.{index}.table.{variable}={table}")
     return "\n".join(lines) + "\n"
 
 

@@ -737,7 +737,6 @@ def audit_states(recording_: Recording) -> dict:
         ("coolant_raw", "coolant_raw_range"),
         ("iat_raw", "iat_raw_range"),
         ("battery_voltage_raw", "battery_raw_range"),
-        ("atmospheric_pressure_raw", "atmospheric_raw_range"),
         ("injection_timing_state_raw", "injection_timing_state_raw_range"),
         ("injection_end_angle_raw", "injection_end_angle_raw_range"),
     ):

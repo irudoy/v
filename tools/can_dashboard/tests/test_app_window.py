@@ -9,6 +9,7 @@ import unittest
 from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
 from tools.can_dashboard import icons
+from tools.can_dashboard import model
 from tools.can_dashboard import replay
 from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
@@ -85,6 +86,41 @@ class HeroCatalogTest(unittest.TestCase):
             for _title, metrics in panels:
                 for metric in metrics:
                     self.assertIn(metric.key, app.HERO_CATALOG)
+
+
+class SchemaStatusTest(unittest.TestCase):
+    def record(self, dashboard, tick, **values):
+        values.update(tick16=tick, schema_verified=1)
+        dashboard.process_record(
+            model.SnapshotRecord(tick * 0.01, values), now=tick * 0.01
+        )
+
+    def test_the_status_names_the_verified_profile_id(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        self.assertEqual(app.schema_status(dashboard), "Schema: waiting")
+        self.record(dashboard, 1)
+        self.assertEqual(app.schema_status(dashboard), "Schema: VERIFIED")
+        self.record(dashboard, 2, profile_id=6)
+        self.assertEqual(
+            app.schema_status(dashboard), "Schema: VERIFIED, profile 6"
+        )
+        self.record(dashboard, 3, profile_id=5)
+        self.assertEqual(
+            app.schema_status(dashboard),
+            "Schema: VERIFIED, retired profile 5",
+        )
+        self.record(dashboard, 4, profile_id=4)
+        self.assertEqual(
+            app.schema_status(dashboard), "Schema: VERIFIED, profile 4"
+        )
+        dashboard.schema_verified = False
+        self.assertEqual(app.schema_status(dashboard), "Schema: waiting")
+
+    def test_the_status_field_reserves_the_retired_status(self):
+        samples = {name: sample for name, *_rest, sample in app.STATUS_FIELDS}
+        self.assertEqual(
+            samples["schema_var"], "Schema: VERIFIED, retired profile 5"
+        )
 
 
 class PaletteTest(unittest.TestCase):
@@ -573,6 +609,37 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.assertEqual(self.panel_value("tcm_gear"), "4")
         self.assertEqual(dashboard._metric_value("selected_map"), 3)
         self.assertEqual(dashboard._metric_value("tcm_gear"), 4)
+
+    def test_the_telemetry_map_index_selects_the_map_and_names_its_source(self):
+        dashboard = self.dashboard
+        dashboard.model.drive.map.number = 3
+        values = {
+            "tick16": 1,
+            "schema_verified": 1,
+            "profile_id": 6,
+            "active_map_index": 1,
+            "rolling_launch_phase": 2,
+            "rolling_launch_abort_reason": 7,
+        }
+        dashboard.model.process_record(
+            model.SnapshotRecord(0.0, values), now=0.0
+        )
+        dashboard._refresh(0.0)
+        self.assertEqual(self.panel_value("selected_map"), "2")
+        self.assertEqual(
+            self.panel_value("rolling_launch_phase_name"), "COOLDOWN"
+        )
+        self.assertEqual(
+            self.panel_value("rolling_launch_abort_name"), "BUTTON RELEASED"
+        )
+        self.assertEqual(
+            dashboard._describe("selected_map"),
+            f"{describe('selected_map')}\n\n"
+            f"Source: {app.TELEMETRY_MAP_SOURCE}.",
+        )
+        self.assertEqual(
+            dashboard.schema_var.get(), "Schema: VERIFIED, profile 6"
+        )
 
     def test_hover_over_a_metric_name_describes_the_metric(self):
         dashboard = self.dashboard

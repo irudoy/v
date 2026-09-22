@@ -75,13 +75,6 @@ class FormTest(unittest.TestCase):
             defaults,
         )
 
-    def test_the_load_note_names_the_table_the_plugin_file_binds(self):
-        self.assertIn(live_feed.LOAD_REFERENCE_TABLE, feed_dialog.LOAD_HINT)
-        self.assertIn(
-            f"={live_feed.LOAD_REFERENCE_TABLE}\n",
-            live_feed.plugin_properties(),
-        )
-
 
 @unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")
 class FeedDialogTest(unittest.TestCase):
@@ -199,11 +192,7 @@ class FeedDialogTest(unittest.TestCase):
         self.plugin_path.parent.mkdir(parents=True)
         current = live_feed.plugin_properties()
         self.plugin_path.write_text(
-            "".join(
-                line
-                for line in current.splitlines(keepends=True)
-                if ".expression=" not in line and ".table." not in line
-            ),
+            current + "udp.item.2.table.reference=Load Reference\n",
             encoding="ascii",
         )
         dialog = self.dialog()

@@ -59,7 +59,6 @@ def synthetic_values(calibration, index):
         "coolant_raw": 141,
         "iat_raw": 80 + index % 5,
         "battery_voltage_raw": 165,
-        "atmospheric_pressure_raw": 207,
     }
     return values
 

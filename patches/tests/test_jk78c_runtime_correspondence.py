@@ -56,7 +56,7 @@ def test_jk78c_telemetry_correspondence_covers_the_complete_schema():
     rows = [row for row in _rows() if row["domain"] == "telemetry"]
     assert {row["key"] for row in rows} == _canonical_telemetry_keys()
     unsupported = [row["key"] for row in rows if row["status"] == "unsupported"]
-    assert unsupported == ["knock_timing_state_raw"]
+    assert unsupported == ["normalized_load_raw", "knock_timing_state_raw"]
     for row in rows:
         if row["status"] != "unsupported":
             assert 0xFFFF0000 <= int(row["target"], 16) < 0xFFFFC000

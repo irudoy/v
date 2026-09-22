@@ -57,8 +57,10 @@ python3 tools/logs/can_telemetry.py \
 The schema-2 `tuning` profile requires pages 0 through 10. It starts with
 `schema_verified=false` and enables engineering-unit transforms only after
 page 9 context tag 3 reports the exact protocol version, profile ID, and
-profile CRC16. A later health mismatch disables conversion and increments the
-reported mismatch counter. Raw source values remain present in every accepted
+profile CRC16. The schema declares the current profile ID and keeps the frozen
+contract of every retired ID, so a run that reports retired profile 5 with its
+own CRC16 decodes with the fields of profile 5. A later health mismatch
+disables conversion and increments the reported mismatch counter. Raw source values remain present in every accepted
 snapshot; transforms are emitted only for scales explicitly declared by the
 schema.
 

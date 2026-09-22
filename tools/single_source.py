@@ -51,6 +51,8 @@ INHERITANCE_REGISTRY = "defs/rom-inheritance.toml"
 MAP_LAYOUT = "patches/map-switching-layout.toml"
 ATLAS_MANIFESTS = "tools/romviz/roms/"
 INTAKE_GUIDE = "rom-images/new-rom-intake.md"
+CORRESPONDENCE = {"1ME3B": "patches/1me3b-runtime-correspondence.csv"}
+DID_TABLE_EVIDENCE = "Aligned diagnostic pointer tables of 1ND0A and 1ME3B"
 
 # Primary references are transcriptions of external documents.
 UNSCANNED = ("refs/", "defs/reference/")
@@ -324,12 +326,21 @@ def check_conversions():
                 f"{TELEMETRY_PROFILE} declares a signed view of {name}, whose "
                 "slot is already signed"
             )
-        bits = 8 * width if signed_view else 0
-        if calibration.signed_bits != bits:
+        # Sign extension leaves the value of a signed slot unchanged, and a
+        # retired profile or an earlier MLG file can carry the same slot
+        # unsigned, so a signed slot accepts both readings.
+        if signed_view:
+            allowed = {8 * width}
+        elif signed:
+            allowed = {0, 8 * width}
+        else:
+            allowed = {0}
+        if calibration.signed_bits not in allowed:
             raise SourceError(
                 f"the host reads {name} with signed_bits "
                 f"{calibration.signed_bits}, {TELEMETRY_PROFILE} declares "
-                f"{scale!r} on a {8 * width}-bit slot"
+                f"{scale!r} on a {'signed' if signed else 'unsigned'} "
+                f"{8 * width}-bit slot"
             )
     return len(decoder) + len(dashboard)
 
@@ -489,6 +500,16 @@ class Sources:
         manifest = can_telemetry_profile.load_manifest()
         fields = (*manifest.fields, *(f for c in manifest.contexts for f in c.fields))
         self.ecu_fields = sum(field.kind == "ecu_ram" for field in fields)
+        self.protocol = manifest.protocol_version
+        tuning = manifest.profile_by_name["tuning"]
+        self.identity = (tuning.profile_id, tuning.crc16)
+        # The documents name the retired ID the host decodes beside the
+        # current one; a second retired ID needs its own statements.
+        (self.retired,) = (
+            (row["id"], int(row["crc16_ccitt_false"], 16))
+            for row in manifest.retired_profiles
+            if row["name"] == "tuning"
+        )
         self.bindings = len(recording.build_bindings("tuning"))
         roms = (dtc_projection.SOURCE_ROM, *dtc_projection.PROJECTED_ROMS)
         self.registries = {rom: dtc_projection.read_registry(rom) for rom in roms}
@@ -523,6 +544,16 @@ class Sources:
     def bound(self, rom):
         return len(self.profiles[rom].telemetry_sources)
 
+    def did_confirmed(self, rom):
+        """Count the telemetry cells the target DID pointer table confirms."""
+        rows = csv.DictReader(io.StringIO(_text(CORRESPONDENCE[rom])))
+        return sum(
+            row["domain"] == "telemetry"
+            and row["status"] == "mapped"
+            and row["evidence"].startswith(DID_TABLE_EVIDENCE)
+            for row in rows
+        )
+
     def onboarded_families(self):
         return sum(bool(roms & self.identities) for roms in self.members.values())
 
@@ -548,6 +579,7 @@ def published_facts(sources=None):
     builder = "patches/rom-builder.md"
     selector = "patches/map-switching-selector.md"
     profiles = "patches/rom-address-profiles.toml"
+    telemetry = "patches/can-telemetry.md"
     return (
         Fact(matrix, r"\| `7MFKAVN86` \| [^|]+ \| {n} families \|", (s.switched(exact),)),
         Fact(matrix, r"\| `8MFK` \| [^|]+ \| {n} families", (s.switched(eight),)),
@@ -575,8 +607,9 @@ def published_facts(sources=None):
         Fact(matrix, r"the {n} codes the two images share", (shared,)),
         Fact(
             matrix,
-            r"Of the {n} telemetry fields, {n} bind to 1ME3B ECU RAM",
-            (s.ecu_fields, s.bound("1ME3B")),
+            r"Of the {n} telemetry fields, {n} bind to 1ME3B ECU RAM; {n} of "
+            r"those sources are confirmed against the DID pointer table",
+            (s.ecu_fields, s.bound("1ME3B"), s.did_confirmed("1ME3B")),
         ),
         Fact(defs, r"\| {dtc} \| Relocated DTC edit ranges", (relocated,)),
         Fact(defs, r"Map 2-5 storage for {n} switched families", (s.switched(me),)),
@@ -644,6 +677,16 @@ def published_facts(sources=None):
             (Labels(frozenset(s.profiles)),),
         ),
         Fact(builder, r"and locked payloads for {list}\.", (relocated,)),
+        *(
+            Fact(
+                builder,
+                rf"`{name}-runtime-correspondence\.csv` records the reviewed "
+                rf"{rom} runtime allocation, [^.]*, and all {{n}} ECU-RAM "
+                r"telemetry fields",
+                (s.ecu_fields,),
+            )
+            for name, rom in (("1nd", nd[0]), ("1me3b", me[0]), ("jk78c", jk78[0]))
+        ),
         Fact(
             builder,
             r"The 1ND address profile binds {n} switched families",
@@ -738,6 +781,40 @@ def published_facts(sources=None):
             (s.bindings,),
         ),
         Fact(
+            "tools/can_dashboard/README.md",
+            r"The bundled schema declares profile ID {n} with CRC16 `{a}` and "
+            r"keeps the frozen contract of retired profile {n} with CRC16 `{a}`",
+            (*s.identity, *s.retired),
+        ),
+        Fact(
+            telemetry,
+            r"\| 4 \| 1 \| profile ID `{n}` \|",
+            (s.identity[0],),
+        ),
+        Fact(
+            telemetry,
+            r"\| 10 \| 2 \| profile CRC16 `{a}` \|",
+            (s.identity[1],),
+        ),
+        Fact(
+            telemetry,
+            r"reports version {n} and a profile ID with the CRC that the host "
+            r"schema declares for it: current profile {n} with CRC `{a}`, or "
+            r"retired profile {n} with CRC `{a}`",
+            (s.protocol, *s.identity, *s.retired),
+        ),
+        Fact(
+            telemetry,
+            r"- version {n}, profile ID {n}, and CRC `{a}` health identity",
+            (s.protocol, *s.identity),
+        ),
+        Fact(
+            "defs/JK08A.tuning-telemetry.md",
+            r"Schema 2 uses protocol version {n}, profile ID {n}, generated "
+            r"CRC16 `{a}`",
+            (s.protocol, *s.identity),
+        ),
+        Fact(
             "tools/logs/README.md",
             r"The `tuning` output contains {n} fields",
             (s.bindings,),
@@ -756,6 +833,14 @@ def published_facts(sources=None):
             profiles,
             r"fuel-cut state machine bind {n} supported VQ37 families",
             (s.switched(jk78),),
+        ),
+        *(
+            Fact(
+                profiles,
+                rf"{{n}} of the {{n}} ECU-RAM fields bind to {rom} sources",
+                (s.bound(rom), s.ecu_fields),
+            )
+            for rom in (nd[0], me[0], jk78[0])
         ),
     )
 

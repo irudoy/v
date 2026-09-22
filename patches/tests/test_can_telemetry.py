@@ -2,6 +2,8 @@ from dataclasses import replace
 import copy
 import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from patches import can_telemetry
@@ -19,7 +21,16 @@ from tools.logs import can_telemetry_schema
 SLOT_ASSIGNMENT_SHA256 = {
     4: "3e03c72b5d80187d2335f3ea42996aab9b48c3e0e09c4fc11fe7a6b6405e11fd",
     5: "aee00366d786afd544790945cddd28ca26ddda9f092e60ab2a4221b628391681",
+    6: "e5d5101a8bbd5b3b5fac3f632d65669d9c30a926ae05df20ee01ebd0a55652a0",
 }
+
+
+def _assignment_digest(assignment):
+    return hashlib.sha256(
+        json.dumps(assignment, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+    ).hexdigest()
 
 
 class CanTelemetryContractTest(unittest.TestCase):
@@ -32,8 +43,8 @@ class CanTelemetryContractTest(unittest.TestCase):
     def test_rom_configuration_guard_follows_the_manifest_identity(self):
         base = can_telemetry_assembly._manifest_identity
         drifts = (
-            ("crc16", 0xE145),
-            ("profile_id", 6),
+            ("crc16", 0xF14F),
+            ("profile_id", 7),
             ("page_count", 12),
             ("version", 3),
         )
@@ -58,9 +69,9 @@ class CanTelemetryContractTest(unittest.TestCase):
                 "magic": can_telemetry.CONFIG_MAGIC,
                 "version": can_telemetry.CONFIG_VERSION,
                 "can_id_max": can_telemetry.MAX_DATA_CAN_ID,
-                "profile_id": 5,
+                "profile_id": 6,
                 "page_count": 11,
-                "crc16": 0xE144,
+                "crc16": 0xF14E,
             },
         )
 
@@ -71,7 +82,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 5, 11, 0xE144),
+                ("tuning", 6, 11, 0xF14E),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)
@@ -84,18 +95,26 @@ class CanTelemetryContractTest(unittest.TestCase):
             for field in context.fields
         }
         self.assertTrue({
-            "front_oxygen_sensor_b1_raw",
-            "front_oxygen_sensor_b2_raw",
+            "normalized_load_raw",
+            "rolling_launch_phase",
             "intake_cvtc_target_raw",
             "exhaust_cvtc_target_raw",
             "throttle_request_bounded_raw",
             "engine_torque_state_raw",
         } <= names)
         self.assertTrue({
+            "active_map_index",
+            "rolling_launch_abort_reason",
             "battery_voltage_raw",
             "front_af_sensor_b1_word_raw",
             "secondary_tps_b2_raw",
         } <= context_names)
+        self.assertFalse({
+            "front_oxygen_sensor_b1_raw",
+            "front_oxygen_sensor_b2_raw",
+            "timing_state_2023_raw",
+            "atmospheric_pressure_raw",
+        } & (names | context_names))
         self.assertEqual(
             can_telemetry_profile.render_tables(self.manifest),
             can_telemetry_profile.DEFAULT_TABLES.read_text(encoding="utf-8"),
@@ -205,13 +224,8 @@ class CanTelemetryContractTest(unittest.TestCase):
                     for context in self.manifest.contexts
                 ],
             }
-            digest = hashlib.sha256(
-                json.dumps(
-                    assignment, sort_keys=True, separators=(",", ":")
-                ).encode("utf-8")
-            ).hexdigest()
             self.assertEqual(
-                digest,
+                _assignment_digest(assignment),
                 SLOT_ASSIGNMENT_SHA256.get(profile.profile_id),
                 f"the slot assignment of profile ID {profile.profile_id} "
                 "differs from the pinned one. The profile CRC covers byte "
@@ -220,6 +234,70 @@ class CanTelemetryContractTest(unittest.TestCase):
                 "only a rename of the same quantity replaces the digest "
                 "under the same ID.",
             )
+
+    def test_retired_profiles_keep_their_pinned_slot_assignment(self):
+        retired = self.manifest.retired_profiles
+        self.assertEqual([item["id"] for item in retired], [5])
+        for item in retired:
+            with self.subTest(profile_id=item["id"]):
+                assignment = {
+                    "fields": sorted(
+                        [field["page"], field["offset"], field["name"]]
+                        for field in item["fields"]
+                    ),
+                    "contexts": [
+                        [
+                            context["page"],
+                            context["tag"],
+                            [field["name"] for field in context["fields"]],
+                        ]
+                        for context in item["contexts"]
+                    ],
+                }
+                self.assertEqual(
+                    _assignment_digest(assignment),
+                    SLOT_ASSIGNMENT_SHA256[item["id"]],
+                )
+        schema = json.loads(
+            can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        self.assertEqual(schema["retired_profiles"], list(retired))
+
+    def test_retired_profiles_reject_reused_ids_and_foreign_framing(self):
+        source = json.loads(
+            can_telemetry_profile.DEFAULT_RETIRED.read_text(encoding="utf-8")
+        )
+        (retired,) = source["retired_profiles"]
+
+        def load(rows):
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "retired.json"
+                path.write_text(
+                    json.dumps({"retired_profiles": rows}), encoding="utf-8"
+                )
+                manifest = can_telemetry_profile.load_manifest(retired=path)
+                return can_telemetry_profile.render_schema(manifest)
+
+        self.assertIn('"retired_profiles"', load([retired]))
+        reused = (
+            [dict(retired, id=6)],
+            [dict(retired, id=7)],
+            [retired, retired],
+            [dict(retired, name="missing")],
+        )
+        for rows in reused:
+            with self.subTest(ids=[row["id"] for row in rows]):
+                with self.assertRaises(ValueError):
+                    load(rows)
+        foreign = {
+            "page_count": dict(retired, page_count=12),
+            "crc16": dict(retired, crc16_ccitt_false="0xE145"),
+            "contexts": dict(retired, contexts=retired["contexts"][:-1]),
+        }
+        for change, row in foreign.items():
+            with self.subTest(change=change):
+                with self.assertRaises(ValueError):
+                    load([row])
 
     def test_configuration_round_trip_and_mailbox_encoding(self):
         cases = (
@@ -249,6 +327,20 @@ class CanTelemetryContractTest(unittest.TestCase):
                     configuration.control_can_id,
                     configuration.can_id + 1,
                 )
+
+    def test_the_specification_publishes_the_default_configuration(self):
+        published = " ".join(
+            (Path(__file__).resolve().parents[1] / "can-telemetry.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        encoded = can_telemetry.default_configuration().to_bytes(self.manifest)
+        self.assertIn(
+            "The default disabled bytes are `"
+            + " ".join(f"{byte:02X}" for byte in encoded)
+            + "`.",
+            published,
+        )
 
     def test_configuration_rejects_corruption_and_invalid_ranges(self):
         encoded = bytearray(can_telemetry.default_configuration().to_bytes())

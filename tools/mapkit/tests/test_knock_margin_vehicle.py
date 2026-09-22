@@ -1,5 +1,6 @@
 """Knock channel schedule and the 2026-09-21 knock margin vehicle result."""
 
+import json
 import math
 import re
 import struct
@@ -12,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[3]
 ROM = (ROOT / "rom-images/23710-JK08A/1JK08A-20260726-stock.bin").read_bytes()
 PROFILE = tomllib.loads(
     (ROOT / "patches/can-telemetry-profile.toml").read_text(encoding="utf-8")
+)
+SCHEMA = json.loads(
+    (ROOT / "patches/can-telemetry-schema.json").read_text(encoding="utf-8")
 )
 REGISTRY = tomllib.loads(
     (ROOT / "patches/hardware-results.toml").read_text(encoding="utf-8")
@@ -350,14 +354,20 @@ def test_record_uses_the_registered_session_and_captures():
     session = REGISTRY["can_telemetry"]["schema2_profile5_drive_2026_09_21"]
     assert (
         "the road session of 2026-09-21 in registry entry "
-        "`can_telemetry.schema2_profile5_drive_2026_09_21` carried the current "
-        f"profile {session['profile_id']}."
+        "`can_telemetry.schema2_profile5_drive_2026_09_21` carried profile "
+        f"{session['profile_id']}."
     ) in TELEMETRY_DOC
     for key in ("recorded_on", "image_sha256", "profile_id", "profile_crc16"):
         assert RESULT[key] == session[key]
     assert RESULT["hardware_status"] == session["hardware_status"] == "pass"
-    profiles = {profile["name"]: profile["id"] for profile in PROFILE["profile"]}
-    assert profiles["tuning"] == RESULT["profile_id"]
+    tuning = {
+        profile["id"]: profile
+        for profile in (*SCHEMA["profiles"], *SCHEMA["retired_profiles"])
+        if profile["name"] == "tuning"
+    }
+    assert int(tuning[RESULT["profile_id"]]["crc16_ccitt_false"], 16) == (
+        RESULT["profile_crc16"]
+    )
     assert RESULT["capture_name"] == [row["capture_name"] for row in captures]
     assert RESULT["capture_sha256"] == [row["capture_sha256"] for row in captures]
     assert RESULT["mlg_record_count"] == session["record_count_total"]

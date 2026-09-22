@@ -166,8 +166,6 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
 @pytest.mark.parametrize(
     "name, scale",
     [
-        # The host reads the slot as signed, the profile as unsigned.
-        ("af_adjustment_b1_raw", "candidate raw * 0.002 A/F ADJ factor"),
         # The host reads the slot as unsigned, the profile as signed.
         ("front_af_sensor_b1_word_raw", "signed raw / 200 V"),
         # A signed view of a slot that is signed on the wire.
@@ -183,6 +181,17 @@ def test_a_signed_view_the_profile_does_not_declare_fails(
     with pytest.raises(single_source.SourceError) as error:
         single_source.check_conversions()
     assert name in str(error.value)
+
+
+def test_a_signed_reading_of_an_unsigned_slot_needs_a_signed_view(monkeypatch):
+    # The host reads the A/F ADJ slot as signed. A profile that carries the
+    # slot unsigned, as profile 5 did, must declare a signed view of it.
+    slots = single_source._profile_slots()
+    slots["af_adjustment_b1_raw"] = {(2, False)}
+    monkeypatch.setattr(single_source, "_profile_slots", lambda: slots)
+    with pytest.raises(single_source.SourceError) as error:
+        single_source.check_conversions()
+    assert "af_adjustment_b1_raw" in str(error.value)
 
 
 @pytest.mark.parametrize(
@@ -205,8 +214,23 @@ def test_a_signed_view_the_profile_does_not_declare_fails(
         ),
         (
             "patches/rom-builder.md",
-            "binds 59 of the 63 ECU-RAM fields",
-            "binds 60 of the 63 ECU-RAM fields",
+            "binds 55 of the 60 ECU-RAM fields",
+            "binds 56 of the 60 ECU-RAM fields",
+        ),
+        (
+            "patches/rom-builder.md",
+            "CAN bindings, and all 60 ECU-RAM\ntelemetry fields. 1ND3B",
+            "CAN bindings, and all 63 ECU-RAM\ntelemetry fields. 1ND3B",
+        ),
+        (
+            "patches/rom-address-profiles.toml",
+            "56 of the 60 ECU-RAM fields bind to 1ND0A sources",
+            "57 of the 60 ECU-RAM fields bind to 1ND0A sources",
+        ),
+        (
+            "rom-images/support-matrix.md",
+            "ECU RAM; 41 of those",
+            "ECU RAM; 45 of those",
         ),
         (
             "rom-images/23710-1ME3B/README.md",

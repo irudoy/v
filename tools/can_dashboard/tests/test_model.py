@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from patches import rolling_launch
 from tools.can_dashboard import model
 from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
@@ -32,6 +33,8 @@ class DashboardModelTest(unittest.TestCase):
             profile, document["protocol_version"]
         )
         profile["crc16_ccitt_false"] = f"0x{portable_crc:04X}"
+        for retired in document["retired_profiles"]:
+            retired["name"] = "portable"
         with tempfile.TemporaryDirectory() as directory:
             schema_path = Path(directory) / "portable-schema.json"
             schema_path.write_text(
@@ -426,6 +429,118 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIsNone(feed_group(dashboard, bad, 4.1))
         self.assertFalse(dashboard.schema_verified)
         self.assertIsNone(dashboard.value("rpm"))
+
+    def test_a_retired_profile_keeps_only_the_fields_of_its_id(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        retired = dashboard.decoder.versions[5]
+
+        def feed(tick, profile_id, crc16):
+            group = list(generator.group(tick))
+            if group[9].data[1] == 3:
+                health = bytearray(group[9].data)
+                health[3] = profile_id
+                health[4:6] = crc16.to_bytes(2, "big")
+                group[9] = model.FrameRecord(0x6F0, bytes(health))
+            feed_group(dashboard, group, tick * model.BASE_TICK_SECONDS)
+
+        current = (6, dashboard.decoder.profile["_crc16"])
+        for tick in range(1, 9):
+            feed(tick, *current)
+        self.assertEqual(dashboard.profile_id, 6)
+        self.assertIn("normalized_load_percent", dashboard.engineering)
+        self.assertEqual(dashboard.value("rolling_launch_phase_name"), "IDLE")
+        self.assertEqual(dashboard.telemetry_map, 1)
+
+        for tick in range(9, 19):
+            feed(tick, 5, retired["_crc16"])
+        self.assertEqual(dashboard.profile_id, 5)
+        names = set(model.profile_field_names(retired))
+        self.assertLessEqual(set(dashboard.raw), names)
+        self.assertLessEqual(set(dashboard.updated_at), names)
+        self.assertIn("front_oxygen_sensor_b1_raw", dashboard.raw)
+        for key in (
+            "normalized_load_percent",
+            "rolling_launch_phase_name",
+            "rolling_launch_abort_name",
+            "selected_map_number",
+        ):
+            self.assertNotIn(key, dashboard.engineering)
+        self.assertIsNone(dashboard.telemetry_map)
+        self.assertEqual(dashboard.selected_map, dashboard.drive.map.number)
+        self.assertIsNotNone(dashboard.value("rpm"))
+
+        for tick in range(19, 29):
+            feed(tick, *current)
+        self.assertEqual(dashboard.profile_id, 6)
+        self.assertNotIn("front_oxygen_sensor_b1_raw", dashboard.raw)
+        self.assertIn("normalized_load_percent", dashboard.engineering)
+
+    def test_the_telemetry_map_index_names_the_selected_map(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        for tick, (index, number) in enumerate(
+            ((0, 1), (3, 4), (4, 5), (5, 1), (0xFF, 1)), start=1
+        ):
+            with self.subTest(index=index):
+                values = {
+                    "tick16": tick,
+                    "schema_verified": 1,
+                    "profile_id": 6,
+                    "active_map_index": index,
+                }
+                dashboard.process_record(
+                    model.SnapshotRecord(tick * 0.01, values), now=tick * 0.01
+                )
+                self.assertEqual(dashboard.profile_id, 6)
+                self.assertEqual(dashboard.telemetry_map, number)
+                self.assertEqual(dashboard.selected_map, number)
+        dashboard.drive.map.number = 3
+        dashboard.schema_verified = False
+        self.assertIsNone(dashboard.telemetry_map)
+        self.assertEqual(dashboard.selected_map, 3)
+
+    def test_a_retired_record_keeps_only_the_fields_of_its_id(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        values = {
+            "tick16": 1,
+            "schema_verified": 1,
+            "profile_id": 5,
+            "active_map_index": 3,
+            "coolant_raw": 140,
+        }
+        dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
+        self.assertEqual(dashboard.profile_id, 5)
+        self.assertNotIn("active_map_index", dashboard.raw)
+        self.assertIsNone(dashboard.telemetry_map)
+        self.assertEqual(dashboard.value("coolant_deg_c"), 90)
+
+    def test_rolling_launch_codes_follow_the_runtime_enumerations(self):
+        for names, enumeration in (
+            (model.ROLLING_LAUNCH_PHASES, rolling_launch.Phase),
+            (model.ROLLING_LAUNCH_ABORT_REASONS, rolling_launch.AbortReason),
+        ):
+            with self.subTest(enumeration=enumeration.__name__):
+                self.assertEqual(
+                    [member.value for member in enumeration],
+                    list(range(len(enumeration))),
+                )
+                self.assertEqual(
+                    names,
+                    tuple(
+                        member.name.replace("_", " ")
+                        for member in enumeration
+                    ),
+                )
+        values = model._dashboard_engineering_values(
+            {"rolling_launch_phase": 2, "rolling_launch_abort_reason": 14}
+        )
+        self.assertEqual(values["rolling_launch_phase_name"], "COOLDOWN")
+        self.assertEqual(values["rolling_launch_abort_name"], "TIMEOUT")
+        values = model._dashboard_engineering_values(
+            {"rolling_launch_phase": 3, "rolling_launch_abort_reason": 19}
+        )
+        self.assertEqual(values["rolling_launch_phase_name"], "0x03")
+        self.assertEqual(values["rolling_launch_abort_name"], "0x13")
 
 
 if __name__ == "__main__":

@@ -9,14 +9,9 @@ from tools.can_dashboard.settings import FeedSettings
 from tools.can_dashboard.widgets import ToolButton
 
 
-REFERENCE_TABLE = f"Fuelling / Load Model / {live_feed.LOAD_REFERENCE_TABLE}"
 INTRODUCTION = (
     "RomRaider Logger receives these values and Overlay Log outlines the "
     "table cell at the live engine speed and load."
-)
-LOAD_HINT = (
-    "RomRaider computes VQ Engine Load itself from the table "
-    f"{REFERENCE_TABLE} of the ROM open in its editor."
 )
 PLUGIN_HINT = (
     "RomRaider learns the parameters from this file when Logger starts. "
@@ -106,10 +101,6 @@ class FeedDialog(tk.Toplevel):
         self.endpoint_entry = self._field(
             form, 0, "UDP ENDPOINT", self.endpoint_var, fonts
         )
-        self._note(LOAD_HINT, fonts["label"], colors["muted"]).pack(
-            fill="x", padx=12, pady=(6, 0)
-        )
-
         plugin = tk.Frame(self, bg=colors["bg"])
         plugin.pack(fill="x", padx=12, pady=(12, 0))
         button(

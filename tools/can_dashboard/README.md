@@ -235,25 +235,13 @@ without a finite value is left out, and the receiver keeps its previous value.
 Nothing is sent until the wire schema is verified. The `Feed` status field
 reports the endpoint, the datagram count, and the last send error.
 
-The `load` channel is derived, and the datagram leaves it out. It is the
-coordinate that the ECU indexes its maps by: a Q7 ratio of the Base Fuel
-Schedule word to a ROM-specific reference word, saturated at one byte. One word
-of either operand is 1/2048 ms; stock JK08A holds 27226 at `ROM16[0x9534]`,
-which RomRaider shows as 13.294 in the table `Fuelling / Load Model / Internal
-Load Normalization Reference`. The plugin file states the arithmetic and binds
-`reference` to that table:
-
-```properties
-udp.item.2.expression=min(255, floor(round(bfs_ms*2048)*128/reference))*100/128
-udp.item.2.table.reference=Internal Load Normalization Reference
-```
-
-RomRaider evaluates the expression with the stored word of the ROM open in its
-editor, so the host schema and the dashboard settings stay ROM-neutral and no
-calibration value is typed by hand. The value follows the image in the editor:
-a ROM other than the flashed one shifts `load` on every load axis, and with no
-ROM open `VQ Engine Load` reads 0. The `VQ CAN Telemetry` entry of the Logger
-`Plugins` menu shows the reference word and the ROM file it comes from.
+The `load` channel is the coordinate that the ECU indexes its maps by:
+snapshot byte `0xFFFF102C` on JK08A, the Base Fuel Schedule as a Q7 ratio to
+reference word `ROM16[0x9534]` of the flashed ROM, saturated at raw 255. The
+stream carries the byte as `normalized_load_raw`, so the value comes from the
+running ECU and needs no ROM open in RomRaider. Raw 128 is 100 percent of the
+reference, and raw 255 is 199.2 percent. A replay of a profile 5 recording has
+no load byte, and its datagrams leave `load` out.
 
 `--publish-udp [HOST:]PORT` turns the feed on at that endpoint for one run
 without changing the settings file.
@@ -261,7 +249,7 @@ without changing the settings file.
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
 | `rpm` | `X_VQ_Engine_Speed` | RPM | `rpm_raw * 12.5` |
-| `load` | `X_VQ_Engine_Load` | % | derived by RomRaider from `bfs_ms` and the reference word of the open ROM |
+| `load` | `X_VQ_Engine_Load` | % | `normalized_load_raw * 100 / 128` |
 | `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw / 2048` |
 | `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
 | `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw / 100` |
@@ -280,8 +268,8 @@ plugin file declares the same channel table and the listening endpoint, so
 the dashboard writes it: `INSTALL PLUGIN` in the `FEED` dialog places
 `vq-telemetry.plugin` in the per-user RomRaider folder,
 `~/.RomRaider/plugins` (`%USERPROFILE%\.RomRaider\plugins` on Windows), which
-a RomRaider build whose UDP data source supports derived items reads beside
-its own `plugins` folder when Logger starts. The file is out of date after an
+a RomRaider build with the UDP external data source reads beside its own
+`plugins` folder when Logger starts. The file is out of date after an
 endpoint change and after a dashboard update that changes the channel table;
 `INSTALL PLUGIN` replaces it, and Logger reads it at its next start.
 `python3 -m tools.can_dashboard.live_feed --write-plugin PATH [--endpoint
@@ -368,7 +356,8 @@ An MLG record replaces a decoded group: it restores the raw value of every
 field, the stock context, and the schema verification that the recording
 dashboard held, so the replayed engineering values equal the recorded
 channels. A rotating context that had not arrived when the record was written
-stays `--`.
+stays `--`. A record of retired profile 5 restores the fields of that profile,
+and a field it does not carry stays `--`.
 
 While a replay is loaded, a transport bar appears under the status fields,
 or under the timer bar while it is shown:
@@ -419,9 +408,10 @@ loop jump ends a running recording.
 
 ## Drive context
 
-The `Gear` and `Selected map` rows of the `Temperatures and context` panel
-show the transmission gear and the selected map, and the optional timer bar
-shows the 0-100 and 100-200 km/h times. `GEAR`, `SELECTED MAP`, `0-100 KM/H`,
+The `Gear`, `Selected map`, `Rolling Launch`, and `Rolling Launch reason` rows
+of the `Temperatures and context` panel show the transmission gear, the
+selected map, and the Rolling Launch state, and the optional timer bar shows
+the 0-100 and 100-200 km/h times. `GEAR`, `SELECTED MAP`, `0-100 KM/H`,
 and `100-200 KM/H` are also available as hero cards.
 
 ### Transmission gear
@@ -436,8 +426,13 @@ the value as the `Gear` channel, `NaN` where the TCM reports no forward gear.
 
 ### Selected map
 
-The telemetry stream does not carry the active map index, so `Selected map` is
-an inference from the stock bus under the runtime contract of
+Profile 6 carries the active map index `0xFFFF5D00` of the map-switching
+runtime in context tag 2, and `Selected map` shows the index plus 1. An index
+outside 0 through 4 shows `1`, because the runtime resolves an invalid index to
+Map 1. Hover over the row name names the stream as the source.
+
+A stream without the index, such as a replay of a profile 5 recording, infers
+the map from the stock bus under the runtime contract of
 [`../../patches/map-switching-selector.md`](../../patches/map-switching-selector.md):
 every controller start selects Map 1, a SET + CANCEL gesture with N CANCEL
 taps commits Map N, and the runtime answers the commit with N pulses of ASCD
@@ -452,9 +447,22 @@ display state 4 on frame `0x551` byte 5 while it ignores selector input.
 
 A source that joins a controller run in progress shows `--` until the next
 controller start or confirmed selection. Hover over the row name adds the
-observation behind the value to the description of the map. The index stays
-an inference: a selection the bus does not show, such as a commit whose frames
-were lost, is not followed.
+observation behind the value to the description of the map. The inference
+does not follow a selection the bus does not show, such as a commit whose
+frames were lost.
+
+### Rolling Launch
+
+`Rolling Launch` shows the phase `0xFFFF5D40` of the Rolling Launch runtime,
+`IDLE`, `ACTIVE`, or `COOLDOWN`, and `Rolling Launch reason` shows the abort
+reason `0xFFFF5D41` by the names of the runtime enumeration, such as
+`BUTTON INVALID` or `TIMEOUT`. In `IDLE` the reason names the first gate that
+fails, in `ACTIVE` it reads `NONE`, and in `COOLDOWN` it keeps the reason that
+ended the run. A code outside the enumeration shows as hex, such as `0x13`.
+The phase refreshes with every snapshot and the reason with context tag 0.
+[`../../patches/rolling-launch.md`](../../patches/rolling-launch.md) specifies
+the gates and the abort reasons. A replay of a profile 5 recording shows `--`
+in both rows.
 
 ### Acceleration timer
 
@@ -644,8 +652,11 @@ The decoder retains the latest values from the paired page-9 and page-10
 contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. The bundled schema declares
-profile ID 5 with CRC16 `0xE144`; a producer that reports another profile ID
-or CRC keeps raw values only, because its slots carry other quantities. The
+profile ID 6 with CRC16 `0xF14E` and keeps the frozen contract of retired
+profile 5 with CRC16 `0xE144`, so a recording of either ID decodes with the
+fields of its own profile, and the `Schema` status field names a retired
+profile. A producer that reports another profile ID or CRC keeps raw values
+only, because its slots carry other quantities. The
 CRC covers the wire layout alone, so a restated field name or scale string
 leaves it unchanged. Stale context values remain visible while their update
 cadence is one fifth of the snapshot rate.
@@ -667,19 +678,20 @@ event that opens the knock window, and the combustion event a window observes
 is not measured. The metric has no physical unit, so the display labels the
 signed evaluator counts `cnt`.
 
-The display leaves out three fields that carry no engine quantity on this
-ECU: the front heated-oxygen-sensor bytes `0xFFFF22C4..22C5` and timing state
-`0xFFFF2023`, which no traced code writes and every recording reads as 0, and
-the atmospheric-pressure byte `0xFFFF4544`, which holds the default 207 of the
-disabled barometric input. The MLG recording keeps all three as raw channels.
+Profile 6 does not stream the front heated-oxygen-sensor bytes
+`0xFFFF22C4..22C5`, timing state `0xFFFF2023`, or the atmospheric-pressure
+byte `0xFFFF4544`: no traced code writes the first three, and every recording
+reads them as 0, and the fourth holds the default 207 of the disabled
+barometric input. Profile 5 carries them, and the display and the MLG
+recording leave them out of its replays.
 
 The A/F adjustment words and timing offset `0xFFFF564C` hold signed producer
-values in slots the profile declares unsigned, and the profile scale reads
-them as `signed raw`: two's complement values of the slot width. The model
-keeps the wire value in its raw view and converts the signed value, and the
-MLG recorder stores the signed value, because MegaLogViewer applies only scale
-and transform. A replay of a recording that stored the unsigned value decodes
-to the same display value.
+values. Profile 6 declares their slots signed. Profile 5 declares them
+unsigned, and its scale strings read them as `signed raw`: two's complement
+values of the slot width. The model converts the signed value under either
+profile, and the MLG recorder stores the signed value, because MegaLogViewer
+applies only scale and transform. A replay of a recording that stored the
+unsigned value decodes to the same display value.
 
 A field marked with `*` uses a candidate transform: engine torque state and
 torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
@@ -695,6 +707,7 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | MAF bank 1/2 | `0xFFFF101C`, `0xFFFF101E` | `raw / 200 V` | ten-bit ADC counts with a unit-nominal Q1.15 trim; the calibration sequence centres on 900 counts, which is 4.50 V, and recordings read 0.425 V with the engine stopped against an expected 0.4 V |
 | injection pulse 1..6 | `0xFFFF23C8..0xFFFF23D3` | `raw / 100 ms` | one count is 10 us: the ATU-II channel-8 down-counters run at `Pphi / 64` and the scheduler adds `800 * raw / 256` steps; a compensated software command, not a measured injector-open duration |
 | Base Fuel Schedule | `0xFFFF1026` | `raw / 2048 ms` | the fixed normalizers between the schedule and the 10 us pulse word multiply to `(1/8) * (100/256) = 100/2048`; the pulse additionally carries the common gain of 0.75..0.85, both trims, and the injector opening time, and a replay of that chain reproduces the recorded pulse with a median ratio of 1.000 |
+| engine load | `0xFFFF102C` byte | `raw * 100 / 128 percent` | scheduler snapshot of `min(255, floor(BFS * 128 / ROM16[0x9534]))` from `FUN_0003B75C` and the column coordinate of the ignition and intake-cam target maps; 100 percent is the reference schedule, and raw 255 saturates at 199.2 percent |
 | fuel/oil temperature | `0xFFFF1074`, `0xFFFF2876` | `raw - 50 degC` | outputs of thermistor table `0x12DEA` and of the byte-identical oil curve `0x12C6E`, whose code J1979 PIDs 0x05 and 0x0F declare as `degC + 50`; the factory sensor tables give 20.5 and 52 degC at their 20 and 50 degC reference voltages |
 | battery voltage | `0xFFFF1188` byte | `raw * 0.08 V` | ten-bit sample shifted right by two; the ROM limits 125, 131, 137, and 200 of the DTC monitors are the factory test conditions of 10, 10.5, 11, and 16 V; established from ROM constants and factory specifications, not from firmware arithmetic |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
@@ -705,6 +718,8 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | APC command | `0xFFFF2022` byte | `110 - raw degBTDC` | `FUN_0004DF82` normally writes `110 - final timing`, and J1979 PID 0x0E reports `110 - raw` as the timing advance in every mode, so the field is the delivered command also where Rolling Launch or a stock mode moves it away from the timing coordinate; `tools/logs/mlg_relation_audit.py` checks `final timing = 110 - raw` on recordings; a software command, not a measured spark angle |
 | timing offset 564C | `0xFFFF564C` byte | signed `raw deg` | `FUN_0004DBE8` adds the byte to the final timing coordinate inside its coolant, speed, and load window, and its sources bound it to -5..0; every recording reads 0 |
 | fuel inhibit | `0xFFFF22E0` byte | `none`, `all`, or the list of cut cylinders | code-proven bit `k` = injector output `k`: a set bit replaces channel word `k` with the opening time and withholds the channel from the fire mask; output `k` drives cylinder `k + 1` by the diagnostic Power Balance order, which is not measured electrically |
+| selected map | `0xFFFF5D00` byte | `raw + 1`, `1` outside 0..4 | active index of the map-switching runtime, which resolves an invalid index to Map 1 |
+| Rolling Launch phase and reason | `0xFFFF5D40`, `0xFFFF5D41` bytes | names of the `Phase` and `AbortReason` codes of `patches/rolling_launch.py`, hex outside them | runtime state of the Rolling Launch patch |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
 | knock channels | telemetry latch `0xFFFF5E0D` | `none` or the list of channels | code-proven: the evaluator sets bit `c - 1` on an exceedance of channel `c` |
 | knock margin ch 1..6 | telemetry latches `0xFFFF5E10..0xFFFF5E1B` | signed evaluator counts, `cnt` | the wrapper behind the only literal of the knock slice evaluator repeats the stock `threshold + 0x80000000 < metric` comparison on the values the evaluator leaves in RAM; the unit of the metric is the summed and gain-scaled sensor difference and has no physical conversion |

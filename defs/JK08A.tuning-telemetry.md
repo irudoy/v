@@ -29,17 +29,17 @@ so each tagged field set refreshes at `19.53125 Hz`.
 The fixed pages provide:
 
 - engine speed, both MAF sensor words, combined airflow, base fuel schedule,
-  and calculated load;
+  normalized load, and calculated load;
 - final ignition coordinate, APC command, ignition state, knock state, and
   latched knock interval count and channel mask;
 - all six calculated injection words, the end-of-injection angle word, and the
   final fuel-output inhibit mask;
-- both front heated-oxygen-sensor bytes, which no code writes on this engine;
 - both accelerator channels, primary throttle feedback, absolute throttle,
   bounded request, shared target, and both final channel targets;
 - engine torque state;
 - intake and exhaust CVTC targets plus both-bank actual intake and exhaust
-  positions.
+  positions;
+- the Rolling Launch phase.
 
 The rotating contexts provide:
 
@@ -49,14 +49,18 @@ The rotating contexts provide:
 - intake CVTC solenoid duty commands and the live intake duty pair they
   latch under one tag, so both pairs come from the same scheduler pass, and
   high-resolution exhaust duty;
-- the atmospheric-pressure byte, which holds a fixed calibration default, and
-  battery voltage;
+- the Rolling Launch abort reason and battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
 - the minimum knock threshold margin of each of the six evaluator channels
   since the previous capture of its tag;
-- timing state `FFFF2023`, which no code writes, timing offset `FFFF564C`, and
-  the in-band transport identity and counters.
+- the active map index, timing offset `FFFF564C`, and the in-band transport
+  identity and counters.
+
+The front heated-oxygen-sensor bytes `FFFF22C4/22C5` and timing state
+`FFFF2023` have no producer on this engine, and the atmospheric-pressure byte
+`FFFF4544` reads the default 207 of the disabled barometric input, so the
+profile streams none of them.
 
 Stock CAN independently provides RPM, vehicle speed, selector position, ASCD
 input, and dashboard state. The dashboard and MLVLG recorder retain those
@@ -80,8 +84,9 @@ units are the ECU's own J1979 Mode 01 declarations, recorded in the
 diagnostics note; they describe the firmware model, not a hardware measurement.
 Code and ROM constants fix the remaining closed scales: MAF, pedal, and
 throttle sensor voltage at `raw / 200 V`, Base Fuel Schedule at
-`raw / 2048 ms`, the injection words at `raw / 100 ms`, CVTC targets and
-positions at `raw * 0.5 - 64 degCA`, the intake duty command at
+`raw / 2048 ms`, normalized load at `raw * 100 / 128` percent of the Base Fuel
+Schedule reference `ROM16[0x9534]`, the injection words at `raw / 100 ms`,
+CVTC targets and positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 `raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
 oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
@@ -95,9 +100,7 @@ torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared
 throttle target at `raw * 0.0008 cm2`, and both A/F adjustment states at
 signed `raw * 0.002` keep candidate conversions; the dashboard and MLG schema
 mark them, and each requires synchronized target validation before its
-engineering unit is treated as measured fact. The atmospheric-pressure byte
-reads the default 207 of the disabled barometric input and carries no
-pressure.
+engineering unit is treated as measured fact.
 
 ## Remaining semantic gaps
 
@@ -166,7 +169,7 @@ in JK08A, reads zero, and is not streamed.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 5, generated CRC16 `0xE144`, one
+Schema 2 uses protocol version 2, profile ID 6, generated CRC16 `0xF14E`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The CRC covers the wire layout alone:
 protocol version, profile ID, page count, and the placement, width, and
@@ -181,12 +184,13 @@ reset, and START activates telemetry even when the definition flag is off. The
 dashboard can send these commands only through an active/ACK PCAN connection.
 
 The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
-this current schema. Historical schema 1 captures require the historical
-decoder revision and are not accepted as schema 2 input.
+this current schema. They decode recordings of retired profile 5 through its
+frozen contract in the host schema. Historical schema 1 captures require the
+historical decoder revision and are not accepted as schema 2 input.
 
 The firmware and executable SH-2E gate are complete. Three road drives on
-2026-08-26 with profile 1 and a road session on 2026-09-21 with the current
-profile 5 carried the eleven-frame stream with the overrun and abort counters
-at zero; [`../patches/hardware-results.toml`](../patches/hardware-results.toml)
-records the captures. Physical validation of mailbox-31 START/STOP remains
-required.
+2026-08-26 with profile 1 and a road session on 2026-09-21 with profile 5
+carried the eleven-frame stream with the overrun and abort counters at zero;
+[`../patches/hardware-results.toml`](../patches/hardware-results.toml)
+records the captures. The current profile 6 has no vehicle recording, and
+physical validation of mailbox-31 START/STOP remains required.

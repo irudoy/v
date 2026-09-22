@@ -280,6 +280,7 @@ PANELS = (
         Metric("maf_b1_v", "MAF bank 1", "V", 3),
         Metric("maf_b2_v", "MAF bank 2", "V", 3),
         Metric("bfs_ms", "BFS", "ms", 3),
+        Metric("normalized_load_percent", "Engine load", "%", 1),
         Metric("af_sensor_b1_v", "A/F sensor 1 B1", "V", 3),
         Metric("af_sensor_b2_v", "A/F sensor 1 B2", "V", 3),
         Metric("af_state_factor", "A/F state factor", "", 4),
@@ -330,6 +331,8 @@ PANELS = (
         Metric("gear", "Selector"),
         Metric("tcm_gear", "Gear", "", 0),
         Metric("selected_map", "Selected map", "", 0),
+        Metric("rolling_launch_phase_name", "Rolling Launch"),
+        Metric("rolling_launch_abort_name", "Rolling Launch reason"),
         Metric("ascd_button", "ASCD input"),
         Metric("dashboard_state", "Dashboard state"),
         Metric("gps_lat", "GPS latitude", "deg", 6),
@@ -384,6 +387,7 @@ DEFAULT_HERO_KEYS = tuple(
     metric.key for metric in HERO_METRICS if metric.key not in OPTIONAL_HERO_KEYS
 )
 RUN_METRICS = {"zero_to_100_s": "0-100", "hundred_to_200_s": "100-200"}
+TELEMETRY_MAP_SOURCE = "the map index of the telemetry stream"
 
 
 def _hero_catalog():
@@ -750,7 +754,8 @@ class DataPanel(tk.Frame):
 STATUS_FIELDS = (
     ("source_var", "Telemetry source", "text", "left",
      "Source: PCAN_USBBUS1, 500000 bit/s"),
-    ("schema_var", "Wire schema state", "amber", "left", "Schema: VERIFIED"),
+    ("schema_var", "Wire schema state", "amber", "left",
+     "Schema: VERIFIED, retired profile 5"),
     ("rate_var", "Group and frame rates", "cyan", "left",
      "Groups: 100.0 Hz | Frames: 1000.0 Hz"),
     ("loss_var", "Loss and integrity counters", "muted", "left",
@@ -789,6 +794,20 @@ RUN_TOOLTIPS = {
         "100 and 200 km/h. Last run and best run of this source."
     ),
 }
+
+
+def schema_status(model):
+    """Name the verified profile ID and whether the schema retired it."""
+    if not model.schema_verified:
+        return "Schema: waiting"
+    if model.profile_id is None:
+        return "Schema: VERIFIED"
+    if (
+        model.profile_id != model.decoder.profile["id"]
+        and model.profile_id in model.decoder.versions
+    ):
+        return f"Schema: VERIFIED, retired profile {model.profile_id}"
+    return f"Schema: VERIFIED, profile {model.profile_id}"
 
 
 def format_replay_time(seconds):
@@ -1401,10 +1420,14 @@ class DashboardApp:
         self._refresh_replay()
 
     def _describe(self, key):
-        """What a metric means; the selected map adds its last observation."""
+        """What a metric means; the selected map adds its source."""
         text = describe(key)
         if key == "selected_map":
-            text = f"{text}\n\nLast observation: {self.model.drive.map.reason}."
+            if self.model.telemetry_map is None:
+                source = f"Last observation: {self.model.drive.map.reason}."
+            else:
+                source = f"Source: {TELEMETRY_MAP_SOURCE}."
+            text = f"{text}\n\n{source}"
         return text
 
     def _timeline_bounds(self):
@@ -2449,9 +2472,7 @@ class DashboardApp:
             self.status_dot.configure(fg=color)
         self.status_field.set_foreground(color)
         self._sync_source_button()
-        self.schema_var.set(
-            "Schema: VERIFIED" if self.model.schema_verified else "Schema: waiting"
-        )
+        self.schema_var.set(schema_status(self.model))
         self.rate_var.set(
             f"Groups: {stats.snapshot_hz:5.1f} Hz | Frames: {stats.telemetry_frame_hz:6.1f} Hz"
         )

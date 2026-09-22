@@ -316,6 +316,32 @@ mov #0x5,r1
         self.assertEqual(result.instruction_count, 720)
         self.assertEqual(result.code_entry_count, 11)
 
+    def test_can_telemetry_harness_rejects_the_neighbouring_profile_ids(self):
+        (profile,) = can_telemetry_profile.load_manifest().profiles
+        previous, high = profile.profile_id - 1, profile.profile_id + 1
+        harness = (
+            ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
+        ).read_text(encoding="utf-8")
+        published = " ".join(
+            (ROOT / "patches/can-telemetry.md").read_text(encoding="utf-8").split()
+        )
+
+        for case, value in (
+            ("CONFIG_PROFILE_ZERO", 0),
+            ("CONFIG_PROFILE_PREVIOUS", previous),
+            ("CONFIG_PROFILE_HIGH", high),
+        ):
+            with self.subTest(case=case):
+                self.assertRegex(
+                    harness, rf"case {case}:\s+config\[4\] = {value};"
+                )
+        self.assertRegex(harness, rf"rom_pointer\(CONFIG\)\[4\] = {previous};")
+        self.assertIn(
+            f"rejection of profile IDs 0, {previous}, and {high} by the capture "
+            f"entry and of profile ID {previous} by the control receiver",
+            published,
+        )
+
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
         fixture = bytearray(32)
         fixture[4:16] = bytes.fromhex(
@@ -443,10 +469,21 @@ mov #0x5,r1
         source = TELEMETRY_VERIFIER.HARNESS_SOURCE.read_text(
             encoding="utf-8"
         )
+        fixture = TELEMETRY_VERIFIER.require_harness_configuration()
+
+        def row(values):
+            return ", ".join(f"0x{value:02x}" for value in values)
+
+        def drift(start, stop):
+            # The last byte of each span is the field under test.
+            changed = bytearray(fixture[start:stop])
+            changed[-1] ^= 1
+            return row(fixture[start:stop]), row(changed)
+
         drifts = (
-            ("profile CRC", "0xe1, 0x44", "0xe1, 0x45"),
-            ("page count", "0x05, 0x0b", "0x05, 0x0c"),
-            ("profile ID", "0x02, 0x01, 0x05", "0x02, 0x01, 0x06"),
+            ("profile CRC", *drift(10, 12)),
+            ("page count", *drift(4, 6)),
+            ("profile ID", *drift(2, 5)),
         )
         original = TELEMETRY_VERIFIER.HARNESS_SOURCE
         with tempfile.TemporaryDirectory() as directory:

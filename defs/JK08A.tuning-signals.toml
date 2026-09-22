@@ -65,6 +65,19 @@ evidence = "exact-code"
 note = "The internal base schedule is available at full rate. One count is 1/2048 ms in the time base of the injection-pulse words: the stage normalizers between the schedule and the 10 us pulse words multiply to exactly 100/2048."
 
 [[signal]]
+id = "normalized_load"
+domain = "air"
+label = "Normalized engine load"
+priority = "core"
+coverage = "fixed"
+current_fields = ["normalized_load_raw"]
+sources = [0xFFFF102C]
+widths = [1]
+dids = []
+evidence = "exact-code"
+note = "FUN 0003B75C stores min(255, floor(uint16[0xFFFF1026] * 128 / ROM16[0x9534])) at 0xFFFF1048, the Base Fuel Schedule as a ratio to the calibration reference 0x6A5A in 1/128 steps, and scheduler FUN 00020DFE copies it to 0xFFFF102C. The snapshot is the column coordinate of the ignition and intake-cam target maps and the normal Y input of exhaust-CVTC target accessor 0x000BFDC0. Raw 128 is 100 percent of the reference, and raw 255 is the saturation at 199.2 percent."
+
+[[signal]]
 id = "calculated_load"
 domain = "air"
 label = "Calculated load"
@@ -75,7 +88,7 @@ sources = [0xFFFF413E]
 widths = [1]
 dids = [0x1117]
 evidence = "exact-code"
-note = "This is the J1979-style calculated-load byte, not the normalized BFS map coordinate."
+note = "This is the J1979-style calculated-load byte, not the normalized BFS map coordinate of signal normalized_load."
 
 [[signal]]
 id = "fuel_output_inhibit"
@@ -107,14 +120,14 @@ note = "All six calculated words are streamed; service 0x22 publishes only the f
 id = "front_heated_oxygen_sensors"
 domain = "fuel"
 label = "Front heated oxygen sensor bytes"
-priority = "core"
-coverage = "fixed"
-current_fields = ["front_oxygen_sensor_b1_raw", "front_oxygen_sensor_b2_raw"]
+priority = "research"
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF22C4, 0xFFFF22C5]
 widths = [1, 1]
 dids = [0x1118, 0x1119]
 evidence = "exact-code+homologous-diagnostic"
-note = "Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank 2 bytes. The engine has front A/F sensors, and no traced code writes the bytes: only the DID records reference them, a whole-program trace of 0xFFFF22C0..0xFFFF22C7 finds writes to the neighbouring bytes alone, ROM8[0x8936] = 0 declares no J1979 oxygen sensor, and every recording reads 0."
+note = "Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank 2 bytes. The engine has front A/F sensors, and no traced code writes the bytes: only the DID records reference them, a whole-program trace of 0xFFFF22C0..0xFFFF22C7 finds writes to the neighbouring bytes alone, ROM8[0x8936] = 0 declares no J1979 oxygen sensor, and every recording reads 0, so the bytes are not streamed. The live front-sensor signal is front_af_sensor_words."
 
 [[signal]]
 id = "commanded_mixture"
@@ -187,12 +200,12 @@ domain = "ignition"
 label = "Ignition control state"
 priority = "high"
 coverage = "rotating"
-current_fields = ["timing_state_2023_raw", "timing_state_564c_raw"]
+current_fields = ["timing_state_564c_raw"]
 sources = [0xFFFF2023, 0xFFFF564C]
 widths = [1, 1]
 dids = [0x1162, 0x112D]
 evidence = "exact-code"
-note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0. 0xFFFF564C is a signed timing offset in degrees, bounded -5..0, that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window; the profile slot is unsigned, so hosts read it as a signed byte."
+note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is a signed timing offset in degrees, bounded -5..0, that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window; the profile declares its slot signed."
 
 [[signal]]
 id = "knock_control_state"
@@ -316,13 +329,13 @@ id = "pressure_context"
 domain = "air"
 label = "Manifold and atmospheric pressure"
 priority = "high"
-coverage = "rotating"
-current_fields = ["atmospheric_pressure_raw"]
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF118A, 0xFFFF4544, 0xFFFF16D2]
 widths = [1, 1, 1]
 dids = [0x1116, 0x1129, 0x112A]
 evidence = "exact-code+homologous-diagnostic"
-note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. The target has no manifold-pressure sensor and both MAP-labelled bytes hold zero, so only the atmospheric byte is streamed. The barometric input is disabled by ROM8[0x893E] and ROM8[0x893F], so FUN 0003CBE8 stores the calibration default ROM16[0x9382] = 0xCF00 on every pass and the streamed byte reads 207 without carrying pressure."
+note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. The target has no manifold-pressure sensor and both MAP-labelled bytes hold zero. The barometric input is disabled by ROM8[0x893E] and ROM8[0x893F], so FUN 0003CBE8 stores the calibration default ROM16[0x9382] = 0xCF00 on every pass and the atmospheric byte reads 207 without carrying pressure. None of the three bytes carries a measurement, and none is streamed."
 
 [[signal]]
 id = "battery_voltage"

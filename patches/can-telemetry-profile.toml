@@ -6,7 +6,9 @@
 # contract. The profile CRC covers the wire layout alone: protocol version,
 # profile ID, page count, and the placement, width, and signedness of every
 # slot. Names and scale strings are outside it, and a slot that carries a
-# different quantity takes a new profile ID. Runtime arbitrary-address
+# different quantity takes a new profile ID. The host contract of every
+# retired profile ID stays frozen in can-telemetry-retired-profiles.json, so
+# recordings of that ID remain decodable. Runtime arbitrary-address
 # interpretation is intentionally unsupported.
 
 schema_version = 2
@@ -29,7 +31,7 @@ state_address = 0xFFFF5E00
 
 [[profile]]
 name = "tuning"
-id = 5
+id = 6
 page_count = 11
 
 [[field]]
@@ -121,15 +123,15 @@ signed = false
 scale = "raw / 100 g/s"
 
 [[field]]
-name = "front_oxygen_sensor_b1_raw"
+name = "normalized_load_raw"
 page = 1
 offset = 7
 width = 1
-source = 0xFFFF22C4
+source = 0xFFFF102C
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw; the producer never writes the byte, which reads 0"
+scale = "raw * 100 / 128 percent of the Base Fuel Schedule reference, saturated at raw 255"
 
 [[field]]
 name = "bfs_raw"
@@ -143,15 +145,15 @@ signed = false
 scale = "raw / 2048 ms"
 
 [[field]]
-name = "front_oxygen_sensor_b2_raw"
+name = "rolling_launch_phase"
 page = 2
 offset = 3
 width = 1
-source = 0xFFFF22C5
+source = 0xFFFF5D40
 profiles = ["tuning"]
-kind = "ecu_ram"
+kind = "runtime_state"
 signed = false
-scale = "raw; the producer never writes the byte, which reads 0"
+scale = "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN"
 
 [[field]]
 name = "injection_0_raw"
@@ -557,7 +559,7 @@ scale = "raw * 39 / 100 percent"
 [[context]]
 page = 9
 tag = 2
-name = "long_fuel_trim_timing"
+name = "long_fuel_trim_map_index_timing"
 
 [[context.field]]
 name = "ltft_b1_raw"
@@ -576,20 +578,20 @@ signed = true
 scale = "raw / 256 - 100 percent"
 
 [[context.field]]
-name = "timing_state_2023_raw"
+name = "active_map_index"
 width = 1
-source = 0xFFFF2023
-kind = "ecu_ram"
+source = 0xFFFF5D00
+kind = "runtime_state"
 signed = false
-scale = "raw; the producer never writes the byte, which reads 0"
+scale = "raw + 1 map number; 0 through 4 select Maps 1 through 5, and any other value selects Map 1"
 
 [[context.field]]
 name = "timing_state_564c_raw"
 width = 1
 source = 0xFFFF564C
 kind = "ecu_ram"
-signed = false
-scale = "signed raw deg added to the final timing coordinate, bounded -5..0"
+signed = true
+scale = "raw deg added to the final timing coordinate, bounded -5..0"
 
 [[context]]
 page = 9
@@ -668,15 +670,15 @@ scale = "threshold minus metric in evaluator units, minimum since the previous c
 [[context]]
 page = 10
 tag = 0
-name = "pressure_voltage_and_trim_terms"
+name = "launch_abort_voltage_and_trim_terms"
 
 [[context.field]]
-name = "atmospheric_pressure_raw"
+name = "rolling_launch_abort_reason"
 width = 1
-source = 0xFFFF4544
-kind = "ecu_ram"
+source = 0xFFFF5D41
+kind = "runtime_state"
 signed = false
-scale = "raw; the barometric input is disabled and the byte holds a fixed calibration default"
+scale = "enumeration: the latest Rolling Launch abort reason, 0 NONE through 18 MODE_CHANGED"
 
 [[context.field]]
 name = "battery_voltage_raw"
@@ -765,8 +767,8 @@ name = "af_adjustment_b1_raw"
 width = 2
 source = 0xFFFF45A0
 kind = "ecu_ram"
-signed = false
-scale = "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1"
+signed = true
+scale = "candidate raw * 0.002 A/F ADJ factor, bounded -1..1"
 
 [[context]]
 page = 10
@@ -794,8 +796,8 @@ name = "af_adjustment_b2_raw"
 width = 2
 source = 0xFFFF45A2
 kind = "ecu_ram"
-signed = false
-scale = "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1"
+signed = true
+scale = "candidate raw * 0.002 A/F ADJ factor, bounded -1..1"
 
 [[context]]
 page = 10

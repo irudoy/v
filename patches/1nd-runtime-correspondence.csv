@@ -123,9 +123,8 @@ telemetry,fuel_inhibit_mask,ffff22e0,fffe92e4,,,mapped,Multiple homologous fuel-
 telemetry,maf_b1_raw,ffff101c,fffe8024,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_b2_raw,ffff101e,fffe8026,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_total_raw,ffff3852,fffead0a,,,mapped,Aligned diagnostic pointer table preserves the field position
-telemetry,front_oxygen_sensor_b1_raw,ffff22c4,fffe81fc,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,normalized_load_raw,ffff102c,,,,unsupported,No normalized load snapshot is established because the 32-instruction JK08A producer at 0003bd1c has no match in the target with PC-relative displacements masked
 telemetry,bfs_raw,ffff1026,fffe802e,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,front_oxygen_sensor_b2_raw,ffff22c5,fffe81fd,,,mapped,Aligned diagnostic pointer table preserves the adjacent byte
 telemetry,injection_0_raw,ffff23c8,fffe93d6,,,mapped,Aligned diagnostic pointer table and channel-array producer agree
 telemetry,injection_1_raw,ffff23ca,fffe93d8,,,mapped,Aligned diagnostic pointer table and channel-array layout agree
 telemetry,injection_2_raw,ffff23cc,fffe93da,,,mapped,Channel-indexed producer preserves the two-byte stride
@@ -163,7 +162,6 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe945b,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe945c,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
 telemetry,ltft_b1_raw,ffff2302,fffe9302,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_b2_raw,ffff2304,fffe9304,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,timing_state_2023_raw,ffff2023,fffe900e,,,mapped,Aligned diagnostic pointer table preserves the field position
 telemetry,timing_state_564c_raw,ffff564c,fffecfe8,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,The target never references the ATU-II channel-7 buffer registers so no intake solenoid duty command cell is established
 telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The adjacent command cell follows the same unestablished pair
@@ -171,7 +169,6 @@ telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,mapped,The target long-term tr
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffecfe4,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction
 telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8b10,,,mapped,Aligned diagnostic pointer table preserves the word position
 telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8b12,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
-telemetry,atmospheric_pressure_raw,ffff4544,fffebc54,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,battery_voltage_raw,ffff1188,fffe817c,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe97e6,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe97e8,,,mapped,Aligned diagnostic pointer table preserves the adjacent word

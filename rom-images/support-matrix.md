@@ -95,14 +95,14 @@ address profile in `../patches/rom-address-profiles.toml`: every stock address
 is recovered in the target image, the runtime occupies `0x13B108..0x13F000` of
 the audited erased region `0x139DC4..0x13FF00`, and
 `../patches/1me3b-runtime-correspondence.csv` records the evidence of every
-binding. Of the 63 telemetry fields, 59 bind to 1ME3B ECU RAM; 45 of those
+binding. Of the 60 telemetry fields, 55 bind to 1ME3B ECU RAM; 41 of those
 sources are confirmed against the DID pointer table at `0x22AE4`, whose
 indices match `0x22A70` on 1ND0A. The compiler packs flag bytes differently from `1ND`: the
 ASCD-enabled flag is bit 3 of `0xFFFEB985`, the native fuel-cut state byte
 `0xFFFE948A` keeps its active and armed flags in bits 3 and 2, and the knock
 surface flag sits in bit 7 of `0xFFFE945B`, outside the telemetry wire
-contract, so that field is declared unavailable beside the knock timing state
-and the two intake solenoid duty commands.
+contract, so that field is declared unavailable beside the knock timing state,
+the normalized load snapshot, and the two intake solenoid duty commands.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,

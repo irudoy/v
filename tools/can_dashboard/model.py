@@ -9,7 +9,7 @@ from pathlib import Path
 import time
 
 from tools.can_dashboard.acceleration import AccelerationTimer
-from tools.can_dashboard.selected_map import MapTracker
+from tools.can_dashboard.selected_map import MAP_COUNT, MapTracker
 from tools.logs import can_telemetry
 
 
@@ -72,6 +72,31 @@ KNOCK_MARGIN_IDLE = 0x7FFF
 KNOCK_MARGIN_FIELDS = tuple(
     f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
 )
+# Rolling Launch phase and abort reason codes of the runtime state bytes
+# 0xFFFF5D40 and 0xFFFF5D41, in the order of the enumerations of
+# patches/rolling_launch.py.
+ROLLING_LAUNCH_PHASES = ("IDLE", "ACTIVE", "COOLDOWN")
+ROLLING_LAUNCH_ABORT_REASONS = (
+    "NONE",
+    "CONFIG INVALID",
+    "MAP INDEX INVALID",
+    "MAP DISABLED",
+    "SELECTOR BUSY",
+    "FEEDBACK BUSY",
+    "ASCD ACTIVE",
+    "BUTTON RELEASED",
+    "BUTTON INVALID",
+    "SPEED LOW",
+    "RPM LOW",
+    "PEDAL LOW",
+    "COOLANT OUTSIDE",
+    "RESERVED 13",
+    "TIMEOUT",
+    "MAP REQUEST",
+    "STATE CORRUPT",
+    "MAP CHANGED",
+    "MODE CHANGED",
+)
 
 DASHBOARD_CALIBRATIONS = {
     "final_timing_raw": can_telemetry.Calibration("timing_command_deg"),
@@ -125,6 +150,11 @@ DASHBOARD_CALIBRATIONS = {
     "af_adjustment_b2_raw": can_telemetry.Calibration(
         "af_adjustment_b2", 0.002, signed_bits=16
     ),
+    # The zero-based slot index of the map-switching runtime names Map
+    # index + 1; the runtime reads an index outside the slots as Map 1.
+    "active_map_index": can_telemetry.Calibration(
+        "selected_map_number", 1.0, 1
+    ),
 }
 
 FUEL_INHIBIT_ALL = 0x3F
@@ -148,6 +178,19 @@ def knock_channels(mask):
     return "none" if mask == 0 else f"ch {_set_bits(mask)}"
 
 
+def _code_name(names, code):
+    return names[code] if 0 <= code < len(names) else f"0x{code:02X}"
+
+
+def profile_field_names(profile):
+    """Return the fixed and context field names of one profile, in order."""
+    return tuple(field["name"] for field in profile["fields"]) + tuple(
+        field["name"]
+        for context in profile.get("contexts", ())
+        for field in context["fields"]
+    )
+
+
 def _dashboard_engineering_values(raw):
     values = {
         calibration.target: calibration.apply(raw[source])
@@ -167,6 +210,14 @@ def _dashboard_engineering_values(raw):
     if "knock_channel_mask_latched" in raw:
         values["knock_channels_latched"] = knock_channels(
             raw["knock_channel_mask_latched"]
+        )
+    if "rolling_launch_phase" in raw:
+        values["rolling_launch_phase_name"] = _code_name(
+            ROLLING_LAUNCH_PHASES, raw["rolling_launch_phase"]
+        )
+    if "rolling_launch_abort_reason" in raw:
+        values["rolling_launch_abort_name"] = _code_name(
+            ROLLING_LAUNCH_ABORT_REASONS, raw["rolling_launch_abort_reason"]
         )
     return values
 
@@ -327,7 +378,12 @@ def _window_rate(samples, now, window=2.0):
 
 
 class DashboardModel:
-    """Retain the latest fixed and rotating fields from strict snapshots."""
+    """Retain the latest fixed and rotating fields from strict snapshots.
+
+    The fields belong to the profile ID the stream identifies. A stream of a
+    retired ID keeps the fields of that ID, and a change of ID drops every
+    retained field the new ID does not carry.
+    """
 
     def __init__(
         self,
@@ -349,6 +405,7 @@ class DashboardModel:
         self.engineering = {}
         self.updated_at = {}
         self.schema_verified = False
+        self.profile_id = None
         self.last_tick = None
         self.last_run = None
         self.last_snapshot_monotonic = None
@@ -374,13 +431,11 @@ class DashboardModel:
         self._record_tick = None
         self._record_run = 0
         self._record_unwrapped = None
-        self._field_names = tuple(
-            field["name"] for field in self.decoder.profile["fields"]
-        ) + tuple(
-            field["name"]
-            for context in self.decoder.profile.get("contexts", ())
-            for field in context["fields"]
-        )
+        self._field_names = profile_field_names(self.decoder.profile)
+        self._version_fields = {
+            profile_id: frozenset(profile_field_names(version))
+            for profile_id, version in self.decoder.versions.items()
+        }
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 
@@ -458,10 +513,16 @@ class DashboardModel:
                 unwrapped = self._record_unwrapped + delta
         self._record_tick = tick16
         self._record_unwrapped = unwrapped
+        verified = values.get("schema_verified") == 1
+        profile_id = values.get("profile_id")
+        profile_id = (
+            int(profile_id) if verified and _finite(profile_id) else None
+        )
+        carried = self._version_fields.get(profile_id, self._field_names)
         fields = {}
         for name in self._field_names:
             value = values.get(name)
-            if _finite(value):
+            if name in carried and _finite(value):
                 fields[name] = int(round(value))
         snapshot = can_telemetry.Snapshot(
             tick16=tick16,
@@ -471,8 +532,9 @@ class DashboardModel:
             fields=fields,
             context_tag=None,
             context_name=None,
-            schema_verified=values.get("schema_verified") == 1,
+            schema_verified=verified,
             timestamp=record.timestamp,
+            profile_id=profile_id,
         )
         self.recorded_groups += 1
         self._accept_snapshot(snapshot, now)
@@ -499,6 +561,11 @@ class DashboardModel:
         self.last_snapshot_monotonic = now
         self._snapshot_times.append(now)
         self.schema_verified = snapshot.schema_verified
+        if (
+            snapshot.profile_id is not None
+            and snapshot.profile_id != self.profile_id
+        ):
+            self._select_version(snapshot.profile_id)
         fields = {
             name: value
             for name, value in snapshot.fields.items()
@@ -511,6 +578,18 @@ class DashboardModel:
             retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
             self.engineering.update(can_telemetry.engineering_values(retained))
             self.engineering.update(_dashboard_engineering_values(self.raw))
+
+    def _select_version(self, profile_id):
+        """Keep only the retained fields that the new profile ID carries."""
+        self.profile_id = profile_id
+        names = self._version_fields.get(profile_id)
+        if names is None:
+            return
+        for retained in (self.raw, self.updated_at):
+            for name in [name for name in retained if name not in names]:
+                del retained[name]
+        # The snapshot that selected the ID rebuilds the engineering values.
+        self.engineering.clear()
 
     def _set_gear(self, code):
         self.gear_raw = code
@@ -606,8 +685,21 @@ class DashboardModel:
         return self.raw.get(name, default)
 
     @property
+    def telemetry_map(self):
+        """Return the map the telemetry map index names, or None."""
+        if not self.schema_verified:
+            return None
+        number = self.engineering.get("selected_map_number")
+        if number is None:
+            return None
+        number = int(number)
+        return number if 1 <= number <= MAP_COUNT else 1
+
+    @property
     def selected_map(self):
-        return self.drive.map.number
+        """The telemetry map index, else the map the stock bus implies."""
+        number = self.telemetry_map
+        return self.drive.map.number if number is None else number
 
     @property
     def high_detonation_selected(self):
@@ -668,6 +760,8 @@ class DemoGenerator:
         injection = 1.4 + load / 28
         cvtc = 4 + 27 * wave
         timing = round(8 + 12 * (1 - wave))
+        bfs_ms = 2.0 + 4.0 * wave
+        launch = wave > 0.97
         return {
             "rpm_raw": rpm / 12.5,
             "final_timing_raw": timing,
@@ -676,9 +770,10 @@ class DemoGenerator:
             "maf_b1_raw": (1.05 + 2.2 * wave) * 200,
             "maf_b2_raw": (1.08 + 2.15 * wave) * 200,
             "maf_total_raw": maf_total * 100,
-            "front_oxygen_sensor_b1_raw": 0,
-            "bfs_raw": (2.0 + 4.0 * wave) * 2048,
-            "front_oxygen_sensor_b2_raw": 0,
+            # Raw load 128 is the stock JK08A reference schedule word 27226.
+            "normalized_load_raw": min(255, bfs_ms * 2048 * 128 / 27226),
+            "bfs_raw": bfs_ms * 2048,
+            "rolling_launch_phase": 1 if launch else 0,
             **{
                 f"injection_{index}_raw": (injection + index * 0.02) * 100
                 for index in range(6)
@@ -721,8 +816,8 @@ class DemoGenerator:
             "intake_cvtc_duty_b2_raw": (19 + 54 * wave) * 256 / 100,
             "ltft_b1_raw": 102.1 * 256,
             "ltft_b2_raw": 101.6 * 256,
-            "timing_state_2023_raw": 0,
-            "timing_state_564c_raw": -round(2 * wave) & 0xFF,
+            "active_map_index": 0,
+            "timing_state_564c_raw": -round(2 * wave),
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
@@ -734,14 +829,15 @@ class DemoGenerator:
             "ltft_adjustment_b1_raw": 100.3 * 256,
             "exhaust_cvtc_duty_b1_word_raw": (12 + 48 * wave) * 1024 / 100,
             "exhaust_cvtc_duty_b2_word_raw": (13 + 47 * wave) * 1024 / 100,
-            "atmospheric_pressure_raw": 207,
+            # IDLE names its first failed gate: CANCEL is not held.
+            "rolling_launch_abort_reason": 0 if launch else 8,
             "battery_voltage_raw": 175,
             "front_af_sensor_b1_word_raw": 440 + 12 * math.sin(elapsed * 2.1),
             "front_af_sensor_b2_word_raw": 438 + 11 * math.sin(elapsed * 2.0 + 0.2),
-            "af_adjustment_b1_raw": round(60 * math.sin(elapsed)) & 0xFFFF,
+            "af_adjustment_b1_raw": round(60 * math.sin(elapsed)),
             "secondary_tps_b1_raw": 98 + 722 * wave,
             "secondary_tps_b2_raw": 102 + 718 * wave,
-            "af_adjustment_b2_raw": round(55 * math.sin(elapsed + 0.2)) & 0xFFFF,
+            "af_adjustment_b2_raw": round(55 * math.sin(elapsed + 0.2)),
             **{
                 name: (
                     KNOCK_MARGIN_IDLE
