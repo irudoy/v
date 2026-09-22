@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -18,6 +19,7 @@ from tools.romviz import model
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_OUTPUT = model.ROOT / "tmp" / "romviz" / "rom-atlas.html"
+SCRIPTS = ("architecture.js", "app.js")
 
 
 def _safe_json(value):
@@ -32,7 +34,9 @@ def _safe_json(value):
 def render(atlas):
     template = (HERE / "app.html").read_text(encoding="utf-8")
     css = (HERE / "app.css").read_text(encoding="utf-8")
-    javascript = (HERE / "app.js").read_text(encoding="utf-8")
+    javascript = "\n".join(
+        (HERE / name).read_text(encoding="utf-8") for name in SCRIPTS
+    )
     replacements = {
         "/*__ROMVIZ_CSS__*/": css,
         "/*__ROMVIZ_JS__*/": javascript,
@@ -46,11 +50,30 @@ def render(atlas):
 
 
 def write_atlas(manifests, output=DEFAULT_OUTPUT):
+    """Render the atlas and replace the output atomically."""
     output = Path(output).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     atlas = model.build_atlas(manifests)
-    output.write_text(render(atlas), encoding="utf-8")
+    document = render(atlas)
+    temporary = output.with_name(f".{output.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(document, encoding="utf-8")
+        os.replace(temporary, output)
+    finally:
+        temporary.unlink(missing_ok=True)
     return output, atlas
+
+
+def summary(atlas):
+    """Return the one-line inventory printed after a build or check."""
+    roms = ", ".join(
+        f"{rom['id']}={len(rom['objects'])} objects" for rom in atlas["roms"]
+    )
+    architectures = ", ".join(
+        f"{key}={len(value['blocks'])} blocks, {len(value['chains'])} chains"
+        for key, value in atlas["architectures"].items()
+    )
+    return f"{roms}; architecture {architectures or 'none'}"
 
 
 def _serve(path, port):
@@ -105,13 +128,10 @@ def main(argv=None):
         output = None
     else:
         output, atlas = write_atlas(args.rom, args.output)
-    summary = ", ".join(
-        f"{rom['id']}={len(rom['objects'])} objects" for rom in atlas["roms"]
-    )
     if args.check:
-        print(f"validated ROM atlas inputs ({summary})")
+        print(f"validated ROM atlas inputs ({summary(atlas)})")
     else:
-        print(f"wrote {output} ({summary})")
+        print(f"wrote {output} ({summary(atlas)})")
     if args.serve:
         _serve(output, args.serve)
     return 0

@@ -14,6 +14,8 @@ import xml.etree.ElementTree as ET
 
 from patches import rom_address_profiles
 from patches import rom_checksums
+from tools.mapkit import definition_projections
+from tools.romviz import architecture as architecture_model
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,8 +61,11 @@ MANIFEST_FIELDS = frozenset(
         "warnings",
         "metadata",
         "patch",
+        "architecture",
     }
 )
+ARCHITECTURE_FIELDS = frozenset({"source", "mode", "note"})
+ARCHITECTURE_MODES = ("exact", "projected", "reference")
 
 
 class ModelError(ValueError):
@@ -233,8 +238,33 @@ def _load_manifest(path):
         raise ModelError(f"{path}: metadata must be a table")
     if "patch" in raw and not isinstance(raw["patch"], list):
         raise ModelError(f"{path}: patch must be an array of tables")
+    if "architecture" in raw:
+        _check_architecture_table(path, raw["architecture"])
     raw["_path"] = path
     return raw
+
+
+def _check_architecture_table(path, table):
+    if not isinstance(table, dict):
+        raise ModelError(f"{path}: architecture must be a table")
+    missing = sorted({"source", "mode"} - set(table))
+    extra = sorted(set(table) - ARCHITECTURE_FIELDS)
+    if missing or extra:
+        raise ModelError(
+            f"{path}: architecture fields differ; missing={missing}; extra={extra}"
+        )
+    if not isinstance(table["source"], str) or not table["source"].strip():
+        raise ModelError(f"{path}: architecture.source must name a tracked file")
+    if table["mode"] not in ARCHITECTURE_MODES:
+        raise ModelError(
+            f"{path}: architecture.mode must be one of {', '.join(ARCHITECTURE_MODES)}"
+        )
+    if "note" in table and (
+        not isinstance(table["note"], str) or not table["note"].strip()
+    ):
+        raise ModelError(f"{path}: architecture.note must be a nonempty string")
+    if table["mode"] != "exact" and "note" not in table:
+        raise ModelError(f"{path}: a {table['mode']} architecture requires a note")
 
 
 def resolve_manifest(value):
@@ -1368,7 +1398,81 @@ def _validate_objects(objects, rom_size):
             raise ModelError(f"{item['id']}: range is outside ROM")
 
 
-def build_rom_model(manifest_path):
+def _load_architecture(path, cache):
+    key = path.resolve()
+    if key not in cache:
+        try:
+            cache[key] = architecture_model.load(key)
+        except architecture_model.ArchitectureError as error:
+            raise ModelError(
+                f"{_display_path(key)}: architecture gate fails: "
+                + "; ".join(error.errors)
+            ) from error
+    return cache[key]
+
+
+def _architecture_binding(manifest, cache):
+    """Bind a ROM to its architecture model and relocate its tables."""
+    table = manifest["architecture"]
+    context = f"{_display_path(manifest['_path'])} architecture"
+    architecture = _load_architecture(_repo_path(table["source"]), cache)
+    mode = table["mode"]
+    projection = definition_projections.projection_for_rom(manifest["rom"])
+    relocation = defaultdict(list)
+    unsupported = []
+    if mode == "exact":
+        ledger = architecture.ledgers.paths["functions"].resolve()
+        reviewed = manifest.get("reviewed_functions")
+        if projection is not None:
+            raise ModelError(
+                f"{context}: {manifest['rom']} has a relocated definition "
+                "projection and cannot use exact mode"
+            )
+        if not reviewed or _repo_path(reviewed).resolve() != ledger:
+            raise ModelError(
+                f"{context}: exact mode requires reviewed_functions = "
+                f"{_display_path(ledger)}"
+            )
+    else:
+        if projection is None or projection.source != architecture.rom:
+            raise ModelError(
+                f"{context}: {mode} mode requires a definition projection "
+                f"from {architecture.rom}"
+            )
+        for binding in projection.bindings:
+            kinds = ("map", "axis") if binding.entity == "Map" else ("axis", "map")
+            node_id = next(
+                (
+                    candidate
+                    for candidate in (
+                        f"{kind}:{binding.source}" for kind in kinds + ("rom",)
+                    )
+                    if candidate in architecture.nodes
+                ),
+                None,
+            )
+            if node_id is None:
+                continue
+            if not binding.mapped:
+                unsupported.append(node_id)
+                continue
+            entry = {
+                "target": binding.target,
+                "status": binding.status,
+                "variant": binding.variant,
+            }
+            if entry not in relocation[node_id]:
+                relocation[node_id].append(entry)
+    return {
+        "source": architecture.rom,
+        "mode": mode,
+        "note": table.get("note", ""),
+        "relocation": dict(sorted(relocation.items())),
+        "unsupported": sorted(set(unsupported)),
+    }
+
+
+def build_rom_model(manifest_path, architecture_cache=None):
     manifest = _load_manifest(manifest_path)
     image_path, image, digest = _registry_image(manifest)
     rom_size = len(image)
@@ -1413,6 +1517,13 @@ def build_rom_model(manifest_path):
     else:
         warnings.append("A checksum layout is not registered for this ROM.")
     objects.extend(_patch_objects(manifest, rom_size, warnings))
+    architecture = None
+    if "architecture" in manifest:
+        architecture = _architecture_binding(
+            manifest, {} if architecture_cache is None else architecture_cache
+        )
+    else:
+        warnings.append("A firmware architecture model is not declared for this ROM.")
     _validate_objects(objects, rom_size)
     objects.sort(key=lambda item: (item["start"], item["end"], item["layer"], item["id"]))
 
@@ -1445,18 +1556,26 @@ def build_rom_model(manifest_path):
         "structuralFunctions": structural_functions,
         "pageMetrics": _page_metrics(image),
         "warnings": warnings,
+        "architecture": architecture,
         "objects": objects,
     }
 
 
 def build_atlas(manifests):
     values = expand_manifest_values(manifests)
-    roms = [build_rom_model(resolve_manifest(value)) for value in values]
+    cache = {}
+    roms = [build_rom_model(resolve_manifest(value), cache) for value in values]
     ids = [rom["id"] for rom in roms]
     if len(set(ids)) != len(ids):
         raise ModelError(f"duplicate ROM models: {ids}")
+    architectures = {}
+    for architecture in sorted(cache.values(), key=lambda item: item.rom):
+        if architecture.rom in architectures:
+            raise ModelError(f"duplicate architecture models for {architecture.rom}")
+        architectures[architecture.rom] = architecture.export()
     return {
         "schemaVersion": 1,
         "layers": [{"id": key, "label": label} for key, label in LAYERS],
         "roms": roms,
+        "architectures": architectures,
     }

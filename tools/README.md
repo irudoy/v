@@ -54,6 +54,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
+| `romviz/architecture.py` | Firmware architecture gate, model export, and block, impact, path, and chain queries |
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
 | `version_index.py` | Hold the deployment table to the version pins builds, containers, and wrappers execute |
 | `single_source.py` | Hold repeated constants, ROM lists, and published counts to the file that owns each |

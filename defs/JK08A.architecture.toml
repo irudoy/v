@@ -1,0 +1,4015 @@
+# Functional architecture of the exact JK08A family.
+#
+# Every reviewed function of defs/JK08A.funcs.csv belongs to exactly one block.
+# Maps, axes, and signals join blocks through their ledger relations; the
+# explicit maps and signals arrays pin exceptions. Endpoints bind blocks to
+# peripheral registers, and chains state calculation steps with an effect and
+# a sign. tools/romviz/architecture.py validates this file against the ledgers.
+
+schema_version = 1
+rom = "JK08A"
+summary = "Hitachi SH7058 engine control of the VQ25HR: sensor capture, engine-state estimation, control calculations, protection, and ATU-II actuator output, with diagnostic, communication, and platform support lanes."
+
+[sources]
+functions = "defs/JK08A.funcs.csv"
+variables = "defs/JK08A.vars.csv"
+findings = "defs/JK08A.findings.csv"
+maps = "defs/JK08A.maps.csv"
+axes = "defs/JK08A.axes.csv"
+presentation = "defs/JK08A.overrides.toml"
+
+[[stage]]
+id = "acquisition"
+name = "Acquisition"
+lane = "flow"
+summary = "Peripheral capture of crank and cam edges, analog and discrete inputs, and throttle position sensors."
+
+[[stage]]
+id = "estimation"
+name = "Engine state"
+lane = "flow"
+summary = "Engine speed, airflow and load, temperatures, vehicle speed, accelerator pedal, engine torque, and knock estimates."
+
+[[stage]]
+id = "control"
+name = "Control calculations"
+lane = "flow"
+summary = "Fuel quantity and phase, closed-loop fuel, ignition timing, valve timing, idle air, torque request, and throttle target."
+
+[[stage]]
+id = "arbitration"
+name = "Protection and arbitration"
+lane = "flow"
+summary = "Fuel-output inhibit, deceleration fuel cut, request limiters, and the immobilizer."
+
+[[stage]]
+id = "actuation"
+name = "Actuator output"
+lane = "flow"
+summary = "Injector, ignition, throttle, and output-driver scheduling onto the ATU-II timer unit."
+
+[[stage]]
+id = "diagnostics"
+name = "On-board diagnostics"
+lane = "support"
+summary = "Monitors that qualify faults and the runtime DTC records they report into."
+
+[[stage]]
+id = "communication"
+name = "Communication"
+lane = "support"
+summary = "Diagnostic services, the HCAN1 network, and work-support adjustments."
+
+[[stage]]
+id = "platform"
+name = "Platform"
+lane = "support"
+summary = "Scheduler, startup, memory integrity, serial EEPROM access, and shared interpolation kernels."
+
+[[stage]]
+id = "unattributed"
+name = "Unattributed"
+lane = "support"
+summary = "Reviewed components whose functional role the ledgers do not establish yet."
+
+[[block]]
+id = "crank-cam"
+name = "Crank and cam capture"
+stage = "acquisition"
+summary = "ATU-II input-capture handlers for crank teeth and the four cam sensors, event-interval snapshots, cam edge-count monitors, and the crank and cam fault predicates."
+specs = ["defs/JK08A.ignition-output.md", "defs/JK08A.cvtc.md"]
+functions = [
+  "00025e4e", "00028af8", "00028b5c", "00029588", "0002a36a", "0002a5cc",
+  "0002b768", "0003cf24", "00099a48", "000c22dc", "000c2c58", "000c2d76",
+  "000c2de0",
+]
+
+[[block]]
+id = "analog-inputs"
+name = "Analog acquisition"
+stage = "acquisition"
+summary = "On-chip A/D sampling with the PF13..PF15 external multiplexer, the AN10 and AN17 pedal samples, the battery-voltage state, and the Q1.15 trim of the MAF and battery words."
+specs = ["defs/JK08A.diagnostics.md", "defs/JK08A.start-signal-temperature-selector.md"]
+functions = [
+  "00028098", "000280d8", "0002862c", "00028668", "0002df5c", "00038128",
+  "00039a9e", "00067188", "000671d8",
+]
+
+[[block]]
+id = "discrete-inputs"
+name = "Discrete inputs"
+stage = "acquisition"
+summary = "PHDR port sampling into packed current input byte 0xFFFF1164."
+specs = ["defs/JK08A.start-signal-temperature-selector.md"]
+functions = ["00038618"]
+
+[[block]]
+id = "throttle-sensing"
+name = "Throttle position sensing"
+stage = "acquisition"
+summary = "Per-channel throttle-feedback acquisition, normalization, and paired-sensor conversion through the reciprocal opening-area pair."
+specs = ["defs/JK08A.throttle-control.md"]
+functions = ["0003e4cc", "0003e548", "0003e63c", "0003e75a", "0003ea9a", "0003eade"]
+
+[[block]]
+id = "engine-speed"
+name = "Engine speed"
+stage = "estimation"
+summary = "Engine-speed word 0xFFFF1196 from event intervals, its RPM/12.5, RPM/25, and RPM/3.125 representations, the floored row coordinates of the requested-torque conversion surfaces, the overspeed flag, the event-frequency scaler, and the RPM-drop filter."
+specs = ["defs/JK08A.rpm-drop-state.md", "defs/JK08A.throttle-control.md"]
+functions = [
+  "00038272", "0003846e", "000384cc", "000384fe", "000385bc", "0003de4c",
+  "0003deec", "0003df2c", "0003e1da",
+]
+# Startup initializers 0002d120 and 0002c648 also seed both coordinates.
+signals = ["ffff1702", "ffff1cca"]
+
+[[block]]
+id = "airflow-load"
+name = "Airflow and load"
+stage = "estimation"
+summary = "Dual-bank MAF transfer, filtering, and correction, combined MAF 0xFFFF1E38, Base Fuel Schedule 0xFFFF1024, normalized load, and the MAF coefficient calibration sequence."
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.load.md", "defs/JK08A.maf-range-monitor.md"]
+functions = [
+  "00039316", "0003a750", "0003a904", "0003a982", "0003a9aa", "0003ae8a",
+  "0003af42", "0003b224", "0003b252", "0003b27e", "0003b320", "0003b468",
+  "0003b520", "0003b75c", "0003c3ac", "0003c408", "0003c45c", "000662f6",
+  "0006635c", "00068724",
+]
+
+[[block]]
+id = "temperatures"
+name = "Temperatures"
+stage = "estimation"
+summary = "Coolant, fuel, and oil temperature conversion, fail-safe substitution, normalized coolant indices, and the computed START SIGNAL state."
+specs = ["defs/JK08A.start-signal-temperature-selector.md"]
+functions = [
+  "0002c4f8", "00038d44", "000394b8", "00039550", "00039588", "000395ae",
+  "00039614", "00039634", "0003967a", "0003972a", "00039788", "000397e8",
+  "000398b0", "0003eb84",
+]
+
+[[block]]
+id = "vehicle-speed"
+name = "Vehicle speed"
+stage = "estimation"
+summary = "Filtering of CAN-derived vehicle speed 0xFFFF113C and the coarse speed byte."
+specs = ["defs/JK08A.can.md"]
+functions = ["0003a174", "0003a254"]
+
+[[block]]
+id = "pedal"
+name = "Accelerator pedal"
+stage = "estimation"
+summary = "Adjustment and range checks of the two pedal channels, the dual-channel pedal quantity, and pedal-request preprocessing."
+specs = ["defs/JK08A.throttle-control.md", "defs/JK08A.request-conditioning.md"]
+functions = [
+  "00047a56", "0006e826", "0006ec68", "00072b68", "00075306", "00075396",
+  "000753d4", "00075540", "00075590",
+]
+
+[[block]]
+id = "torque-model"
+name = "Engine torque model"
+stage = "estimation"
+summary = "Engine Torque Map lookup, RPM-curve correction, net engine torque, and accessory-load subtraction that the CAN torque words publish."
+specs = ["defs/JK08A.can.md"]
+functions = [
+  "000655b4", "00065860", "000658a4", "00065928", "000659ae", "00065b08",
+  "00065c26", "00065cd8", "00065de4", "00065e2c", "00065f9c", "00066186",
+]
+
+[[block]]
+id = "knock"
+name = "Knock detection"
+stage = "estimation"
+summary = "ADC2 DMAC acquisition of the knock signal, per-channel slice thresholds, the knock monitor, and the knock-circuit monitor surfaces."
+specs = ["defs/JK08A.knock-detection.md"]
+functions = ["00049ffc", "0004a238", "0004a5ac", "0004a6d4", "0004a8d4", "000a52e4"]
+
+[[block]]
+id = "fuel-quantity"
+name = "Fuel quantity"
+stage = "control"
+summary = "Fuel multiplier, commanded mixture 0xFFFF22E8, compensation and transient terms, and the compensated six-channel injection-pulse words 0xFFFF23C8."
+specs = ["defs/JK08A.fuel.md"]
+functions = [
+  "0003be3c", "0004e614", "0004e974", "0004ead4", "0004eba2", "0005185c",
+  "00052576", "000526a0", "000528be", "00052902", "00052be8", "00052de8",
+  "00052f00", "00053698", "00054eb8", "00054ee0", "00055098", "0005525a",
+  "000554ae", "000554f8", "00055596", "00055648", "000556ec", "0005594a",
+  "0005651c", "00056714", "00056a7a", "00056bd0", "00056ea6", "00056fc0",
+  "000571c0", "0005727a", "00057608", "0005b7ec", "000befb0",
+]
+
+[[block]]
+id = "fuel-closed-loop"
+name = "Closed-loop fuel"
+stage = "control"
+summary = "A/F sensor words, short-term correction, and the learned long-term fuel-trim grid of each bank."
+specs = ["defs/JK08A.fuel.md"]
+functions = [
+  "0005796c", "00057b26", "00057d1e", "00058168", "0005911c", "000593ac",
+  "00059d9a", "00059e7c", "0005ac54", "0005c910", "0005cbec", "000a0ee8",
+]
+
+[[block]]
+id = "injection-timing"
+name = "Injection phase"
+stage = "control"
+summary = "End-of-injection angle, injection start delay, and the mode-dependent six-channel phase calculation."
+specs = ["defs/JK08A.fuel.md"]
+functions = ["00051700", "00051a98", "000521a8", "000522c4"]
+
+[[block]]
+id = "ignition-timing"
+name = "Ignition timing"
+stage = "control"
+summary = "Base ignition angle, cold, high-octane, and high-detonation state surfaces, knock, transition, and cam-deviation corrections, and final timing coordinate 0xFFFF11D4."
+specs = ["defs/JK08A.ignition-state.md", "defs/JK08A.ignition-output.md"]
+functions = [
+  "000493e8", "0004aad0", "0004ac60", "0004ac7a", "0004ae6c", "0004af38",
+  "0004afdc", "0004b790", "0004b9b4", "0004ba48", "0004bb6a", "0004bbac",
+  "0004bbee", "0004bdc2", "0004c02e", "0004c136", "0004cadc", "0004d2a6",
+  "0004d888", "0004d99c", "0004dbe8", "0004e0c2", "0004e112", "0004e162",
+  "0004e1c0", "00062e10", "00063f30", "0006469c", "00065434",
+]
+
+[[block]]
+id = "cvtc-intake"
+name = "Intake valve timing"
+stage = "control"
+summary = "Intake CVTC target surfaces, coolant selection, reference learning, and centered intake-cam timing."
+specs = ["defs/JK08A.cvtc.md"]
+functions = [
+  "000bccdc", "000bcd44", "000bced0", "000bd170", "000bd20a", "000bd9f0",
+  "000bda64", "000bdb66", "000bdc66", "000bdf5c", "000be32a", "000be5bc",
+  "000bec52",
+]
+signals = ["ffff23b4", "ffff23b5", "ffff2440", "ffff2441"]
+
+[[block]]
+id = "cvtc-exhaust"
+name = "Exhaust valve timing"
+stage = "control"
+summary = "Exhaust VTC enable, target surfaces, rest-edge and reference learning, and the per-bank duty controller."
+specs = ["defs/JK08A.cvtc.md"]
+functions = [
+  "000907e8", "00090884", "00090a84", "000bccf0", "000bf630", "000bf9b0",
+  "000bfad4", "000bfc2e", "000bfdc0", "000bfe88", "000c0d90", "000c1152",
+  "000c1dec", "000c21e6", "000cd75c",
+]
+# Initializer 000bced0 of the intake block also writes these exhaust states.
+signals = [
+  "ffff1240", "ffff1376", "ffff1377", "ffff143a", "ffff1a98", "ffff1aac",
+  "ffff1aae", "ffff1c70", "ffff1c90", "ffff2324", "ffff2325", "ffff232a",
+]
+
+[[block]]
+id = "idle-air"
+name = "Idle air"
+stage = "control"
+summary = "Idle air quantity, opening-area base, floor curves, and coolant-indexed compensation states."
+specs = ["defs/JK08A.throttle-control.md"]
+functions = [
+  "0002c626", "0004121c", "000413cc", "00041750", "00041db6", "000420b8",
+  "00043aee", "00044500", "00044910", "0004569c", "00045758", "000464de",
+  "0004673c", "000468b0", "00046938", "00046c70", "000473ac", "000474a4",
+  "000476a0", "000476d2", "0004776c", "00068cb8", "00069374", "0006e3d8",
+]
+
+[[block]]
+id = "torque-request"
+name = "Torque request"
+stage = "control"
+summary = "Conditioning of both request channels, request boundaries, controller-limit arbitration, and endpoint normalization."
+specs = ["defs/JK08A.request-conditioning.md", "defs/JK08A.limiters.md"]
+functions = [
+  "0006f8fa", "000702a0", "000702c6", "0007054a", "00070d20", "00070d82",
+  "00070e4c", "00071448", "00071508", "00071650", "0007173c", "000720c4",
+  "00074028", "000740ae", "000740e2", "00074c08", "00074c82", "0007604c",
+  "000760d2", "00076108", "00076250", "000763e2", "0007654c", "00076770",
+  "00076ad0", "00079030", "00079538", "00079a98", "00079ba4", "00079dd8",
+  "0007a090", "0007a43e", "0007a4de", "0007a592", "0007a804", "0007ab18",
+  "0007ae80", "0007af78", "0007b0a0", "0007b2c8", "0007b3f4",
+]
+
+[[block]]
+id = "throttle-target"
+name = "Throttle target"
+stage = "control"
+summary = "Request-to-area conversion, shared throttle area 0xFFFF19B2, and per-channel target openings."
+specs = ["defs/JK08A.throttle-control.md"]
+functions = [
+  "0003b498", "0006f236", "0006f454", "0006f464", "0006f48c", "000710bc",
+  "00072378", "0007249e", "00072c3c", "00072e5e", "00072f1e", "000730fc",
+  "00073432", "00073628", "00073824", "00073948", "00073a44", "00073bdc",
+  "00074728", "000749bc", "00074e4e", "0007acb4",
+]
+
+[[block]]
+id = "transmission"
+name = "Transmission coordination"
+stage = "control"
+summary = "TCM status decoding and the transmission request bounds."
+specs = ["defs/JK08A.can.md"]
+functions = ["0007724c", "00077352", "000777fa", "00077892", "00077dec", "000786da"]
+
+[[block]]
+id = "cruise"
+name = "Cruise control"
+stage = "control"
+summary = "ASCD control task, display state, and steering-switch decoder."
+specs = ["defs/JK08A.can.md"]
+functions = ["000ceabc", "000cf020"]
+
+[[block]]
+id = "fuel-cut"
+name = "Fuel-output inhibit"
+stage = "arbitration"
+summary = "Six-channel fuel-output inhibit coordinator and its contributors: rev limiters, overtemperature, vehicle speed, faults, CAN ceiling, and Power Balance."
+specs = ["defs/JK08A.fuel-inhibit.md"]
+functions = [
+  "0004ed88", "0004f050", "0004f14e", "0004f19c", "0004f282", "0004f324",
+  "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958",
+  "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "00050766", "0005079c",
+  "000507ce", "00050920", "0005096c", "000509a0", "000509ea", "00050a06",
+  "00050a34", "00050a4c", "00050a60", "00050b3c",
+]
+
+[[block]]
+id = "dfco"
+name = "Deceleration fuel cut"
+stage = "arbitration"
+summary = "DFCO cut request, entry and exit delays, and the five-state machine with rotating release."
+specs = ["defs/JK08A.dfco.md"]
+functions = [
+  "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0006efbc",
+  "0008c3fa",
+]
+
+[[block]]
+id = "limiters"
+name = "Request limiters"
+stage = "arbitration"
+summary = "Rotational-speed request limiter and the request-limit source coordinator."
+specs = ["defs/JK08A.limiters.md"]
+functions = ["00075798", "0007584e", "00075e9e", "000769c0"]
+
+[[block]]
+id = "immobilizer"
+name = "Immobilizer"
+stage = "arbitration"
+summary = "NATS registration and lock handlers and the developer-immobilizer state machine that forms the engine inhibit."
+functions = [
+  "0008d724", "000937dc", "00093b60", "000a3f96", "000bbc88", "000bc82e",
+  "000bc9e4", "000bcb60",
+]
+
+[[block]]
+id = "injector-output"
+name = "Injector drivers"
+stage = "actuation"
+summary = "Sequential-injection sequencer, duration arrays, and ATU-II one-shot scheduling of the six injectors."
+specs = ["defs/JK08A.fuel.md"]
+functions = [
+  "0002b64a", "0002be40", "0002c13c", "0004ecac", "00051f1e", "00052034",
+  "00054a44", "00054d3e",
+]
+
+[[block]]
+id = "ignition-output"
+name = "Ignition drivers"
+stage = "actuation"
+summary = "APC command builders and crank-angle compare schedulers of the ATU-II coil outputs."
+specs = ["defs/JK08A.ignition-output.md"]
+functions = [
+  "00028dc8", "00028e7c", "0002a892", "0002ab24", "0002acba", "0002af38",
+  "0004c1e4", "0004df82", "0004e080",
+]
+
+[[block]]
+id = "throttle-servo"
+name = "Throttle servo"
+stage = "actuation"
+summary = "Per-channel feedback selection, throttle regulator, effort-to-duty conversion, and ATU-II PWM publication."
+specs = ["defs/JK08A.throttle-control.md"]
+functions = [
+  "000407c0", "000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224",
+  "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2",
+  "000cc720",
+]
+
+[[block]]
+id = "aux-outputs"
+name = "Output-driver status"
+stage = "actuation"
+summary = "Status decoder of the five-device output-driver table."
+functions = ["0004110a"]
+
+[[block]]
+id = "misfire"
+name = "Misfire monitor"
+stage = "diagnostics"
+summary = "Crankshaft irregularity metric, detection core, operating-range counters, and P0300..P0306 reporting."
+specs = ["defs/JK08A.diagnostics.md"]
+functions = [
+  "00025a12", "0007c400", "0007c494", "0007c4e0", "0007c57a", "0007c8fa",
+  "0007c9a8", "0008042c", "00082bd8", "00082c8a", "000847dc", "00084aa4",
+  "00084cd0", "00085020", "00085a70", "000867c4", "00086b0c", "00086d2a",
+  "000872d0",
+]
+
+[[block]]
+id = "maf-monitors"
+name = "MAF monitors"
+stage = "diagnostics"
+summary = "Dual-bank MAF circuit and range-performance monitors P0101 and P010B."
+specs = ["defs/JK08A.maf-range-monitor.md"]
+functions = ["00080e20", "00080f82", "0008152a", "00081d74", "00082604"]
+
+[[block]]
+id = "o2-catalyst"
+name = "Oxygen sensors and catalyst"
+stage = "diagnostics"
+summary = "Rear O2 and heater monitors, catalyst-efficiency metrics, and the AN1-derived two-lane readiness sources."
+specs = ["defs/JK08A.diagnostics.md"]
+functions = [
+  "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d702", "0003d7b4",
+  "0003d832", "00089310", "00089a88", "00089d92", "0008a258", "0008aa46",
+  "0008b604", "0008b93a", "000a2254", "000a25fa", "000a2d66", "000a2ee4",
+  "000a2f56", "000a38dc",
+]
+
+[[block]]
+id = "evap"
+name = "EVAP monitors"
+stage = "diagnostics"
+summary = "Fuel-level conditioning, vent, purge, pressure-sensor, and leak monitors of the EVAP system."
+functions = [
+  "0003dac6", "000aab54", "000aacc0", "000ab844", "000abb84", "000abca2",
+  "000ac934", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "000b1e48",
+  "000b2096", "000b2838", "000b29b8",
+]
+
+[[block]]
+id = "thermostat-coldstart"
+name = "Thermostat and cold-start monitors"
+stage = "diagnostics"
+summary = "P0128 thermostat model and the cold-start control monitor P1421 and P1422."
+functions = [
+  "0009b1b4", "0009b816", "0009b8aa", "0009bdd0", "000b5908", "000b5c36",
+  "000b6b5a", "000b7768", "000b784e", "000b78da", "000b7a3c", "000b7b98",
+  "000b7c84",
+]
+
+[[block]]
+id = "vtc-monitors"
+name = "Valve timing monitors"
+stage = "diagnostics"
+summary = "Exhaust-VTC position, magnet-retarder circuit, and cam reference monitors."
+specs = ["defs/JK08A.cvtc.md"]
+functions = [
+  "0008f168", "00090086", "0009018c", "00090642", "00090bd2", "00090d54",
+  "00090e02", "00090e5e",
+]
+
+[[block]]
+id = "sensor-monitors"
+name = "Sensor and actuator monitors"
+stage = "diagnostics"
+summary = "Pedal and throttle sensor range monitors, oil temperature rationality, critical ECM and ETC aggregates, and table-driven monitors."
+specs = ["defs/JK08A.diagnostics.md"]
+functions = [
+  "0007c166", "0007d856", "0008d194", "000913d0", "00094f26", "00099e00",
+  "00099efe", "0009a0d4", "0009cdd8", "000a5560", "000a5a06", "000a643c",
+  "000a6dc4", "000a6fee", "000a7040", "000a70f0", "000a7418", "000a75c0",
+]
+
+[[block]]
+id = "dtc-manager"
+name = "DTC records"
+stage = "diagnostics"
+summary = "Runtime DTC records, descriptor dispatch, aging, readiness latches, and stored-fault projections."
+specs = ["defs/JK08A.diagnostics.md", "defs/JK08A.fuel-inhibit.md"]
+functions = [
+  "000259e4", "00025e20", "0007bfc4", "0007c3b4", "0007cf14", "0007d8b8",
+  "0007dc32", "0007ebec", "0007f5b0", "0007f870", "000804ce", "0008092e",
+  "00080b54", "0008c24e", "0008c272", "0008c2d2", "0008c348", "0008c396",
+  "0008c942", "0008c968", "00097eb4", "000b4ef8",
+]
+
+[[block]]
+id = "diag-services"
+name = "Diagnostic services"
+stage = "communication"
+summary = "Diagnostic transport, Nissan and UDS service handlers, J1979 PIDs, and output-control active tests."
+specs = ["defs/JK08A.diagnostics.md"]
+functions = [
+  "00027530", "0002e0d4", "0002e2e8", "0002e466", "0002ea0a", "0002f12c",
+  "0002f2d4", "0002f928", "00030c4c", "0003235c", "000328c0", "00033810",
+  "00033f78", "00035634", "000357dc", "00035856", "0008083c", "000b997c",
+]
+
+[[block]]
+id = "can-network"
+name = "CAN network"
+stage = "communication"
+summary = "HCAN1 mailbox setup, receive dispatch and payload decoders, and periodic transmit serialization."
+specs = ["defs/JK08A.can.md", "defs/JK08A.tuning-telemetry.md"]
+functions = [
+  "00079e70", "000c2fbe", "000c3746", "000c38de", "000c3b14", "000c3de4",
+  "000c4506", "000c456c", "000c47ea", "000c4ace", "000c577a", "000c590e",
+  "000c5cb2", "000c5d2e", "000c7914",
+]
+
+[[block]]
+id = "work-support"
+name = "Work support"
+stage = "communication"
+summary = "Service 0x3B work-support adjustments, their stored records, and the automatic request selector."
+specs = ["defs/JK08A.work-support.md"]
+functions = [
+  "0002e81a", "00034194", "00034fe4", "00035318", "00068040", "00068254",
+  "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6",
+  "000683cc", "000685f2", "00068670", "000686b8",
+]
+
+[[block]]
+id = "scheduler"
+name = "Scheduler"
+stage = "platform"
+summary = "ATU-II periodic interrupt, pending-task dispatch, engine-event task feeder, and main-loop snapshot copier."
+generic = true
+functions = ["0002040c", "000208f8", "000209d8", "00020dfe", "00027e24"]
+
+[[block]]
+id = "startup"
+name = "Startup and reset"
+stage = "platform"
+summary = "Startup RAM initializers, retained-region checks, ATU-II initialization, and the default exception handler."
+specs = ["defs/JK08A.cvtc.md"]
+functions = [
+  "00021b98", "00026e1c", "00026f08", "00026f30", "0002718a", "000274ac",
+  "00027ac0", "00027c50", "00027ce4", "0002c648", "0002d120", "0002fc24",
+  "00034b70", "0003995a", "000d093c",
+]
+
+[[block]]
+id = "memory-integrity"
+name = "Memory integrity"
+stage = "platform"
+summary = "Background ROM self-test scanner and the memory and ROM-check task."
+functions = [
+  "00021610", "00021654", "0002167a", "00021714", "00021774", "0002e8d2",
+  "000cd85c",
+]
+
+[[block]]
+id = "nonvolatile"
+name = "Serial EEPROM"
+stage = "platform"
+summary = "SCI2-backed EEPROM read primitive and its stable read wrapper."
+specs = ["defs/JK08A.work-support.md"]
+functions = ["00066bd0", "0006727c"]
+
+[[block]]
+id = "library"
+name = "Shared kernels"
+stage = "platform"
+summary = "Interpolation wrappers, kernels, and finishers and the arithmetic helpers shared by every subsystem."
+generic = true
+functions = [
+  "00021bbc", "00021ce0", "00021dd0", "00021e14", "00021f40", "00022038",
+  "00022094", "000220f8", "00022104", "00022116", "000221bc", "000221e6",
+  "0002227c", "000222a6", "0002234c", "0002235c", "0002248a", "000224f8",
+  "000224fa", "00022508", "0002251c", "00022530", "00022544", "00022558",
+  "00022590", "000259aa", "000259d0", "00026014", "00026040", "00026084",
+  "000260bc", "00026100", "00026140", "00026178", "000261b8", "000261f0",
+  "00026230", "00026270", "000262a8", "000262e0", "00026320", "00026358",
+  "00026370", "00026388", "000263a0", "000263bc", "000263d8", "000263f4",
+  "00026410", "0002642c", "00026474", "000264a0", "000264cc", "000264f8",
+  "00026524", "00026550", "0002657c", "000265c4", "000265f0", "00026628",
+  "00026660", "000266a0", "000266bc", "000266e8", "00026714", "00026740",
+  "00026770", "000267cc", "00026848", "000268a4", "00026944", "00026984",
+  "00026a0c", "00026a5c", "00026a60", "00026ae0", "00026af8", "00026b28",
+  "00026b84", "00026bc4", "00026c1c", "00026c78", "00026d10", "00026da8",
+]
+
+[[block]]
+id = "unattributed"
+name = "Unattributed components"
+stage = "unattributed"
+summary = "Reviewed accessors whose functional role the ledgers do not yet establish."
+functions = [
+  "0002c59c", "0003bd74", "0003c4a0", "0003edb4", "0003ef74", "0005e278",
+  "0005fac0", "0005fdb0", "000602f2", "0006062c", "00060fb4", "000617ea",
+  "0006205c", "00062c68", "000638b4", "000647e8", "0006edbc", "0007b650",
+  "0007b7c0",
+]
+
+# Peripheral endpoints.
+
+[[endpoint]]
+id = "crank-sensor"
+name = "Crank position sensor"
+direction = "input"
+block = "crank-cam"
+peripheral = "ATU-II channel 0A input capture ICR0A"
+summary = "Crank tooth edges latch ICR0A; handler 00029588 dispatches each tooth and samples the tooth-9 interval."
+registers = ["fffff434"]
+functions = ["00029588"]
+specs = ["defs/JK08A.ignition-output.md"]
+
+[[endpoint]]
+id = "intake-cam-sensors"
+name = "Intake cam position sensors"
+direction = "input"
+block = "crank-cam"
+peripheral = "ATU-II channel 1A captures GR1E and GR1F"
+summary = "GR1E and GR1F capture the bank-2 and bank-1 intake-cam edges; the handlers store cam intervals 0xFFFF22CA and 0xFFFF22C8."
+functions = ["0002a36a", "0002a5cc"]
+specs = ["defs/JK08A.cvtc.md"]
+
+[[endpoint]]
+id = "exhaust-cam-sensors"
+name = "Exhaust cam position sensors"
+direction = "input"
+block = "crank-cam"
+peripheral = "ATU-II input captures IMI4C and IMI4D"
+summary = "IMI4C and IMI4D capture the bank-2 and bank-1 exhaust-cam edges."
+functions = ["000c2c58", "000c2d76"]
+specs = ["defs/JK08A.cvtc.md"]
+
+[[endpoint]]
+id = "multiplexed-analog"
+name = "Multiplexed analog inputs"
+direction = "input"
+block = "analog-inputs"
+peripheral = "A/D ADDR0 and ADDR1 with the PF13..PF15 external multiplexer"
+summary = "AN0 samples each external-multiplexer code that PFDR selects, including coolant on code 000, fuel temperature on code 111, and the battery-voltage sample."
+registers = ["fffff800", "fffff802", "fffff74e"]
+functions = ["000280d8", "00028668"]
+
+[[endpoint]]
+id = "maf-sensors"
+name = "MAF sensors"
+direction = "input"
+block = "analog-inputs"
+peripheral = "A/D channels AN4 and AN15"
+summary = "ADDR4 and ADDR15 give the ten-bit samples 0xFFFF1D62 and 0xFFFF1D64 of the dual-bank MAF path."
+functions = ["00028098"]
+specs = ["defs/JK08A.fuel.md"]
+
+[[endpoint]]
+id = "pedal-sensors"
+name = "Accelerator pedal sensors"
+direction = "input"
+block = "analog-inputs"
+peripheral = "A/D channels AN10 and AN17"
+summary = "AN10 and AN17 samples 0xFFFF362C and 0xFFFF362E feed the two pedal channels."
+functions = ["0002862c"]
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[endpoint]]
+id = "throttle-sensors"
+name = "Throttle position sensors"
+direction = "input"
+block = "throttle-sensing"
+peripheral = "A/D acquisition of both throttle position sensors"
+summary = "Per-channel throttle feedback enters the six-sample estimator of 0003e75a."
+functions = ["0003e75a"]
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[endpoint]]
+id = "knock-sensors"
+name = "Knock sensors"
+direction = "input"
+block = "knock"
+peripheral = "ADC2 with DMAC channel 2"
+summary = "DMAC channel 2 transfers ADC2 conversions into the RAM buffers of the knock evaluation."
+functions = ["0004a5ac", "0004a6d4", "0004a8d4"]
+specs = ["defs/JK08A.knock-detection.md"]
+
+[[endpoint]]
+id = "switch-inputs"
+name = "Switch inputs"
+direction = "input"
+block = "discrete-inputs"
+peripheral = "Port H data register PHDR and PLDR bit 4"
+summary = "PHDR bits, the park/neutral input on bit 4 included, form packed input byte 0xFFFF1164; PLDR bit 4 is debounced into 0xFFFF4185 bit 7."
+functions = ["00038618"]
+
+[[endpoint]]
+id = "can-receive"
+name = "CAN receive"
+direction = "input"
+block = "can-network"
+peripheral = "HCAN1 receive mailboxes"
+summary = "Receive dispatcher 000c3b14 matches software-table keys; the payload decoders handle 0x174, 0x177, 0x280, and the meter frame."
+functions = ["000c3b14", "000c47ea", "000c4ace", "000c4506", "000c456c"]
+specs = ["defs/JK08A.can.md"]
+
+[[endpoint]]
+id = "injectors"
+name = "Fuel injectors"
+direction = "output"
+block = "injector-output"
+peripheral = "ATU-II channel 8 one-shot down-counters"
+summary = "Scheduler 0002c13c adds each injector duration to DCNT8A+2*i and starts the one-shot through DSTR bit i."
+registers = ["fffff640", "fffff666"]
+functions = ["0002c13c"]
+specs = ["defs/JK08A.fuel.md"]
+
+[[endpoint]]
+id = "ignition-coils"
+name = "Ignition coils"
+direction = "output"
+block = "ignition-output"
+peripheral = "ATU-II APC channel 11 compare registers"
+summary = "The primary and secondary APC schedulers program GR11A and GR11B against TCNT11 from the APC command; the low byte of POPCR selects the output of each compare event."
+registers = ["fffff5c2", "fffff5c4", "fffff5ca", "fffff5c0", "fffff700"]
+functions = ["0002a892", "0002acba"]
+specs = ["defs/JK08A.ignition-output.md"]
+
+[[endpoint]]
+id = "intake-vtc-solenoids"
+name = "Intake valve timing solenoids"
+direction = "output"
+block = "cvtc-intake"
+peripheral = "ATU-II channel 7A and 7B PWM"
+summary = "BFR7A and BFR7B carry intake-VTC duty cells 0xFFFF23B5 and 0xFFFF23B4 into the channel-7 PWM; CYLR7A and CYLR7B set the period."
+registers = ["fffff590", "fffff592", "fffff588", "fffff58a"]
+specs = ["defs/JK08A.cvtc.md"]
+
+[[endpoint]]
+id = "exhaust-vtc-solenoids"
+name = "Exhaust valve timing solenoids"
+direction = "output"
+block = "cvtc-exhaust"
+peripheral = "ATU-II channel 7C and 7D PWM"
+summary = "BFR7C and BFR7D carry exhaust-VTC duty words 0xFFFF1AAE and 0xFFFF1AAC into the channel-7 PWM."
+registers = ["fffff594", "fffff596", "fffff58c", "fffff58e"]
+specs = ["defs/JK08A.cvtc.md"]
+
+[[endpoint]]
+id = "throttle-motor"
+name = "Throttle motor"
+direction = "output"
+block = "throttle-servo"
+peripheral = "ATU-II channel 6 complementary PWM"
+summary = "000407c0 converts duty commands 0xFFFF374C and 0xFFFF374E to 0..320 counts in BFR6A..BFR6D."
+registers = ["fffff510", "fffff512", "fffff514", "fffff516"]
+functions = ["000407c0"]
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[endpoint]]
+id = "can-transmit"
+name = "CAN transmit"
+direction = "output"
+block = "can-network"
+peripheral = "HCAN1 transmit mailboxes"
+summary = "Periodic scanner 000c38de requests transmission through TXPR1 after the serializers fill frames such as 0x160 and 0x180; mailbox-empty handler 000c7914 observes TXACK1."
+registers = ["ffffd820", "ffffd830"]
+functions = ["000c38de", "000c3746", "000c577a", "000c590e", "000c7914"]
+specs = ["defs/JK08A.can.md"]
+
+[[endpoint]]
+id = "diagnostic-link"
+name = "Diagnostic serial link"
+direction = "bidirectional"
+block = "diag-services"
+peripheral = "SCI diagnostic transport"
+summary = "Transport state machine 0002ea0a and SCI transmit-complete handler 0002f12c carry the diagnostic requests and responses; dispatcher 0002f928 selects the service handler."
+functions = ["0002ea0a", "0002f12c", "0002f928"]
+specs = ["defs/JK08A.diagnostics.md"]
+
+[[endpoint]]
+id = "serial-eeprom"
+name = "Serial EEPROM"
+direction = "bidirectional"
+block = "nonvolatile"
+peripheral = "SCI2 serial EEPROM"
+summary = "Read primitive 00066bd0 reads two bytes per key; stable wrapper 0006727c accepts only equal consecutive reads."
+functions = ["00066bd0", "0006727c"]
+
+# Calculation chains.
+
+[[chain]]
+id = "engine-speed"
+name = "Engine speed"
+summary = "The ICI0A crank handler forms the 10-degree tooth time ffff22bc on every tooth and, on the tooth-7 engine event, the 120-degree interval ffff11fc; ffff1196 = 32000000/ffff11fc is engine speed, and its shifted words and scheduler snapshots index the maps."
+quantity = "Engine speed, RPM*5.12 counts"
+output = "ffff1196"
+specs = ["defs/JK08A.cvtc.md", "defs/JK08A.rpm-drop-state.md", "defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "fffff434"
+to = "ffff158a"
+effect = "stores"
+sign = "none"
+via = ["00029588"]
+note = "On every crank tooth the ICI0A prologue 00028ea2 stores OSBR1 at 00028f22 as crank reference capture ffff158a, in 3.2 us counts."
+
+[[chain.step]]
+from = "ffff158a"
+to = "ffff22ba"
+effect = "subtracts"
+sign = "none"
+via = ["00029588"]
+note = "Timestamp difference: ffff22ba = current minus previous ffff158a, 0xffff on the first capture; it spans 10 crank degrees, 30 on tooth 8."
+
+[[chain.step]]
+from = "ffff22ba"
+to = "ffff22bc"
+effect = "copies"
+sign = "positive"
+via = ["00029588"]
+note = "The prologue copies ffff22ba to 10-degree time ffff22bc; with sync, tooth 8 stores one third. P0335 fallback 0002b768 writes floor(ffff11fc/12)."
+
+[[chain.step]]
+from = "ffff22bc"
+to = "ffff114a"
+effect = "converts"
+sign = "negative"
+via = ["0003deec"]
+note = "ffff114a = floor(0xA2C2/ffff22bc) in RPM/12.5; ffff24c9.bit5 copies ffff11f4 instead and ffff417f.bit5 writes zero."
+
+[[chain.step]]
+from = "ffff22bc"
+to = "ffff2804"
+effect = "converts"
+sign = "negative"
+via = ["0003df2c"]
+note = "ffff2804 = median of the last three min(255, 41666/ffff22bc) samples in RPM/12.5; ffff24c9.bit5 substitutes ffff11ea."
+
+[[chain.step]]
+from = "ffff114a"
+to = "ffff1e50"
+effect = "filters"
+sign = "negative"
+via = ["0003e1da"]
+note = "ffff1e50 = min(65535, 64*max(ffff1f76 - ffff114a, 0) + floor(192*ffff1e58/256)), the Q8 filtered positive four-sample RPM drop."
+
+[[chain.step]]
+from = "fffff434"
+to = "ffff11fc"
+effect = "schedules"
+sign = "none"
+via = ["00029588", "000208f8", "00028af8"]
+note = "Tooth 7 with sync calls feeder 000208f8; 00028af8 writes ffff11fc = wrap-corrected (ffff185c - ffff84cc) >> 5, the 120-degree event interval."
+
+[[chain.step]]
+from = "ffff11fc"
+to = "ffff1196"
+effect = "converts"
+sign = "negative"
+via = ["00038272"]
+note = "ffff1196 = floor(32000000/ffff11fc) through unsigned divider 00021ce0; the interval is 6250000/RPM counts, so ffff1196 is RPM*5.12."
+
+[[chain.step]]
+from = "ffff1196"
+to = "ffff11e8"
+effect = "scales"
+sign = "positive"
+via = ["000384fe"]
+note = "ffff11e8 = ffff1196 >> 3 in RPM/1.5625, denominator N of the primary MAF calculation in 0003b75c."
+
+[[chain.step]]
+from = "ffff1196"
+to = "ffff11ee"
+effect = "scales"
+sign = "positive"
+via = ["000384fe"]
+note = "ffff11ee = ffff1196 >> 4 in RPM/3.125; serializer 000c577a sends sat_u16(ffff11ee*25) = RPM*8 in 0x180 bytes 0 and 1."
+
+[[chain.step]]
+from = "ffff1196"
+to = "ffff11f4"
+effect = "scales"
+sign = "positive"
+via = ["000384fe"]
+note = "ffff11f4 = ffff1196 >> 6 in RPM/12.5, the word that UDS DID 0x1201 returns."
+
+[[chain.step]]
+from = "ffff1196"
+to = "ffff11e6"
+effect = "scales"
+sign = "positive"
+via = ["000384fe"]
+note = "ffff11e6 = min(255, ffff1196 >> 8) in RPM/50."
+
+[[chain.step]]
+from = "ffff11e8"
+to = "ffff11eb"
+effect = "scales"
+sign = "positive"
+via = ["000384cc"]
+note = "ffff11eb = min(255, ffff11e8 >> 4) = min(255, ffff1196 >> 7) in RPM/25."
+
+[[chain.step]]
+from = "ffff11e8"
+to = "ffff11ea"
+effect = "scales"
+sign = "positive"
+via = ["0003846e"]
+note = "ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6), the saturated RPM/12.5 byte."
+
+[[chain.step]]
+from = "ffff11ee"
+to = "ffff11b6"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "Scheduler 00020dfe copies ffff11d4..ffff120b to ffff119c..ffff11d3, so ffff11b6 is the RPM/3.125 snapshot of ffff11ee."
+
+[[chain.step]]
+from = "ffff11f4"
+to = "ffff11bc"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "ffff11bc is the RPM/12.5 snapshot of ffff11f4; fuel-cut state machine 0004f282 compares it with its activation and release words."
+
+[[chain.step]]
+from = "ffff11e6"
+to = "ffff11ae"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "ffff11ae is the RPM/50 snapshot of ffff11e6, the speed input of the intake and exhaust CVTC target surfaces."
+
+[[chain.step]]
+from = "ffff11eb"
+to = "ffff11b3"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "ffff11b3 is the RPM/25 snapshot of ffff11eb; 0004fbe2 and 00050018 compare it with the Over Run Fuel Cut and Restore table outputs."
+
+[[chain.step]]
+from = "ffff11ea"
+to = "ffff11b2"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "ffff11b2 is the saturated RPM/12.5 snapshot of ffff11ea; it indexes implicit-axis maps and the P030 speed gate of 0007c4e0."
+
+[[chain.step]]
+from = "ffff11f4"
+to = "axis:00011cf0"
+effect = "indexes"
+sign = "none"
+note = "Row axis 0x11CF0 of Fuel Compensation Map 0xA29A: the byte core compares each point times four with ffff11f4, so one count is 50 RPM."
+
+[[chain.step]]
+from = "ffff11bc"
+to = "axis:00011ece"
+effect = "indexes"
+sign = "none"
+note = "Shared row axis 0x11ECE of ignition maps 0x991A, 0x9A1A, and 0x9B1A: each point times four is compared with ffff11bc, 400..7400 RPM."
+
+[[chain.step]]
+from = "ffff11b6"
+to = "axis:00014b4a"
+effect = "indexes"
+sign = "none"
+via = ["00065928"]
+note = "00065928 passes ffff11b6 through wrapper 000262a8 as the row input of Engine Torque Map 0x10B8E; axis 0x14B4A spans 400..7600 RPM."
+
+[[chain.step]]
+from = "ffff11ae"
+to = "map:0000b43a"
+effect = "indexes"
+sign = "none"
+via = ["000bda64"]
+note = "000bda64 interpolates Intake CVTC Target - Main 0xB43A by RPM/50 byte ffff11ae and normalized-BFS snapshot ffff102c."
+
+[[chain.step]]
+from = "ffff11b3"
+to = "map:00012302"
+effect = "indexes"
+sign = "none"
+via = ["00056bd0"]
+note = "00056bd0 forms end-of-injection delay ffff192e = 2*min(lookup(0x12302 at ffff11b3) + ffff340c, 209) in 2-degree counts."
+
+[[chain.step]]
+from = "ffff11b2"
+to = "map:00012196"
+effect = "indexes"
+sign = "none"
+via = ["0004afdc"]
+note = "0004afdc interpolates Timing-State Addend - Default/Post-Transition 0x12196 over the saturated RPM/12.5 byte ffff11b2."
+
+[[chain]]
+id = "airflow-load"
+name = "Airflow and load"
+summary = "Samples the AN4/AN15 MAF voltages, converts them through the bank transfer curves, filters, and the combined aggregate into Base Fuel Schedule ffff1026 with Fuel Compensation Main, and normalizes the schedule to the Q7 load byte ffff102c read by the fuel and ignition maps."
+quantity = "Normalized Base Fuel Schedule load, percent of the ROM16[0x9534] reference (raw*100/128)"
+output = "ffff102c"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.load.md"]
+
+[[chain.step]]
+from = "fffff808"
+to = "ffff1d62"
+effect = "receives"
+sign = "positive"
+via = ["00028098"]
+note = "ffff1d62 = ADDR4 >> 6, the ten-bit AN4 sample of the bank-1 MAF sensor."
+
+[[chain.step]]
+from = "fffff826"
+to = "ffff1d64"
+effect = "receives"
+sign = "positive"
+via = ["00028098"]
+note = "ffff1d64 = ADDR15 >> 6, the ten-bit AN15 sample of the bank-2 MAF sensor."
+
+[[chain.step]]
+from = "ffff1d62"
+to = "ffff101c"
+effect = "scales"
+sign = "positive"
+via = ["0003c408"]
+note = "ffff101c = min(65535, ffff1d62*ffff4970/32768), +1 at 0x3ff; stock coefficient 0x8000 is unity; DID 0x1204 at 5 mV per count."
+
+[[chain.step]]
+from = "ffff1d64"
+to = "ffff101e"
+effect = "scales"
+sign = "positive"
+via = ["0003c408"]
+note = "Bank-2 twin of ffff101c with the same guarded coefficient ffff4970; DID 0x1205."
+
+[[chain.step]]
+from = "ffff101c"
+to = "ffff1e48"
+effect = "subtracts"
+sign = "positive"
+via = ["0003ae8a"]
+note = "ffff1e48 = uint16(ffff101c - c), c = floor(floor(K*335/65536)/min(65535, prev+80)), K = ffff3998; the first call copies the word."
+
+[[chain.step]]
+from = "ffff101e"
+to = "ffff1e4a"
+effect = "subtracts"
+sign = "positive"
+via = ["0003ae8a"]
+note = "Bank-2 twin of ffff1e48 with K = ffff399c."
+
+[[chain.step]]
+from = "ffff1e48"
+to = "00014274"
+effect = "indexes"
+sign = "none"
+via = ["0003a904"]
+note = "The low 12 bits of ffff1e48 index the 64-point implicit axis of the bank-1 transfer curve, 16 input counts per cell."
+
+[[chain.step]]
+from = "ffff1e4a"
+to = "000141f4"
+effect = "indexes"
+sign = "none"
+via = ["0003a904"]
+note = "The low 12 bits of ffff1e4a index the bank-2 transfer curve."
+
+[[chain.step]]
+from = "00014274"
+to = "ffff1054"
+effect = "looks-up"
+sign = "positive"
+via = ["0003a904"]
+note = "MAF Sensor Transfer - Bank 1 gives output A; one count is 105/25600 g/s."
+
+[[chain.step]]
+from = "000141f4"
+to = "ffff1056"
+effect = "looks-up"
+sign = "positive"
+via = ["0003a904"]
+note = "MAF Sensor Transfer - Bank 2 gives output B; one count is 105/25600 g/s."
+
+[[chain.step]]
+from = "ffff1054"
+to = "ffff1df0"
+effect = "filters"
+sign = "positive"
+via = ["0003a904", "0003a982", "0003a9aa"]
+note = "0003a982 copies A to ffff1058; 0003a9aa writes ffff1df0 as a direct copy or a first-order update with one-count anti-stall."
+
+[[chain.step]]
+from = "ffff1056"
+to = "ffff1df2"
+effect = "filters"
+sign = "positive"
+via = ["0003a904", "0003a982", "0003a9aa"]
+note = "Bank-2 twin through working copy ffff105a."
+
+[[chain.step]]
+from = "ffff1df0"
+to = "ffff1df8"
+effect = "converts"
+sign = "positive"
+via = ["0003af42"]
+note = "Signed 32-bit bank-1 contribution with bounded stateful corrections; fuel.md reproduces BFS from Q = A + B, which fixes the sign."
+
+[[chain.step]]
+from = "ffff1df2"
+to = "ffff1dfc"
+effect = "converts"
+sign = "positive"
+via = ["0003af42"]
+note = "Signed 32-bit bank-2 contribution; the correction terms of 0003af42 are unresolved."
+
+[[chain.step]]
+from = "ffff1df8"
+to = "ffff1e38"
+effect = "adds"
+sign = "positive"
+via = ["0003b252"]
+note = "ffff1e38 = max(0, ffff1df8 + ffff1dfc + ffff1e2a + ffff2368); stock ffff1e2a is zero and ffff2368 has no application writer."
+
+[[chain.step]]
+from = "ffff1dfc"
+to = "ffff1e38"
+effect = "adds"
+sign = "positive"
+via = ["0003b252"]
+note = "The bank-2 contribution enters the combined nonnegative MAF aggregate."
+
+[[chain.step]]
+from = "ffff1e38"
+to = "ffff1e40"
+effect = "scales"
+sign = "positive"
+via = ["0003b75c"]
+note = "Primary branch: fixed = min(floor(floor(F*K*Q/256)/(E*N)), 0x726f9), ffff1e40 = floor(fixed*9163/65536), a quarter BFS."
+
+[[chain.step]]
+from = "00009284"
+to = "ffff1e40"
+effect = "scales"
+sign = "positive"
+via = ["0003b75c"]
+note = "Base Fuel Schedule K-Value K = 26806 multiplies aggregate Q."
+
+[[chain.step]]
+from = "00008a27"
+to = "ffff1e40"
+effect = "scales"
+sign = "positive"
+via = ["0003b75c"]
+note = "MAF Factor F = 109 multiplies aggregate Q."
+
+[[chain.step]]
+from = "ffff11e8"
+to = "ffff1e40"
+effect = "scales"
+sign = "negative"
+via = ["0003b75c"]
+note = "N is ffff11e8 (1.5625 rpm per count) or ffff11dc, lower-bounded at 64; E*N divides F*K*Q with E = ROM8[0x88fb] = 3."
+
+[[chain.step]]
+from = "ffff1e40"
+to = "ffff1062"
+effect = "multiplies"
+sign = "positive"
+via = ["0003b75c"]
+note = "ffff1062 = min(65535, floor(ffff1e40*ffff1160/128))."
+
+[[chain.step]]
+from = "0000a29a"
+to = "ffff1160"
+effect = "looks-up"
+sign = "positive"
+via = ["0003be3c"]
+note = "Fuel Compensation Main, Q7 with 128 = 100 percent, on RPM/12.5 ffff11f4 and alpha-N byte ffff1170; runtime gates can write a bounded bypass."
+
+[[chain.step]]
+from = "ffff1160"
+to = "ffff1062"
+effect = "multiplies"
+sign = "positive"
+via = ["0003b75c"]
+note = "The Q7 Fuel Compensation Main byte multiplies the quarter-BFS source ffff1e40."
+
+[[chain.step]]
+from = "ffff1062"
+to = "ffff1026"
+effect = "filters"
+sign = "positive"
+via = ["0003b75c"]
+note = "Rate stage on T = 4*ffff1062*ffff115c and P = ffff1f30*ffff1e06 into ffff1dee, blend, ffff1060; fuel.md replays steady BFS from the primary branch."
+
+[[chain.step]]
+from = "00012c9e"
+to = "ffff1026"
+effect = "limits"
+sign = "positive"
+via = ["0003b75c"]
+note = "Upper-limit curve on RPM/25 byte ffff11eb, cell << 8, caps the corrected schedule while ffff2449.bit7 is clear."
+
+[[chain.step]]
+from = "ffff1026"
+to = "ffff1048"
+effect = "scales"
+sign = "positive"
+via = ["0003b75c"]
+note = "ffff1048 = min(255, floor(ffff1026*128/ROM16[0x9534])); raw 128 is 100 percent of the reference."
+
+[[chain.step]]
+from = "00009534"
+to = "ffff1048"
+effect = "scales"
+sign = "negative"
+via = ["0003b75c"]
+note = "Internal Load Normalization Reference 0x6a5a = 27226 divides the schedule; it also scales the torque filling coordinate."
+
+[[chain.step]]
+from = "ffff1048"
+to = "ffff102c"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "00020dfe copies ffff1048..ffff1063 to ffff102c..ffff1047 before the periodic tasks; the maps of that pass read ffff102c."
+
+[[chain]]
+id = "fuel-pulse"
+name = "Injection pulse"
+summary = "Scales current Base Fuel Schedule ffff1024 by the fuel multiplier from target mixture and the base terms, the transient term, and the common gain into bank precursors, adds the battery-dependent opening time, and applies the channel multiplier and minimum-pulse floor to the durations that 0002c13c loads into ATU-II channel 8."
+quantity = "Injector pulse duration after the minimum-pulse floor, 10 us counts (ms = raw/100)"
+output = "ffff23d4"
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff102c"
+to = "0000a9aa"
+effect = "indexes"
+sign = "none"
+via = ["0005594a"]
+note = "Load axis 0x11AC7 reads normalized BFS ffff102c; wide-open latch ffff2468.bit3 forces 0xFF."
+
+[[chain.step]]
+from = "ffff11bc"
+to = "0000a9aa"
+effect = "indexes"
+sign = "none"
+via = ["0005594a"]
+note = "RPM axis 0x11CC0 at 50 rpm per count reads RPM/12.5 word ffff11bc."
+
+[[chain.step]]
+from = "0000a9aa"
+to = "ffff15eb"
+effect = "looks-up"
+sign = "positive"
+via = ["0005594a"]
+note = "Target Mixture - Main, Q7 with 128 = stoichiometric; ffff15eb = m while rich latch ffff24a2.bit7 holds (set at m >= 130), else 128."
+
+[[chain.step]]
+from = "ffff15eb"
+to = "ffff22e8"
+effect = "limits"
+sign = "positive"
+via = ["0005594a"]
+note = "ffff123a ramps from snapshot ffff1278 toward ffff15eb << 7; ffff22e8 = max(ffff123a, ffff123c), 0x4000 below 400 rpm or while ffff2531 != 0."
+
+[[chain.step]]
+from = "ffff22e8"
+to = "ffff22e6"
+effect = "multiplies"
+sign = "positive"
+via = ["000556ec"]
+note = "target = floor(min(65535, ffff231a + ffff240a)*ffff22e8/16384); gates, bounds, and rate limits give ffff18e4, published as ffff22e6."
+
+[[chain.step]]
+from = "ffff106f"
+to = "00012422"
+effect = "indexes"
+sign = "none"
+via = ["0005525a"]
+note = "The previous-cycle normalized coolant index ffff106f is the lookup coordinate."
+
+[[chain.step]]
+from = "00012422"
+to = "ffff15da"
+effect = "looks-up"
+sign = "positive"
+via = ["0005525a"]
+note = "The lookup times selected ROM8[0x990a] is step-limited relative to ffff15da and capped before it updates ffff15da."
+
+[[chain.step]]
+from = "ffff15da"
+to = "ffff231a"
+effect = "adds"
+sign = "positive"
+via = ["000554ae"]
+note = "ffff231a = clamp_u16(ffff15f8 + 0x4000 + ffff230c + ffff15da)."
+
+[[chain.step]]
+from = "ffff231a"
+to = "ffff22e6"
+effect = "multiplies"
+sign = "positive"
+via = ["000556ec"]
+note = "The base term plus conditional term ffff240a is scaled by commanded mixture ffff22e8 over 16384."
+
+[[chain.step]]
+from = "ffff1024"
+to = "ffff18c0"
+effect = "multiplies"
+sign = "positive"
+via = ["0004e974"]
+note = "S = current BFS ffff1024, or ffff123e while ffff245d.bit5 is set; H = floor(S*ffff22e6/131072)."
+
+[[chain.step]]
+from = "ffff22e6"
+to = "ffff18c0"
+effect = "multiplies"
+sign = "positive"
+via = ["0004e974"]
+note = "H = floor(S*ffff22e6/131072) with unity 0x4000; a full inhibit mask 0x3f publishes ffff22e6 = 0."
+
+[[chain.step]]
+from = "00012176"
+to = "ffff2300"
+effect = "scales"
+sign = "negative"
+via = ["000528be", "00052902"]
+note = "Only while ffff1a66 < 0: ffff150a = cell/2 and ffff2300 = clamp_s16(trunc0(ffff150a*ffff1a66/256)), so a larger cell lowers ffff2300."
+
+[[chain.step]]
+from = "ffff2300"
+to = "ffff18c0"
+effect = "adds"
+sign = "positive"
+via = ["0004e974"]
+note = "X_b = floor(H*ffff40b6/0x6400) + ffff2300, the signed transient term."
+
+[[chain.step]]
+from = "000129e2"
+to = "ffff165e"
+effect = "scales"
+sign = "positive"
+via = ["00053698"]
+note = "Curve 0x129E2 on load byte ffff13b1 adds to s; ffff31d8 = P*(256-s)>>8 falls, so ffff17ee = (K<<18)/((K<<10)+ffff31d8) and the gain rise."
+
+[[chain.step]]
+from = "000129f2"
+to = "ffff165e"
+effect = "scales"
+sign = "positive"
+via = ["00053698"]
+note = "Curve 0x129F2 on RPM/25 byte ffff11b3 adds to s; ffff165e = ffff160d*ROM16[0x9332]/256 rises with s."
+
+[[chain.step]]
+from = "ffff165e"
+to = "ffff18c0"
+effect = "multiplies"
+sign = "positive"
+via = ["0004e974"]
+note = "I_b = max(170, clamp_u16(trunc0(X_b*ffff165e/16384))); the common Q14 gain spans 0.7495..0.8494."
+
+[[chain.step]]
+from = "ffff18c0"
+to = "ffff191c"
+effect = "multiplies"
+sign = "positive"
+via = ["0004ead4"]
+note = "v = ffff2436 + floor(ffff18c0*trim/65536); the neutral trim 0x6400 is the factor 100/256 to 10 us counts."
+
+[[chain.step]]
+from = "ffff1108"
+to = "ffff2436"
+effect = "scales"
+sign = "negative"
+via = ["00056fc0"]
+note = "ffff2436 = clamp_u16(max(0, ((175 - ffff1108)*92 >> 7) + 70)) on battery byte ffff1108: 0.70 ms at 14.0 V, 0.09 ms per V."
+
+[[chain.step]]
+from = "ffff2436"
+to = "ffff191c"
+effect = "adds"
+sign = "positive"
+via = ["0004ead4"]
+note = "Injector opening time ffff2436 adds to both parity bases."
+
+[[chain.step]]
+from = "ffff191c"
+to = "ffff23c8"
+effect = "scales"
+sign = "positive"
+via = ["0004eba2"]
+note = "Even channels: v = ffff191c + ffff1396[i] - ffff1466[i], zero if negative, times ROM8[0x129C0+i] >> 7; DID 0x1206, ms = raw/100."
+
+[[chain.step]]
+from = "000129c0"
+to = "ffff23c8"
+effect = "multiplies"
+sign = "positive"
+via = ["0004eba2"]
+note = "Injection Pulse Channel Multiplier, Q1.7; all six stock cells are 0x80, unity."
+
+[[chain.step]]
+from = "ffff23c8"
+to = "ffff23d4"
+effect = "limits"
+sign = "positive"
+via = ["0004eba2", "0005b7ec"]
+note = "Minimum-pulse floor: max(x, sat_u16(floor((13656*x + 425000)/16384))) with the stock coefficients at 0x91DA."
+
+[[chain.step]]
+from = "ffff23d4"
+to = "ffff2348"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "The periodic 140-byte copy ffff23bc -> ffff2330 snapshots the transformed words."
+
+[[chain.step]]
+from = "ffff2348"
+to = "ffff224e"
+effect = "selects"
+sign = "positive"
+via = ["00054d3e"]
+note = "Running: ffff224e+2i = max(ffff2348+2i, ffff2390); stopped, inhibited, and start modes fill ffff23aa or the start words."
+
+[[chain.step]]
+from = "ffff224e"
+to = "fffff640"
+effect = "drives"
+sign = "positive"
+via = ["0002c13c"]
+note = "DCNT8x += sat_u16(800*d >> 8), one duration count is 10 us; inhibited channels take opening time ffff23aa."
+
+[[chain.step]]
+from = "ffff224e"
+to = "fffff666"
+effect = "schedules"
+sign = "none"
+via = ["0002c13c"]
+note = "0002c13c sets DSTR bit i to start the one-shot of channel i under the aggregate channel mask."
+
+[[chain]]
+id = "closed-loop-fuel"
+name = "Closed-loop fuel trim"
+summary = "Forms bank-1 conversion word ffff29e2 from curve 0x148FA, correction map 0xC10E, and A/F adjustment state ffff45a0, runs the 0005cbec feedback into STFT ffff22dc, learns it into LTFT grid ffff4b90, and multiplies precursor ffff18c0 by the trim sum into pulse base ffff191c. Bank 2 mirrors it through ffff29e4, ffff40ae, ffff22de, ffff4b10, ffff2304, and ffff191e."
+quantity = "Bank-1 trimmed pulse base, 10 us counts: precursor ffff18c0 times the STFT, LTFT, and third-trim sum plus opening time"
+output = "ffff191c"
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "00012292"
+to = "ffff322c"
+effect = "scales"
+sign = "none"
+via = ["0003ef74", "0003edb4"]
+note = "Z1 = max(0, 880 + sat_s16(trunc0(128*(X-880)/C))), X = 2*ffff267c in stock, C from 0x12292 on ffff4524; the sign follows X-880."
+
+[[chain.step]]
+from = "ffff322c"
+to = "000148fa"
+effect = "indexes"
+sign = "none"
+via = ["0003edb4"]
+note = "Adjusted coordinate Z1 indexes the common conversion curve over axis 0x15D20, points 0..1960."
+
+[[chain.step]]
+from = "000148fa"
+to = "ffff29e2"
+effect = "looks-up"
+sign = "positive"
+via = ["0003edb4"]
+note = "ffff29e2 = clamp(Y1 + A1 + O1 + P1 - 32768, 0, 65535) with Y1 from this curve, 5000..30000; stock P1 is zero."
+
+[[chain.step]]
+from = "0000c10e"
+to = "ffff29e2"
+effect = "adds"
+sign = "positive"
+via = ["0003edb4"]
+note = "Offset-binary 8x8 correction A1, stock 32747..32789, adds to Y1 before the 32768 offset."
+
+[[chain.step]]
+from = "0001462a"
+to = "ffff45a0"
+effect = "integrates"
+sign = "positive"
+via = ["000a0ee8"]
+note = "On selector 2 each update adds up step ffff97a4 from this map to ffff45a0, bounded to -500..500."
+
+[[chain.step]]
+from = "0001463a"
+to = "ffff45a0"
+effect = "integrates"
+sign = "negative"
+via = ["000a0ee8"]
+note = "On selector 2 each update subtracts down step ffff97a0 from this map."
+
+[[chain.step]]
+from = "ffff45a0"
+to = "ffff29e2"
+effect = "adds"
+sign = "positive"
+via = ["0003edb4"]
+note = "Signed A/F adjustment state O1, DID 0x1249, adds to the conversion sum."
+
+[[chain.step]]
+from = "ffff29e2"
+to = "ffff40ac"
+effect = "feeds"
+sign = "none"
+via = ["0005cbec"]
+note = "0005cbec runs the two-bank feedback state calculation into working Q8.8 word ffff40ac; the ledger states neither its arithmetic nor a sign."
+
+[[chain.step]]
+from = "ffff40ac"
+to = "ffff22dc"
+effect = "copies"
+sign = "positive"
+via = ["0005c910"]
+note = "The normal path copies ffff40ac to STFT ffff22dc, Q8.8 percent with neutral 0x6400; an alternate mode forces 75..125 percent."
+
+[[chain.step]]
+from = "ffff22dc"
+to = "ffff4b90"
+effect = "learns"
+sign = "positive"
+via = ["00057d1e"]
+note = "A signed step from ffff134e, a region coefficient, and STFT updates the selected cell in 90..110 percent; 492 of 518 changes follow the STFT sign."
+
+[[chain.step]]
+from = "ffff1024"
+to = "ffff2306"
+effect = "indexes"
+sign = "none"
+via = ["0005796c"]
+note = "BFS ffff1024 against byte thresholds 0x12592 forms one index of the 8x8 learned grid, with hysteresis on the prior packed index."
+
+[[chain.step]]
+from = "ffff11ae"
+to = "ffff2306"
+effect = "indexes"
+sign = "none"
+via = ["0005796c"]
+note = "Engine speed ffff11ae against thresholds 0x126DC forms the other index, at 0, 1000, 1500, 2200, 3400, 4400, 5400, and 6400 rpm."
+
+[[chain.step]]
+from = "ffff4b90"
+to = "ffff2306"
+effect = "selects"
+sign = "positive"
+via = ["0005796c"]
+note = "One of the 64 Q8.8-percent cells of bank-1 grid ffff4b90 is copied to ffff2306."
+
+[[chain.step]]
+from = "ffff2306"
+to = "ffff2302"
+effect = "adds"
+sign = "positive"
+via = ["00057b26"]
+note = "LTFT ffff2302 = ffff2306 + ffff5648 - 0x6400, clamped to 90..110 percent; fault and control gates force 0x6400."
+
+[[chain.step]]
+from = "ffff5648"
+to = "ffff2302"
+effect = "adds"
+sign = "positive"
+via = ["00057b26"]
+note = "Adjustment term ffff5648 from 00058168 adds around neutral 0x6400."
+
+[[chain.step]]
+from = "ffff22dc"
+to = "ffff191c"
+effect = "multiplies"
+sign = "positive"
+via = ["0004ead4"]
+note = "trim = max(STFT + LTFT + ffff2a24 - 0xC800, 0), or STFT + ffff2a24 - 0x6400 while ffff22e6 > 0x4000; v = ffff2436 + ffff18c0*trim/65536."
+
+[[chain.step]]
+from = "ffff2302"
+to = "ffff191c"
+effect = "multiplies"
+sign = "positive"
+via = ["0004ead4"]
+note = "LTFT enters the trim sum only while multiplier ffff22e6 <= 0x4000."
+
+[[chain.step]]
+from = "ffff2a24"
+to = "ffff191c"
+effect = "multiplies"
+sign = "positive"
+via = ["0004ead4"]
+note = "Third trim ffff2a24 from 0005b534, 90..110 percent with neutral 0x6400, adds to the trim sum; its physical source is unresolved."
+
+[[chain.step]]
+from = "ffff18c0"
+to = "ffff191c"
+effect = "multiplies"
+sign = "positive"
+via = ["0004ead4"]
+note = "The trim sum over 65536 scales bank-1 precursor ffff18c0; offset word ffff2310 stays at neutral 0x8000."
+
+[[chain]]
+id = "injection-phase"
+name = "Injection phase"
+summary = "RPM/25 byte ffff11b3 indexes End of Injection Angle Base 0x12302 or Conditional 0x1230A into injection-end delay ffff192e. FUN_000521A8 subtracts the pulse angle into lead ffff23f0 and start angle ffff23bf, which place the delayed start that FUN_0002C13C fires into DSTR and DCNT8A..DCNT8F."
+quantity = "Injection-end delay from the reference tooth to the end of the pulse, 2 crank degrees per count; end of injection is 130 + 2*count degrees after intake TDC"
+output = "ffff192e"
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff1196"
+to = "ffff11b3"
+effect = "converts"
+sign = "positive"
+via = ["000384fe", "000384cc", "00020dfe"]
+note = "000384fe writes ffff11e8 = ffff1196 >> 3, 000384cc writes ffff11eb = min(255, ffff11e8 >> 4), and 00020dfe copies it to RPM/25 byte ffff11b3."
+
+[[chain.step]]
+from = "ffff11b3"
+to = "00012302"
+effect = "indexes"
+sign = "none"
+via = ["00056bd0", "00026370"]
+note = "00056bd0 looks up the base table over 8-point implicit axis 00026370 (step 32, limit 224) at RPM/25 byte ffff11b3."
+
+[[chain.step]]
+from = "ffff11b3"
+to = "0001230a"
+effect = "indexes"
+sign = "none"
+via = ["00056bd0", "00026370", "00026740"]
+note = "00056bd0 interpolates the conditional table over implicit axis 00026370 (8 points, step 32) through 00026740 at ffff11b3."
+
+[[chain.step]]
+from = "00012302"
+to = "ffff192e"
+effect = "looks-up"
+sign = "positive"
+via = ["00056bd0"]
+note = "Base path: ffff192e = 2 * min(lookup + uint8[ffff340c], 209); one cell count is 4 crank degrees, stock 133 in all 8 cells (532 degrees)."
+
+[[chain.step]]
+from = "0001230a"
+to = "ffff192e"
+effect = "looks-up"
+sign = "positive"
+via = ["00056bd0"]
+note = "Conditional path: ffff192e = 2 * min(y, 209); stock cells 160..200 (640..800 crank degrees) end the pulse 50..210 degrees after intake TDC."
+
+[[chain.step]]
+from = "ffff340c"
+to = "ffff192e"
+effect = "adds"
+sign = "positive"
+via = ["00056bd0"]
+note = "The base path adds uint8[ffff340c] to the table value before the 209-count limit; the conditional path omits it."
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff2484"
+to = "ffff192e"
+effect = "selects"
+sign = "none"
+via = ["00056bd0"]
+note = "00056bd0 selects 0x1230A while ffff2484 bits 4 and 5 and warm latch ffff41d0.bit1 are set; ffff24d0.bit1 selects a path that bypasses both maps."
+
+[[chain.step]]
+from = "ffff41d0"
+to = "ffff192e"
+effect = "selects"
+sign = "none"
+via = ["00056bd0"]
+note = "Warm latch ffff41d0.bit1 sets at raw coolant ROM8[0x8770] = 120 (70 deg C) and releases below 115; it enables the conditional table."
+
+[[chain.step]]
+from = "ffff192e"
+to = "ffff23f0"
+effect = "converts"
+sign = "positive"
+via = ["000521a8"]
+note = "Start delay d = 2*E - 4*p crank degrees, or 0 when E < 2*p; lead ffff23f0 = d / 120 engine events, forced to 3 while ffff4251.bit0 is set."
+
+[[chain.step]]
+from = "ffff192e"
+to = "ffff23bf"
+effect = "converts"
+sign = "none"
+via = ["000521a8"]
+note = "Start angle ffff23bf = clamp(d % 120, 4, 116) / 4 in 4 crank degrees per count; the remainder has no monotonic sign in d."
+
+[[chain.step]]
+from = "ffff23d4"
+to = "ffff23f0"
+effect = "subtracts"
+sign = "negative"
+via = ["000521a8"]
+note = "The longest transformed pulse ffff23d4..ffff23de, floored at ffff241c in 10 us counts, gives pulse angle p = min((k * pulse) >> 16, 255)."
+
+[[chain.step]]
+from = "ffff11bc"
+to = "ffff23f0"
+effect = "scales"
+sign = "negative"
+via = ["000521a8"]
+note = "k = ((ffff11bc << 4) * 0xC49B) >> 16 turns pulse time into angle, so a higher RPM/12.5 speed raises p and lowers the start delay d."
+
+[[chain.step]]
+from = "ffff23f0"
+to = "ffff2364"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "00020dfe copies the 140-byte block 0xFFFF23BC..0xFFFF2447 to 0xFFFF2330, so ffff2364 is the scheduler snapshot of lead ffff23f0."
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff23bf"
+to = "ffff2333"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "The same 140-byte copy places start angle ffff23bf in snapshot ffff2333."
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff2364"
+to = "ffff20b4"
+effect = "indexes"
+sign = "none"
+via = ["00054a44"]
+note = "On every engine event 00054a44 forms slot ffff20b4 = (ffff11de - 1 - lead) mod 6; the lead is ffff2364 while ffff8513.bit5 is set, else 3."
+
+[[chain.step]]
+from = "ffff11de"
+to = "ffff20b4"
+effect = "indexes"
+sign = "none"
+via = ["00054a44"]
+note = "ffff11de is the engine-event cylinder number 1..6 that tooth 7 copies before feeder 000208f8 runs the engine-event tasks."
+
+[[chain.step]]
+from = "ffff20b4"
+to = "ffff2228"
+effect = "selects"
+sign = "none"
+via = ["00054a44"]
+note = "For an accepted slot the pending mask ffff2228 = ROM8[0x22695 + slot] (02 04 08 10 20 01); with no accepted slot it is 0."
+
+[[chain.step]]
+from = "ffff2333"
+to = "ffff16c2"
+effect = "converts"
+sign = "none"
+via = ["00054a44", "0002b64a"]
+note = "00054a44 passes angle 4*ffff2333 to 0002b64a, which splits it by 10 into tooth count and remainder; offset ffff16c2 = ffff22bc * rem / 10."
+
+[[chain.step]]
+from = "ffff22bc"
+to = "ffff16c2"
+effect = "scales"
+sign = "positive"
+via = ["0002b64a"]
+note = "ffff22bc is the time of one 10-degree crank tooth in 3.2 us channel-1 counts."
+
+[[chain.step]]
+from = "ffff16c2"
+to = "fffff666"
+effect = "schedules"
+sign = "none"
+via = ["0002b64a", "00054a44", "0002be40", "0002c13c"]
+note = "With a zero tooth count 0002b64a sets GR1A = ffff158a + ffff16c2; on the IMI1A match 0002be40 fires ffff2228 through 0002c13c into DSTR."
+
+[[chain.step]]
+from = "ffff2228"
+to = "fffff666"
+effect = "drives"
+sign = "none"
+via = ["0002be40", "0002c13c"]
+note = "0002be40 copies ffff2228 to ffff1936 and calls 0002c13c, which sets DSTR bit i to start the one-shot of each channel in the mask."
+
+[[chain.step]]
+from = "ffff2228"
+to = "fffff640"
+effect = "selects"
+sign = "none"
+via = ["0002be40", "0002c13c"]
+note = "For each channel i in the mask 0002c13c adds sat_u16(800 * d >> 8) to DCNT8A + 2*i with interrupts masked."
+
+[[chain]]
+id = "ignition-advance"
+name = "Ignition advance"
+summary = "Builds the final software spark advance ffff11d4 from the RPM and load timing surfaces 0x991A, 0x9A1A, and 0x9B1A, the computed base angle, the retard and cam terms, the event corrections, and the work-support adjustment, then converts it into APC command ffff2022, which programs the GR11A spark edge, the GR11B reset edge that starts the dwell, and the POPCR output actions."
+quantity = "Spark advance, crank degrees BTDC in the software coordinate that J1979 PID 0x0E reports"
+output = "ffff11d4"
+specs = ["defs/JK08A.ignition-state.md", "defs/JK08A.ignition-output.md", "defs/JK08A.work-support.md"]
+
+[[chain.step]]
+from = "ffff11bc"
+to = "ffff160f"
+effect = "indexes"
+sign = "none"
+via = ["0004e1c0"]
+note = "Row axis 0x11ECE: each point times four is compared with RPM/12.5 word ffff11bc, so one count is 50 RPM over 400..7400 RPM."
+specs = ["defs/JK08A.ignition-state.md"]
+
+[[chain.step]]
+from = "ffff102c"
+to = "ffff160f"
+effect = "indexes"
+sign = "none"
+via = ["0004e1c0"]
+note = "Column axis 0x11EBE is Q7 normalized BFS ffff102c, the scheduler snapshot of ffff1048."
+
+[[chain.step]]
+from = "0000991a"
+to = "ffff160f"
+effect = "looks-up"
+sign = "positive"
+via = ["0004e1c0"]
+note = "Cold surface, 16x16: bits 0..6 are an x - 64 crank-degree timing trim; bit 7 enables the knock-state path."
+
+[[chain.step]]
+from = "00009a1a"
+to = "ffff160f"
+effect = "looks-up"
+sign = "positive"
+via = ["0004e1c0"]
+note = "High-octane hot surface; it is the hot input while ffff2466 bit 6 is clear."
+
+[[chain.step]]
+from = "00009b1a"
+to = "ffff160f"
+effect = "looks-up"
+sign = "positive"
+via = ["0004e1c0"]
+note = "High-detonation hot surface; it is the hot input while ffff2466 bit 6 is set."
+
+[[chain.step]]
+from = "ffff1071"
+to = "ffff160f"
+effect = "selects"
+sign = "none"
+via = ["0004e1c0"]
+note = "Coolant raw ffff1071 (deg C = raw - 50) <= 106 uses the cold surface, 107..131 blends cold with the selected hot surface, above 131 uses hot."
+
+[[chain.step]]
+from = "ffff2466"
+to = "ffff160f"
+effect = "selects"
+sign = "none"
+via = ["0004e1c0"]
+note = "Bit 6 selects the hot surface: clear 0x9A1A, set 0x9B1A."
+
+[[chain.step]]
+from = "ffff1382"
+to = "ffff2466"
+effect = "compares"
+sign = "none"
+via = ["000493e8"]
+note = "Hysteresis: Q8 state ffff1382 <= ROM16[0x8F02] = -1792 sets bit 6; only a value above ROM16[0x8F00] = 8192 clears it."
+
+[[chain.step]]
+from = "ffff160f"
+to = "ffff23bd"
+effect = "masks"
+sign = "positive"
+via = ["0004af38"]
+note = "ffff23bd = max((ffff160f & 0x7F) - ffff11af, 0); ffff11af is the snapshot of adjustment follower ffff11e7."
+
+[[chain.step]]
+from = "ffff23bd"
+to = "ffff1830"
+effect = "adds"
+sign = "positive"
+via = ["0004bdc2"]
+note = "Normal branch: ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc - ffff15ea - 128 + ffff1a7d + ffff134a)."
+
+[[chain.step]]
+from = "ffff23f1"
+to = "ffff1830"
+effect = "adds"
+sign = "positive"
+via = ["0004bdc2"]
+note = "Base angle of 0004ae6c: divider result r of ffff17b8, ffff14dc, ffff1630, and ffff11bc, stored as r - 14 below 0x8E and 127 otherwise."
+
+[[chain.step]]
+from = "ffff23c5"
+to = "ffff1830"
+effect = "subtracts"
+sign = "negative"
+via = ["0004bdc2"]
+note = "Unsigned retard sum clamp_u8(ffff22fe + ffff22f8 - (ffff1657 >> 4)) of 0004bb6a; both branches subtract it."
+
+[[chain.step]]
+from = "ffff12dc"
+to = "ffff1830"
+effect = "subtracts"
+sign = "negative"
+via = ["0004bdc2"]
+note = "Retard max(curve(RPM/25 ffff11b3) - curve(coolant index ffff106f), 0) of 0004bbac; the normal branch subtracts it."
+
+[[chain.step]]
+from = "ffff15ea"
+to = "ffff1830"
+effect = "subtracts"
+sign = "negative"
+via = ["0004bdc2"]
+note = "Bounded ramp of 0004bbee from live load ffff1048 and ffff22e8; the normal branch subtracts it."
+
+[[chain.step]]
+from = "ffff1a7d"
+to = "ffff1830"
+effect = "adds"
+sign = "positive"
+via = ["0004bdc2"]
+note = "Centered cam-coordinate correction of 0004d2a6, neutral at 64; both branches add it."
+
+[[chain.step]]
+from = "00012196"
+to = "ffff1511"
+effect = "looks-up"
+sign = "positive"
+via = ["0004afdc"]
+note = "Default/post-transition addend, the last selector choice; ffff1511 = x - 128 of the selected 8-point map."
+
+[[chain.step]]
+from = "0001219e"
+to = "ffff1511"
+effect = "looks-up"
+sign = "positive"
+via = ["0004afdc"]
+note = "Warm DFCO-transition addend, second choice after stock-inert 0x121A6, while window timer ffff2590 is nonzero."
+
+[[chain.step]]
+from = "ffff1511"
+to = "ffff23ee"
+effect = "adds"
+sign = "positive"
+via = ["0004afdc"]
+note = "ffff23ee = clamp_s8(s8(ffff1514) + u8(ffff12db) + s8(ffff1511) + u8(ffff1512) + u8(ffff1349) - 128)."
+
+[[chain.step]]
+from = "ffff23ee"
+to = "ffff1830"
+effect = "adds"
+sign = "positive"
+via = ["0004bdc2"]
+note = "Alternate branch: ffff1830 = clamp_s8(ffff1a7d + ffff23ee - ffff23c5 - 64)."
+
+[[chain.step]]
+from = "ffff1830"
+to = "ffff2404"
+effect = "stores"
+sign = "positive"
+via = ["0004c136"]
+note = "Timing-state latch 0004c136 stores ffff1830 or ffff1831 into ffff2404."
+
+[[chain.step]]
+from = "ffff2404"
+to = "ffff2378"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "Scheduler block copy ffff23bc..ffff2447 -> ffff2330..ffff23bb; ffff2378 is the previous-pass latched state."
+
+[[chain.step]]
+from = "ffff2378"
+to = "ffff12d6"
+effect = "adds"
+sign = "positive"
+via = ["0004d99c"]
+note = "Normal path: ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6)."
+
+[[chain.step]]
+from = "ffff11d6"
+to = "ffff12d6"
+effect = "adds"
+sign = "positive"
+via = ["0004d99c"]
+note = "Signed event correction in crank degrees; negative values retard."
+
+[[chain.step]]
+from = "ffff11f9"
+to = "ffff11d6"
+effect = "subtracts"
+sign = "negative"
+via = ["0004d99c"]
+note = "ffff11d6 = -ffff11f9 while ffff24c5 bit 5 and ffff24cb bit 2 are clear; 00062e10 forms ffff11f9 from Q8 states ffff23c2 and ffff23ea."
+
+[[chain.step]]
+from = "ffff22fa"
+to = "ffff11d6"
+effect = "adds"
+sign = "positive"
+via = ["0004d99c"]
+note = "Knock branch (ROM8[0x8710] bit 5): ffff11d6 = min(ffff22fa - hi(ffff23c2), -ffff11fa); chain knock-retard forms ffff22fa."
+
+[[chain.step]]
+from = "000147da"
+to = "ffff12d6"
+effect = "subtracts"
+sign = "negative"
+via = ["0004d99c"]
+note = "Subtracted ffff1ff6 = byte coefficient * interp(0x147DA by ffff237e) / 100; its operating-mode qualifier is unresolved."
+
+[[chain.step]]
+from = "ffff12d6"
+to = "ffff11da"
+effect = "adds"
+sign = "positive"
+via = ["0004dbe8"]
+note = "ffff11da = clamp(ffff12d6 + gated ffff564c, ROM8[0x8221] = -7, ROM8[0x821E] = 50)."
+
+[[chain.step]]
+from = "ffff564c"
+to = "ffff11da"
+effect = "adds"
+sign = "positive"
+via = ["0004dbe8"]
+note = "Work-support adjustment TARGET IGN TIM ADJ, -5..0 degrees, added only while ffff5b31 bits 1..5 are clear."
+specs = ["defs/JK08A.work-support.md"]
+
+[[chain.step]]
+from = "ffff11da"
+to = "ffff11d4"
+effect = "limits"
+sign = "positive"
+via = ["0004dbe8"]
+note = "Moves from the previous ffff11d4 by at most +4 (15 in flagged modes) or -15 per pass, then -7..50, a coolant floor, and 70."
+
+[[chain.step]]
+from = "ffff11d4"
+to = "ffff2022"
+effect = "converts"
+sign = "negative"
+via = ["0004df82"]
+note = "Normal path: command ffff2022 = uint8(110 - uint8(ffff11d4)), the spark delay in crank degrees after tooth 7."
+
+[[chain.step]]
+from = "ffff2022"
+to = "fffff5c2"
+effect = "schedules"
+sign = "none"
+via = ["0002a892", "00028e7c", "00028dc8", "0002ab24"]
+note = "0002a892 stores command / 10 and the remainder at ffff1558 and ffff155a; ffff1558 counts teeth down, then GR11A = ffff158a + ffff22bc * remainder / 10."
+
+[[chain.step]]
+from = "ffff2022"
+to = "fffff5c4"
+effect = "schedules"
+sign = "none"
+via = ["0004e080", "0002acba"]
+note = "0004e080 adds 120 - dwell ffff237a to the command; 0002acba programs the GR11B reset edge with the same divide-by-ten scheme."
+
+[[chain.step]]
+from = "ffff13bd"
+to = "fffff700"
+effect = "selects"
+sign = "none"
+via = ["0002a892"]
+note = "Set mask ffff13bd = 1 << (cylinder - 1) enables the POPCR low-byte action that drives the PULS pin high at GR11A."
+
+[[chain.step]]
+from = "ffff13d1"
+to = "fffff700"
+effect = "selects"
+sign = "none"
+via = ["0002acba"]
+note = "Reset mask ffff13d1 of the next cylinder enables the POPCR high-byte action that drives its PULS pin low at GR11B, which starts its dwell."
+
+[[chain]]
+id = "knock-retard"
+name = "Knock retard"
+summary = "Samples ADC2 in a 50-degree window per cylinder, compares the rise over a learned per-channel reference with the RPM threshold from 0x1108E, and integrates the event count into Q8 knock timing state ffff121a, whose degree byte ffff22fa enters event correction ffff11d6 of the advance sum."
+quantity = "Knock timing-state correction, crank degrees; negative values retard the spark"
+output = "ffff22fa"
+specs = ["defs/JK08A.knock-detection.md", "defs/JK08A.ignition-state.md"]
+
+[[chain.step]]
+from = "fffff840"
+to = "ffff21d8"
+effect = "detects"
+sign = "none"
+via = ["0004a5ac", "0004a8d4", "0004a238"]
+note = "Tooth 7 opens and tooth 0 closes the window; DMAC 2 reads ADDR24 (AN24/AN25 scan); metric = sum of the 3 largest rises over the reference."
+
+[[chain.step]]
+from = "fffff840"
+to = "ffff2178"
+effect = "learns"
+sign = "none"
+via = ["0004a5ac", "0004a8d4", "0004a238"]
+note = "Per-channel reference update ref = (224 * v + 31 * ref) >> 8, plus 1 when below the old value; weight ROM8[0x884B] = 0xE0."
+
+[[chain.step]]
+from = "ffff2178"
+to = "ffff21d8"
+effect = "subtracts"
+sign = "negative"
+via = ["0004a238"]
+note = "d[i] = v[i] - reference[c][i] with the reference at 0xFFFF2178 + 16 * (c - 1); a higher reference lowers the metric."
+
+[[chain.step]]
+from = "ffff11de"
+to = "ffff2144"
+effect = "selects"
+sign = "none"
+via = ["00049ffc"]
+note = "Channel c = cylinder ffff11de of the tooth-7 event selects row 0x1108E + 0x20 * (c - 1) and slot ffff2144 + 2 * (c - 1)."
+
+[[chain.step]]
+from = "ffff11f4"
+to = "ffff2144"
+effect = "indexes"
+sign = "none"
+via = ["00049ffc"]
+note = "RPM/12.5 word ffff11f4 interpolates the row on axis 0x15340 (400..6400 RPM)."
+
+[[chain.step]]
+from = "0001108e"
+to = "ffff2144"
+effect = "looks-up"
+sign = "positive"
+via = ["00049ffc"]
+note = "Six rows of 16 uint16 thresholds; stock rows 3 and 5 hold only 0xFFFF."
+
+[[chain.step]]
+from = "ffff2144"
+to = "ffff2142"
+effect = "compares"
+sign = "negative"
+via = ["0004a238"]
+note = "An exceedance is metric > threshold, so a higher threshold admits fewer events."
+
+[[chain.step]]
+from = "ffff21d8"
+to = "ffff2142"
+effect = "compares"
+sign = "positive"
+via = ["0004a238"]
+note = "Each exceedance increments ffff2142 up to 0xFF and sets ffff24c2 bit 6 and bit c - 1 of ffff2150."
+
+[[chain.step]]
+from = "ffff2142"
+to = "ffff1380"
+effect = "integrates"
+sign = "negative"
+via = ["000493e8"]
+note = "Knock branch: ffff1380 = sat16(ffff1258 + 13) after a quiet interval, else sat16(ffff1258 - 307 * ffff2142); the count is then cleared."
+
+[[chain.step]]
+from = "ffff1258"
+to = "ffff1380"
+effect = "adds"
+sign = "positive"
+via = ["000493e8"]
+note = "Q8 state ffff1258 is the base of the knock step; ROM16[0x8EAA] = 13 and ROM16[0x8EAE] = 307."
+
+[[chain.step]]
+from = "ffff1380"
+to = "ffff121a"
+effect = "adds"
+sign = "positive"
+via = ["000493e8"]
+note = "Direct branch adds (low7 0x9A1A - low7 0x9B1A) << 8; otherwise ffff121a slews from ffff1258 toward ffff1380 by ROM16[0x9078] = 0x500, clamped to <= 0."
+
+[[chain.step]]
+from = "00009a1a"
+to = "ffff121a"
+effect = "looks-up"
+sign = "positive"
+via = ["000493e8"]
+note = "Direct branch (ffff2469 bit 7 clear, ffff2467 bit 6 set): the high-octane low 7 bits enter with weight +256."
+
+[[chain.step]]
+from = "00009b1a"
+to = "ffff121a"
+effect = "looks-up"
+sign = "negative"
+via = ["000493e8"]
+note = "Direct branch: the high-detonation low 7 bits enter with weight -256."
+
+[[chain.step]]
+from = "ffff121a"
+to = "ffff22fa"
+effect = "scales"
+sign = "positive"
+via = ["000493e8"]
+note = "ffff22fa = trunc_toward_zero(int16(ffff121a) / 256), one crank degree per count."
+
+[[chain.step]]
+from = "ffff22fa"
+to = "ffff11d6"
+effect = "adds"
+sign = "positive"
+via = ["0004d99c"]
+note = "With ffff24c5 bit 5 or ffff24cb bit 2 set and ROM8[0x8710] bit 5: ffff11d6 = min(ffff22fa - hi(ffff23c2), -ffff11fa)."
+
+[[chain.step]]
+from = "ffff11d6"
+to = "ffff12d6"
+effect = "adds"
+sign = "positive"
+via = ["0004d99c"]
+note = "ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6); 0004dbe8 carries it into advance ffff11d4."
+
+[[chain]]
+id = "electronic-throttle"
+name = "Electronic throttle target"
+summary = "Two accelerator-pedal samples form a normalized pedal word that scales a signed request; the rotational-speed limiter and the signed-min arbitration bound it, and 0xE98E inverts it to an opening-area request that joins the idle base. 0006F48C converts the shared target area through 0x13202 to channel targets, which the regulator publishes as ATU-II BFR6A-D duty."
+quantity = "Throttle opening target of code channel 0, raw opening coordinate of the inverse 0x13202/0x155A0 pair (FFFF28BE holds channel 1)"
+output = "ffff28bc"
+specs = ["defs/JK08A.throttle-control.md", "defs/JK08A.limiters.md"]
+
+[[chain.step]]
+from = "ffff362c"
+to = "ffff27a0"
+effect = "converts"
+sign = "positive"
+via = ["00072b68"]
+note = "ffff27a0 = signed(AN10 sample ffff362c - learned offset ffff55c0); calibrated range checks share the first pedal DTC thresholds."
+
+[[chain.step]]
+from = "ffff362e"
+to = "ffff27a4"
+effect = "converts"
+sign = "positive"
+via = ["0006e826"]
+note = "ffff27a4 = signed(2 * AN17 sample ffff362e - learned offset ffff55c2)."
+
+[[chain.step]]
+from = "ffff27a0"
+to = "ffff2672"
+effect = "selects"
+sign = "positive"
+via = ["0006ec68"]
+note = "ffff2672 = minimum of both channels clamped at zero, with mode substitution by ffff24c8 and an optional rate limit through ffff1384."
+
+[[chain.step]]
+from = "ffff27a4"
+to = "ffff2672"
+effect = "selects"
+sign = "positive"
+via = ["0006ec68"]
+note = "The second channel enters the same zero-clamped minimum; mode bits in ffff24c8 can substitute one channel."
+
+[[chain.step]]
+from = "ffff2672"
+to = "ffff266e"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "Periodic scheduler 00020dfe snapshots the normalized pedal word."
+
+[[chain.step]]
+from = "ffff266e"
+to = "ffff18c8"
+effect = "converts"
+sign = "positive"
+via = ["000753d4"]
+note = "Q15 pedal fraction ffff18c8 = clamp(floor(ffff266e * 32768 / 170), 0, 32768) with stock ROM16[0x94e4] = 0 and ROM16[0x94e8] = 170."
+
+[[chain.step]]
+from = "ffff18c8"
+to = "ffff19d2"
+effect = "multiplies"
+sign = "positive"
+via = ["000753d4"]
+note = "With stock 0x89fb.bit5 set, coefficient max(ffff18c8, lookup 0x10b0e), capped at 0xa000, multiplies a nonnegative difference / 32768."
+
+[[chain.step]]
+from = "00010b0e"
+to = "ffff19d2"
+effect = "multiplies"
+sign = "positive"
+via = ["000753d4"]
+note = "Q15 multiplier map 0x10b0e competes with ffff18c8 in the maximum; ffff19be records the selected coefficient before the 0xa000 cap."
+
+[[chain.step]]
+from = "ffff266e"
+to = "ffff18f2"
+effect = "converts"
+sign = "positive"
+via = ["00075590"]
+note = "ffff1e6c = 0 at <= 45, 1500 at >= 170, else floor((x - 45) * 1500 / 125); bounded offsets and corrections then form ffff18f2."
+
+[[chain.step]]
+from = "ffff18f2"
+to = "ffff19d4"
+effect = "scales"
+sign = "positive"
+via = ["00075306"]
+note = "ffff19d4 = s16 clamp of ffff18f2 * ROM16[0x944e] divided by ffff19a2 and ffff23fc; zero when either divisor is zero."
+
+[[chain.step]]
+from = "ffff19d4"
+to = "ffff19d0"
+effect = "selects"
+sign = "positive"
+via = ["00075396"]
+note = "00075396 selects ffff19d4 or forward-surface value ffff19ba by ffff2488.bit7, ROM8[0x8b28], ffff418a.bit2, and ffff24d2.bit7."
+
+[[chain.step]]
+from = "ffff19d0"
+to = "ffff19d2"
+effect = "scales"
+sign = "positive"
+via = ["000753d4"]
+note = "000753d4 applies the bounded coefficient adjustment to ffff19d0 and writes ffff19d2; with 0x89fb.bit5 clear it copies ffff19d0."
+
+[[chain.step]]
+from = "0000e98e"
+to = "ffff19d2"
+effect = "looks-up"
+sign = "none"
+via = ["000753d4"]
+note = "Basis B = lookup(0xe98e, row ffff1702, column of the first 0x13202 point) - 0x8000 and ffff19d2 = B + c * max(ffff19d0 - B, 0), so B raises ffff19d2 while c < 1 and lowers it while c > 1."
+
+[[chain.step]]
+from = "ffff19d2"
+to = "ffff243c"
+effect = "limits"
+sign = "positive"
+via = ["00075540"]
+note = "00075540 stores the mode-dependent floor of 00075230 back into ffff19d2 and writes the lesser of it and the 0xe98e cap as APP request ffff243c."
+
+[[chain.step]]
+from = "0000e98e"
+to = "ffff243c"
+effect = "limits"
+sign = "positive"
+via = ["00075540"]
+note = "The cap is lookup(0xe98e, row ffff1702, last column 0xffff) - 0x8000; a larger last-column cell raises the APP request ceiling."
+
+[[chain.step]]
+from = "ffff243c"
+to = "ffff19d8"
+effect = "limits"
+sign = "positive"
+via = ["0007584e"]
+note = "The ramp engages while previous ffff19d8 < ffff243c; the inactive branch reloads ramp ffff19da with ffff243c, so the output tracks APP."
+
+[[chain.step]]
+from = "0000942c"
+to = "ffff19d8"
+effect = "limits"
+sign = "positive"
+via = ["0007584e"]
+note = "Threshold 0x942c (x*0.78125 RPM, stock 0x2580 = 7500 RPM) sets the onset of progressive request reduction; 0xffff writes neutral 0x7fff."
+
+[[chain.step]]
+from = "ffff19d8"
+to = "ffff243a"
+effect = "selects"
+sign = "positive"
+via = ["00071508"]
+note = "Index-18 arbiter 00071508 takes the signed minimum of ffff19d8, limiter candidate ffff19de, and the other bounds into ffff243a."
+
+[[chain.step]]
+from = "ffff243a"
+to = "ffff2438"
+effect = "selects"
+sign = "positive"
+via = ["00070d82"]
+note = "With ffff2490.bit1 clear 00070d82 selects ffff243a; with the bit set it selects controller result ffff19c0, bounded by ffff243a while ffff25d6 is zero."
+
+[[chain.step]]
+from = "ffff2438"
+to = "ffff19c6"
+effect = "limits"
+sign = "positive"
+via = ["00079030"]
+note = "Index-21 boundary stage 00079030 applies the mode-controlled lower and upper bounds, including ffff347e..ffff3484, and writes ffff19c6."
+
+[[chain.step]]
+from = "ffff19c6"
+to = "ffff198a"
+effect = "converts"
+sign = "positive"
+via = ["00073432"]
+note = "00073432 interpolates the current-RPM row of 0xe98e and inverse-searches ffff19c6 + 0x8000, returning coordinates from 0x14114."
+
+[[chain.step]]
+from = "0000e98e"
+to = "ffff198a"
+effect = "converts"
+sign = "negative"
+via = ["00073432"]
+note = "Inverse lookup: larger 0xe98e requested-torque cells reach a given request at a lower 0x14114 coordinate."
+
+[[chain.step]]
+from = "ffff198a"
+to = "ffff183e"
+effect = "converts"
+sign = "positive"
+via = ["000730fc"]
+note = "000730fc converts the coordinate through 0x15500/0x15690 or 0x15540/0x156d0, applies ffff1702 and ROM8[0x8d8f], and clamps at 0x13202[0]."
+
+[[chain.step]]
+from = "ffff183e"
+to = "ffff19b2"
+effect = "adds"
+sign = "positive"
+via = ["00072c3c"]
+note = "With ffff24d2.bit0 and ffff24ce.bit2 clear: ffff19b2 = clamp_u16(ffff183e + ffff1340 - (ffff120e >> 2))."
+
+[[chain.step]]
+from = "ffff1340"
+to = "ffff19b2"
+effect = "adds"
+sign = "positive"
+via = ["00072c3c"]
+note = "The idle/opening-area base ffff1340 adds to the request area in the normal composition."
+
+[[chain.step]]
+from = "ffff120e"
+to = "ffff19b2"
+effect = "subtracts"
+sign = "negative"
+via = ["00072c3c"]
+note = "Inflow opening area ffff120e, in four times the raw 0x13202 counts, is subtracted as ffff120e >> 2."
+
+[[chain.step]]
+from = "ffff19b2"
+to = "ffff28bc"
+effect = "converts"
+sign = "positive"
+via = ["0006f48c"]
+note = "0006f48c converts the area through inverse pair 0x155a0/0x13202, adds a channel correction, and clamps from ROM16[0x9574] = 15 to the upper bound."
+
+[[chain.step]]
+from = "00013202"
+to = "ffff28bc"
+effect = "converts"
+sign = "negative"
+via = ["0006f48c"]
+note = "Inverse lookup: larger 0x13202 opening-area cells reach a given area at a lower 0x155a0 opening coordinate."
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[chain.step]]
+from = "00012daa"
+to = "ffff28bc"
+effect = "limits"
+sign = "positive"
+via = ["0006f48c"]
+note = "Upper target ffff3508 = clamp(raw(0x12daa) * 13, 908, 2908) while ffff417e.bit5 is clear; otherwise ROM16[0x9578] * 4 = 2908 applies."
+
+[[chain.step]]
+from = "ffff28bc"
+to = "ffff37b8"
+effect = "feeds"
+sign = "none"
+via = ["000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb614", "000cc720"]
+note = "Scaled target sat_u16(t * 16 + 0x2000) gives magnitude and direction for regulator 000cb614. Sign none: effort has separate direction ffff369a."
+
+[[chain.step]]
+from = "ffff38a8"
+to = "ffff2660"
+effect = "converts"
+sign = "positive"
+via = ["0003ea9a"]
+note = "Feedback estimate of 0003e75a: ffff2660 = clamp_u16(ffff38a8 - 64 * ffff454e + 0x2000) per channel."
+
+[[chain.step]]
+from = "ffff2660"
+to = "ffff37b8"
+effect = "feeds"
+sign = "none"
+via = ["000cafbc", "000cb078", "000cb140", "000cb614", "000cc720"]
+note = "000cafbc selects ffff2660 or ffff2664, 000cb140 forms feedback magnitude and direction, 000cb614 regulates. Sign none: closed-loop feedback."
+
+[[chain.step]]
+from = "ffff37b8"
+to = "ffff374c"
+effect = "converts"
+sign = "positive"
+via = ["000cc5f0"]
+note = "Duty = effort >> 6 with supply-compensation divisor ffff39b0, clamped to 500 and capped at stock literal 490."
+
+[[chain.step]]
+from = "ffff374c"
+to = "fffff510"
+effect = "drives"
+sign = "none"
+via = ["000407c0"]
+note = "min(320, floor(duty * 320 / 500)) goes to BFR6A or BFR6B by direction mask ffff36dc; channel 1 uses BFR6C/D. Sign none: mask-selected member."
+
+[[chain]]
+id = "idle-air"
+name = "Idle air opening base"
+summary = "000476D2 adds coolant-indexed base 0x1465A and speed-indexed correction 0x1469A and bounds the sum by FFFF133E, a scaled copy of the 000474A4 air/throttle quantity FFFF122A built from curve aggregate FFFF173A, floor curve 0x12908, and multiplier maps. 00072C3C adds the result FFFF1340 to the shared throttle target area."
+quantity = "Idle/opening-area base, raw opening-area counts added to the shared throttle target area FFFF19B2"
+output = "ffff1340"
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[chain.step]]
+from = "0001465a"
+to = "ffff1340"
+effect = "looks-up"
+sign = "positive"
+via = ["000476d2"]
+note = "base = lookup(0x1465a, ffff106f << 8), stored in ffff1e74; ffff1340 = min(sat_u16(base + correction), ffff133e)."
+
+[[chain.step]]
+from = "ffff106f"
+to = "ffff1340"
+effect = "indexes"
+sign = "none"
+via = ["000476d2"]
+note = "Previous-cycle coolant index ffff106f (0..240 = -40..110 deg C) indexes 0x1465a; the sign follows the table shape."
+
+[[chain.step]]
+from = "0001469a"
+to = "ffff1340"
+effect = "adds"
+sign = "positive"
+via = ["000476d2"]
+note = "correction = lookup(0x1469a, ffff11bc), stored in ffff12fc, adds to the base with uint16 saturation into ffff12fa."
+
+[[chain.step]]
+from = "ffff11bc"
+to = "ffff1340"
+effect = "indexes"
+sign = "none"
+via = ["000476d2"]
+note = "Engine-speed word ffff11bc (RPM/12.5) indexes correction 0x1469a; the sign follows the table shape."
+
+[[chain.step]]
+from = "ffff22e4"
+to = "ffff1752"
+effect = "indexes"
+sign = "none"
+via = ["0004569c"]
+note = "uint8 ffff22e4 indexes curves A and B over explicit axis 0x12778 while ROM8[0x8710].bit3 is set; the sign follows the curve shape."
+
+[[chain.step]]
+from = "000127a8"
+to = "ffff1752"
+effect = "looks-up"
+sign = "positive"
+via = ["0004569c"]
+note = "Curve A while ffff244f.bit1 is clear: ffff1752 = 4 * lookup(0x127a8, ffff22e4)."
+
+[[chain.step]]
+from = "000127e8"
+to = "ffff1752"
+effect = "looks-up"
+sign = "positive"
+via = ["0004569c"]
+note = "Curve B while ffff244f.bit1 is set: ffff1752 = 4 * lookup(0x127e8, ffff22e4)."
+
+[[chain.step]]
+from = "ffff1752"
+to = "ffff173a"
+effect = "adds"
+sign = "positive"
+via = ["000468b0"]
+note = "S = ffff1752 + 4*ffff1765 + ffff1748 + s16 ffff1230 + ffff15ac + ffff13f7 + s16 ffff170a; ffff173a = clamp(S, 0, 65535)."
+
+[[chain.step]]
+from = "0001296c"
+to = "ffff1765"
+effect = "looks-up"
+sign = "positive"
+via = ["00045758"]
+note = "lookup(0x1296c, ffff106f), conditionally multiplied by ffff22e4 and divided by nonzero ffff16b1, is saturated at 255 into ffff1765."
+
+[[chain.step]]
+from = "ffff106f"
+to = "ffff1765"
+effect = "indexes"
+sign = "none"
+via = ["00045758"]
+note = "Coolant index ffff106f indexes 0x1296c; the sign follows the table shape."
+
+[[chain.step]]
+from = "ffff1765"
+to = "ffff173a"
+effect = "adds"
+sign = "positive"
+via = ["000468b0"]
+note = "4 * u8 ffff1765 is a term of saturating aggregate ffff173a."
+
+[[chain.step]]
+from = "000122e2"
+to = "ffff1230"
+effect = "looks-up"
+sign = "positive"
+via = ["0002c626"]
+note = "lookup(0x122e2, ffff1077) is extended to uint16 in ffff1230."
+
+[[chain.step]]
+from = "ffff1077"
+to = "ffff1230"
+effect = "indexes"
+sign = "none"
+via = ["0002c626"]
+note = "Current coolant index ffff1077 indexes 0x122e2; the sign follows the table shape."
+
+[[chain.step]]
+from = "ffff1230"
+to = "ffff173a"
+effect = "adds"
+sign = "positive"
+via = ["000468b0"]
+note = "s16 ffff1230 is a term of saturating aggregate ffff173a."
+
+[[chain.step]]
+from = "ffff173a"
+to = "ffff122a"
+effect = "converts"
+sign = "none"
+via = ["000474a4"]
+note = "000474a4 uses ffff173a in the ffff122a calculation before the ffff171a floor. Sign none: the ledger does not state this formula."
+
+[[chain.step]]
+from = "00012908"
+to = "ffff171a"
+effect = "looks-up"
+sign = "positive"
+via = ["00046938"]
+note = "Floor curve 0x12908, or byte-identical 0x12918 while ffff4250.bit3 is clear, is written to ffff171a."
+
+[[chain.step]]
+from = "ffff171a"
+to = "ffff122a"
+effect = "limits"
+sign = "positive"
+via = ["000474a4"]
+note = "000474a4 applies lower bound max(uVar4, ffff171a << 3) in the ffff122a calculation."
+
+[[chain.step]]
+from = "0001234a"
+to = "ffff122a"
+effect = "adds"
+sign = "positive"
+via = ["0004673c", "000474a4"]
+note = "ffff15b1 = high byte of sat_u16((0x1234a << 8) + (0x12342 << 8)) by ffff1070; 000474a4 adds 2 * ffff15b1 before saturation."
+
+[[chain.step]]
+from = "0001233a"
+to = "ffff122a"
+effect = "multiplies"
+sign = "positive"
+via = ["000473ac", "000474a4"]
+note = "000473ac writes lookup 0x1233a, or neutral 0x80 while ffff41d0.bit3 is set, to ffff2fc0, a factor of the 000474a4 product."
+
+[[chain.step]]
+from = "00012352"
+to = "ffff122a"
+effect = "multiplies"
+sign = "positive"
+via = ["000473ac", "000474a4"]
+note = "000473ac writes lookup(0x12352, ffff10f4) to ffff2fc1, which multiplies with ffff2fc0 in the 000474a4 product."
+
+[[chain.step]]
+from = "00012dd2"
+to = "ffff122a"
+effect = "multiplies"
+sign = "positive"
+via = ["000474a4"]
+note = "Correction multiplier 0x12dd2 scales the 000474a4 intermediate with ffff2fc0 and ffff2fc1 before limiting into ffff122a."
+
+[[chain.step]]
+from = "ffff122a"
+to = "ffff133e"
+effect = "scales"
+sign = "positive"
+via = ["000476a0"]
+note = "ffff133e = sat_u16(ffff122a * ROM16[0x92fc] >> 13) with stock 0x92fc = 0x235f."
+
+[[chain.step]]
+from = "ffff133e"
+to = "ffff1340"
+effect = "limits"
+sign = "positive"
+via = ["000476d2"]
+note = "ffff133e is the upper bound: ffff1340 = min(ffff12fa, ffff133e)."
+
+[[chain.step]]
+from = "ffff1340"
+to = "ffff19b2"
+effect = "adds"
+sign = "positive"
+via = ["00072c3c"]
+note = "Normal composition ffff19b2 = clamp_u16(ffff183e + ffff1340 - (ffff120e >> 2)) carries the base into the throttle target area."
+
+[[chain]]
+id = "intake-cvtc"
+name = "Intake CVTC"
+summary = "RPM/50 ffff11ae and normalized BFS ffff102c index the intake main, cold, and correction surfaces; coolant selection, the operating bit, and idle source ffff1553 form common target ffff2326. The GR1F/GR1E capture handlers measure both intake cams, and the scheduler latch of live duty pair ffff2440/ffff2441 drives ATU-II channels 7B/7A."
+quantity = "Intake cam advance target, crank degrees ((raw-128)*0.5, advance positive)"
+output = "ffff2326"
+specs = ["defs/JK08A.cvtc.md"]
+
+[[chain.step]]
+from = "ffff11ae"
+to = "ffff1c5c"
+effect = "indexes"
+sign = "none"
+via = ["000bda64"]
+note = "RPM/50 snapshot is the row key of 0xB43A, 0xB53A, and 0xAB5A; the sign follows the surface shape."
+
+[[chain.step]]
+from = "ffff102c"
+to = "ffff1c5c"
+effect = "indexes"
+sign = "none"
+via = ["000bda64"]
+note = "Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three intake surfaces."
+
+[[chain.step]]
+from = "0000b43a"
+to = "ffff1c5c"
+effect = "looks-up"
+sign = "positive"
+via = ["000bda64"]
+note = "base_main = interpolate_u8(0xB43A, rpm50, load); 16x16, (raw-128)*0.5 degCA, advance positive."
+
+[[chain.step]]
+from = "0000ab5a"
+to = "ffff1c5c"
+effect = "subtracts"
+sign = "negative"
+via = ["000bda64"]
+note = "With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); otherwise main = base_main."
+
+[[chain.step]]
+from = "0000b53a"
+to = "ffff1c5e"
+effect = "looks-up"
+sign = "positive"
+via = ["000bda64"]
+note = "cold = interpolate_u8(0xB53A, rpm50, load); 8x8 over the same keys."
+
+[[chain.step]]
+from = "ffff1c5c"
+to = "ffff2326"
+effect = "selects"
+sign = "positive"
+via = ["000bdc66"]
+note = "Raw coolant > 131 selects main; 106..131 blends cold + trunc0((c-106)*(main-cold)/25); mode, rate, and offset logic follow."
+
+[[chain.step]]
+from = "ffff1c5e"
+to = "ffff2326"
+effect = "selects"
+sign = "positive"
+via = ["000bdc66"]
+note = "Raw coolant <= 106 selects cold; the weight of cold falls from 1 to 0 across 106..131."
+
+[[chain.step]]
+from = "ffff1071"
+to = "ffff2326"
+effect = "selects"
+sign = "none"
+via = ["000bdc66"]
+note = "Raw coolant snapshot chooses cold, blend, or main; the sign follows main - cold."
+
+[[chain.step]]
+from = "ffff246b"
+to = "ffff2326"
+effect = "gates"
+sign = "none"
+via = ["000bdc66"]
+note = "Bit 6 clear stores neutral 0x80 unless ffff248b bit 1 and IOLID 0x19 test bit ffff41fa bit 0 are both set."
+
+[[chain.step]]
+from = "ffff1553"
+to = "ffff2326"
+effect = "overrides"
+sign = "positive"
+via = ["000bdc66"]
+note = "With ffff24a7 bit 1 set the target continues from idle source ffff1553; with ffff247b bit 1 set a rise climbs one count per countdown."
+
+[[chain.step]]
+from = "000122ea"
+to = "ffff1553"
+effect = "looks-up"
+sign = "positive"
+via = ["000bdb66"]
+note = "S = interpolate_u8(0x122EA over axis 0x12F66, ffff11ae); ffff1553 = clamp_u8(128 + trunc0((S-128)*W/128))."
+
+[[chain.step]]
+from = "000122f2"
+to = "ffff1553"
+effect = "multiplies"
+sign = "none"
+via = ["000bdb66"]
+note = "W = 0x122F2 by coolant index ffff106f, 0..128; the sign of the product follows S - 128."
+
+[[chain.step]]
+from = "fffff44e"
+to = "ffff22cc"
+effect = "converts"
+sign = "positive"
+via = ["0002a5cc"]
+note = "GR1F: phase = 20*ffff13b2 + floor(20*(GR1F - ffff158a)/ffff22bc) - 60 or - 20, stored while ffff13c8 is 2, 4, 6; 0.5 degCA."
+
+[[chain.step]]
+from = "fffff44c"
+to = "ffff22cd"
+effect = "converts"
+sign = "positive"
+via = ["0002a36a"]
+note = "GR1E forms the second intake edge phase with the same arithmetic while event state ffff13c8 is 1, 3, or 5."
+
+[[chain.step]]
+from = "ffff22cc"
+to = "ffff2442"
+effect = "subtracts"
+sign = "negative"
+via = ["000bd9f0"]
+note = "ffff2442 = clamp_u8(0x80 + ffff4799 - ffff22cc): an edge earlier than the rest edge reads above 0x80; DID 0x1135."
+
+[[chain.step]]
+from = "ffff22cd"
+to = "ffff2443"
+effect = "subtracts"
+sign = "negative"
+via = ["000bd9f0"]
+note = "ffff2443 = clamp_u8(0x80 + ffff479a - ffff22cd), the same unit and sign as ffff2442."
+
+[[chain.step]]
+from = "ffff2440"
+to = "ffff23b4"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "000BE814 stores the live byte at ffff23bc+0x84; the 140-byte copy ffff23bc -> ffff2330 at 0x21318 latches it."
+
+[[chain.step]]
+from = "ffff2441"
+to = "ffff23b5"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "The same block copy latches the second live cell; the bank order follows the adjacent-pair convention, not code."
+
+[[chain.step]]
+from = "ffff23b4"
+to = "fffff592"
+effect = "converts"
+sign = "positive"
+via = ["000beace"]
+note = "BFR7B = u8*ROM8[0x8DFC]*39/80, duty = raw*39/100 percent of CYLR7B; ffff4247 bit 0 forces 825 (20 percent)."
+
+[[chain.step]]
+from = "ffff23b5"
+to = "fffff590"
+effect = "converts"
+sign = "positive"
+via = ["000beace"]
+note = "BFR7A = u8*ROM8[0x8DFC]*39/80; ffff4247 bit 0 forces 1238 (30 percent)."
+
+[[chain.step]]
+from = "00008dfc"
+to = "fffff58a"
+effect = "scales"
+sign = "positive"
+via = ["000cd75c"]
+note = "CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts, the intake PWM period."
+
+[[chain.step]]
+from = "00008dfc"
+to = "fffff588"
+effect = "scales"
+sign = "positive"
+via = ["000cd75c"]
+note = "CYLR7A = 125 * ROM8[0x8DFC] = 4125 counts."
+
+[[chain]]
+id = "exhaust-cvtc"
+name = "Exhaust CVTC"
+summary = "RPM/50 ffff11ae and normalized BFS ffff102c index the exhaust main, cold/fallback, and correction surfaces; coolant selection, the standstill override, the limiter, the slew, and the demand gate form common target ffff2327. Per bank, the error against the filtered cam position feeds the gain-scaled controller and the battery-compensated duty words ffff1aac/ffff1aae, which drive ATU-II channels 7D/7C."
+quantity = "Exhaust cam retard target, crank degrees ((raw-128)*0.5, retard positive)"
+output = "ffff2327"
+specs = ["defs/JK08A.cvtc.md"]
+
+[[chain.step]]
+from = "ffff11ae"
+to = "ffff1c5d"
+effect = "indexes"
+sign = "none"
+via = ["000bfdc0"]
+note = "RPM/50 snapshot is the row key of 0xB33A, 0xB2FA, and 0xAB4A; the sign follows the surface shape."
+
+[[chain.step]]
+from = "ffff102c"
+to = "ffff1c5d"
+effect = "indexes"
+sign = "none"
+via = ["000bfdc0"]
+note = "Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three exhaust surfaces."
+
+[[chain.step]]
+from = "0000b33a"
+to = "ffff1c5d"
+effect = "looks-up"
+sign = "positive"
+via = ["000bfdc0"]
+note = "base_main = interpolate_u8(0xB33A, rpm50, load); 16x16, (raw-128)*0.5 degCA, retard positive."
+
+[[chain.step]]
+from = "0000ab4a"
+to = "ffff1c5d"
+effect = "subtracts"
+sign = "negative"
+via = ["000bfdc0"]
+note = "With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); otherwise main = base_main."
+
+[[chain.step]]
+from = "0000b2fa"
+to = "ffff1c5f"
+effect = "looks-up"
+sign = "positive"
+via = ["000bfdc0"]
+note = "cold = interpolate_u8(0xB2FA, rpm50, load); stock 0xB2FA is neutral 128 throughout."
+
+[[chain.step]]
+from = "ffff1c5d"
+to = "ffff137e"
+effect = "selects"
+sign = "positive"
+via = ["000bfe88"]
+note = "Raw coolant > 131 selects main; 106..131 blends cold + trunc0((c-106)*(main-cold)/25); the override stage passes it otherwise."
+
+[[chain.step]]
+from = "ffff1c5f"
+to = "ffff137e"
+effect = "selects"
+sign = "positive"
+via = ["000bfe88"]
+note = "Raw coolant <= 106 selects cold/fallback; the weight of cold falls from 1 to 0 across 106..131."
+
+[[chain.step]]
+from = "ffff1071"
+to = "ffff137e"
+effect = "selects"
+sign = "none"
+via = ["000bfe88"]
+note = "Raw coolant snapshot chooses cold, blend, or main; the sign follows main - cold."
+
+[[chain.step]]
+from = "00008e36"
+to = "ffff137e"
+effect = "overrides"
+sign = "positive"
+via = ["000bfe88"]
+note = "With ffff246c bit 1 set and latch ffff2478 bit 4 clear, byte = clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 degCA)."
+
+[[chain.step]]
+from = "ffff137e"
+to = "ffff1c90"
+effect = "limits"
+sign = "positive"
+via = ["000bfe88"]
+note = "Limiter for bytes >= ROM8[0x8DE4] = 190 (counter ffff1954), then slew: rise over previous ffff1c90 <= 4 or 20 * ffff11c0; store 0xC055C."
+
+[[chain.step]]
+from = "ffff1c90"
+to = "ffff2327"
+effect = "gates"
+sign = "positive"
+via = ["000bfe88"]
+note = "Demand bit ffff24a7.3 sets at ffff1c90 >= 142, holds to 140; set: the byte continues to 0xC0CEE; clear: 140 while ffff1246 has a bank bit, then 128."
+
+[[chain.step]]
+from = "fffff4c8"
+to = "ffff1200"
+effect = "converts"
+sign = "positive"
+via = ["000c2d76", "000c2de0"]
+note = "IMI4D: phase = 20*segment + floor(20*(GR4D - ffff158a)/ffff22bc), stored at 0xC2E60 for cylinders 1, 3, 5; 0.5 degCA."
+
+[[chain.step]]
+from = "ffff1200"
+to = "ffff2324"
+effect = "filters"
+sign = "positive"
+via = ["00020dfe", "000bfc2e"]
+note = "Snapshot ffff11c8; out = 128 + filtered mean deviation of three edges from rest edge ffff479b, curve 0x12F7E; DID 0x1164."
+
+[[chain.step]]
+from = "fffff4c6"
+to = "ffff1201"
+effect = "converts"
+sign = "positive"
+via = ["000c2c58"]
+note = "IMI4C forms the bank-2 phase from GR4C with the same arithmetic, stored at 0xC2D2C for cylinders 2, 4, 6."
+
+[[chain.step]]
+from = "ffff1201"
+to = "ffff2325"
+effect = "filters"
+sign = "positive"
+via = ["00020dfe", "000bfc2e"]
+note = "Snapshot ffff11c9 passes the same filter against learned rest edge ffff479c; DID 0x1165."
+
+[[chain.step]]
+from = "ffff2327"
+to = "ffff1240"
+effect = "compares"
+sign = "positive"
+via = ["000c0d32"]
+note = "Bank-1 error ffff1240 = clamp_u8(ffff2327 - ffff2324 + 128) at 0xC0D62; bank 2 writes ffff1241 from ffff2325."
+
+[[chain.step]]
+from = "ffff2324"
+to = "ffff1240"
+effect = "subtracts"
+sign = "negative"
+via = ["000c0d32"]
+note = "The actual position enters the error negatively; an error outside 128 +/- 6 also reloads settle countdown ffff25e7."
+
+[[chain.step]]
+from = "ffff1240"
+to = "ffff1b18"
+effect = "feeds"
+sign = "none"
+via = ["000c1152"]
+note = "Error word = 0..65535 clamp of saturating sum 0x265C4, written only while ffff1246 bit 0 is set; the sum operands are not stated."
+
+[[chain.step]]
+from = "ffff1b18"
+to = "ffff1aa4"
+effect = "multiplies"
+sign = "positive"
+via = ["000c1dec"]
+note = "P = floor(floor(u16*ROM16[0x9212])*gain*2/625), K = 8866, clamped to 0..0x04000000; control mode 0 forces P = 0."
+
+[[chain.step]]
+from = "0001205a"
+to = "ffff1aa4"
+effect = "multiplies"
+sign = "positive"
+via = ["000c1dec"]
+note = "Gain ffff143a = curve 0x1205A over axis 0x12850 by oil-temperature snapshot ffff2772, stock 102..128; P scales with it."
+
+[[chain.step]]
+from = "ffff1aa4"
+to = "ffff1aac"
+effect = "scales"
+sign = "positive"
+via = ["000c2040"]
+note = "req = floor((P>>16)*150/batt) + rounded low byte, min 1024; mode 1 publishes req, mode 2 ramps down; stored at 0xC213E."
+
+[[chain.step]]
+from = "ffff1108"
+to = "ffff1aac"
+effect = "scales"
+sign = "negative"
+via = ["000c2040"]
+note = "Battery-voltage snapshot ffff1108 divides the request: req = floor((P>>16)*150/batt) plus the rounded low-byte term."
+
+[[chain.step]]
+from = "ffff2325"
+to = "ffff1aae"
+effect = "feeds"
+sign = "none"
+via = ["000c0d32", "000c1152", "000c1dec", "000c2040"]
+note = "Bank 2 (b = 1) repeats the loop: error ffff1241, error word ffff1b1a, P ffff1aa8, duty ffff1aae; the error-word operands are not stated."
+
+[[chain.step]]
+from = "ffff1aac"
+to = "fffff596"
+effect = "converts"
+sign = "positive"
+via = ["000c2152"]
+note = "BFR7D = u16*ROM8[0x8DFD]*125/1024, duty = raw/1024 of CYLR7D; ffff4251 bit 0 forces 1250 (50 percent)."
+
+[[chain.step]]
+from = "ffff1aae"
+to = "fffff594"
+effect = "converts"
+sign = "positive"
+via = ["000c2152"]
+note = "BFR7C = u16*ROM8[0x8DFD]*125/1024; ffff4251 bit 0 forces 1500 (60 percent)."
+
+[[chain.step]]
+from = "00008dfd"
+to = "fffff58e"
+effect = "scales"
+sign = "positive"
+via = ["000cd75c"]
+note = "CYLR7D = 125 * ROM8[0x8DFD] = 2500 counts, the exhaust PWM period."
+
+[[chain.step]]
+from = "00008dfd"
+to = "fffff58c"
+effect = "scales"
+sign = "positive"
+via = ["000cd75c"]
+note = "CYLR7C = 125 * ROM8[0x8DFD] = 2500 counts; 000C2152 reprograms both cycle registers under ffff4251 bit 0."
+
+[[chain]]
+id = "fuel-cut"
+name = "Fuel cut"
+summary = "Deceleration fuel cut, the main and stationary rev limiters, the vehicle-speed cut, and P1217 overtemperature protection form six-channel inhibit mask ffff22e0 in FUN_0004ED88 after the Power Balance replacement. FUN_0002C13C gives each inhibited channel the no-fuel opening-time pulse on DCNT8A..DCNT8F."
+quantity = "Six-channel fuel-injection inhibit mask; bit k set cuts fuel to injector channel k, cylinder k + 1 by the Power Balance bit assignment"
+output = "ffff22e0"
+specs = ["defs/JK08A.dfco.md", "defs/JK08A.fuel-inhibit.md", "defs/JK08A.limiters.md", "defs/JK08A.rpm-drop-state.md", "defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "ffff2458"
+to = "ffff14c1"
+effect = "gates"
+sign = "none"
+via = ["0004fbe2", "00050018", "000503e0"]
+note = "With snapshot ffff2458.bit5 of upstream DFCO mode bit ffff2459.bit5 clear, 0004fbe2 requests no cut and 00050018 returns inhibit class 1."
+
+[[chain.step]]
+from = "00012718"
+to = "ffff14c1"
+effect = "compares"
+sign = "none"
+via = ["0004fbe2", "000503e0"]
+note = "On a rising edge (previous ffff245a.bit5 clear, coarse speed >= 4) 0004fbe2 requests cut when ffff11b3 > Entry threshold, x*25 RPM by coolant."
+
+[[chain.step]]
+from = "000126e4"
+to = "ffff14c1"
+effect = "compares"
+sign = "none"
+via = ["0004fbe2", "000503e0"]
+note = "While the mode bit is held, 0004fbe2 compares ffff11b3 with the Hold threshold, x*25 RPM by coolant; a higher threshold needs more RPM to cut."
+
+[[chain.step]]
+from = "ffff11b3"
+to = "ffff14c1"
+effect = "compares"
+sign = "none"
+via = ["0004fbe2", "00050018", "000503e0"]
+note = "Cut request is 1 only while RPM/25 ffff11b3 is strictly above the selected threshold; 00050018 compares the same byte with the restore thresholds."
+
+[[chain.step]]
+from = "00012818"
+to = "ffff16aa"
+effect = "looks-up"
+sign = "positive"
+via = ["00050018"]
+note = "00050018 interpolates Full Restore 0x12818 by coolant into lower threshold ffff16aa, RPM/25, after runtime floors and offsets."
+
+[[chain.step]]
+from = "0001298c"
+to = "ffff1778"
+effect = "looks-up"
+sign = "positive"
+via = ["00050018"]
+note = "00050018 interpolates Intermediate Restore 0x1298C by coolant into upper threshold ffff1778, RPM/25, after runtime floors and offsets."
+
+[[chain.step]]
+from = "ffff106a"
+to = "ffff16aa"
+effect = "limits"
+sign = "none"
+via = ["00050018"]
+note = "The class of RPM-drop byte ffff106a at 0x11CB5 = [4, 8, 12] selects restore floor 0x1299C = [36, 48, 54, 62] RPM/25 (900..1550 RPM)."
+
+[[chain.step]]
+from = "ffff16aa"
+to = "ffff14c1"
+effect = "compares"
+sign = "none"
+via = ["00050018", "000503e0"]
+note = "ffff11b3 <= ffff16aa returns full-restore class 3; entry from idle needs class 0, so a higher threshold vetoes DFCO up to a higher RPM."
+
+[[chain.step]]
+from = "ffff1778"
+to = "ffff14c1"
+effect = "compares"
+sign = "none"
+via = ["00050018", "000503e0"]
+note = "Below coarse speed 4, ffff16aa < ffff11b3 <= ffff1778 returns intermediate class 2; stock moving branches do not compare ffff1778."
+
+[[chain.step]]
+from = "ffff14c1"
+to = "ffff22e0"
+effect = "masks"
+sign = "none"
+via = ["000503e0", "0004ed88"]
+note = "000503e0 steps idle, entry delays, full cut, and exit delay; table 0x2371C gives D = 00, 00, 15, 3F, 15 and 0004ed88 forms P = G | D | C."
+
+[[chain.step]]
+from = "0000934e"
+to = "ffff2497"
+effect = "compares"
+sign = "none"
+via = ["0004f282"]
+note = "ffff2468.bit4 selects a column; bit 2 sets at RPM/12.5 >= 612 (7650 RPM) and clears below 596 in column 0, 596 and 368 in column 1."
+
+[[chain.step]]
+from = "ffff11bc"
+to = "ffff2497"
+effect = "compares"
+sign = "none"
+via = ["0004f282"]
+note = "0004f282 compares RPM/12.5 word ffff11bc with the active pair; equality with the release word retains the cut, and the stock delay is zero."
+
+[[chain.step]]
+from = "ffff2497"
+to = "ffff22e0"
+effect = "gates"
+sign = "none"
+via = ["0004f282", "0004ed88"]
+note = "Active main cut bit ffff2497.bit2 is one of the 15 global Booleans, so 0004ed88 sets G = 0x3F for all six channels."
+
+[[chain.step]]
+from = "0000911c"
+to = "ffff247f"
+effect = "compares"
+sign = "none"
+via = ["0004f324"]
+note = "Readiness bit 4 sets when accumulator ffff16a6 reaches ROM16[0x911C] = 381; any failed entry gate clears ffff16a6 and bits 3..5."
+
+[[chain.step]]
+from = "000124d2"
+to = "ffff247f"
+effect = "integrates"
+sign = "none"
+via = ["0004f324"]
+note = "Each 100-count expiry adds lookup(0x124D2 at clamp((ffff11bc - 160) / 2, 0, 255)) - 128 to ffff16a6; stock step 0 at <= 2000 RPM, 127 at the limiter."
+
+[[chain.step]]
+from = "000085d9"
+to = "ffff247f"
+effect = "compares"
+sign = "none"
+via = ["0004f324"]
+note = "With readiness set and coarse speed ffff110e = 0, RPM/50 ffff11ae >= ROM8[0x85D9] = 36 (1800 RPM) sets bit 5; it clears below 30 (1500 RPM)."
+
+[[chain.step]]
+from = "ffff247f"
+to = "ffff22e0"
+effect = "gates"
+sign = "none"
+via = ["0004f324", "0004ed88"]
+note = "Stationary cut bit ffff247f.bit5 enters the same global Boolean group and becomes a full 0x3F mask."
+
+[[chain.step]]
+from = "ffff110e"
+to = "ffff24a6"
+effect = "compares"
+sign = "none"
+via = ["0004f19c"]
+note = "With RPM gate ffff24a7.bit5 clear, bit 0 arms at coarse speed >= 93 and holds at >= 91 (candidate 186 and 182 km/h); stock delay ROM8[0x8CAF] is 0."
+
+[[chain.step]]
+from = "ffff24a6"
+to = "ffff22e0"
+effect = "gates"
+sign = "none"
+via = ["0004f19c", "0004ed88"]
+note = "Active vehicle-speed cut bit ffff24a6.bit0 is a global Boolean and makes G = 0x3F."
+
+[[chain.step]]
+from = "ffff1071"
+to = "ffff41f2"
+effect = "compares"
+sign = "none"
+via = ["0004f494"]
+note = "P1217: raw coolant ffff1071 >= ROM8[0x8D15] = 190 sets, >= 180 retains; bit 5 also needs 1900/1700 RPM hysteresis and ffff2458.bit5 clear."
+
+[[chain.step]]
+from = "ffff41f2"
+to = "ffff22e0"
+effect = "gates"
+sign = "none"
+via = ["0004f494", "0004ed88"]
+note = "Overtemperature fuel-inhibit bit ffff41f2.bit5 is a global Boolean and makes G = 0x3F."
+
+[[chain.step]]
+from = "ffff2b2c"
+to = "ffff22e0"
+effect = "overrides"
+sign = "none"
+via = ["00050a06", "00050a34", "0004ed88"]
+note = "While service 0x30 IOLID 0x0C is active, 00050a34 returns Power Balance mask ffff2b2c in place of P; the ETC-fault mask A is ORed after it."
+
+[[chain.step]]
+from = "ffff22e0"
+to = "fffff640"
+effect = "gates"
+sign = "none"
+via = ["0002c13c"]
+note = "For a channel bit set in ffff22e0, 0002c13c adds opening time ffff23aa, a pulse that delivers no fuel, to DCNT8A + 2*i instead of the duration."
+
+[[chain.step]]
+from = "ffff1937"
+to = "ffff1935"
+effect = "stores"
+sign = "none"
+via = ["0002be40"]
+note = "While rotating count ffff1937 and ffff22e0 are nonzero, 0002be40 decrements the count and adds the current channel to history ffff1935."
+
+[[chain.step]]
+from = "ffff1935"
+to = "fffff640"
+effect = "gates"
+sign = "none"
+via = ["0002c13c"]
+note = "A channel set in rotating-release history ffff1935 also receives opening time ffff23aa; the DFCO release tail follows injector events."
+
+[[chain]]
+id = "torque-can"
+name = "Engine torque on CAN"
+summary = "Engine Torque Map 0x10B8E over ffff11b6 and load passes the base term, spark-efficiency table 0x11D24, cylinder scaling, and accessory loads to net torque ffff240c, which frames 0x180 and 0x160 carry; CAN 0x174 status and word B bound shared request ffff19c6."
+quantity = "Net engine torque after accessory loads, signed raw torque counts"
+output = "ffff240c"
+specs = ["defs/JK08A.can.md", "defs/JK08A.limiters.md"]
+
+[[chain.step]]
+from = "axis:00014b4a"
+to = "map:00010b8e"
+effect = "indexes"
+sign = "none"
+note = "Row axis 0x14B4A selects Engine Torque Map rows at RPM/3.125 coordinate ffff11b6, 16 points from 400 to 7600 RPM."
+
+[[chain.step]]
+from = "axis:0002378c"
+to = "map:00010b8e"
+effect = "indexes"
+sign = "none"
+note = "Column axis 0x2378C selects columns at q = min(65535, floor(ffff1024*40960/ROM16[0x9534])), which 00065928 stores in ffff15c4."
+
+[[chain.step]]
+from = "map:00010b8e"
+to = "ffff18cc"
+effect = "looks-up"
+sign = "positive"
+via = ["00065928", "000659ae"]
+note = "00065928 writes ffff18ca = lookup - 32768; 000659ae writes ffff18cc = sat_s16 of ffff18ca + ffff2408 times a Q14 and a Q8 (256 - 0x1245A) factor."
+
+[[chain.step]]
+from = "ffff2408"
+to = "ffff18cc"
+effect = "adds"
+sign = "positive"
+via = ["000659ae"]
+note = "Base term ffff2408 = sat_u16(lookup(0x154A0) - D + C) of 00065c26 enters the sum with the centered map result before the factors."
+
+[[chain.step]]
+from = "ffff18cc"
+to = "ffff18ce"
+effect = "multiplies"
+sign = "positive"
+via = ["00065b08"]
+note = "On the stock ROM8[0x8710].bit5 branch ffff18ce = trunc0(ffff18cc*(256 - F)/256); F <= 179 keeps the factor positive."
+
+[[chain.step]]
+from = "map:00011d24"
+to = "ffff18ce"
+effect = "multiplies"
+sign = "negative"
+via = ["00065b08"]
+note = "F = table 0x11D24 at clamp_u8(ffff23f1 - ffff11a2), base ignition angle minus latched timing sum; a larger F lowers a positive state."
+
+[[chain.step]]
+from = "ffff18ce"
+to = "ffff18d0"
+effect = "scales"
+sign = "positive"
+via = ["00065cd8"]
+note = "ffff18d0 = sat_i16(trunc0(ffff18ce*(6 - n)/6) - ffff2408 - ffff14e2), n = inhibited-cylinder count of 00065d42."
+
+[[chain.step]]
+from = "ffff2408"
+to = "ffff18d0"
+effect = "subtracts"
+sign = "negative"
+via = ["00065cd8"]
+note = "00065cd8 subtracts the unscaled base term ffff2408 after the efficiency and cylinder scaling."
+
+[[chain.step]]
+from = "map:00014c1a"
+to = "ffff14e2"
+effect = "multiplies"
+sign = "positive"
+via = ["000658a4"]
+note = "000658a4 writes ffff14e2 = lookup(0x14C1A) times a nonnegative byte difference selected by ffff4181.bit7, divided by 256."
+
+[[chain.step]]
+from = "ffff14e2"
+to = "ffff18d0"
+effect = "subtracts"
+sign = "negative"
+via = ["00065cd8"]
+note = "00065cd8 subtracts RPM-curve correction ffff14e2 from the scaled state."
+
+[[chain.step]]
+from = "ffff18d0"
+to = "ffff18d2"
+effect = "filters"
+sign = "positive"
+via = ["00065de4"]
+note = "First-order filter ffff18d2 = trunc0((ffff18d0*w + ffff18d2*(256 - w))/256) with stock w = ROM8[0x87ED] = 255."
+
+[[chain.step]]
+from = "ffff18d2"
+to = "ffff240c"
+effect = "feeds"
+sign = "positive"
+via = ["00065e2c"]
+note = "00065e2c writes net engine torque ffff240c = sat_i16(ffff18d2 - ffff2410), the torque that CAN frame 0x180 carries."
+
+[[chain.step]]
+from = "ffff2410"
+to = "ffff240c"
+effect = "subtracts"
+sign = "negative"
+via = ["00065e2c"]
+note = "Accessory-load sum ffff2410 = sat_u16(ffff1818 + ffff196e + ffff1838) of 00065f9c, or zero while ffff11b3 is zero."
+
+[[chain.step]]
+from = "ffff240c"
+to = "ffff3f96"
+effect = "converts"
+sign = "positive"
+via = ["00020dfe", "00079e70"]
+note = "00020dfe latches ffff240c as ffff2380; 00079e70 writes clamp(trunc0(ffff2380/5) + 800, 0, 4094), or 4095 while ffff4221.bit2 is set."
+
+[[chain.step]]
+from = "ffff3f96"
+to = "ffff3ab5"
+effect = "stores"
+sign = "none"
+via = ["000c577a", "000c3de4"]
+note = "Coordinator 000c3de4 runs serializer 000c577a, which puts ffff3f96 into 0x180 byte 2 and byte 3 bits 7..4 of record 7 at ffff3ab5 + 70."
+
+[[chain.step]]
+from = "ffff3ab5"
+to = "ffffd820"
+effect = "transmits"
+sign = "none"
+via = ["000c38de", "000c3746"]
+note = "000c38de calls submitter 000c3746, which copies record i into mailbox i + 1, then writes TXPR0/TXPR1; mailboxes 8 and 9 lie in TXPR0."
+
+[[chain.step]]
+from = "ffff18cc"
+to = "ffff240e"
+effect = "feeds"
+sign = "positive"
+via = ["000655b4", "00065860"]
+note = "Parallel channel 00065860 repeats stages 3 to 6 with F at latched timing-state byte ffff2404 and writes ffff240e = sat_i16(ffff18d8 - ffff2410)."
+
+[[chain.step]]
+from = "ffff240e"
+to = "ffff3f98"
+effect = "converts"
+sign = "positive"
+via = ["00020dfe", "00079e70"]
+note = "00020dfe latches ffff240e as ffff2382; 00079e70 packs max(min(ffff23a8, ffff2382), ffff2374) like ffff3f96, 4095 while ffff4221.bit2 is set."
+
+[[chain.step]]
+from = "ffff3f98"
+to = "ffff3ab5"
+effect = "stores"
+sign = "none"
+via = ["000c590e", "000c3de4"]
+note = "Serializer 000c590e puts ffff3f98 into 0x160 byte 1 bits 3..0 and byte 2 of record 8 at ffff3ab5 + 80."
+
+[[chain.step]]
+from = "000c47ea"
+to = "ffff418f"
+effect = "receives"
+sign = "none"
+via = ["000c3b14", "0007724c", "00020dfe"]
+note = "000c3b14 calls 000c47ea for CAN 0x174, which publishes status ffff3a2e; 0007724c sets ffff419b bits 3, 4 for value 3; 00020dfe latches ffff418f."
+
+[[chain.step]]
+from = "ffff418f"
+to = "ffff41a6"
+effect = "gates"
+sign = "none"
+via = ["00077892"]
+note = "ffff4252.bit1 = ffff418f.bit4 with ffff1082 != ffff1083 and ffff4253.bit6 clear; ffff41a6.bit3 is set while bit 1 or hold byte ffff4413 is set."
+
+[[chain.step]]
+from = "000c47ea"
+to = "ffff2770"
+effect = "receives"
+sign = "none"
+via = ["0007724c", "00020dfe"]
+note = "000c47ea stores 0x174 word B in ffff3f8e; 0007724c writes min(5*B - 4000, 0x7FFF) to ffff2874; 00020dfe latches it as ffff2770."
+
+[[chain.step]]
+from = "ffff2770"
+to = "ffff4162"
+effect = "limits"
+sign = "positive"
+via = ["00077892"]
+note = "On a ffff4252.bit1 pass ffff4162 = max(floor ffff34da, target term) limited by ffff4138 and ffff2770; otherwise min(ffff34a4, ffff2770)."
+
+[[chain.step]]
+from = "ffff41a6"
+to = "ffff3480"
+effect = "gates"
+sign = "none"
+via = ["000777fa"]
+note = "While ffff41a6.bit3 is set, 000777fa publishes candidate ffff4162 as upper bound ffff3480 under ROM8[0x89C5].bit0; otherwise ffff3488."
+
+[[chain.step]]
+from = "ffff4162"
+to = "ffff3480"
+effect = "selects"
+sign = "positive"
+via = ["000777fa"]
+note = "Upper bound ffff3480 equals candidate ffff4162 while ffff41a6.bit3 is set; lower bound ffff3484 is min(ffff34c8, ffff4162)."
+
+[[chain.step]]
+from = "ffff3480"
+to = "ffff19c6"
+effect = "limits"
+sign = "positive"
+via = ["00079030"]
+note = "00079030 caps its working request, duplicated selection ffff2438, at upper bound ffff3480 before its other bounds and the store to ffff19c6."
+
+[[chain]]
+id = "misfire-detection"
+name = "Misfire detection"
+summary = "Tooth-9 crank intervals captured by ICR0A form offset-binary irregularity metrics that detection core 00085a70 compares with surface-derived threshold windows to count misfire events per cylinder. Per-cylinder counts at the threshold set the P0301..P0306 and P0300 records through reporter 00084cd0 and handler 0007dc32."
+quantity = "Misfire event count: total element 0 of the ffff3806 array, with per-cylinder elements 1..6 at byte offset 2*cylinder"
+output = "ffff3806"
+specs = ["defs/JK08A.fuel.md"]
+
+[[chain.step]]
+from = "fffff434"
+to = "ffff1dac"
+effect = "subtracts"
+sign = "none"
+via = ["00029588"]
+note = "Tooth 9: ffff1dac = abs(ICR0A - ffff84d4), the capture interval over 120 crank degrees, spanning 50..170 degrees after TDC of index c - 2."
+
+[[chain.step]]
+from = "ffff1dac"
+to = "ffff3816"
+effect = "filters"
+sign = "none"
+via = ["0003cf24", "00086b0c"]
+note = "0003cf24 shifts the 14-longword history; ffff3816 = 6*T[n-7] - 5*T[n-8] - T[n-2], offset-binary with 0x80 neutral."
+
+[[chain.step]]
+from = "ffff1dac"
+to = "ffff3820"
+effect = "filters"
+sign = "none"
+via = ["0003cf24", "00086b0c"]
+note = "Group ffff3820..3826 from the same history, e.g. ffff3822 = 3*(2*T[n-6] - T[n-12] - T[n]); 00086b0c runs only with ffff55a2 at 0x8000 +/- 1%."
+
+[[chain.step]]
+from = "map:0000b81a"
+to = "ffff314a"
+effect = "looks-up"
+sign = "positive"
+via = ["00082c8a"]
+note = "16x16 surface on RPM axis 0x11B6B and BFS axis 0x11B8B; its output 33..63 never equals sentinel 0x80, so the != 0x80 predicate is always true."
+
+[[chain.step]]
+from = "map:0000b61a"
+to = "ffff314b"
+effect = "looks-up"
+sign = "positive"
+via = ["00082c8a"]
+note = "Selected while ffff4217 bit 0 is clear; uint8 interpolation 40..128 written unconverted; raw 0x80 is the blocking sentinel."
+
+[[chain.step]]
+from = "map:0000b71a"
+to = "ffff314b"
+effect = "looks-up"
+sign = "positive"
+via = ["00082c8a"]
+note = "Selected while ffff4217 bit 0 is set; same axes, output 34..128, raw 0x80 blocks its conjunct."
+
+[[chain.step]]
+from = "ffff11ae"
+to = "ffff314a"
+effect = "indexes"
+sign = "none"
+via = ["00082c8a"]
+note = "RPM/50 byte ffff11ae indexes axis 0x11B6B of all three surfaces; the high byte of BFS ffff1024 indexes axis 0x11B8B."
+
+[[chain.step]]
+from = "ffff314a"
+to = "ffff3100"
+effect = "scales"
+sign = "none"
+via = ["00085a70", "000224f8"]
+note = "Threshold array ffff3100..3105 is built from ffff314a and ffff314b through shift helper 000224f8; the build formula is not stated."
+
+[[chain.step]]
+from = "ffff314b"
+to = "ffff3100"
+effect = "scales"
+sign = "none"
+via = ["00085a70", "000224f8"]
+note = "Second surface input of the build; channel bytes 0x87C1..C6 = 60 ff 40 40 ff 60, where 0xff disables a channel."
+
+[[chain.step]]
+from = "ffff3100"
+to = "ffff3806"
+effect = "compares"
+sign = "none"
+via = ["00085a70"]
+note = "Threshold windows ffff3100..3105 and ffff306e..3070 bound the metric comparisons of detection core 00085a70."
+
+[[chain.step]]
+from = "ffff3816"
+to = "ffff3806"
+effect = "integrates"
+sign = "none"
+via = ["00085a70"]
+note = "A metric hit inside the threshold windows is a detected event; it increments element ffff4038 and total element 0."
+
+[[chain.step]]
+from = "ffff3820"
+to = "ffff3806"
+effect = "integrates"
+sign = "none"
+via = ["00085a70"]
+note = "Second metric group of the window comparison; ffff3102 <= ffff3820 with ffff314a != 0x80 also shifts a bit into window ffff36f4."
+
+[[chain.step]]
+from = "ffff11de"
+to = "ffff4038"
+effect = "looks-up"
+sign = "none"
+via = ["00029588"]
+note = "ffff4038 = ROM8[0x2265C + ffff11de] = c + 3 mod 6 on tooth 9: the cylinder whose expansion stroke fills tested interval T[n-7]."
+
+[[chain.step]]
+from = "ffff4038"
+to = "ffff3806"
+effect = "indexes"
+sign = "none"
+via = ["00085a70"]
+note = "Cylinder 1..6 selects the element at byte offset 2*ffff4038 in ffff3806, ffff37f8, and ffff37dc; element 1 reports P0301."
+
+[[chain.step]]
+from = "ffff4251"
+to = "ffff3806"
+effect = "gates"
+sign = "none"
+via = ["00085a70"]
+note = "Bit 7 (sole writer 00082c8a) needs 300 <= RPM < 7600 (6 <= ffff11ae < 0x98), ffff1108 >= 0x89, ffff4096 >= 1, and ffff436f == 0."
+
+[[chain.step]]
+from = "ffff41d2"
+to = "ffff3806"
+effect = "gates"
+sign = "none"
+via = ["00085a70"]
+note = "Bits 0 and 1 must be set; bit 0 needs coolant ffff1071 < 150 and >= lookup(0x12DE2), ffff106e >= 40, and ffff2736 >= 40."
+
+[[chain.step]]
+from = "map:0001497a"
+to = "ffff2b90"
+effect = "looks-up"
+sign = "positive"
+via = ["00082c8a"]
+note = "1D-4 uint16 event-count threshold, stock constant 33; the findings trace indexes it from ffff106f."
+
+[[chain.step]]
+from = "ffff2b90"
+to = "ffff3806"
+effect = "compares"
+sign = "none"
+note = "Total element 0 is compared with ffff2b90; the ledgers do not state the outcome of the comparison."
+
+[[chain.step]]
+from = "ffff3806"
+to = "ffff41ff"
+effect = "compares"
+sign = "none"
+via = ["00085a70", "00082c8a", "00084aa4"]
+note = "00084aa4 compares elements 1..5 (from ffff3808) with ROM8[0x8863] = 6 and sets ffff41ff bits 4..0 for P0301..P0305."
+
+[[chain.step]]
+from = "ffff3806"
+to = "ffff4200"
+effect = "compares"
+sign = "none"
+via = ["00085a70", "00082c8a", "00084aa4"]
+note = "Element 6 at the threshold sets ffff4200 bit 7 (P0306); two or more qualifying elements set bit 6 (P0300)."
+
+[[chain.step]]
+from = "ffff41ff"
+to = "ffff5718"
+effect = "stores"
+sign = "none"
+via = ["00084cd0", "0007d8b8", "0007dc32"]
+note = "00084cd0 maps bits 4..0 to records 0x0f..0x0b; descriptor byte 8 = 0x40 routes 0007d8b8 to 0007dc32, which sets third-byte bits 0 and 1."
+
+[[chain.step]]
+from = "ffff4200"
+to = "ffff5718"
+effect = "stores"
+sign = "none"
+via = ["00084cd0", "0007d8b8", "0007dc32"]
+note = "Bit 7 reports record 0x0a (P0306); bit 6 or the no-cylinder fallback reports 0x10 (P0300) on the same 0007dc32 route."
+
+[[chain.step]]
+from = "ffff4241"
+to = "ffff5b2b"
+effect = "selects"
+sign = "none"
+via = ["00082c8a"]
+note = "000872d0 sets bits 5, 7, 6 at 200, 1000, 200 revolutions; 00082c8a then sets ffff5b2b bit 6, 5, or 4 before even reporter calls."
+
+[[chain.step]]
+from = "ffff5b2b"
+to = "ffff5718"
+effect = "selects"
+sign = "none"
+via = ["0007dc32", "0008c942", "0008c968"]
+note = "Selector bits 4..6 set: 0008c942 sets third-byte bits 3 and 6; all clear: bit 5, 0008c968 bit 4, and ffff5b2c bit 3."
+
+[[chain.step]]
+from = "ffff5718"
+to = "ffff2461"
+effect = "detects"
+sign = "none"
+via = ["0008042c"]
+note = "0008042c scans P0306..P0300 and sets ffff2461 bit 3 at the first record with third-byte bit 5 or 6; its presentation is unresolved."
+
+[[chain]]
+id = "maf-range-monitor"
+name = "MAF range-performance monitor"
+summary = "P0101 monitor 0008152a composes threshold Q0 in ffff12eb from RPM factor 0x1236A, factors 0x12AC2 and 0x12868, and bank weights, and 00082604 forms model byte ffff15bc; a true monitor result reaches record 0xBA through 00080f82 and 0007d8b8. A stored MAF record requests fuel inhibit at 2400 RPM and blocks the exhaust-VTC operating enable; P010B mirrors the path in 00081d74."
+quantity = "P0101 composite threshold Q0, raw byte: model byte ffff15bc below it is a fault candidate while ROM8[0x8D92].bit5 is clear"
+output = "ffff12eb"
+specs = ["defs/JK08A.maf-range-monitor.md", "defs/JK08A.fuel-inhibit.md"]
+
+[[chain.step]]
+from = "ffff11ae"
+to = "ffff15be"
+effect = "indexes"
+sign = "none"
+via = ["0008152a"]
+note = "RPM/50 byte ffff11ae indexes axis 0x1238A = 8..128, exactly 400..6400 RPM."
+
+[[chain.step]]
+from = "map:0001236a"
+to = "ffff15be"
+effect = "looks-up"
+sign = "positive"
+via = ["0008152a"]
+note = "M = interp(0x1236A, 0x1238A, ffff11ae), raw 74..125, shared by P0101 and P010B."
+
+[[chain.step]]
+from = "ffff15be"
+to = "ffff15c6"
+effect = "multiplies"
+sign = "positive"
+via = ["0008152a"]
+note = "C = min(255, floor(M*A*B/16384))."
+
+[[chain.step]]
+from = "map:00012ac2"
+to = "ffff15c6"
+effect = "multiplies"
+sign = "positive"
+via = ["0008152a"]
+note = "A = lookup_u8_1d8(0x12AC2, ffff10f5), raw 108..154."
+
+[[chain.step]]
+from = "ffff10f5"
+to = "ffff15c6"
+effect = "indexes"
+sign = "none"
+via = ["0008152a"]
+note = "Runtime byte ffff10f5 indexes factor A; the ledgers do not identify the byte."
+
+[[chain.step]]
+from = "map:00012868"
+to = "ffff15c6"
+effect = "multiplies"
+sign = "positive"
+via = ["0008152a"]
+note = "B = lookup_u8_1d8(0x12868, high8(ffff517c)), raw 56..148."
+
+[[chain.step]]
+from = "ffff517c"
+to = "ffff15c6"
+effect = "indexes"
+sign = "none"
+via = ["0008152a"]
+note = "The pressure word high byte indexes factor B; stock slope ROM8[0x89FE] = 0 holds the word at 51865, so B is constant in stock."
+
+[[chain.step]]
+from = "ffff15c6"
+to = "ffff12eb"
+effect = "multiplies"
+sign = "positive"
+via = ["0008152a"]
+note = "G = floor(ffff1733*C/256); R0 = min(255, floor(W0*G/(W0+W1))); Q0 = floor(ROM8[0x82BA]*R0/256) with stock 128."
+
+[[chain.step]]
+from = "ffff1733"
+to = "ffff12eb"
+effect = "multiplies"
+sign = "positive"
+via = ["0008152a"]
+note = "Byte ffff1733 scales C into G = floor(ffff1733*C/256)."
+
+[[chain.step]]
+from = "ffff2a8c"
+to = "ffff12eb"
+effect = "scales"
+sign = "positive"
+via = ["0008152a"]
+note = "First-bank weight W0: R0 = min(255, floor(W0*G/(W0+W1))); R0 is 255 when W0 and W1 are both zero."
+
+[[chain.step]]
+from = "ffff2a8e"
+to = "ffff12eb"
+effect = "scales"
+sign = "negative"
+via = ["0008152a"]
+note = "Second-bank weight W1 enters only the denominator of R0 = W0*G/(W0+W1), so a larger W1 lowers Q0."
+
+[[chain.step]]
+from = "map:00008a27"
+to = "ffff15bc"
+effect = "feeds"
+sign = "none"
+via = ["00082604"]
+note = "00082604 combines ffff1956, bank state, MAF Factor 0x8A27, K-Value 0x9284, reference 0x9534, ROM8[0x88FB], and ffff10e0; conversion unresolved."
+
+[[chain.step]]
+from = "map:00009284"
+to = "ffff15bc"
+effect = "feeds"
+sign = "none"
+via = ["00082604"]
+note = "The Base Fuel Schedule K-Value enters model bytes ffff15bc (P0101) and ffff15bd (P010B); the formula is not stated."
+
+[[chain.step]]
+from = "ffff12eb"
+to = "ffff4566"
+effect = "copies"
+sign = "positive"
+via = ["0008152a"]
+note = "Event-snapshot copy at 0x81C62, the stock terminal consumer of Q0; the model byte goes to ffff4564."
+
+[[chain.step]]
+from = "ffff12eb"
+to = "0007d8b8"
+effect = "compares"
+sign = "none"
+via = ["0008152a", "00080f82"]
+note = "Candidate ffff15bc < Q0 runs only with ROM8[0x8D92].bit5 clear (compare at 0x81942); stock 0x7A bypasses it."
+
+[[chain.step]]
+from = "ffff15bc"
+to = "0007d8b8"
+effect = "compares"
+sign = "none"
+via = ["0008152a", "00080f82"]
+note = "A true return of 0008152a makes 00080f82 call 0007d8b8 with record 0xBA (P0101); the stock direct-condition branch is not described."
+
+[[chain.step]]
+from = "0007d8b8"
+to = "ffff5718"
+effect = "stores"
+sign = "none"
+via = ["0008c2d2"]
+note = "0007d8b8 calls 0008c2d2 first for every index, which sets byte 1 bit 7 (stored fault) of ffff5718 + 3*0xBA."
+specs = ["defs/JK08A.cvtc.md"]
+
+[[chain.step]]
+from = "0007d8b8"
+to = "ffff48e0"
+effect = "stores"
+sign = "none"
+via = ["0008c2d2"]
+note = "0008c2d2 sets event byte ffff48e0 for records with attribute bit 10, which the six MAF records carry."
+specs = ["defs/JK08A.cvtc.md"]
+
+[[chain.step]]
+from = "ffff5718"
+to = "ffff5a93"
+effect = "detects"
+sign = "none"
+via = ["00097eb4"]
+note = "Record 0x129 bytes 1 and 2 are the OR over records 0xBA, 0x07, 0xBB, 0x08, 0xBC, and 0x09 (P0101..P0103, P010B..P010D)."
+
+[[chain.step]]
+from = "ffff5a93"
+to = "ffff22e0"
+effect = "masks"
+sign = "none"
+via = ["0003c3ac", "0004f736", "0004ed88"]
+note = "0003c3ac copies byte 1 bit 7 to ffff2449 bit 7 (snapshot ffff2448); 0004f736 then requests the full fuel-inhibit mask at >= 2400 RPM."
+
+[[chain.step]]
+from = "ffff48e0"
+to = "ffff41d1"
+effect = "copies"
+sign = "none"
+via = ["0008c272"]
+note = "0008c272 sets ffff41d1 bits 7, 2, and 0 while ffff48e0 is nonzero and clears them otherwise."
+
+[[chain.step]]
+from = "ffff41d1"
+to = "ffff248b"
+effect = "gates"
+sign = "none"
+via = ["000bf630"]
+note = "A set bit 7 blocks exhaust-VTC operating enable ffff248b bit 2 in 000bf630."
+
+[[chain]]
+id = "exhaust-cvtc-magnet-circuit"
+name = "Exhaust CVTC magnet circuit monitor"
+summary = "Monitor 00090642 counts zero-duty passes on which the output-driver status decoded from the device-1 diagnostic word equals 1. Ten passes set result ffff358d and the stored fault of P0078/P0084, one hundred set judged latch ffff3584, and a stored record clears the exhaust-CVTC electrical enable."
+quantity = "P0078 magnet retarder circuit fault count, bank 1 (bank 2 at ffff3597): consecutive zero-duty passes with driver status code 1"
+output = "ffff3596"
+specs = ["defs/JK08A.cvtc.md"]
+
+[[chain.step]]
+from = "ffff1eb2"
+to = "ffff111e"
+effect = "converts"
+sign = "none"
+via = ["0004110a"]
+note = "Device-1 word (identifier 0x4000) received by 00040e6c; channel 2 gets (word >> 6) & 3, and a rejected word zeroes the channel bytes."
+
+[[chain.step]]
+from = "ffff111e"
+to = "ffff109e"
+effect = "copies"
+sign = "positive"
+via = ["00020dfe"]
+note = "Scheduler block copy ffff1114..ffff1193 -> ffff1094..ffff1113 at 0x20F56; ffff109e and ffff109f are the bank-1 status bytes."
+
+[[chain.step]]
+from = "ffff109e"
+to = "ffff3596"
+effect = "integrates"
+sign = "none"
+via = ["00090642"]
+note = "The counter increments with saturation on each evaluating pass with a bank status byte equal to 1 and returns to zero otherwise."
+
+[[chain.step]]
+from = "ffff1aac"
+to = "ffff3596"
+effect = "gates"
+sign = "none"
+via = ["00090642"]
+note = "Evaluation needs duty word ffff1aac + 2b at zero, so the pair judges the de-energized output; a non-zero duty zeroes the counter."
+
+[[chain.step]]
+from = "ffff1108"
+to = "ffff3596"
+effect = "gates"
+sign = "none"
+via = ["0008f168", "00090642"]
+note = "The 0008f168 enable needs ffff1108 above 0x89 and at most 0xC8, ffff41c8 bit 7 clear, and ROM8[0x186DE] bit 1 for bank 1."
+
+[[chain.step]]
+from = "ffff3596"
+to = "ffff358d"
+effect = "compares"
+sign = "none"
+via = ["00090642"]
+note = "A count of ROM8[0x8B00] = 10 sets result bit b of ffff358d."
+
+[[chain.step]]
+from = "ffff3596"
+to = "ffff3584"
+effect = "compares"
+sign = "none"
+via = ["00090642"]
+note = "A count of ROM8[0x8B02] = 100 sets judged latch bit b; evaluation stops while the latch bit is set."
+
+[[chain.step]]
+from = "ffff358d"
+to = "ffff5718"
+effect = "stores"
+sign = "none"
+via = ["0008f168", "0008c2d2"]
+note = "The 0008f168 routing calls 0008c2d2: byte 1 bit 7 of ffff5718 + 3*0x43 (P0078) or 0x44 (P0084), bit 4 on a fresh fault."
+
+[[chain.step]]
+from = "ffff3584"
+to = "ffff5718"
+effect = "stores"
+sign = "none"
+via = ["0008f168", "0007d8b8"]
+note = "0008f168 calls dispatcher 0007d8b8 with index 0x43 or 0x44 while the judged latch bit is set."
+
+[[chain.step]]
+from = "ffff5718"
+to = "ffff248b"
+effect = "gates"
+sign = "none"
+via = ["00025e20", "000bf630"]
+note = "A stored fault of 0x43 or 0x44 (00025e20, byte 1 bit 7) clears exhaust-VTC electrical enable ffff248b bit 0 in 000bf630."
+
+[[chain.step]]
+from = "ffff5718"
+to = "0003614c"
+effect = "transmits"
+sign = "none"
+note = "0003614c and 00036e2c publish the code while attribute bit 7 is set (0x00a0 for P0078/P0084) and record byte 2 has bit 2 or 3."
+specs = ["defs/README.md"]

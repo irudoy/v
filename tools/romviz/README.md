@@ -41,8 +41,67 @@ ROM in the image registry lacks a tracked manifest.
 The interface supports mouse-wheel and trackpad-pinch zoom, pointer dragging,
 trackpad horizontal panning, whole-ROM navigation, layer filters, reviewed-only
 function filtering, text and address search, object details, and related-address
-jumps. The URL fragment records the active ROM, viewport, and selected object
-for reproducible local links.
+jumps. The URL fragment records the active view, ROM, viewport, and selected
+object for reproducible local links.
+
+## Architecture view
+
+The atlas carries two views. The address map draws the flash layout of one
+image. The architecture view draws the firmware itself: functional blocks, the
+data flow between them, the actuator and bus endpoints, and the calculation
+chains that lead from the crank events and the sensors to each command.
+
+`defs/JK08A.architecture.toml` is the source and `tools/romviz/architecture.py`
+is its gate. Blocks, endpoints, and chain steps are declared over addresses of
+the reviewed ledgers, and the gate binds every step either to a relation those
+ledgers record or to a specification the step names. `make check` runs the gate
+and rebuilds the atlas, so the view follows the ledgers on every build.
+
+The view opens on the system map: input endpoints, the block columns of every
+stage, output endpoints, and the support lane below them. Opening a block shows
+its functions and tables with its upstream and downstream partners. Opening a
+table, signal, or function shows its neighborhood. Opening a chain draws the
+calculation from the sensors to the published quantity and gives every node the
+sign of the effect that an increase has on that output: a raise, a lowering, no
+established sign, or paths that disagree. A dashed edge is a step that a named
+specification states rather than a ledger relation. The trace route walks the
+derived relations from one node to the registers that drive the actuators; a
+relation records evidence rather than a signed effect, and the view labels it
+as such.
+
+Each manifest declares `[architecture]` with `source`, `mode`, and, outside
+exact mode, a `note` that the view shows as a banner. `exact` requires the
+reviewed function ledger of the architecture source and refuses a ROM with a
+relocated definition projection. `projected` and `reference` relocate the maps
+and axes of the reviewed correspondence in `defs/definition-projections.toml`
+and keep JK08A function and RAM addresses; a table without a target address is
+marked unsupported on that ROM.
+
+## Architecture command line
+
+The same model answers structural questions without the browser:
+
+```bash
+uv run python tools/romviz/architecture.py check
+uv run python tools/romviz/architecture.py blocks
+uv run python tools/romviz/architecture.py block ignition-timing
+uv run python tools/romviz/architecture.py node 0x991a
+uv run python tools/romviz/architecture.py impact 0x991a
+uv run python tools/romviz/architecture.py path 0003de4c ffff1702
+uv run python tools/romviz/architecture.py chains ignition-advance
+uv run python tools/romviz/architecture.py suggest 0003de4c
+uv run python tools/romviz/architecture.py json --output tmp/architecture.json
+```
+
+`check` reports the gate result and the inventory of the model. `blocks` and
+`block` list the functional structure. `node` prints one node with its ledger
+relations. `impact` states the sign an increase of a table or signal has on the
+output of every chain that names it, followed by the unsigned derived reach to
+the nearest actuator registers. `path` prints the shortest derived data or
+control path between two addresses. `chains` prints one chain step by step with
+its support and notes. `suggest` ranks candidate blocks for a function, which
+is how a newly reviewed function finds its place. `json` writes the exported
+model that the atlas embeds.
 
 ## Evidence model
 
@@ -120,10 +179,16 @@ ensures that `all` includes the new flash ROM.
 ## Verification
 
 ```bash
+uv run python tools/romviz/architecture.py check
+node --check tools/romviz/architecture.js
 node --check tools/romviz/app.js
 uv run pytest -q tools/romviz/tests
 make check
 ```
+
+`make check` runs the architecture gate and rebuilds `ROMVIZ_OUTPUT` from the
+tracked sources, so a stale atlas or an unplaced reviewed function fails the
+check rather than the reader.
 
 Generated atlas files belong under ignored `tmp/` or another explicit output
 location and are not repository evidence.

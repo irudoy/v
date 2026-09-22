@@ -53,9 +53,13 @@
     warnings: document.getElementById("warnings"),
     warningList: document.getElementById("warning-list"),
     tooltip: document.getElementById("tooltip"),
+    viewAddress: document.getElementById("view-address"),
+    viewArchitecture: document.getElementById("view-architecture"),
+    addressView: document.getElementById("address-view"),
   };
 
   const state = {
+    view: "address",
     romIndex: 0,
     rom: null,
     objectById: new Map(),
@@ -177,10 +181,43 @@
     renderLayerFilters();
     renderWarnings();
     clearDetails(false);
+    architecture.setRom(state.rom);
+    elements.viewArchitecture.disabled = !architectureAvailable();
+    if (state.view === "architecture" && !architectureAvailable()) {
+      showView("address", false);
+    }
     if (preserveHash) {
       restoreHash();
     }
     scheduleRender();
+  }
+
+  function architectureAvailable() {
+    const binding = state.rom.architecture;
+    return Boolean(binding && atlas.architectures && atlas.architectures[binding.source]);
+  }
+
+  function showView(view, updateLocation = true) {
+    const next = view === "architecture" && architectureAvailable() ? "architecture" : "address";
+    const changed = next !== state.view;
+    const showArchitecture = next === "architecture";
+    state.view = next;
+    root.dataset.view = next;
+    elements.addressView.hidden = showArchitecture;
+    elements.viewAddress.setAttribute("aria-selected", String(!showArchitecture));
+    elements.viewArchitecture.setAttribute("aria-selected", String(showArchitecture));
+    elements.viewAddress.tabIndex = showArchitecture ? -1 : 0;
+    elements.viewArchitecture.tabIndex = showArchitecture ? 0 : -1;
+    if (showArchitecture) {
+      hideTooltip();
+      architecture.activate();
+    } else {
+      architecture.deactivate();
+      scheduleRender();
+    }
+    if (updateLocation && changed) {
+      updateHash(true);
+    }
   }
 
   function renderRomMetadata() {
@@ -340,7 +377,7 @@
     }
   }
 
-  function updateHash() {
+  function updateHash(push = false) {
     const parameters = new URLSearchParams();
     parameters.set("rom", state.rom.id);
     parameters.set("start", Math.round(state.viewStart).toString(16));
@@ -348,7 +385,21 @@
     if (state.selectedId) {
       parameters.set("object", state.selectedId);
     }
-    history.replaceState(null, "", `#${parameters.toString()}`);
+    if (state.view === "architecture") {
+      parameters.set("view", "arch");
+      for (const [key, value] of architecture.hashParams()) {
+        parameters.set(key, value);
+      }
+    }
+    const hash = `#${parameters.toString()}`;
+    if (hash === location.hash) {
+      return;
+    }
+    if (push) {
+      history.pushState(null, "", hash);
+    } else {
+      history.replaceState(null, "", hash);
+    }
   }
 
   function restoreHash() {
@@ -369,7 +420,12 @@
     const objectId = parameters.get("object");
     if (objectId && state.objectById.has(objectId)) {
       selectObject(objectId, false);
+    } else if (state.selectedId) {
+      clearDetails(false);
     }
+    architecture.restore(parameters);
+    showView(parameters.get("view") === "arch" ? "architecture" : "address", false);
+    updateHash();
   }
 
   function niceStep(span, plotWidth) {
@@ -652,10 +708,11 @@
   }
 
   function scheduleRender() {
-    if (state.framePending) return;
+    if (state.framePending || state.view !== "address") return;
     state.framePending = true;
     requestAnimationFrame(() => {
       state.framePending = false;
+      if (state.view !== "address") return;
       renderAddressMap();
       drawOverview();
     });
@@ -922,6 +979,15 @@
   elements.overview.addEventListener("pointerup", endOverviewDrag);
   elements.overview.addEventListener("pointercancel", endOverviewDrag);
 
+  const architecture = window.RomAtlasArchitecture.create({
+    atlas,
+    showAddress(address) {
+      showView("address");
+      jumpToAddress(address, true);
+    },
+    updateHash,
+  });
+
   for (const [index, rom] of atlas.roms.entries()) {
     const option = document.createElement("option");
     option.value = String(index);
@@ -929,7 +995,28 @@
     elements.romPicker.append(option);
   }
   elements.romPickerLabel.hidden = false;
-  elements.romPicker.addEventListener("change", () => setupRom(Number(elements.romPicker.value)));
+  elements.romPicker.addEventListener("change", () => {
+    setupRom(Number(elements.romPicker.value));
+    updateHash();
+  });
+
+  const tabs = [elements.viewAddress, elements.viewArchitecture];
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => {
+      showView(tab === elements.viewArchitecture ? "architecture" : "address");
+    });
+    tab.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? tabs[0]
+        : event.key === "End" ? tabs[tabs.length - 1]
+          : tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+      if (next.disabled) return;
+      next.focus();
+      next.click();
+    });
+  }
+  window.addEventListener("popstate", restoreHash);
 
   const resizeObserver = new ResizeObserver(scheduleRender);
   resizeObserver.observe(elements.addressMap);

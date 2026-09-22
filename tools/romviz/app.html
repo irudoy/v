@@ -20,82 +20,138 @@
       <dl id="header-stats" class="header-stats"></dl>
     </header>
 
-    <section class="toolbar" aria-label="Atlas controls">
-      <label id="rom-picker-label" class="field field-rom" hidden>
+    <div class="view-bar">
+      <div class="view-tabs" role="tablist" aria-label="Atlas views">
+        <button id="view-address" class="view-tab" type="button" role="tab" aria-selected="true" aria-controls="address-view">Address map</button>
+        <button id="view-architecture" class="view-tab" type="button" role="tab" aria-selected="false" aria-controls="arch-view" tabindex="-1">Architecture</button>
+      </div>
+      <label id="rom-picker-label" class="field field-rom field-inline" hidden>
         <span>ROM</span>
         <select id="rom-picker"></select>
       </label>
-      <label class="field field-search">
-        <span>Search objects or addresses</span>
-        <input id="search" type="search" autocomplete="off" placeholder="label, role, 0xD38E4">
-      </label>
-      <label class="field field-address">
-        <span>Go to address</span>
-        <input id="address" inputmode="text" spellcheck="false" placeholder="0x000000">
-      </label>
-      <div class="button-group" aria-label="Zoom controls">
-        <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
-        <button id="zoom-out" type="button" aria-label="Zoom out">-</button>
-        <button id="full-view" type="button">Full ROM</button>
-      </div>
-    </section>
+    </div>
 
-    <section class="layer-controls" aria-label="Visible layers">
-      <div id="layer-filters" class="layer-filters"></div>
-      <label class="semantic-toggle">
-        <input id="semantic-only" type="checkbox">
-        <span>Reviewed semantics only</span>
-      </label>
-    </section>
-
-    <section class="overview-section" aria-labelledby="overview-title">
-      <div class="section-heading">
-        <div>
-          <h2 id="overview-title">Whole flash</h2>
-          <p>Byte entropy with patch allocations and the active viewport</p>
+    <div id="address-view" role="tabpanel" aria-labelledby="view-address">
+      <section class="toolbar" aria-label="Atlas controls">
+        <label class="field field-search">
+          <span>Search objects or addresses</span>
+          <input id="search" type="search" autocomplete="off" placeholder="label, role, 0xD38E4">
+        </label>
+        <label class="field field-address">
+          <span>Go to address</span>
+          <input id="address" inputmode="text" spellcheck="false" placeholder="0x000000">
+        </label>
+        <div class="button-group" aria-label="Zoom controls">
+          <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+          <button id="zoom-out" type="button" aria-label="Zoom out">-</button>
+          <button id="full-view" type="button">Full ROM</button>
         </div>
-        <output id="search-status" aria-live="polite"></output>
-      </div>
-      <canvas id="overview" height="58" aria-label="Whole flash entropy overview"></canvas>
-    </section>
+      </section>
 
-    <section class="workspace">
-      <div class="map-panel">
-        <div class="section-heading map-heading">
+      <section class="layer-controls" aria-label="Visible layers">
+        <div id="layer-filters" class="layer-filters"></div>
+        <label class="semantic-toggle">
+          <input id="semantic-only" type="checkbox">
+          <span>Reviewed semantics only</span>
+        </label>
+      </section>
+
+      <section class="overview-section" aria-labelledby="overview-title">
+        <div class="section-heading">
           <div>
-            <h2>Address space</h2>
-            <p id="viewport-label"></p>
+            <h2 id="overview-title">Whole flash</h2>
+            <p>Byte entropy with patch allocations and the active viewport</p>
           </div>
-          <p class="gesture-help">Wheel or pinch to zoom, drag or two-finger swipe to pan, click an object to inspect</p>
+          <output id="search-status" aria-live="polite"></output>
         </div>
-        <svg id="address-map" role="img" aria-labelledby="address-map-title address-map-desc">
-          <title id="address-map-title">ROM object address map</title>
-          <desc id="address-map-desc">Interactive lanes place firmware structure, calibrations, diagnostics, patches, and checksums on one flash address axis.</desc>
-        </svg>
-      </div>
+        <canvas id="overview" height="58" aria-label="Whole flash entropy overview"></canvas>
+      </section>
 
-      <aside id="details" class="details" aria-live="polite">
-        <div id="details-empty" class="details-empty">
-          <h2>Object details</h2>
-          <p>Select a mark or search for an address.</p>
-        </div>
-        <div id="details-content" hidden>
-          <div class="details-heading">
+      <section class="workspace">
+        <div class="map-panel">
+          <div class="section-heading map-heading">
             <div>
-              <p id="detail-kind" class="eyebrow"></p>
-              <h2 id="detail-label"></h2>
+              <h2>Address space</h2>
+              <p id="viewport-label"></p>
             </div>
-            <button id="close-details" type="button" aria-label="Clear selection">Clear</button>
+            <p class="gesture-help">Wheel or pinch to zoom, drag or two-finger swipe to pan, click an object to inspect</p>
           </div>
-          <p id="detail-range" class="detail-range"></p>
-          <div id="detail-badges" class="detail-badges"></div>
-          <dl id="detail-meta" class="detail-meta"></dl>
-          <p id="detail-description" class="detail-copy"></p>
-          <p id="detail-note" class="detail-copy secondary"></p>
-          <div id="detail-related" class="detail-related"></div>
-          <p id="detail-source" class="detail-source"></p>
+          <svg id="address-map" role="img" aria-labelledby="address-map-title address-map-desc">
+            <title id="address-map-title">ROM object address map</title>
+            <desc id="address-map-desc">Interactive lanes place firmware structure, calibrations, diagnostics, patches, and checksums on one flash address axis.</desc>
+          </svg>
         </div>
-      </aside>
+
+        <aside id="details" class="details" aria-live="polite">
+          <div id="details-empty" class="details-empty">
+            <h2>Object details</h2>
+            <p>Select a mark or search for an address.</p>
+          </div>
+          <div id="details-content" hidden>
+            <div class="details-heading">
+              <div>
+                <p id="detail-kind" class="eyebrow"></p>
+                <h2 id="detail-label"></h2>
+              </div>
+              <button id="close-details" type="button" aria-label="Clear selection">Clear</button>
+            </div>
+            <p id="detail-range" class="detail-range"></p>
+            <div id="detail-badges" class="detail-badges"></div>
+            <dl id="detail-meta" class="detail-meta"></dl>
+            <p id="detail-description" class="detail-copy"></p>
+            <p id="detail-note" class="detail-copy secondary"></p>
+            <div id="detail-related" class="detail-related"></div>
+            <p id="detail-source" class="detail-source"></p>
+          </div>
+        </aside>
+      </section>
+    </div>
+
+    <section id="arch-view" class="arch-view" role="tabpanel" aria-labelledby="view-architecture" hidden>
+      <div class="toolbar arch-toolbar">
+        <div class="arch-search-field">
+          <label class="field field-search">
+            <span>Search blocks, chains, tables, signals, or addresses</span>
+            <input id="arch-search" type="search" autocomplete="off" spellcheck="false" placeholder="ignition, fuel, 0x2378C, FFFF11F4" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="arch-results">
+          </label>
+          <div id="arch-results" class="arch-results" role="listbox" aria-label="Architecture search results" hidden></div>
+        </div>
+        <div class="button-group" aria-label="Diagram zoom controls">
+          <button id="arch-zoom-in" type="button" aria-label="Zoom in">+</button>
+          <button id="arch-zoom-out" type="button" aria-label="Zoom out">-</button>
+          <button id="arch-fit" type="button">Fit</button>
+        </div>
+      </div>
+      <p id="arch-banner" class="arch-banner"></p>
+      <div id="arch-chains" class="arch-chains" role="group" aria-label="Calculation chains"></div>
+      <section class="workspace arch-workspace">
+        <div class="map-panel arch-panel">
+          <div class="section-heading map-heading arch-heading">
+            <div class="arch-heading-text">
+              <nav id="arch-crumbs" class="arch-crumbs" aria-label="Architecture location"></nav>
+              <h2 id="arch-title"></h2>
+              <p id="arch-subtitle"></p>
+            </div>
+            <div id="arch-options" class="arch-options">
+              <label class="semantic-toggle">
+                <input id="arch-support" type="checkbox">
+                <span>Support-system flows</span>
+              </label>
+              <label class="arch-range">
+                <span>Flows</span>
+                <input id="arch-flow-limit" type="range" min="10" max="400" step="10" value="60">
+                <output id="arch-flow-limit-value" for="arch-flow-limit">60</output>
+              </label>
+            </div>
+          </div>
+          <svg id="arch-canvas" class="arch-canvas" role="group" aria-label="Firmware architecture diagram" aria-describedby="arch-canvas-desc">
+            <desc id="arch-canvas-desc"></desc>
+          </svg>
+          <div id="arch-legend" class="arch-legend" aria-label="Legend"></div>
+          <div id="arch-table" class="arch-table" hidden></div>
+        </div>
+        <aside id="arch-details" class="details arch-details" aria-live="polite"></aside>
+      </section>
     </section>
 
     <section id="warnings" class="warnings" hidden aria-labelledby="warnings-title">
@@ -105,6 +161,7 @@
 
     <footer>
       <p>Exact starts and declared ranges come from repository evidence. Ghidra function spans use exported body byte counts; unknown extents are drawn as point-sized marks.</p>
+      <p>Architecture blocks, relations, and flows derive from ledger evidence tokens on every build and carry no sign. The signs of a calculation chain come from its declared steps, each bound to a ledger relation or a named specification.</p>
     </footer>
 
     <div id="tooltip" class="tooltip" role="tooltip" hidden></div>

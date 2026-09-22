@@ -51,6 +51,12 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
   address profiles, or runtime allocation.
 - A version, count, or identity that a document publishes belongs under a gate
   that reads it from the file the project executes. Add the gate with the fact.
+- `defs/JK08A.architecture.toml` places every reviewed function in one block and
+  binds every calculation step to a ledger relation or to a named specification.
+  A review that adds a function, a map, or a calculation extends it in the same
+  commit; `tools/romviz/architecture.py suggest` ranks candidate blocks and
+  `check` reports what remains unplaced. `make check` runs that gate and rebuilds
+  the atlas, so the architecture view follows the ledgers on every build.
 - Commit locally on `master` as soon as the gates covering a step pass, without
   waiting for a separate instruction. Leave unrelated worktree content and
   other sessions' changes unstaged.

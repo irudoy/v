@@ -24,6 +24,7 @@ presentation and generated output.
 | `JK08A.vars.csv` | RAM and peripheral semantics and evidence | yes |
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | yes |
+| `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
@@ -244,6 +245,22 @@ surfaces, two floor curves over the demand axis, and the constant 50.0 in the
 mode 14 pair. It reads the shaft-angle conversion and the cold pair inline and
 leaves the throttled pair to `0x063534`, which publishes the throttled duration
 as the curve value or as a stepped approach to it from 50.0.
+
+## Functional architecture
+
+`JK08A.architecture.toml` is the curated functional layer over the reviewed
+ledgers. It declares stages, blocks, actuator and bus endpoints, and the
+calculation chains that lead from the crank events and the sensors to each
+command, with the sign of the effect that an increase of every table and signal
+has on the published quantity. Nodes are addresses of `JK08A.findings.csv`,
+`JK08A.axes.csv`, `JK08A.funcs.csv`, and `JK08A.vars.csv`, and every chain step
+is bound either to a relation those ledgers record or to a specification named
+in the step. `tools/romviz/architecture.py check`, which `make check` runs,
+requires every reviewed function to sit in exactly one block and rejects an
+address, a relation, or a step that the ledgers and the named specifications do
+not carry. The ROM atlas renders the model as the interactive architecture
+view, and the same command answers block, node, impact, path, and chain
+questions on the command line.
 
 ## Evidence specifications
 

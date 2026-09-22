@@ -14,6 +14,10 @@ dtc = "defs/JK08A.dtc.csv"
 overrides = "defs/JK08A.overrides.toml"
 checksum_registry = "patches/checksum-layouts.toml"
 
+[architecture]
+source = "defs/JK08A.architecture.toml"
+mode = "exact"
+
 [[patch]]
 id = "map-switching"
 label = "Map switching"
