@@ -13,6 +13,7 @@ VARS = ROOT / "defs" / "JK08A.vars.csv"
 INTERP = ROOT / "defs" / "JK08A.interp.csv"
 OVERRIDES = ROOT / "defs" / "JK08A.overrides.toml"
 FUEL = ROOT / "defs" / "JK08A.fuel.md"
+THROTTLE = ROOT / "defs" / "JK08A.throttle-control.md"
 
 SPEED_WORD = 0xFFFF1196
 SPEED_BLOCK = 0xFFFF11D4
@@ -20,8 +21,65 @@ SNAPSHOT = 0xFFFF119C
 SNAPSHOT_SIZE = 0x38
 COMPENSATION_BLOCK = 0xFFFF1114
 ETC_BLOCK = 0xFFFF1E60
+TORQUE_BLOCK = 0xFFFF128C
+INTERVAL_BLOCK = 0xFFFF1FF4
+PRIMARY_ROW = 0xFFFF1702
+TRUSTFUL_ROW = 0xFFFF1CCA
 # 32000000 over the 3.2 us interval of 120 crank degrees, 6250000/RPM counts.
 SPEED_WORD_PER_RPM = Fraction(32_000_000, 6_250_000)
+
+# (surface, row axis, column axis, 2D wrapper) of each requested-torque family.
+PRIMARY = (0xE98E, 0x11D0C, 0x14114, 0x262E0)
+TRUSTFUL = (0x175C8, 0x18716, 0x18AC6, 0x26660)
+# Forward lookups that pass the row coordinate: (surface load, base load,
+# base register, row load, extu.w r14,r7, call). The row load is
+# mov.w @(r0,base),r14 after mov.w #offset,r0 and one mov.l of r4 or r5.
+PRIMARY_LOOKUPS = (
+    (0x7031E, 0x702D6, 12, 0x70320, 0x7032A, 0x70328),  # FUN_000702C6
+    (0x739D0, 0x7398A, 13, 0x739DC, 0x739E4, 0x739E2),  # FUN_00073948
+    (0x754A2, 0x7546E, 11, 0x754A4, 0x754AE, 0x754AC),  # FUN_000753D4
+    (0x75554, 0x75548, 13, 0x75560, 0x75568, 0x75566),  # FUN_00075540
+    (0x75D26, 0x75CEE, 12, 0x75D32, 0x75D3A, 0x75D38),  # FUN_00075C48
+    (0x7AAF2, 0x7AAE8, 7, 0x7AAF4, 0x7AAFE, 0x7AAFC),  # FUN_0007A9FC
+    (0x7AB54, 0x7AB4E, 12, 0x7AB56, 0x7AB62, 0x7AB60),  # FUN_0007AB18
+)
+TRUSTFUL_LOOKUPS = (
+    (0x73ACC, 0x73A7A, 13, 0x73AD8, 0x73AE0, 0x73ADE),  # FUN_00073A44
+    (0x7476E, 0x7474A, 12, 0x74770, 0x7477A, 0x74778),  # FUN_00074728
+    (0x74A7E, 0x74A78, 13, 0x74A80, 0x74A86, 0x74A8C),  # FUN_000749BC
+    (0x7ADFC, 0x7ADF8, 7, 0x7ADFE, 0x7AE08, 0x7AE06),  # FUN_0007ACB4
+)
+# Throttle-rev limiter FUN_0007584E passes snapshot ffff11b6 directly.
+LIMITER_LOOKUP = 0x75A10
+# Inverse lookups FUN_00073432 and FUN_00073628 load the primary surface
+# three times and the trustful surface three times.
+INVERSE_LOADS = {
+    0xE98E: (0x734CE, 0x734E2, 0x7350C),
+    0x175C8: (0x736AA, 0x736C8, 0x736F2),
+}
+# Stack column words: (mov #imm,r0, mov.w r0,@(2,r15), imm).
+FIXED_COLUMNS = (
+    (0x70318, 0x7031A, 0xFF),  # FUN_000702C6
+    (0x75558, 0x7555A, 0xFF),  # FUN_00075540
+    (0x75D2A, 0x75D2C, 0xFF),  # FUN_00075C48
+    (0x7AB4C, 0x7AB50, 0xFF),  # FUN_0007AB18
+    (0x74A76, 0x74A7A, 0xFF),  # FUN_000749BC
+    (0x75A0A, 0x75A0C, 0x00),  # FUN_0007584E
+)
+# Primary tables and constants of FUN_00073948 and their trustful copies
+# in FUN_00073A44, with the byte length of each.
+CONVERSION_COPIES = (
+    (0x0E98E, 0x175C8, 512),  # surface
+    (0x11D0C, 0x18716, 16),  # row axis
+    (0x14114, 0x18AC6, 32),  # column axis
+    (0x13202, 0x18766, 64),  # opening area
+    (0x155A0, 0x190D0, 64),  # throttle angle axis
+    (0x15690, 0x18FD6, 64),  # lower segment
+    (0x15500, 0x18E86, 64),  # lower segment axis
+    (0x156D0, 0x18F96, 64),  # upper segment
+    (0x15540, 0x18E46, 64),  # upper segment axis
+    (0x08D8F, 0x15F82, 1),  # divisor
+)
 
 
 def u16(data, offset):
@@ -75,6 +133,40 @@ def names_register(data, start, stop, register):
     ]
 
 
+def stores_through(data, start, stop, register):
+    """Return whether every instruction in start..stop that names register
+    as Rn is a store addressed through it, which leaves it unchanged."""
+    for address in names_register(data, start, stop, register):
+        opcode = u16(data, address)
+        top, low = opcode >> 12, opcode & 0xF
+        if not (
+            (top == 0x0 and low in (4, 5, 6))  # mov.x Rm,@(r0,Rn)
+            or top == 0x1  # mov.l Rm,@(disp,Rn)
+            or (top == 0x2 and low in (0, 1, 2))  # mov.x Rm,@Rn
+        ):
+            return False
+    return True
+
+
+def pc_literal_loads(data, value):
+    """Return every PC-relative MOV.L in data that loads value."""
+    pattern = value.to_bytes(4, "big")
+    loads = []
+    literal = data.find(pattern)
+    while literal != -1:
+        if literal % 4 == 0:
+            # A MOV.L reaches literals up to 255 longwords past (PC + 4) & ~3.
+            for address in range(max(0, literal - 1024), literal, 2):
+                opcode = u16(data, address)
+                if (
+                    opcode >> 12 == 0xD
+                    and ((address + 4) & ~3) + (opcode & 0xFF) * 4 == literal
+                ):
+                    loads.append(address)
+        literal = data.find(pattern, literal + 1)
+    return sorted(loads)
+
+
 def rpm_per_count(shift):
     """Return the RPM of one count of the speed word shifted right by shift."""
     return Fraction(1 << shift) / SPEED_WORD_PER_RPM
@@ -101,6 +193,7 @@ class OverlayLookupOperandTest(unittest.TestCase):
         with OVERRIDES.open("rb") as source:
             cls.overrides = tomllib.load(source)
         cls.fuel = " ".join(FUEL.read_text(encoding="utf-8").split())
+        cls.throttle = " ".join(THROTTLE.read_text(encoding="utf-8").split())
 
     def test_speed_word_counts_rpm_times_5_12(self):
         # FUN_00038272 divides this constant by event interval ffff11fc.
@@ -207,6 +300,7 @@ class OverlayLookupOperandTest(unittest.TestCase):
             (0xFFFF11EB, 0xFFFF11B3),
             (0xFFFF11EE, 0xFFFF11B6),
             (0xFFFF11F4, 0xFFFF11BC),
+            (0xFFFF1208, 0xFFFF11D0),
         ):
             with self.subTest(source=hex(source)):
                 self.assertLess(source - SPEED_BLOCK, SNAPSHOT_SIZE)
@@ -465,6 +559,494 @@ class OverlayLookupOperandTest(unittest.TestCase):
         )
         self.assertEqual(32 * rpm_per_count(7), 800)
 
+    def test_maf_range_monitors_evaluate_the_qh0_curves(self):
+        rom = self.rom
+        # FUN_0008152A (P0101) and FUN_00081D74 (P010B) read inflow area
+        # ffff120e and both curves of FUN_0003B498 on two paths each.
+        for loads, value in (
+            ((0x815C4, 0x8163C, 0x81E5C, 0x81ED8), 0xFFFF120E),
+            ((0x81606, 0x8166E, 0x81EA2, 0x81F0A), 0x15042),
+            ((0x81610, 0x81676, 0x81EAC, 0x81F12), 0x15022),
+        ):
+            for load in loads:
+                with self.subTest(load=hex(load)):
+                    self.assertEqual(mov_l_literal(rom, load), value)
+        self.assertEqual(mov_l_literal(rom, 0x3B4EE), 0x15042)
+        self.assertEqual(mov_l_literal(rom, 0x3B4FA), 0x15022)
+        # The two curves of 16 words span high bytes 4..204 and 204..224.
+        lower = [rom[0x15042 + 2 * index] for index in range(16)]
+        upper = [rom[0x15022 + 2 * index] for index in range(16)]
+        self.assertEqual((min(lower), max(lower)), (4, 204))
+        self.assertEqual((min(upper), max(upper)), (204, 224))
+        # 0xDC1D00 / (8 * RPM) scaled by 2^-9 is 3522 / RPM.
+        self.assertEqual(round(Fraction(0xDC1D00, 8 * 512)), 3522)
+
+    def test_requested_torque_row_coordinates_clamp_the_speed_snapshots(self):
+        rom = self.rom
+        # FUN_0003DE4C: GBR = ffff119c.
+        self.assertEqual(mov_l_literal(rom, 0x3DE4E), SNAPSHOT)
+        self.assertEqual(u16(rom, 0x3DE50), 0x401E)  # ldc r0,gbr
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x3DE52, 0x3DE78, 2)],
+            [
+                0xC50D,  # mov.w @(0x1a,gbr),r0: ffff11b6
+                0xE520,  # mov #0x20,r5
+                0x670D,  # extu.w r0,r7
+                0x3753,  # cmp/ge r5,r7
+                0x8D01,  # bt/s 0x3DE60
+                0x6273,  # mov r7,r2
+                0xE220,  # mov #0x20,r2
+                0xD41E,  # mov.l @(0x3dedc,pc),r4
+                0x9034,  # mov.w @(0x3dece,pc),r0
+                0x0425,  # mov.w r2,@(r0,r4): ffff1702
+                0xC51A,  # mov.w @(0x34,gbr),r0: ffff11d0
+                0x620D,  # extu.w r0,r2
+                0x3253,  # cmp/ge r5,r2
+                0x8900,  # bt 0x3DE70
+                0xE220,  # mov #0x20,r2
+                0xD41A,  # mov.l @(0x3dedc,pc),r4
+                0x6673,  # mov r7,r6
+                0x902C,  # mov.w @(0x3ded0,pc),r0
+                0x0425,  # mov.w r2,@(r0,r4): ffff1cca
+            ],
+        )
+        self.assertEqual(conditional_target(rom, 0x3DE5A), 0x3DE60)
+        self.assertEqual(conditional_target(rom, 0x3DE6C), 0x3DE70)
+        self.assertEqual(mov_l_literal(rom, 0x3DE60), TORQUE_BLOCK)
+        self.assertEqual(mov_l_literal(rom, 0x3DE70), TORQUE_BLOCK)
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x3DE62), PRIMARY_ROW)
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x3DE74), TRUSTFUL_ROW)
+        self.assertEqual(SNAPSHOT + 0x1A, 0xFFFF11B6)
+        self.assertEqual(SNAPSHOT + 0x34, 0xFFFF11D0)
+        # The clamp at 32 counts is 100 RPM, below the first row point.
+        self.assertEqual(32 * rpm_per_count(4), 100)
+
+    def test_trustful_speed_word_has_the_primary_representation(self):
+        rom = self.rom
+        # FUN_000385BC: ffff1206 = 12000000 / (ROM8[0x88FB] * ffff22d4) and
+        # ffff1208 = uint16(ffff1206) >> 1, or zero for both while
+        # ffff417f bit 5 is set. Divider 0x21CE0 returns r1 / r0.
+        self.assertEqual(mov_l_literal(rom, 0x385C2), SPEED_BLOCK)
+        self.assertEqual(u16(rom, 0x385C4), 0x401E)  # ldc r0,gbr
+        self.assertEqual(mov_l_literal(rom, 0x385C6), 0xFFFF417F)
+        self.assertEqual(u16(rom, 0x385C8), 0x6060)  # mov.b @r6,r0
+        self.assertEqual(u16(rom, 0x385CA), 0xC820)  # tst #0x20,r0
+        self.assertEqual(conditional_target(rom, 0x385CC), 0x385E8)
+        self.assertEqual(mov_l_literal(rom, 0x385CE), 0x88FB)  # r6
+        self.assertEqual(mov_l_literal(rom, 0x385D0), INTERVAL_BLOCK)  # r5
+        self.assertEqual(u16(rom, 0x385D2), 0x6260)  # mov.b @r6,r2
+        self.assertEqual(mov_w_literal(rom, 0x385D4), 0x2E0)
+        self.assertEqual(u16(rom, 0x385D6), 0x662C)  # extu.b r2,r6
+        self.assertEqual(mov_l_literal(rom, 0x385D8), 12_000_000)  # r1
+        self.assertEqual(u16(rom, 0x385DA), 0x025E)  # mov.l @(r0,r5),r2
+        self.assertEqual(u16(rom, 0x385DC), 0x0267)  # mul.l r6,r2
+        self.assertEqual(mov_l_literal(rom, 0x385DE), 0x21CE0)
+        self.assertEqual(u16(rom, 0x385E0), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x385E2), 0x001A)  # sts macl,r0
+        self.assertEqual(branch_target(rom, 0x385E4), 0x385EC)
+        self.assertEqual(u16(rom, 0x385E6), 0x6203)  # mov r0,r2
+        self.assertEqual(u16(rom, 0x385E8), 0xE200)  # mov #0,r2
+        self.assertEqual(u16(rom, 0x385EA), 0x6023)  # mov r2,r0
+        self.assertEqual(u16(rom, 0x385EC), 0xC119)  # mov.w r0,@(0x32,gbr)
+        self.assertEqual(u16(rom, 0x385EE), 0x602D)  # extu.w r2,r0
+        self.assertEqual(u16(rom, 0x385F0), 0x4001)  # shlr r0
+        self.assertEqual(u16(rom, 0x385F2), 0xC11A)  # mov.w r0,@(0x34,gbr)
+        self.assertEqual(rom[0x88FB], 3)
+        self.assertEqual(INTERVAL_BLOCK + 0x2E0, 0xFFFF22D4)
+        self.assertEqual(SPEED_BLOCK + 0x32, 0xFFFF1206)
+        self.assertEqual(SPEED_BLOCK + 0x34, 0xFFFF1208)
+        # Event handler FUN_000208F8 calls both interval samplers in turn.
+        self.assertEqual(mov_l_literal(rom, 0x20908), 0x28AF8)
+        self.assertEqual(mov_l_literal(rom, 0x2090E), 0x28B5C)
+        for call in (0x2090A, 0x20910):
+            self.assertEqual(u16(rom, call), 0x420B)  # jsr @r2
+            self.assertEqual(u16(rom, call + 2), 0x0009)  # nop
+        # Both samplers apply the same gates to capture ffff185c, form
+        # (capture - previous) >> 5 with the same borrow, and keep the
+        # capture as their own previous value in r1.
+        for entry, previous, gate, lock, capture, borrow, shifts, keep in (
+            (
+                0x28AF8, 0xFFFF84CC, 0x28AFA, 0x28B02, 0x28B12, 0x28B18,
+                (0x28B24, 0x28B26, 0x28B2C), 0x28B34,
+            ),
+            (
+                0x28B5C, 0xFFFF84D0, 0x28B5E, 0x28B66, 0x28B78, 0x28B7E,
+                (0x28B88, 0x28B8C, 0x28B90), 0x28B94,
+            ),
+        ):
+            with self.subTest(sampler=hex(entry)):
+                self.assertEqual(u16(rom, entry) >> 8, 0x91)  # mov.w ...,r1
+                self.assertEqual(mov_w_literal(rom, entry) | 0xFFFF0000, previous)
+                self.assertEqual(names_register(rom, entry + 2, keep + 8, 1), [])
+                self.assertEqual(mov_l_literal(rom, gate), 0xFFFF24C8)
+                self.assertEqual(u16(rom, gate + 2), 0x8461)  # mov.b @(1,r6),r0
+                self.assertEqual(u16(rom, gate + 4), 0xC820)  # tst #0x20,r0
+                self.assertEqual(mov_l_literal(rom, lock), 0xFFFF25FB)
+                self.assertEqual(u16(rom, lock + 2), 0x8464)  # mov.b @(4,r6),r0
+                self.assertEqual(u16(rom, lock + 4), 0x2008)  # tst r0,r0
+                for load in (capture, keep):
+                    self.assertEqual(mov_l_literal(rom, load), TORQUE_BLOCK)
+                    self.assertEqual(
+                        TORQUE_BLOCK + mov_w_literal(rom, load + 2), 0xFFFF185C
+                    )
+                self.assertEqual(u16(rom, capture + 4), 0x046E)  # mov.l @(r0,r6),r4
+                self.assertEqual(
+                    [u16(rom, borrow + offset) for offset in range(0, 10, 2)],
+                    [0x6012, 0x3402, 0x8D01, 0x3408, 0x74FF],
+                )  # mov.l @r1,r0; cmp/hs r0,r4; bt/s; sub r0,r4; add #-1,r4
+                self.assertEqual(
+                    [u16(rom, shift) for shift in shifts], [0x4409, 0x4409, 0x4401]
+                )  # shlr2 r4; shlr2 r4; shlr r4
+                self.assertEqual(u16(rom, keep + 4), 0x006E)  # mov.l @(r0,r6),r0
+                self.assertEqual(u16(rom, keep + 6), 0x000B)  # rts
+                self.assertEqual(u16(rom, keep + 8), 0x2102)  # mov.l r0,@r1
+        # Sampler 0x28AF8 stores ffff11fc and sampler 0x28B5C ffff22d4.
+        self.assertEqual(mov_l_literal(rom, 0x28B28), SPEED_BLOCK)  # r5
+        self.assertEqual(u16(rom, 0x28B2E), 0x154A)  # mov.l r4,@(0x28,r5)
+        self.assertEqual(mov_l_literal(rom, 0x28B8A), INTERVAL_BLOCK)  # r5
+        self.assertEqual(mov_w_literal(rom, 0x28B8E), 0x2E0)
+        self.assertEqual(u16(rom, 0x28B92), 0x0546)  # mov.l r4,@(r0,r5)
+        self.assertEqual(SPEED_BLOCK + 0x28, 0xFFFF11FC)
+        # FUN_0002B768 stores r6 to both words.
+        self.assertEqual(mov_l_literal(rom, 0x2B7A0), INTERVAL_BLOCK)  # r10
+        self.assertTrue(stores_through(rom, 0x2B7A2, 0x2B80A, 0xA))
+        self.assertEqual(mov_l_literal(rom, 0x2B800), SPEED_BLOCK)  # r12
+        self.assertEqual(mov_w_literal(rom, 0x2B804), 0x2E0)
+        self.assertEqual(u16(rom, 0x2B80A), 0x0A66)  # mov.l r6,@(r0,r10)
+        self.assertEqual(u16(rom, 0x2B812), 0x1C6A)  # mov.l r6,@(0x28,r12)
+        self.assertEqual(names_register(rom, 0x2B80C, 0x2B812, 6), [])
+        # FUN_0002C648 stores r9 to both words; between the stores, the only
+        # instruction whose Rn field reads 9 is and #0xdf,r0.
+        self.assertEqual(mov_l_literal(rom, 0x2C674), INTERVAL_BLOCK)  # r12
+        self.assertTrue(stores_through(rom, 0x2C676, 0x2CA44, 0xC))
+        self.assertEqual(mov_l_literal(rom, 0x2C772), SPEED_BLOCK)  # r13
+        self.assertEqual(u16(rom, 0x2C994), 0x1D9A)  # mov.l r9,@(0x28,r13)
+        self.assertEqual(names_register(rom, 0x2C996, 0x2CA44, 9), [0x2CA3C])
+        self.assertEqual(u16(rom, 0x2CA3C), 0xC9DF)
+        self.assertEqual(mov_w_literal(rom, 0x2CA40), 0x2E0)
+        self.assertEqual(u16(rom, 0x2CA44), 0x0C96)  # mov.l r9,@(r0,r12)
+        # FUN_00099A48 stores r6 = -1 to both words.
+        self.assertEqual(u16(rom, 0x99B8E), 0xE6FF)  # mov #-1,r6
+        self.assertEqual(mov_l_literal(rom, 0x99B90), INTERVAL_BLOCK)  # r5
+        self.assertTrue(stores_through(rom, 0x99B92, 0x99BB6, 5))
+        self.assertEqual(names_register(rom, 0x99B90, 0x99BB6, 6), [])
+        self.assertEqual(u16(rom, 0x99BAC), 0xE060)  # mov #0x60,r0
+        self.assertEqual(mov_l_literal(rom, 0x99BAE), SNAPSHOT)  # r2
+        self.assertEqual(u16(rom, 0x99BB0), 0x0266)  # mov.l r6,@(r0,r2)
+        self.assertEqual(mov_w_literal(rom, 0x99BB4), 0x2E0)
+        self.assertEqual(u16(rom, 0x99BB6), 0x0566)  # mov.l r6,@(r0,r5)
+        self.assertEqual(SNAPSHOT + 0x60, 0xFFFF11FC)
+        # With ffff22d4 = ffff11fc = 6250000/RPM counts, ffff1208 counts
+        # 0.32 per RPM, the representation of ffff11ee.
+        self.assertEqual(
+            Fraction(12_000_000, 3 * 6_250_000) / 2, 1 / rpm_per_count(4)
+        )
+
+    def test_requested_torque_row_axes_count_sixteen_speed_counts(self):
+        rom = self.rom
+        # The trustful wrapper and byte core share the code of the primary
+        # ones. Each wrapper passes the row input to its byte core in r5
+        # and reads the stacked column word from @(16,r15) after four pushes.
+        self.assertEqual(rom[0x262E0:0x26314], rom[0x26660:0x26694])
+        self.assertEqual(rom[0x26A0C:0x26A58], rom[0x26BC4:0x26C10])
+        for wrapper, core in ((0x262E0, 0x26A0C), (0x26660, 0x26BC4)):
+            with self.subTest(wrapper=hex(wrapper)):
+                self.assertEqual(u16(rom, wrapper + 4), 0x677D)  # extu.w r7,r7
+                self.assertEqual(u16(rom, wrapper + 6), 0x6053)  # mov r5,r0
+                self.assertEqual(u16(rom, wrapper + 8), 0x6573)  # mov r7,r5
+                self.assertEqual(mov_l_literal(rom, wrapper + 10), core)
+                self.assertEqual(u16(rom, wrapper + 12), 0x470B)  # jsr @r7
+                self.assertEqual(u16(rom, wrapper + 14), 0xE40F)  # mov #15,r4
+                self.assertEqual(u16(rom, wrapper + 22), 0x55F4)
+                self.assertEqual(u16(rom, wrapper + 24), 0x655D)  # extu.w r5,r5
+        # Byte core 0x26A0C multiplies each point and both span points by 16.
+        self.assertEqual(u16(rom, 0x26A0E), 0x014C)  # mov.b @(r0,r4),r1
+        self.assertEqual(u16(rom, 0x26A10), 0x611C)  # extu.b r1,r1
+        self.assertEqual(u16(rom, 0x26A12), 0x4108)  # shll2 r1
+        self.assertEqual(u16(rom, 0x26A14), 0x4108)  # shll2 r1
+        self.assertEqual(u16(rom, 0x26A16), 0x3150)  # cmp/eq r5,r1
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x26A2A, 0x26A3A, 2)],
+            [0x6130, 0x8431, 0x611C, 0x600C, 0x4008, 0x4108, 0x4008, 0x4108],
+        )
+        # FUN_000730FC passes ffff1702 to inverse lookup FUN_00073432.
+        self.assertEqual(mov_l_literal(rom, 0x7310E), TORQUE_BLOCK)  # r11
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73110), PRIMARY_ROW)
+        self.assertEqual(branch_target(rom, 0x73112), 0x73432)  # bsr
+        self.assertEqual(u16(rom, 0x73114), 0x04BD)  # mov.w @(r0,r11),r4
+        # FUN_00073432 compares the row input with the first and the last
+        # point of 0x11D0C, each multiplied by 16.
+        self.assertEqual(mov_l_literal(rom, 0x73446), 0x11D0C)  # r14
+        self.assertEqual(u16(rom, 0x73448), 0x674D)  # extu.w r4,r7
+        self.assertEqual(u16(rom, 0x7344E), 0x62E0)  # mov.b @r14,r2
+        self.assertEqual(u16(rom, 0x73452), 0x662C)  # extu.b r2,r6
+        self.assertEqual(u16(rom, 0x73454), 0x4608)  # shll2 r6
+        self.assertEqual(u16(rom, 0x73458), 0x4608)  # shll2 r6
+        self.assertEqual(u16(rom, 0x7345E), 0x3767)  # cmp/gt r6,r7
+        self.assertEqual(u16(rom, 0x73468), 0x84EF)  # mov.b @(15,r14),r0
+        self.assertEqual(u16(rom, 0x7346A), 0x620C)  # extu.b r0,r2
+        self.assertEqual(u16(rom, 0x7346C), 0x4208)  # shll2 r2
+        self.assertEqual(u16(rom, 0x7346E), 0x4208)  # shll2 r2
+        self.assertEqual(u16(rom, 0x73470), 0x3723)  # cmp/ge r2,r7
+        # FUN_00073628 reads ffff1cca and compares it the same way.
+        self.assertEqual(mov_l_literal(rom, 0x7363C), 0x18716)  # r10
+        self.assertEqual(mov_l_literal(rom, 0x7363E), TORQUE_BLOCK)  # r14
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73640), TRUSTFUL_ROW)
+        self.assertEqual(u16(rom, 0x73642), 0x62A0)  # mov.b @r10,r2
+        self.assertEqual(u16(rom, 0x73644), 0x0DED)  # mov.w @(r0,r14),r13
+        self.assertEqual(u16(rom, 0x73646), 0x622C)  # extu.b r2,r2
+        self.assertEqual(u16(rom, 0x73648), 0x4208)  # shll2 r2
+        self.assertEqual(u16(rom, 0x7364A), 0x6DDD)  # extu.w r13,r13
+        self.assertEqual(u16(rom, 0x7364C), 0x4208)  # shll2 r2
+        self.assertEqual(u16(rom, 0x7364E), 0x3D23)  # cmp/ge r2,r13
+        # One stored count is 16 counts of 3.125 RPM.
+        self.assertEqual(16 * rpm_per_count(4), 50)
+        self.assertEqual(rom[0x18716:0x18726], rom[0x11D0C:0x11D1C])
+        self.assertEqual(
+            [point * 50 for point in rom[0x11D0C:0x11D1C]],
+            [*range(800, 6401, 400), 7200],
+        )
+
+    def test_every_requested_torque_lookup_takes_its_row_coordinate(self):
+        rom = self.rom
+        for family, row, lookups, direct in (
+            (PRIMARY, PRIMARY_ROW, PRIMARY_LOOKUPS, (LIMITER_LOOKUP,)),
+            (TRUSTFUL, TRUSTFUL_ROW, TRUSTFUL_LOOKUPS, ()),
+        ):
+            surface = family[0]
+            self.assertEqual(
+                pc_literal_loads(rom, surface),
+                sorted(
+                    [lookup[0] for lookup in lookups]
+                    + list(direct)
+                    + list(INVERSE_LOADS[surface])
+                ),
+            )
+            for load, base_load, base, row_load, extend, call in lookups:
+                with self.subTest(surface=hex(surface), load=hex(load)):
+                    self.assertEqual(mov_l_literal(rom, base_load), TORQUE_BLOCK)
+                    self.assertEqual((u16(rom, base_load) >> 8) & 0xF, base)
+                    # Registers r8..r14 survive calls; between the base load
+                    # and the row load the base register only addresses
+                    # stores.
+                    self.assertTrue(
+                        stores_through(rom, base_load + 2, row_load, base)
+                    )
+                    self.assertEqual(u16(rom, row_load - 4) >> 8, 0x90)
+                    self.assertEqual(
+                        TORQUE_BLOCK + mov_w_literal(rom, row_load - 4), row
+                    )
+                    self.assertIn(u16(rom, row_load - 2) >> 8, (0xD4, 0xD5))
+                    # mov.w @(r0,base),r14, then extu.w r14,r7.
+                    self.assertEqual(u16(rom, row_load), 0x0E0D | base << 4)
+                    self.assertEqual(
+                        names_register(rom, row_load + 2, extend, 14), []
+                    )
+                    self.assertEqual(u16(rom, extend), 0x67ED)
+                    self.assertEqual(names_register(rom, extend + 2, call, 7), [])
+                    self.assertEqual(u16(rom, call), 0x420B)  # jsr @r2
+                    # r4, r5, r6, and r2 are each loaded once before the call.
+                    start = min(load, row_load - 4)
+                    for register, value in zip((4, 5, 6, 2), family):
+                        named = names_register(rom, start, call, register)
+                        self.assertEqual(len(named), 1)
+                        self.assertEqual(mov_l_literal(rom, named[0]), value)
+        # FUN_0007584E passes snapshot ffff11b6 through r7.
+        self.assertEqual(mov_l_literal(rom, 0x75A08), SNAPSHOT)  # r3
+        self.assertEqual(u16(rom, 0x75A0E), 0x853D)  # mov.w @(0x1a,r3),r0
+        for load, value in zip((0x75A10, 0x75A12, 0x75A16, 0x75A18), PRIMARY):
+            self.assertEqual(mov_l_literal(rom, load), value)
+        self.assertEqual(u16(rom, 0x75A14), 0x670D)  # extu.w r0,r7
+        self.assertEqual(u16(rom, 0x75A1A), 0x420B)  # jsr @r2
+        # Fixed columns: mov #imm,r0, then mov.w r0,@(2,r15).
+        for constant, store, immediate in FIXED_COLUMNS:
+            with self.subTest(column=hex(store)):
+                self.assertEqual(u16(rom, constant), 0xE000 | immediate)
+                self.assertEqual(names_register(rom, constant + 2, store, 0), [])
+                self.assertEqual(u16(rom, store), 0x81F1)
+
+    def test_primary_conversion_divides_the_opening_area_by_engine_speed(self):
+        rom = self.rom
+        # FUN_00073948: GBR = ffff128c and r14 = 0xFFFF.
+        self.assertEqual(mov_l_literal(rom, 0x73950), TORQUE_BLOCK)
+        self.assertEqual(u16(rom, 0x73952), 0x401E)  # ldc r0,gbr
+        self.assertEqual(u16(rom, 0x73956), 0xC553)  # mov.w @(0xa6,gbr),r0
+        self.assertEqual(TORQUE_BLOCK + 0xA6, 0xFFFF1332)
+        self.assertEqual(u16(rom, 0x73958), 0xEEFF)  # mov #-1,r14
+        self.assertEqual(u16(rom, 0x7395A), 0x6EED)  # extu.w r14,r14
+        # area = lookup of 0x13202 over 0x155A0 at min(0xFFFF, 4 * ffff1332).
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x7395C, 0x73966, 2)],
+            [0x660D, 0x4608, 0x36E6, 0x8B00, 0x66E3],
+        )  # extu.w r0,r6; shll2 r6; cmp/hi r14,r6; bf; mov r14,r6
+        self.assertEqual(mov_l_literal(rom, 0x73966), 0x13202)  # r4
+        self.assertEqual(mov_l_literal(rom, 0x73968), 0x155A0)  # r5
+        self.assertEqual(mov_l_literal(rom, 0x7396A), 0x26524)  # r7
+        self.assertEqual(u16(rom, 0x7396C), 0x470B)  # jsr @r7
+        # ffff12a0 = min(0xFFFF, 2 * area).
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x73970, 0x7397A, 2)],
+            [0x660D, 0x4600, 0x36E6, 0x8B00, 0x66E3],
+        )  # extu.w r0,r6; shll r6; cmp/hi r14,r6; bf; mov r14,r6
+        self.assertEqual(u16(rom, 0x7397C), 0x6063)  # mov r6,r0
+        self.assertEqual(u16(rom, 0x73986), 0xC10A)  # mov.w r0,@(0x14,gbr)
+        self.assertEqual(TORQUE_BLOCK + 0x14, 0xFFFF12A0)
+        # ffff1824 = 4 * (ffff12a0 << 16) / ROM8[0x8D8F] / ffff1702.
+        self.assertEqual(mov_l_literal(rom, 0x7397A), 0x8D8F)  # r5
+        self.assertEqual(u16(rom, 0x7397E), 0x616D)  # extu.w r6,r1
+        self.assertEqual(mov_l_literal(rom, 0x73980), 0x21CE0)  # r6
+        self.assertEqual(u16(rom, 0x73982), 0x6250)  # mov.b @r5,r2
+        self.assertEqual(u16(rom, 0x73984), 0x4128)  # shll16 r1
+        self.assertEqual(u16(rom, 0x73988), 0x652C)  # extu.b r2,r5
+        self.assertEqual(mov_l_literal(rom, 0x7398A), TORQUE_BLOCK)  # r13
+        self.assertEqual(u16(rom, 0x7398C), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x7398E), 0x6053)  # mov r5,r0
+        self.assertEqual(u16(rom, 0x73990), 0x6103)  # mov r0,r1
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73992), PRIMARY_ROW)
+        self.assertEqual(mov_l_literal(rom, 0x73994), 0x21CE0)  # r6
+        self.assertEqual(u16(rom, 0x73996), 0x4108)  # shll2 r1
+        self.assertEqual(u16(rom, 0x73998), 0x02DD)  # mov.w @(r0,r13),r2
+        self.assertEqual(u16(rom, 0x7399A), 0x652D)  # extu.w r2,r5
+        self.assertEqual(u16(rom, 0x7399C), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x7399E), 0x6053)  # mov r5,r0
+        self.assertEqual(u16(rom, 0x739A0), 0x6603)  # mov r0,r6
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x739A2), 0xFFFF1824)
+        self.assertEqual(u16(rom, 0x739A6), 0x0D66)  # mov.l r6,@(r0,r13)
+        # Up to ROM16[0x1553E] the coordinate indexes 0x15690 over 0x15500,
+        # above it 0x156D0 over 0x15540 at min(0xFFFF, ffff1824 >> 4).
+        self.assertEqual(mov_l_literal(rom, 0x739A4), 0x15500)  # r5
+        self.assertEqual(u16(rom, 0x739A8), 0xE03E)  # mov #0x3e,r0
+        self.assertEqual(u16(rom, 0x739AA), 0x025D)  # mov.w @(r0,r5),r2
+        self.assertEqual(u16(rom, 0x739AE), 0x3626)  # cmp/hi r2,r6
+        self.assertEqual(conditional_target(rom, 0x739B0), 0x739B8)
+        self.assertEqual(mov_l_literal(rom, 0x739B2), 0x15690)  # r4
+        self.assertEqual(branch_target(rom, 0x739B4), 0x739C6)
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x739B8, 0x739C2, 2)],
+            [0x4609, 0x4609, 0x36E6, 0x8B00, 0x66E3],
+        )  # shlr2 r6; shlr2 r6; cmp/hi r14,r6; bf; mov r14,r6
+        self.assertEqual(mov_l_literal(rom, 0x739C2), 0x156D0)  # r4
+        self.assertEqual(mov_l_literal(rom, 0x739C4), 0x15540)  # r5
+        self.assertEqual(mov_l_literal(rom, 0x739C6), 0x26524)  # r7
+        self.assertEqual(u16(rom, 0x739C8), 0x470B)  # jsr @r7
+        # ffff1980 = the segment value, which is also the stacked column.
+        self.assertEqual(u16(rom, 0x739CC), 0x6203)  # mov r0,r2
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x739CE), 0xFFFF1980)
+        self.assertEqual(u16(rom, 0x739D2), 0x0D25)  # mov.w r2,@(r0,r13)
+        self.assertEqual(u16(rom, 0x739D4), 0x6023)  # mov r2,r0
+        self.assertEqual(u16(rom, 0x739D6), 0x81F1)  # mov.w r0,@(2,r15)
+        # ffff19ba = the surface value + 0x8000.
+        self.assertEqual(u16(rom, 0x739E6), 0x620D)  # extu.w r0,r2
+        self.assertEqual(mov_l_literal(rom, 0x739E8), 0x8000)  # r5
+        self.assertEqual(u16(rom, 0x739EA), 0x622F)  # exts.w r2,r2
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x739EC), 0xFFFF19BA)
+        self.assertEqual(u16(rom, 0x739EE), 0x325C)  # add r5,r2
+        self.assertEqual(u16(rom, 0x739F0), 0x0D25)  # mov.w r2,@(r0,r13)
+        self.assertEqual(rom[0x8D8F], 100)
+        self.assertEqual(u16(rom, 0x1553E), 45187)
+        self.assertEqual(0x15500 + 31 * 2, 0x1553E)
+        # 4 * 65536 / 100 over RPM/3.125 counts is 8192 / RPM.
+        self.assertEqual(Fraction(4 * 65536, 100) * rpm_per_count(4), 8192)
+
+    def test_trustful_conversion_repeats_the_primary_chain_over_copies(self):
+        rom = self.rom
+        for primary, trustful, size in CONVERSION_COPIES:
+            with self.subTest(primary=hex(primary)):
+                self.assertEqual(
+                    rom[primary : primary + size], rom[trustful : trustful + size]
+                )
+        self.assertEqual(u16(rom, 0x18EC4), u16(rom, 0x1553E))
+        # The 1D wrappers 0x26524 and 0x26714 share their code.
+        self.assertEqual(rom[0x26524:0x26548], rom[0x26714:0x26738])
+        copies = {primary: trustful for primary, trustful, _size in CONVERSION_COPIES}
+        copies[0x26524] = 0x26714
+        copies[0x262E0] = 0x26660
+        # FUN_00073A44 loads the copy wherever FUN_00073948 loads a primary
+        # table, constant, or wrapper.
+        for primary_site, trustful_site in (
+            (0x73966, 0x73A62),
+            (0x73968, 0x73A64),
+            (0x7396A, 0x73A66),
+            (0x7397A, 0x73A76),
+            (0x739A4, 0x73AA0),
+            (0x739B2, 0x73AAE),
+            (0x739C2, 0x73ABE),
+            (0x739C4, 0x73AC0),
+            (0x739C6, 0x73AC2),
+            (0x739D0, 0x73ACC),
+            (0x739DA, 0x73AD6),
+            (0x739DE, 0x73ADA),
+            (0x739E0, 0x73ADC),
+        ):
+            with self.subTest(site=hex(trustful_site)):
+                self.assertEqual(
+                    copies[mov_l_literal(rom, primary_site)],
+                    mov_l_literal(rom, trustful_site),
+                )
+                self.assertEqual(
+                    u16(rom, primary_site) >> 8, u16(rom, trustful_site) >> 8
+                )
+        self.assertEqual(mov_l_literal(rom, 0x73A4C), TORQUE_BLOCK)  # gbr
+        self.assertEqual(u16(rom, 0x73A52), 0xC553)  # mov.w @(0xa6,gbr),r0
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x73A54, 0x73A62, 2)],
+            [0xEEFF, 0x6EED, 0x660D, 0x4608, 0x36E6, 0x8B00, 0x66E3],
+        )
+        self.assertEqual(u16(rom, 0x73A68), 0x470B)  # jsr @r7
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x73A6C, 0x73A76, 2)],
+            [0x660D, 0x4600, 0x36E6, 0x8B00, 0x66E3],
+        )
+        # ffff1ca8 = min(0xFFFF, 2 * area), then the two divisions.
+        self.assertEqual(u16(rom, 0x73A78), 0x616D)  # extu.w r6,r1
+        self.assertEqual(mov_l_literal(rom, 0x73A7A), TORQUE_BLOCK)  # r13
+        self.assertEqual(u16(rom, 0x73A7C), 0x4128)  # shll16 r1
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73A7E), 0xFFFF1CA8)
+        self.assertEqual(u16(rom, 0x73A80), 0x6250)  # mov.b @r5,r2
+        self.assertEqual(u16(rom, 0x73A82), 0x0D65)  # mov.w r6,@(r0,r13)
+        self.assertEqual(mov_l_literal(rom, 0x73A84), 0x21CE0)  # r6
+        self.assertEqual(u16(rom, 0x73A86), 0x652C)  # extu.b r2,r5
+        self.assertEqual(u16(rom, 0x73A88), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x73A8A), 0x6053)  # mov r5,r0
+        self.assertEqual(u16(rom, 0x73A8C), 0x6103)  # mov r0,r1
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73A8E), TRUSTFUL_ROW)
+        self.assertEqual(mov_l_literal(rom, 0x73A90), 0x21CE0)  # r6
+        self.assertEqual(u16(rom, 0x73A92), 0x4108)  # shll2 r1
+        self.assertEqual(u16(rom, 0x73A94), 0x02DD)  # mov.w @(r0,r13),r2
+        self.assertEqual(u16(rom, 0x73A96), 0x652D)  # extu.w r2,r5
+        self.assertEqual(u16(rom, 0x73A98), 0x460B)  # jsr @r6
+        self.assertEqual(u16(rom, 0x73A9A), 0x6053)  # mov r5,r0
+        # ffff1ce0 = the quotient, then the segment choice at the copy of
+        # ROM16[0x1553E].
+        self.assertEqual(u16(rom, 0x73A9C), 0x6603)  # mov r0,r6
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73A9E), 0xFFFF1CE0)
+        self.assertEqual(u16(rom, 0x73AA2), 0x0D66)  # mov.l r6,@(r0,r13)
+        self.assertEqual(u16(rom, 0x73AA4), 0xE03E)  # mov #0x3e,r0
+        self.assertEqual(u16(rom, 0x73AA6), 0x025D)  # mov.w @(r0,r5),r2
+        self.assertEqual(u16(rom, 0x73AAA), 0x3626)  # cmp/hi r2,r6
+        self.assertEqual(conditional_target(rom, 0x73AAC), 0x73AB4)
+        self.assertEqual(branch_target(rom, 0x73AB0), 0x73AC2)
+        self.assertEqual(
+            [u16(rom, address) for address in range(0x73AB4, 0x73ABE, 2)],
+            [0x4609, 0x4609, 0x36E6, 0x8B00, 0x66E3],
+        )
+        self.assertEqual(u16(rom, 0x73AC4), 0x470B)  # jsr @r7
+        # ffff1d0e = the segment value and the stacked column.
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73ACA), 0xFFFF1D0E)
+        self.assertEqual(u16(rom, 0x73ACE), 0x0D25)  # mov.w r2,@(r0,r13)
+        self.assertEqual(u16(rom, 0x73AD0), 0x6023)  # mov r2,r0
+        self.assertEqual(u16(rom, 0x73AD2), 0x81F1)  # mov.w r0,@(2,r15)
+        # ffff1d1a = the surface value - 0x8000, which equals the value
+        # + 0x8000 in the 16-bit store.
+        self.assertEqual(u16(rom, 0x73AE2), 0x620D)  # extu.w r0,r2
+        self.assertEqual(TORQUE_BLOCK + mov_w_literal(rom, 0x73AE4), 0xFFFF1D1A)
+        self.assertEqual(u16(rom, 0x73AE6), 0xE580)  # mov #-0x80,r5
+        self.assertEqual(u16(rom, 0x73AE8), 0x622F)  # exts.w r2,r2
+        self.assertEqual(u16(rom, 0x73AEA), 0x4518)  # shll8 r5
+        self.assertEqual(u16(rom, 0x73AEC), 0x325C)  # add r5,r2
+        self.assertEqual(u16(rom, 0x73AEE), 0x0D25)  # mov.w r2,@(r0,r13)
+        self.assertEqual(-0x8000 % 0x10000, 0x8000)
+
     def test_tracked_records_state_the_bound_operands(self):
         speed = self.axes["00011cf0"]
         self.assertEqual(
@@ -533,6 +1115,41 @@ class OverlayLookupOperandTest(unittest.TestCase):
             {"id": "X_VQ_Engine_Speed", "static_axis_name": "Engine Speed [RPM]"},
         )
         self.assertNotIn("ffff1170", logparam)
+        for axis, row in (("00011d0c", "ffff1702"), ("00018716", "ffff1cca")):
+            with self.subTest(axis=axis):
+                record = self.axes[axis]
+                self.assertEqual(
+                    (record["units"], record["scale_expr"], record["scale_conf"]),
+                    ("RPM", "x*50", "code"),
+                )
+                self.assertIn(
+                    f"indexed_by:{row}@confidence",
+                    evidence(record, "scale_evidence"),
+                )
+                self.assertEqual(
+                    logparam[row], {"id": "X_VQ_Engine_Speed", "units": "RPM"}
+                )
+        for axis, column in (("00014114", "ffff1980"), ("00018ac6", "ffff1d0e")):
+            with self.subTest(axis=axis):
+                record = self.axes[axis]
+                self.assertEqual(record["scale_conf"], "candidate")
+                self.assertIn(
+                    f"indexed_by:{column}@structural",
+                    evidence(record, "scale_evidence"),
+                )
+        for register in ("ffff1702", "ffff1cca", "ffff11d0", "ffff1208"):
+            self.assertEqual(self.vars[register]["units"], "rpm/3.125")
+        self.assertEqual(self.vars["ffff1206"]["units"], "rpm*0.64")
+        # The column coordinates and the MAF-table inputs are not streamed.
+        for register in (
+            "ffff1980",
+            "ffff1d0e",
+            "ffff198a",
+            "ffff1d14",
+            "ffff1e48",
+            "ffff1e4a",
+        ):
+            self.assertNotIn(register, logparam)
 
     def test_published_statements(self):
         for statement in (
@@ -556,9 +1173,36 @@ class OverlayLookupOperandTest(unittest.TestCase):
             "`0xFFFF3A76`, which `FUN_0003B520` derives through the Throttle "
             "Angle-to-Area pair `0x13202`/`0x155A0`, or from ROM word "
             "`0x916C`.",
+            "Both addends of `u` are opening areas in the value domain of "
+            "`0x13202`, divided by engine speed.",
+            "u ~= 3522 * (0xFFFF1E60 + 0xFFFF120E / 4) / RPM",
+            "The column coordinate is therefore an alpha-N flow estimate: "
+            "opening area over engine speed through a saturating curve.",
+            "MAF range monitors `FUN_0008152A` (P0101) and `FUN_00081D74` "
+            "(P010B) evaluate the same curve pair and read `0xFFFF120E`.",
         ):
             with self.subTest(statement=statement[:40]):
                 self.assertIn(statement, self.fuel)
+        for statement in (
+            "FFFF1702 = max(32, FFFF11B6) FFFF1CCA = max(32, FFFF11D0)",
+            "so `FFFF22D4` equals `FFFF11FC` and "
+            "`FFFF1208 = floor(2000000 / FFFF11FC)`",
+            "One stored row-axis count is therefore 50 RPM, and the row points "
+            "decode to 800 through 6400 RPM in 400 RPM steps and 7200 RPM.",
+            "Every forward lookup of `0xE98E` passes `FFFF1702` as the row "
+            "input except throttle-rev limiter `0007584E`, which passes "
+            "`FFFF11B6`; the two differ only below 100 RPM. Every lookup of "
+            "`0x175C8` passes `FFFF1CCA`.",
+            "FFFF1824 = floor(4 * floor(FFFF12A0 * 65536 / ROM8[0x8D8F]) "
+            "/ FFFF1702)",
+            "`FFFF1824 = 8192 * FFFF12A0 / RPM`: the column input is an "
+            "opening area divided by engine speed.",
+            "at column `0xFFFF`, the last column; `0007584E` reads `0xE98E` "
+            "at column 0.",
+            "`FFFF19B2 + (FFFF120E >> 2) = FFFF183E + FFFF1340`",
+        ):
+            with self.subTest(statement=statement[:40]):
+                self.assertIn(statement, self.throttle)
 
 
 if __name__ == "__main__":

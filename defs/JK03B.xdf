@@ -3652,7 +3652,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D0C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3694,7 +3694,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x18716" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>

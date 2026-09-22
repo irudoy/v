@@ -1374,8 +1374,8 @@
     <!-- 0x0E98E  16x16 uint16  map [candidate]; entry 0x262E0 (explicit, core 0x26984)
          accessor 0x702C6, 0x73948, 0x753D4, 0x75540, 0x7584E, 0x75C48, 0x7A9FC, 0x7AB18; r4
          operand: pool, slice
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x11D0C rpm [candidate];
-         X Axis 0x14114 load [candidate]
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x11D0C rpm [code]; X
+         Axis 0x14114 load [candidate]
          All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic.
          The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to
          trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional
@@ -1394,15 +1394,15 @@
                  to_byte="x/0.00152588" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11D0C" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x11D0C" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x175C8  16x16 uint16  map [candidate]; entry 0x26660 (explicit, core 0x26B84)
          accessor 0x73A44, 0x74728, 0x749BC, 0x7ACB4; r4 operand: pool, slice
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x18716 rpm [candidate];
-         X Axis 0x18AC6 load [candidate]
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x18716 rpm [code]; X
+         Axis 0x18AC6 load [candidate]
          Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The
          stock contents and both axes are byte-identical to primary family
          0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps
@@ -1420,8 +1420,8 @@
                  to_byte="x/0.00152588" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x18716" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x18716" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 

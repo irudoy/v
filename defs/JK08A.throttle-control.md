@@ -317,6 +317,72 @@ The rotational-speed request limiter belongs to this same continuous request
 chain. It remains independent of the hard fuel-cut mask described in
 `JK08A.limiters.md` and `JK08A.fuel-inhibit.md`.
 
+## Requested-torque conversion coordinates
+
+`0xE98E` and its trustful copy `0x175C8` are 16x16 offset-binary surfaces.
+Row axes `0x11D0C` and `0x18716` hold byte points, and column axes `0x14114`
+and `0x18AC6` hold uint16 points. Each trustful table, axis, and constant named
+in this section equals its primary counterpart byte for byte in the stock ROM.
+
+`0003DE4C` writes both row coordinates on every pass:
+
+```text
+FFFF1702 = max(32, FFFF11B6)
+FFFF1CCA = max(32, FFFF11D0)
+```
+
+`FFFF11B6` and `FFFF11D0` are scheduler snapshots of
+`FFFF11EE = FFFF1196 >> 4 = floor(2000000 / FFFF11FC)` and `FFFF1208`.
+`000385BC` computes
+`FFFF1208 = floor(floor(12000000 / (ROM8[0x88FB] * FFFF22D4)) / 2)` with
+`ROM8[0x88FB] = 3`. `00028B5C` samples `FFFF22D4` from the same capture and
+under the same gates as `00028AF8` samples `FFFF11FC`, and `0002B768`,
+`0002C648`, and `00099A48` store one value to both words, so `FFFF22D4` equals
+`FFFF11FC` and `FFFF1208 = floor(2000000 / FFFF11FC)`. Both row coordinates
+are therefore engine speed in 3.125 RPM counts, clamped at 100 RPM.
+
+Wrappers `000262E0` and `00026660` pass the row coordinate to byte cores
+`00026A0C` and `00026BC4`, which multiply every stored axis point by 16 before
+the comparison. Inverse lookups `00073432` and `00073628` apply the same
+multiplication. One stored row-axis count is therefore 50 RPM, and the row
+points decode to 800 through 6400 RPM in 400 RPM steps and 7200 RPM. Every
+forward lookup of `0xE98E` passes `FFFF1702` as the row input except
+throttle-rev limiter `0007584E`, which passes `FFFF11B6`; the two differ only
+below 100 RPM. Every lookup of `0x175C8` passes `FFFF1CCA`.
+
+`00073948` forms the forward column coordinate from first-channel word
+`FFFF1332`:
+
+```text
+FFFF12A0 = min(0xFFFF, 2 * area(min(0xFFFF, 4 * FFFF1332)))
+FFFF1824 = floor(4 * floor(FFFF12A0 * 65536 / ROM8[0x8D8F]) / FFFF1702)
+FFFF1980 = lookup(0x15690 over 0x15500, FFFF1824)
+             while FFFF1824 <= ROM16[0x1553E]
+FFFF1980 = lookup(0x156D0 over 0x15540, min(0xFFFF, FFFF1824 >> 4))
+             otherwise
+FFFF19BA = lookup(0xE98E, row FFFF1702, column FFFF1980) + 0x8000
+```
+
+`area(x)` interpolates `0x13202` over `0x155A0`. `ROM8[0x8D8F] = 100`, and
+`ROM16[0x1553E] = 45187` is the last point of `0x15500`. With `FFFF1702` in
+3.125 RPM counts, `FFFF1824 = 8192 * FFFF12A0 / RPM`: the column input is an
+opening area divided by engine speed. `00073A44` writes `FFFF1CA8`,
+`FFFF1CE0`, `FFFF1D0E`, and `FFFF1D1A` with the same formulas over row
+`FFFF1CCA`, tables `0x18766`/`0x190D0`, `0x18FD6`/`0x18E86`, and
+`0x18F96`/`0x18E46`, and constants `ROM8[0x15F82]` and `ROM16[0x18EC4]`.
+
+The inverse direction uses the same rows. `00073432` produces `FFFF198A` and
+`FFFF1984` as described above, and `00073628` inverse-searches the
+`FFFF1CCA` row of `0x175C8` for `FFFF19C6 + 0x8000` and writes `FFFF1D14`.
+
+Other consumers evaluate the surfaces at fixed or locally formed columns.
+`000702C6`, `00075540`, `00075C48`, and `0007AB18` read `0xE98E`, and
+`000749BC` reads `0x175C8`, at column `0xFFFF`, the last column; `0007584E`
+reads `0xE98E` at column 0. `000753D4` and `00074728` convert the first area
+point, `ROM16[0x13202]` or `ROM16[0x18766]`, through the lower segment over the
+current row coordinate, and `0007A9FC` and `0007ACB4` form their column inputs
+through the same lower-segment conversion.
+
 ## Executable stock-ROM sweep
 
 `tools/ghidra/EmulateThrottleLimiter.java` executes the unmodified
@@ -347,8 +413,8 @@ row is the transition point under the RPM conversion. The isolated
 APP-5000 downstream projection produces symmetric channel targets 1820 at
 7200 through 7600, 549 at 7700, and 18 at 7800. This proves executable
 composition and both code channels; it is not a vehicle prediction. Real
-targets also depend on idle/opening-area additions, learned subtraction,
-controller bounds, fault modes, diagnostics, and current feedback.
+targets also depend on idle/opening-area additions, the inflow-area
+subtraction, controller bounds, fault modes, diagnostics, and current feedback.
 
 ## Opening-area composition and lift-off behavior
 
@@ -380,6 +446,12 @@ FFFF19B2 = clamp_u16(FFFF183E + FFFF1340 - (FFFF120E >> 2))
 FFFF19B6 = sat_u16(FFFF183E + FFFF2A1C)
 ```
 
+`FFFF120E` is an inflow opening area in four times the raw `0x13202` area
+counts, written by `00069374`; the same area enters the alpha-N coordinate of
+Fuel Compensation Main described in `JK08A.fuel.md`. Outside the clamp,
+`FFFF19B2 + (FFFF120E >> 2) = FFFF183E + FFFF1340`: the throttle target area
+and the inflow area together equal the composed request area.
+
 The alternate branch converts final channel targets `FFFF28BC` and
 `FFFF28BE` back through `0x13202`/`0x155A0` and sums them. That branch is a
 mode/fallback feedback path, not the source of the normal request.
@@ -394,7 +466,7 @@ selected, and clamps each result. The stock lower target is
 channel words are `FFFF28BC` and `FFFF28BE`.
 
 Consequently, lift-off response combines at least the shared request,
-idle/opening-area base, learned/subtractive term, channel corrections, target
+idle/opening-area base, inflow-area subtraction, channel corrections, target
 bounds, and diagnostic caps. DFCO entry and hold calibrations decide fuel
 state; they do not independently define the throttle target.
 

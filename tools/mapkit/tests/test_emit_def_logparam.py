@@ -379,6 +379,17 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
             with self.subTest(table=name):
                 self.assertEqual(params[name], (None, "X_VQ_Engine_Speed"))
 
+    def test_requested_torque_conversion_rows_follow_engine_speed(self):
+        # The column coordinates 0xFFFF1980 and 0xFFFF1D0E have no feed
+        # parameter, so the surfaces follow engine speed on the rows alone.
+        params = self.surface_parameters()
+        for name in (
+            "Requested Torque Conversion by QH0 - Primary",
+            "Requested Torque Conversion by QH0 - Validation Copy",
+        ):
+            with self.subTest(table=name):
+                self.assertEqual(params[name], (None, "X_VQ_Engine_Speed"))
+
 
 if __name__ == "__main__":
     unittest.main()

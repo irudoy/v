@@ -56,6 +56,18 @@ units = "RPM"
 id = "X_VQ_Engine_Speed"
 units = "RPM"
 
+[logparam.ffff1702]
+# Primary requested-torque conversion row coordinate max(32, ffff11b6) in
+# 3.125 RPM counts.
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff1cca]
+# Trustful requested-torque conversion row coordinate max(32, ffff11d0) in
+# 3.125 RPM counts; ffff11d0 is the snapshot of RPM/3.125 word ffff1208.
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
 [logparam.ffff102c]
 # Snapshot of the Q7 normalized Base Fuel Schedule byte,
 # min(255, floor(BFS * 128 / ROM16[0x9534])), 128 counts = 100 percent.

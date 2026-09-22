@@ -152,10 +152,35 @@ u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9)
 which is inversely proportional to engine speed. `FUN_0003B468`
 selects `0xFFFF1E60` from ETC-path value `0xFFFF3A76`, which `FUN_0003B520`
 derives through the Throttle Angle-to-Area pair `0x13202`/`0x155A0`, or from
-ROM word `0x916C`. The physical quantity of `u` is not resolved: the A2L names
-the column coordinate QH0 Flow Quantity with a candidate `x * 0.390625`
-percent scale. It is not the normalized Base Fuel Schedule that indexes the
-ignition and CVTC target maps.
+ROM word `0x916C`.
+
+Both addends of `u` are opening areas in the value domain of `0x13202`, divided
+by engine speed. `0xFFFF3A76` sums two areas:
+
+```text
+0xFFFF3A76 = min(0xFFFF, clamp(area(min(0xFFFF, 4 * 0xFFFF284A)) - 0xFFFF56A2, 0, 0xFFFF)
+                       + clamp(area(min(0xFFFF, 4 * 0xFFFF284C)) - 0xFFFF56A4, 0, 0xFFFF))
+area(x) = lookup of 0x13202 over axis 0x155A0 at x
+```
+
+`0xFFFF120E` is an inflow area in four times those counts: `FUN_0003B498` adds
+`0xFFFF120E / 4` to the throttle area, and `FUN_00072C3C` subtracts
+`0xFFFF120E >> 2` from shared throttle target area `0xFFFF19B2`. With
+`ROM8[0x8D8F] = 100`, `0xFFFF1F46` is `8 * RPM` and `0xFFFF114E` is about
+`1803168 / RPM`, so:
+
+```text
+u ~= 3522 * (0xFFFF1E60 + 0xFFFF120E / 4) / RPM
+```
+
+The column coordinate is therefore an alpha-N flow estimate: opening area over
+engine speed through a saturating curve. The high bytes of curve `0x15042` run
+from 4 to 204 and those of curve `0x15022` from 204 to 224. MAF range
+monitors `FUN_0008152A` (P0101) and `FUN_00081D74` (P010B) evaluate the same
+curve pair and read `0xFFFF120E`. The A2L names the coordinate QH0 Flow
+Quantity with a candidate `x * 0.390625` percent scale, which is the curve
+high byte over 256. It is not the normalized Base Fuel Schedule that indexes
+the ignition and CVTC target maps.
 
 The map's code-level representation is Q7:
 
