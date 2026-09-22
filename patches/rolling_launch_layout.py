@@ -393,7 +393,7 @@ def validate_structure(layout):
     scheduler = layout.scheduler
     if (
         scheduler.table_address % 4
-        or scheduler.table_index != 0
+        or scheduler.table_index < 0
         or scheduler.tick_numerator != 204800
         or scheduler.pphi_hz != 20_000_000
         or scheduler.tick_microseconds
@@ -403,9 +403,16 @@ def validate_structure(layout):
         raise ValueError("periodic scheduler timing contract differs")
     if (
         layout.variant == "canonical"
-        and scheduler.table_address != 0x00021970
+        and scheduler.table_address != 0x0002196C
     ):
         raise ValueError("canonical scheduler table address differs")
+    periodic_hook = layout.hook_by_key.get("displaced_periodic_task")
+    if (
+        periodic_hook is not None
+        and periodic_hook.address
+        != scheduler.table_address + 4 * scheduler.table_index
+    ):
+        raise ValueError("displaced periodic task lies outside its table entry")
 
     if not layout.ram.proven_free.contains(layout.ram.base_reservation):
         raise ValueError("map-switching RAM lies outside the proven free range")
@@ -490,7 +497,7 @@ def validate_structure(layout):
         )
 
     required_hooks = {
-        "periodic_scheduler_index_0",
+        "displaced_periodic_task",
         "selector_arbitration",
         "startup_state_clear",
         "primary_ignition_command",
@@ -501,7 +508,7 @@ def validate_structure(layout):
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
     canonical_hooks = {
-        "periodic_scheduler_index_0": (0x21970, 0xA9554, 0xD3860),
+        "displaced_periodic_task": (0x21970, 0xA9554, 0xD3860),
         "selector_arbitration": (0xCE8DC, 0xD2108, 0xD3880),
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),

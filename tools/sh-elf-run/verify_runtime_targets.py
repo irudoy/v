@@ -256,7 +256,7 @@ def _install_stock_stubs(fixture, target):
     if target.rolling_layout is not None:
         rolling_hooks = target.rolling_layout.hook_by_key
         stubs.update({
-            rolling_hooks["periodic_scheduler_index_0"].stock: RETURN_STUB,
+            rolling_hooks["displaced_periodic_task"].stock: RETURN_STUB,
             rolling_hooks["primary_ignition_command"].stock: RETURN_STUB,
         })
         if target.rolling_layout.variant == "vq37-fuel-coordinator":

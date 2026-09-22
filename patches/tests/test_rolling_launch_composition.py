@@ -56,7 +56,12 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_scheduler_tick_formula_matches_target_measurement(self):
         scheduler = self.layout.scheduler
-        self.assertEqual(scheduler.table_index, 0)
+        self.assertEqual(scheduler.table_address, 0x0002196C)
+        self.assertEqual(scheduler.table_index, 1)
+        self.assertEqual(
+            self.layout.hook_by_key["displaced_periodic_task"].address,
+            scheduler.table_address + 4 * scheduler.table_index,
+        )
         self.assertEqual(scheduler.tick_numerator, 204800)
         self.assertEqual(scheduler.pphi_hz, 20_000_000)
         self.assertEqual(

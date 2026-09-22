@@ -79,7 +79,7 @@ throttle_container = 0x000094DC
 throttle_runtime = 0xFFFF17EC
 
 [profile.JK00D.rolling_hooks]
-periodic_scheduler_index_0 = [0x000219F0, 0x000AEB54, 0x000AEB54, 0x000DFF60]
+displaced_periodic_task = [0x000219F0, 0x000AEB54, 0x000AEB54, 0x000DFF60]
 selector_arbitration = [0x000DAC84, 0x000DCFA4, 0x000DE808, 0x000DFF80]
 startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000DFFA0]
 primary_ignition_command = [0x0004FAE8, 0x0002B51A, 0x0002B51A, 0x000E05A0]
@@ -97,7 +97,8 @@ restore_rpm_native = [0x1228, 0x000229D8, 0xFFFF604E, 2]
 stock_effective_ignition_command = [0x1229, 0x000229DC, 0xFFFF6050, 2]
 
 [profile.JK00D.rolling_symbols]
-scheduler_table = 0x000219F0
+periodic_task_slot = 0x000219F0
+periodic_task_table = 0x000219EC
 scheduler_task = 0x000AEB54
 rpm = 0xFFFF11CA
 vehicle_speed = 0xFFFF111A
@@ -297,7 +298,7 @@ throttle_container = 0x000094CE
 throttle_runtime = 0xFFFF17E8
 
 [profile.JK00C.rolling_hooks]
-periodic_scheduler_index_0 = [0x000219F0, 0x000AEB74, 0x000AEB74, 0x000DFF60]
+displaced_periodic_task = [0x000219F0, 0x000AEB74, 0x000AEB74, 0x000DFF60]
 selector_arbitration = [0x000DA548, 0x000DC868, 0x000DE808, 0x000DFF80]
 startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000DFFA0]
 primary_ignition_command = [0x0004FAEC, 0x0002B51A, 0x0002B51A, 0x000E05A0]
@@ -315,7 +316,8 @@ restore_rpm_native = [0x1228, 0x000229D8, 0xFFFF604E, 2]
 stock_effective_ignition_command = [0x1229, 0x000229DC, 0xFFFF6050, 2]
 
 [profile.JK00C.rolling_symbols]
-scheduler_table = 0x000219F0
+periodic_task_slot = 0x000219F0
+periodic_task_table = 0x000219EC
 scheduler_task = 0x000AEB74
 rpm = 0xFFFF11CA
 vehicle_speed = 0xFFFF111A
@@ -529,7 +531,7 @@ ignition_gated_surface_2 = 0x00009980
 ignition_gated_surface_3 = 0x00009A80
 
 [profile.1ND0A.rolling_hooks]
-periodic_scheduler_index_0 = [0x0002205C, 0x000F1880, 0x000F1880, 0x00133860]
+displaced_periodic_task = [0x0002205C, 0x000F1880, 0x000F1880, 0x00133860]
 selector_arbitration = [0x00127158, 0x00129CBC, 0x00132108, 0x00133880]
 startup_state_clear = [0x0002B398, 0x00030810, 0x001322A0, 0x001338A0]
 primary_ignition_command = [0x00074D88, 0x0002E464, 0x0002E464, 0x00133EA0]
@@ -548,7 +550,8 @@ restore_rpm_native = [0x1228, 0x00022D10, 0xFFFF0C4E, 2]
 stock_effective_ignition_command = [0x1229, 0x00022D14, 0xFFFF0C50, 2]
 
 [profile.1ND0A.rolling_symbols]
-scheduler_table = 0x0002205C
+periodic_task_slot = 0x0002205C
+periodic_task_table = 0x00022058
 scheduler_task = 0x000F1880
 rpm = 0xFFFE81B6
 vehicle_speed = 0xFFFE8104
@@ -772,7 +775,7 @@ feedback_status_byte = 0xFFFEB236
 ignition_coordinator_config_byte = 0x00008A7D
 
 [profile.1ME3B.rolling_hooks]
-periodic_scheduler_index_0 = [0x000220C8, 0x000FD68C, 0x000FD68C, 0x0013C860]
+displaced_periodic_task = [0x000220C8, 0x000FD68C, 0x000FD68C, 0x0013C860]
 selector_arbitration = [0x001344C8, 0x001370DC, 0x0013B108, 0x0013C880]
 startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013B2A0, 0x0013C8A0]
 primary_ignition_command = [0x00079194, 0x000311B2, 0x000311B2, 0x0013CEA0]
@@ -791,7 +794,8 @@ restore_rpm_native = [0x1228, 0x00022D84, 0xFFFF0C4E, 2]
 stock_effective_ignition_command = [0x1229, 0x00022D88, 0xFFFF0C50, 2]
 
 [profile.1ME3B.rolling_symbols]
-scheduler_table = 0x000220C8
+periodic_task_slot = 0x000220C8
+periodic_task_table = 0x000220C4
 scheduler_task = 0x000FD68C
 rpm = 0xFFFE819E
 vehicle_speed = 0xFFFE80F8
@@ -1008,7 +1012,7 @@ ignition_gated_surface_2 = 0x000096CA
 ignition_gated_surface_3 = 0x000097CA
 
 [profile.JK78C.rolling_hooks]
-periodic_scheduler_index_0 = [0x00021A4C, 0x000B2294, 0x000B2294, 0x0001E260]
+displaced_periodic_task = [0x00021A4C, 0x000B2294, 0x000B2294, 0x0001E260]
 selector_arbitration = [0x000FB260, 0x000FD40C, 0x0001CB08, 0x0001E280]
 startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001CCA0, 0x0001E2A0]
 primary_ignition_command = [0x000699D4, 0x0002D6F6, 0x0002D6F6, 0x0001E8A0]
@@ -1027,7 +1031,8 @@ restore_rpm_native = [0x1228, 0x000229B8, 0xFFFF0C4E, 2]
 stock_effective_ignition_command = [0x1229, 0x000229BC, 0xFFFF0C50, 2]
 
 [profile.JK78C.rolling_symbols]
-scheduler_table = 0x00021A4C
+periodic_task_slot = 0x00021A4C
+periodic_task_table = 0x00021A4C
 scheduler_task = 0x000B2294
 rpm = 0xFFFF11AC
 vehicle_speed = 0xFFFF10FC

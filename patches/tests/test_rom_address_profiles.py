@@ -110,7 +110,8 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
         rom_address_profiles.VQ37_ROLLING_HOOK_KEYS
     )
     assert len(one.rolling_diagnostics) == 9
-    assert one.rolling_symbol_by_key["scheduler_table"] == 0x0002205C
+    assert one.rolling_symbol_by_key["periodic_task_slot"] == 0x0002205C
+    assert one.rolling_symbol_by_key["periodic_task_table"] == 0x00022058
     assert one.rolling_symbol_by_key["vehicle_speed"] == 0xFFFE8104
     assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
     assert one.telemetry_unavailable == (

@@ -124,14 +124,14 @@ class RollingEndpointSignature:
 
 
 PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
-    ("periodic_scheduler_index_0", 0x000D3860),
+    ("displaced_periodic_task", 0x000D3860),
     ("selector_arbitration", 0x000D3880),
     ("startup_state_clear", 0x000D38A0),
     ("primary_ignition_command", 0x000D3EA0),
     ("feedback_arbitration", 0x000D35E0),
 )
 CURRENT_ROLLING_HOOK_VALUES = (
-    ("periodic_scheduler_index_0", 0x000D3860),
+    ("displaced_periodic_task", 0x000D3860),
     ("selector_arbitration", 0x000D3880),
     ("startup_state_clear", 0x000D38A0),
     ("primary_ignition_command", 0x000D3EA0),

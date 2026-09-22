@@ -20,7 +20,7 @@ proven application lifecycle.
 
 ## Exact evaluation and mask order
 
-Periodic-table index 27 invokes `fuel_output_inhibit_coordinator` at
+Periodic-table index 28 invokes `fuel_output_inhibit_coordinator` at
 `0x0004ED88`. Its global accumulator receives exactly 15 Boolean results.
 `0x0004F758` and `0x0004F7E0` execute in the same sequence but their return
 values are discarded; they only update state consumed by later calls.

@@ -75,12 +75,14 @@ jitter, and payload behavior.
 
 ## Stock broadcast transmit path
 
-The stock periodic path has two separate stages in the 124-entry table called
-by `FUN_00020DFE`:
+The stock periodic path has two separate stages in the 69-entry table at
+`0x21834` that dispatcher `FUN_000209D8` drains while `0xFFFF84B9` bit 4 is
+pending. Handler `FUN_0002040C` sets that bit on the same tenth-invocation
+phase that makes `FUN_00020DFE` run, so both tables advance once per `Tcan`:
 
-1. `FUN_000C38DE`, referenced at `0x00021928`, scans only type-3 records and
+1. `FUN_000C38DE`, entry 61 at `0x00021928`, scans only type-3 records and
    calls `FUN_000C3746` for eligible transmissions.
-2. `FUN_000C3DE4`, referenced at `0x00021930`, scans only type-3 records and
+2. `FUN_000C3DE4`, entry 63 at `0x00021930`, scans only type-3 records and
    serializes the payload for a subsequent scan.
 
 The scan therefore precedes payload preparation in the same scheduler cycle.

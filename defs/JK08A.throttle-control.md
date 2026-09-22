@@ -95,7 +95,7 @@ table `0x14114`, and publishes APP-derived signed request candidate
 ## Rotational-speed request limiter
 
 `FFFF243C` is an input to the request-limit subsystem rather than a direct
-throttle target. Periodic-table index 11 reaches `0007584E` once per
+throttle target. Periodic-table index 12 reaches `0007584E` once per
 `00020DFE` scheduler pass. Passive target-CAN timing establishes a period of
 `10.24 ms`, or `97.65625 Hz`, for the target ECU.
 

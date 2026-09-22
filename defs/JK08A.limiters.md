@@ -19,20 +19,20 @@ slot copy and fixes the `x*12.5 RPM` conversion of `0x0934E`.
 
 ## Periodic execution order
 
-`FUN_00020DFE` dispatches the 124-entry table at `0x21970` in ascending index order.
+`FUN_00020DFE` dispatches the 124-entry table at `0x2196C` in ascending index order.
 The limiter-related entries are:
 
 | Index | Function | Established role |
 |---:|---|---|
-| 11 | `FUN_000769C0` | request-limit source coordinator; reaches `FUN_0007584E` through `FUN_00075E9E` |
-| 18 | `FUN_00071508` | signed minimum arbiter, including `0x0942C` result `0xFFFF19D8` |
-| 20 | `FUN_000702A0` | ordered request-controller stages ending in `FUN_00070D82` |
-| 21 | `FUN_00079DD8` | request-boundary dispatch ending in `FUN_00079030` |
-| 22 | `FUN_000730FC` | downstream inverse-coordinate and limit calculations through `FUN_00073432` |
-| 27 | `FUN_0004ED88` | final six-channel fuel inhibit/override mask `0xFFFF22E0` |
-| 35 | `FUN_00057608` | fuel-multiplier coordinator, ending in `FUN_000556EC` |
-| 42 | `FUN_0004E974` | common and bank-specific injection precursors |
-| 60 | `FUN_0004ECAC` | parity bases and six compensated pulse channels |
+| 12 | `FUN_000769C0` | request-limit source coordinator; reaches `FUN_0007584E` through `FUN_00075E9E` |
+| 19 | `FUN_00071508` | signed minimum arbiter, including `0x0942C` result `0xFFFF19D8` |
+| 21 | `FUN_000702A0` | ordered request-controller stages ending in `FUN_00070D82` |
+| 22 | `FUN_00079DD8` | request-boundary dispatch ending in `FUN_00079030` |
+| 23 | `FUN_000730FC` | downstream inverse-coordinate and limit calculations through `FUN_00073432` |
+| 28 | `FUN_0004ED88` | final six-channel fuel inhibit/override mask `0xFFFF22E0` |
+| 36 | `FUN_00057608` | fuel-multiplier coordinator, ending in `FUN_000556EC` |
+| 43 | `FUN_0004E974` | common and bank-specific injection precursors |
+| 61 | `FUN_0004ECAC` | parity bases and six compensated pulse channels |
 
 The request limiter is therefore calculated before the main/stationary fuel-cut
 states in the same periodic pass. The two mechanisms do not feed the same arbiter:

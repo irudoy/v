@@ -64,14 +64,15 @@ map_symbol,rev_fuel_cut_state_machine,,0007b1a0,,,target-specific,Exact 190-byte
 map_symbol,rev_fuel_cut_selector,,fffe80e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,fffe948a,,,target-specific,Bits 0x04 and 0x08 retain the armed and active hysteresis state
 map_symbol,rev_fuel_cut_delay,,fffe94e2,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008b40
-rolling_hook,periodic_scheduler_index_0,00021970,000220c8,000fd68c,,mapped,Word 000220c8 of the periodic task list holds the homolog of the 1ND index-0 scheduler task and binds the periodic wrapper
+rolling_hook,displaced_periodic_task,00021970,000220c8,000fd68c,,mapped,Entry 1 of the homologous 152-entry scheduler table at 000220c4 holds the homolog of the 1ND scheduler task and binds the periodic wrapper
 rolling_hook,selector_arbitration,000ce8dc,001344c8,001370dc,,mapped,Rolling arbitration can chain from the selector literal
 rolling_hook,startup_state_clear,00027d28,0002e18c,0003357c,,mapped,Runtime clear can chain from the startup literal
 rolling_hook,primary_ignition_command,0004e198,00079194,000311b2,,mapped,Target call path consumes the final ignition command
 rolling_hook,feedback_arbitration,000c3fa4,001216e4,00123264,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
-rolling_hook,fuel_cut_coordinator,,00022144,0007a740,,target-specific,Word 31 above the scheduler word points to the sole writer of the final six-cylinder fuel inhibit mask
-rolling_symbol,scheduler_table,00021970,000220c8,,,mapped,Homologous scheduler table preserves task order
-rolling_symbol,scheduler_task,000a9554,000fd68c,,,mapped,Stock task of the hooked word is displaced by the periodic wrapper
+rolling_hook,fuel_cut_coordinator,,00022144,0007a740,,target-specific,Entry 32 points to the sole writer of the final six-cylinder fuel inhibit mask
+rolling_symbol,periodic_task_table,0002196c,000220c4,,,mapped,Homologous 152-entry periodic task table walked by the scheduler
+rolling_symbol,periodic_task_slot,00021970,000220c8,,,mapped,Homologous scheduler entry preserves task order
+rolling_symbol,scheduler_task,000a9554,000fd68c,,,mapped,The stock task of entry 1 is displaced by the periodic wrapper
 rolling_symbol,rpm,ffff11bc,fffe819e,,,mapped,Direct target consumers use the native RPM word
 rolling_symbol,vehicle_speed,ffff110e,fffe80f8,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
 rolling_symbol,pedal,ffff2672,fffe96a0,,,mapped,Pedal activation source is recovered from target consumers

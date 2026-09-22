@@ -240,7 +240,7 @@ MAP_SYMBOL_KEYS_BY_VARIANT = {
 
 ROLLING_HOOK_KEYS = frozenset(
     {
-        "periodic_scheduler_index_0",
+        "displaced_periodic_task",
         "selector_arbitration",
         "startup_state_clear",
         "primary_ignition_command",
@@ -275,7 +275,8 @@ ROLLING_DIAGNOSTIC_KEYS = frozenset(
 
 ROLLING_SYMBOL_KEYS = frozenset(
     {
-        "scheduler_table",
+        "periodic_task_slot",
+        "periodic_task_table",
         "scheduler_task",
         "rpm",
         "vehicle_speed",
@@ -1259,7 +1260,7 @@ def _validate_rolling_bindings(profile, launch_layout):
     launch_code = launch_layout.code_region_by_key
     rolling = profile.rolling_hook_by_key
     expected = {
-        "periodic_scheduler_index_0": _rebased(
+        "displaced_periodic_task": _rebased(
             launch_code["periodic_wrapper"].entry, rom_delta
         ),
         "selector_arbitration": _rebased(
@@ -1296,9 +1297,9 @@ def _validate_rolling_bindings(profile, launch_layout):
             )
 
     symbols = profile.rolling_symbol_by_key
-    periodic = rolling["periodic_scheduler_index_0"]
+    periodic = rolling["displaced_periodic_task"]
     if (
-        periodic.address != symbols["scheduler_table"]
+        periodic.address != symbols["periodic_task_slot"]
         or periodic.stock != symbols["scheduler_task"]
         or periodic.base != symbols["scheduler_task"]
     ):
@@ -1308,7 +1309,7 @@ def _validate_rolling_bindings(profile, launch_layout):
     if profile.map_variant in VQ37_MAP_VARIANTS:
         coordinator = rolling["fuel_cut_coordinator"]
         if (
-            coordinator.address != symbols["scheduler_table"] + 31 * 4
+            coordinator.address != symbols["periodic_task_slot"] + 31 * 4
             or coordinator.stock != symbols["fuel_cut_coordinator"]
             or coordinator.base != symbols["fuel_cut_coordinator"]
         ):

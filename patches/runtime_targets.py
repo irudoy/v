@@ -149,7 +149,8 @@ CANONICAL_MAP_SYMBOLS = {
 }
 
 CANONICAL_ROLLING_SYMBOLS = {
-    "scheduler_table": 0x00021970,
+    "periodic_task_slot": 0x00021970,
+    "periodic_task_table": 0x0002196C,
     "scheduler_task": 0x000A9554,
     "rpm": 0xFFFF11BC,
     "vehicle_speed": 0xFFFF110E,
@@ -1388,7 +1389,12 @@ def _project_rolling(
         configuration=_shift_range(base.configuration, delta),
         scheduler=replace(
             base.scheduler,
-            table_address=rolling_symbols["scheduler_table"],
+            table_address=rolling_symbols["periodic_task_table"],
+            table_index=(
+                rolling_symbols["periodic_task_slot"]
+                - rolling_symbols["periodic_task_table"]
+            )
+            // 4,
         ),
         ram=ram,
         code_regions=code_regions,

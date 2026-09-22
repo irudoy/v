@@ -63,14 +63,15 @@ map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,Exact 190-byte
 map_symbol,rev_fuel_cut_selector,,ffff10e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,ffff23f5,,,target-specific,Bits 0x08 and 0x10 retain the armed and active hysteresis state
 map_symbol,rev_fuel_cut_delay,,ffff2449,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008a1f
-rolling_hook,periodic_scheduler_index_0,00021970,00021a4c,000b2294,,mapped,Index 0 of the homologous 33-entry scheduler table binds the periodic wrapper
+rolling_hook,displaced_periodic_task,00021970,00021a4c,000b2294,,mapped,Entry 0 of the homologous 144-entry scheduler table at 00021a4c binds the periodic wrapper
 rolling_hook,selector_arbitration,000ce8dc,000fb260,000fd40c,,mapped,Rolling arbitration chains from the selector literal
 rolling_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Runtime clear chains from the startup literal
 rolling_hook,primary_ignition_command,0004e198,000699d4,0002d6f6,,mapped,Producer literal calls the final ignition command consumer
 rolling_hook,feedback_arbitration,000c3fa4,000eba3c,000ed03c,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
 rolling_hook,fuel_cut_coordinator,,00021ac8,0006a9b0,,target-specific,Index 31 points to the sole writer of the final six-cylinder fuel inhibit mask
-rolling_symbol,scheduler_table,00021970,00021a4c,,,mapped,Homologous 33-entry scheduler table preserves task order
-rolling_symbol,scheduler_task,000a9554,000b2294,,,mapped,Index 0 stock task is displaced by the periodic wrapper
+rolling_symbol,periodic_task_table,0002196c,00021a4c,,,mapped,Homologous 144-entry periodic task table walked by the scheduler
+rolling_symbol,periodic_task_slot,00021970,00021a4c,,,mapped,Homologous scheduler entry preserves task order
+rolling_symbol,scheduler_task,000a9554,000b2294,,,mapped,The stock task of entry 0 is displaced by the periodic wrapper
 rolling_symbol,rpm,ffff11bc,ffff11ac,,,mapped,Direct target consumers use the native RPM word
 rolling_symbol,vehicle_speed,ffff110e,ffff10fc,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
 rolling_symbol,pedal,ffff2672,ffff25d0,,,mapped,Pedal activation source is recovered from target consumers

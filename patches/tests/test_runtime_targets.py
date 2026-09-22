@@ -115,7 +115,7 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
     assert target.rolling_layout.variant == "vq37-fuel-coordinator"
     assert target.rolling_layout.ram.state.size == 24
     assert set(target.rolling_layout.hook_by_key) == {
-        "periodic_scheduler_index_0",
+        "displaced_periodic_task",
         "selector_arbitration",
         "startup_state_clear",
         "primary_ignition_command",

@@ -23,8 +23,8 @@ start = 0x000D40C0
 end = 0x000D4280
 
 [scheduler]
-table_address = 0x00021970
-table_index = 0
+table_address = 0x0002196C
+table_index = 1
 tick_numerator = 204800
 pphi_hz = 20000000
 tick_microseconds = 10240
@@ -160,7 +160,7 @@ data_bytes = 16
 code_regions = ["feedback_arbiter"]
 
 [[hook]]
-key = "periodic_scheduler_index_0"
+key = "displaced_periodic_task"
 address = 0x00021970
 width = 4
 stock = 0x000A9554

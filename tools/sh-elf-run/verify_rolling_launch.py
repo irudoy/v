@@ -115,7 +115,7 @@ def install_stock_return_stubs(fixture, base_layout, rolling_layout):
     targets = {
         base_hooks["selector_host_call"].stock,
         base_hooks["startup_initializer"].stock,
-        rolling_hooks["periodic_scheduler_index_0"].stock,
+        rolling_hooks["displaced_periodic_task"].stock,
         rolling_hooks["primary_ignition_command"].stock,
     }
     expected = {0x000D09D8, 0x0002C648, 0x000A9554, 0x0002A892}

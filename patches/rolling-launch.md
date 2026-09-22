@@ -78,9 +78,10 @@ both runtimes from modifying shared state during one gesture.
 
 ## Scheduler timebase
 
-On the canonical layout, the periodic hook replaces table entry 0 at
-`0x00021970`, calls the displaced stock task, and advances Rolling Launch once
-per exact `FUN_00020DFE` pass. Target profiles bind the homologous table and
+On the canonical layout, `FUN_00020DFE` walks the 124-entry table at
+`0x0002196C`, and the periodic hook replaces entry 1 at `0x00021970`, calls the
+displaced stock task, and advances Rolling Launch once per exact
+`FUN_00020DFE` pass. Target profiles bind the homologous table and
 task explicitly. The timer configuration proves a period of `204800/Pphi`
 seconds. Passive
 target-CAN timestamps independently establish `Pphi = 20 MHz`, so one runtime
@@ -326,8 +327,8 @@ selected map shadow through the Map Switching limiter commit.
 
 The VQ37 variant clears a dedicated uint16 request at the start of every
 periodic pass and publishes exactly `0x003F` only while a non-observe mode is
-active. Scheduler index 31 calls a wrapper that first executes the complete
-stock fuel-mask coordinator. An exact request then ORs the six cylinder bits
+active. The scheduler entry 31 positions after the displaced periodic task
+calls a wrapper that first executes the complete stock fuel-mask coordinator. An exact request then ORs the six cylinder bits
 into the coordinator result; zero and every malformed request leave the stock
 mask unchanged. The wrapper preserves the stock coordinator's return value.
 Activation does not modify the 36-byte native fuel-cut shadow. Abort
@@ -412,7 +413,7 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 
 The composition replaces five declared call targets:
 
-- periodic scheduler index 0 at `0x00021970`;
+- periodic scheduler entry 1 at `0x00021970`;
 - map-selector host at `0x000CE8DC`;
 - startup state initialization at `0x00027D28`;
 - primary ignition-command consumer at `0x0004E198`;

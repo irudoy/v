@@ -21,28 +21,28 @@ terminals remains a hardware-validation item.
 
 ## Periodic ordering
 
-`FUN_00020DFE` dispatches the 124-entry table at `0x21970`. Relevant entries are
+`FUN_00020DFE` dispatches the 124-entry table at `0x2196C`. Relevant entries are
 ordered as follows:
 
 | Index | Function | Established role |
 |---:|---|---|
-| 11 | `FUN_000769C0` | request-limit source coordinator, including the `0x0942C` branch |
-| 18 | `FUN_00071508` | signed-minimum request-limit arbiter |
-| 20 | `FUN_000702A0` | ordered request-controller stages and final selector |
-| 21 | `FUN_00079DD8` | signed request-boundary dispatch |
-| 22 | `FUN_000730FC` | downstream inverse-coordinate and limit calculations |
-| 27 | `FUN_0004ED88` | final six-channel inhibit/override mask `0xFFFF22E0` |
-| 35 | `FUN_00057608` | fuel-multiplier calculation coordinator |
-| 38 | `FUN_00056FC0` | common additive and masked-channel override word `0xFFFF2436` |
-| 39 | `FUN_00053698` | common Q14 gain `0xFFFF165E` |
-| 41 | `FUN_000522C4` | transient and per-channel preparation, including `0xFFFF2300` |
-| 42 | `FUN_0004E974` | common and two-bank injection precursors |
-| 54 | `FUN_0005C910` | runtime STFT publication |
-| 60 | `FUN_0004ECAC` | two parity bases and six-channel compensated pulse calculation |
-| 80 | `FUN_00057020` | downstream mode-dependent fuel calculation |
+| 12 | `FUN_000769C0` | request-limit source coordinator, including the `0x0942C` branch |
+| 19 | `FUN_00071508` | signed-minimum request-limit arbiter |
+| 21 | `FUN_000702A0` | ordered request-controller stages and final selector |
+| 22 | `FUN_00079DD8` | signed request-boundary dispatch |
+| 23 | `FUN_000730FC` | downstream inverse-coordinate and limit calculations |
+| 28 | `FUN_0004ED88` | final six-channel inhibit/override mask `0xFFFF22E0` |
+| 36 | `FUN_00057608` | fuel-multiplier calculation coordinator |
+| 39 | `FUN_00056FC0` | common additive and masked-channel override word `0xFFFF2436` |
+| 40 | `FUN_00053698` | common Q14 gain `0xFFFF165E` |
+| 42 | `FUN_000522C4` | transient and per-channel preparation, including `0xFFFF2300` |
+| 43 | `FUN_0004E974` | common and two-bank injection precursors |
+| 55 | `FUN_0005C910` | runtime STFT publication |
+| 61 | `FUN_0004ECAC` | two parity bases and six-channel compensated pulse calculation |
+| 81 | `FUN_00057020` | downstream mode-dependent fuel calculation |
 
 The ordering proves current-pass dependencies from the inhibit mask and fuel
-multiplier through the transient term and pulse calculation. Scheduler index 83
+multiplier through the transient term and pulse calculation. Scheduler index 84
 is the separate two-bank exhaust-VTC coordinator `FUN_000C21E6`; it is outside
 the fuel calculation.
 
