@@ -29,8 +29,10 @@ enabled = true
 # physical quantity of one runtime lookup operand, the axis units in which that
 # parameter is expressed, and the name of the static axis whose reviewed labels
 # it is comparable with. A ROM array axis names the parameter in logparam when
-# its code-established scale evidence rests on exactly this indexed_by operand
-# and its units equal the record. A static axis names it when the map declares
+# its scale evidence rests on exactly this indexed_by operand, its units equal
+# the record, and the multiplier is the same on both sides: either the record
+# repeats the axis expression in scale, or the axis scale is established by
+# code. A static axis names it when the map declares
 # static_axis_operand and carries labels under the declared name. The IDs are
 # the external parameters that the CAN dashboard live value feed publishes
 # (tools/can_dashboard/live_feed.py).
@@ -81,6 +83,17 @@ units = "Normalized BFS [%]"
 # saturates at 160 percent and the byte at 199.2 percent.
 id = "X_VQ_Engine_Load"
 units = "Normalized BFS [%]"
+
+[logparam.ffff28bc]
+# Channel 0 of the throttle target array that FUN 0006f48c publishes. FUN
+# 00072c3c passes it unscaled to wrapper 00026524, whose word core 00026984
+# compares each point of angle coordinate table 000155a0 with it directly, so
+# one stored count is one count of this word. The catalog degree scale is a
+# candidate, and the feed publishes the same expression, so the overlay
+# compares one domain.
+id = "X_VQ_Throttle_Angle"
+units = "Throttle Valve Opening [deg]"
+scale = "x*0.0275"
 
 [logparam.ffff11b2]
 # Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It

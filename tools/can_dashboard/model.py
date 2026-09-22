@@ -163,6 +163,18 @@ DASHBOARD_CALIBRATIONS = {
     ),
 }
 
+# Values published for RomRaider Overlay Log in the domain of a definition axis.
+# The factor repeats the expression of the axis the parameter is compared with, so
+# the live value and the stored points are one domain whatever the physical
+# quantity is. Channel 0 of the throttle target indexes angle coordinate table
+# 000155a0, and defs/JK08A.overrides.toml declares the same expression in
+# [logparam.ffff28bc]. The dashboard reads the same targets in volts.
+OVERLAY_CALIBRATIONS = {
+    "throttle_target_channel_0_raw": can_telemetry.Calibration(
+        "throttle_angle_target_deg", 0.0275
+    ),
+}
+
 FUEL_INHIBIT_ALL = 0x3F
 
 
@@ -207,7 +219,8 @@ def profile_field_names(profile):
 def _dashboard_engineering_values(raw):
     values = {
         calibration.target: calibration.apply(raw[source])
-        for source, calibration in DASHBOARD_CALIBRATIONS.items()
+        for table in (DASHBOARD_CALIBRATIONS, OVERLAY_CALIBRATIONS)
+        for source, calibration in table.items()
         if source in raw
     }
     if "knock_surface_state" in raw:

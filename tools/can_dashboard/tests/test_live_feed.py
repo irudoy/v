@@ -27,6 +27,7 @@ class ChannelTableTest(unittest.TestCase):
             for table in (
                 can_telemetry.RAW_CALIBRATIONS,
                 model.DASHBOARD_CALIBRATIONS,
+                model.OVERLAY_CALIBRATIONS,
             )
             for calibration in table.values()
         }
@@ -48,6 +49,26 @@ class ChannelTableTest(unittest.TestCase):
         ids = {channel.key: channel.logger_id for channel in live_feed.CHANNELS}
         self.assertEqual(ids["rpm"], "X_VQ_Engine_Speed")
         self.assertEqual(ids["load"], "X_VQ_Engine_Load")
+        self.assertEqual(ids["throttle_angle_deg"], "X_VQ_Throttle_Angle")
+
+    def test_the_throttle_angle_channel_carries_the_axis_expression(self):
+        # Overlay Log compares the published value with the stored points of
+        # angle coordinate table 000155a0, so the factor is the axis expression
+        # that defs/JK08A.overrides.toml declares for operand ffff28bc.
+        sources = {channel.key: channel.source for channel in live_feed.CHANNELS}
+        calibration = model.OVERLAY_CALIBRATIONS[
+            "throttle_target_channel_0_raw"
+        ]
+        self.assertEqual(sources["throttle_angle_deg"], calibration.target)
+        self.assertEqual(calibration.apply(1), 0.0275)
+        self.assertEqual(calibration.apply(0), 0.0)
+        angle = next(
+            channel
+            for channel in live_feed.CHANNELS
+            if channel.key == "throttle_angle_deg"
+        )
+        # The stored points span 0..3172 counts, the range the channel declares.
+        self.assertLessEqual(calibration.apply(3172), angle.maximum)
 
 
 class EngineLoadTest(unittest.TestCase):

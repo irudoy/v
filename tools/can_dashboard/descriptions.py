@@ -317,6 +317,12 @@ DESCRIPTIONS = {
         "closed position, in volts. In steady state it reads the TPS voltage "
         "minus the closed position."
     ),
+    "throttle_angle_target_deg": (
+        "Channel 0 throttle target in the coordinate domain of the "
+        "angle-to-area table, at the candidate 0.0275 degrees per count. The "
+        "live value feed publishes it for RomRaider Overlay Log, which "
+        "compares it with the stored points of that table."
+    ),
     "injection_end_angle_deg": (
         "End of injection in crank degrees after intake TDC of the injected "
         "cylinder. A firmware coordinate from the injection-end tables, not "

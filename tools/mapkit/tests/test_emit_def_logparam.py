@@ -4,7 +4,8 @@ import tomllib
 import unittest
 import xml.etree.ElementTree as ET
 
-from tools.can_dashboard import live_feed
+from tools.can_dashboard import live_feed, model
+from tools.logs import can_telemetry
 from tools.mapkit import emit_def
 
 
@@ -74,6 +75,16 @@ def tracked_axes():
         return {row["addr"]: row for row in csv.DictReader(stream)}
 
 
+def stream_fields():
+    """Return the fields of the telemetry profile, fixed pages and context tags."""
+    path = ROOT / "patches" / "can-telemetry-profile.toml"
+    with path.open("rb") as stream:
+        profile = tomllib.load(stream)
+    return list(profile["field"]) + [
+        field for context in profile["context"] for field in context["field"]
+    ]
+
+
 class AxisLogparamRuleTest(unittest.TestCase):
     def test_code_scaled_axis_names_the_parameter_of_its_single_operand(self):
         self.assertEqual(
@@ -137,6 +148,42 @@ class AxisLogparamRuleTest(unittest.TestCase):
             )
         )
 
+    def test_a_declared_scale_binds_an_axis_of_any_confidence(self):
+        # The overlay compares domains, so a declaration that repeats the axis
+        # expression binds the axis while the physical quantity stays a candidate.
+        declared = {
+            "logparam": {
+                "ffff11ae": {
+                    "id": "X_VQ_Engine_Speed",
+                    "units": "RPM",
+                    "scale": "x*50",
+                }
+            }
+        }
+        self.assertEqual(
+            emit_def.axis_logparam(axis(scale_conf="candidate"), declared),
+            "X_VQ_Engine_Speed",
+        )
+        self.assertEqual(
+            emit_def.axis_logparam(axis(), declared), "X_VQ_Engine_Speed"
+        )
+
+    def test_a_scale_other_than_the_axis_expression_stays_without_live_data(self):
+        declared = {
+            "logparam": {
+                "ffff11ae": {
+                    "id": "X_VQ_Engine_Speed",
+                    "units": "RPM",
+                    "scale": "x*12.5",
+                }
+            }
+        }
+        for conf in ("candidate", "code"):
+            with self.subTest(scale_conf=conf):
+                self.assertIsNone(
+                    emit_def.axis_logparam(axis(scale_conf=conf), declared)
+                )
+
     def test_malformed_scale_evidence_stops_generation(self):
         with self.assertRaises(SystemExit):
             emit_def.axis_logparam(
@@ -168,6 +215,17 @@ class LogparamDeclarationTest(unittest.TestCase):
             {"logparam": {"ffff11ae": {"id": "X A", "units": "RPM"}}},
             {"logparam": {"ffff11ae": {"id": "X_A", "units": 1}}},
             {"logparam": {"ffff11ae": {"id": "X_A", "units": "RPM", "x": 1}}},
+            {"logparam": {"ffff11ae": {"id": "X_A", "units": "RPM", "scale": ""}}},
+            # A scale is the expression of stored points, which static labels lack.
+            {
+                "logparam": {
+                    "ffff11ae": {
+                        "id": "X_A",
+                        "static_axis_name": "Engine Speed [RPM]",
+                        "scale": "x*50",
+                    }
+                }
+            },
         )
         for overrides in rejected:
             with self.subTest(overrides=overrides):
@@ -177,6 +235,7 @@ class LogparamDeclarationTest(unittest.TestCase):
         binding = emit_def.logparam_bindings(BINDINGS)["ffff102c"]
         self.assertEqual(binding.id, "X_VQ_Engine_Load")
         self.assertEqual(binding.units, "Normalized BFS [%]")
+        self.assertIsNone(binding.scale)
         self.assertIsNone(binding.static_axis_name)
 
     def test_tracked_declaration_names_published_feed_parameters(self):
@@ -186,6 +245,48 @@ class LogparamDeclarationTest(unittest.TestCase):
         for operand, binding in bindings.items():
             with self.subTest(operand=operand):
                 self.assertIn(binding.id, published)
+
+    def test_tracked_declaration_scale_matches_the_published_conversion(self):
+        # A declared scale states that the feed publishes the operand in the domain
+        # of the stored points it is compared with. The chain is checked end to end:
+        # the operand address names a stream field, the dashboard converts that field
+        # into the value the channel publishes, and the conversion is the declared
+        # expression.
+        bindings = {
+            operand: binding
+            for operand, binding in emit_def.logparam_bindings(
+                tracked_overrides()
+            ).items()
+            if binding.scale
+        }
+        self.assertTrue(bindings)
+        fields = {
+            field["source"]: field["name"]
+            for field in stream_fields()
+            if "source" in field
+        }
+        channels = {channel.logger_id: channel for channel in live_feed.CHANNELS}
+        conversions = {
+            calibration.target: (source, calibration)
+            for table in (
+                can_telemetry.RAW_CALIBRATIONS,
+                model.DASHBOARD_CALIBRATIONS,
+                model.OVERLAY_CALIBRATIONS,
+            )
+            for source, calibration in table.items()
+        }
+        for operand, binding in bindings.items():
+            with self.subTest(operand=operand):
+                field = fields[int(operand, 16)]
+                source, calibration = conversions[channels[binding.id].source]
+                self.assertEqual(source, field)
+                for raw in (0, 1, 1000, 3172):
+                    self.assertAlmostEqual(
+                        calibration.apply(raw),
+                        eval(  # the scaling vocabulary the ledger validates
+                            binding.scale, {"__builtins__": {}}, {"x": raw}
+                        ),
+                    )
 
     def test_every_tracked_declaration_binds_an_axis(self):
         overrides = tracked_overrides()

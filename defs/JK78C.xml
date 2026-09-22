@@ -1397,7 +1397,7 @@
       <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
                to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
       <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x167E4"
-             sizex="32" endian="big">
+             sizex="32" endian="big" logparam="X_VQ_Throttle_Angle">
         <scaling units="Throttle Valve Opening [deg] [cand]" expression="x*0.0275"
                  to_byte="x/0.0275" format="0"/>
       </table>

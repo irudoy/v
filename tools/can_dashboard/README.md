@@ -260,6 +260,12 @@ without changing the settings file.
 | `stft_b1_pct`, `stft_b2_pct` | `X_VQ_STFT_B1`, `X_VQ_STFT_B2` | % | `raw / 256 - 100` |
 | `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
 | `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
+| `throttle_angle_deg` | `X_VQ_Throttle_Angle` | deg | `throttle_target_channel_0_raw * 0.0275` |
+
+`throttle_angle_deg` carries the channel 0 throttle target in the coordinate
+domain of the angle-to-area table. Its factor repeats the expression of that
+table's axis, so Overlay Log compares the live value with the stored points
+directly; the degree scale itself stays a catalog candidate.
 
 ### RomRaider table overlay
 

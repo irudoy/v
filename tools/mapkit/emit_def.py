@@ -25,8 +25,12 @@
 # [logparam.<operand>] in overrides declares the Logger ID of one runtime lookup operand,
 # together with the axis units (ROM array axis) and the axis name (static labels) the
 # parameter is comparable with. A ROM array axis receives the attribute only when its
-# scaling is established by code, its scale evidence names exactly that one indexed_by
-# operand, and its units equal the declared units. A static axis carries reviewed labels
+# scale evidence names exactly that one indexed_by operand, its units equal the declared
+# units, and both sides convert through the same multiplier: the declaration repeats the
+# axis expression in scale, or, without that field, the axis scaling is established by
+# code. A repeated expression puts the stored points and the live parameter in one
+# domain, which is what the overlay compares, while the confidence of the physical
+# quantity stays with the axis. A static axis carries reviewed labels
 # instead of stored points, so the map names its lookup operand in static_axis_operand;
 # the attribute follows only when the map evidence records that operand as indexed_by and
 # the axis name equals the declared name. Every other axis stays without live data.
@@ -125,7 +129,7 @@ MASKED_VIEW_FIELDS = (
     "format", "fine", "coarse",
 )
 PRESENTATION_FIELDS = ("default_emit",)
-LOGPARAM_FIELDS = ("id", "units", "static_axis_name")
+LOGPARAM_FIELDS = ("id", "units", "scale", "static_axis_name")
 LOGPARAM_OPERAND_RE = re.compile(r"^[0-9a-f]{8}$")
 LOGPARAM_ID_RE = re.compile(r"^\S+$")
 MAP_SWITCHING_FIELDS = ("enabled",)
@@ -241,6 +245,7 @@ class LogparamBinding:
     """A Logger parameter declared for one runtime lookup operand."""
     id: str
     units: str | None
+    scale: str | None
     static_axis_name: str | None
 
 
@@ -272,8 +277,12 @@ def logparam_bindings(ovr):
         # and with reviewed static labels through the axis name.
         if "units" not in entry and "static_axis_name" not in entry:
             sys.exit(f"{where}: units or static_axis_name is required")
+        # The scale repeats the expression of the stored points it is compared with.
+        if "scale" in entry and "units" not in entry:
+            sys.exit(f"{where}: scale belongs to stored axis points and requires units")
         bindings[operand] = LogparamBinding(
-            entry["id"], entry.get("units"), entry.get("static_axis_name")
+            entry["id"], entry.get("units"), entry.get("scale"),
+            entry.get("static_axis_name"),
         )
     return bindings
 
@@ -331,12 +340,13 @@ def axis_logparam(x, ovr):
     """Return the Logger parameter ID that follows an axis, or None.
 
     The overlay compares a live value with the displayed axis points, so the axis names a
-    parameter only when code or hardware establishes its scaling, its evidence names exactly one lookup
-    operand without an offset, the presentation layer declares that operand, and the declared
-    units equal the axis units.
+    parameter only when its evidence names exactly one lookup operand without an offset, the
+    presentation layer declares that operand, the declared units equal the axis units, and the
+    two sides share a multiplier: the declaration repeats the axis expression in scale, or,
+    without that field, code or hardware establishes the axis scaling.
     """
     bindings = logparam_bindings(ovr)
-    if not bindings or x.get("scale_conf") not in ESTABLISHED_SCALE:
+    if not bindings:
         return None
     try:
         tokens = provenance.parse_evidence(
@@ -350,7 +360,9 @@ def axis_logparam(x, ovr):
     binding = bindings.get(operands[0].target_addr)
     if binding is None or binding.units != x["units"]:
         return None
-    return binding.id
+    if binding.scale is not None:
+        return binding.id if binding.scale == x["scale_expr"] else None
+    return binding.id if x.get("scale_conf") in ESTABLISHED_SCALE else None
 
 
 def axis_xml(kind, x, ovr, size_attr, indent=6):
