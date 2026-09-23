@@ -159,23 +159,18 @@ class SchemaStatusTest(unittest.TestCase):
         self.assertEqual(
             app.schema_status(dashboard), "Schema: VERIFIED, profile 7"
         )
-        self.record(dashboard, 3, profile_id=5)
-        self.assertEqual(
-            app.schema_status(dashboard),
-            "Schema: VERIFIED, retired profile 5",
-        )
-        self.record(dashboard, 4, profile_id=4)
+        self.record(dashboard, 3, profile_id=4)
         self.assertEqual(
             app.schema_status(dashboard), "Schema: VERIFIED, profile 4"
         )
         dashboard.schema_verified = False
         self.assertEqual(app.schema_status(dashboard), "Schema: waiting")
 
-    def test_the_status_field_reserves_the_retired_status(self):
+    def test_the_status_field_reserves_the_widest_profile_id(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        self.record(dashboard, 1, profile_id=0xFF)
         samples = {name: sample for name, *_rest, sample in app.STATUS_FIELDS}
-        self.assertEqual(
-            samples["schema_var"], "Schema: VERIFIED, retired profile 5"
-        )
+        self.assertEqual(samples["schema_var"], app.schema_status(dashboard))
 
 
 class PaletteTest(unittest.TestCase):

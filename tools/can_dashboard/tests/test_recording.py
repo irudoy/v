@@ -281,23 +281,18 @@ class MlgCalibrationGateTest(unittest.TestCase):
         self.bindings = recording.build_bindings("tuning")
 
     def test_every_declared_calibration_reaches_a_recorded_channel(self):
-        # A calibration converts one field of a known profile. A recording of
-        # a retired ID replays under the current field names, so the declared
-        # set spans the current profile and every retired one, and every
-        # current field that a calibration names reaches a channel.
+        # A calibration converts one field of the profile, and every field
+        # that a calibration names reaches a channel.
         dashboard = model.DashboardModel()
-        current = set(model.profile_field_names(dashboard.decoder.profile))
-        known = set(current)
-        for version in dashboard.decoder.versions.values():
-            known.update(model.profile_field_names(version))
+        fields = set(model.profile_field_names(dashboard.decoder.profile))
         declared = set(recording.MLG_CALIBRATIONS)
         calibrated = {
             binding.source
             for binding in self.bindings
             if binding.source in declared
         }
-        self.assertEqual(calibrated, declared & current)
-        self.assertLessEqual(declared, known)
+        self.assertEqual(calibrated, declared)
+        self.assertLessEqual(declared, fields)
 
     def test_channel_values_equal_dashboard_engineering_values(self):
         for binding in self.bindings:
@@ -309,35 +304,12 @@ class MlgCalibrationGateTest(unittest.TestCase):
             spec = binding.spec
             for raw in self.RAW_PROBES:
                 with self.subTest(field=spec.name, raw=raw):
-                    stored = recording.recorded_value(binding.source, raw)
                     # MegaLogViewer evaluates (raw + transform) * scale.
                     self.assertAlmostEqual(
-                        (stored + spec.transform) * spec.scale,
+                        (raw + spec.transform) * spec.scale,
                         calibration.apply(raw),
                         places=6,
                     )
-
-    def test_a_signed_view_records_the_signed_value(self):
-        for binding in self.bindings:
-            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
-            if calibration is None or not calibration.signed_bits:
-                continue
-            bits = calibration.signed_bits
-            with self.subTest(field=binding.spec.name):
-                self.assertEqual(
-                    recording.recorded_value(binding.source, (1 << bits) - 2),
-                    -2,
-                )
-                self.assertEqual(
-                    recording.recorded_value(
-                        binding.source, (1 << (bits - 1)) - 1
-                    ),
-                    (1 << (bits - 1)) - 1,
-                )
-                # A replayed signed value decodes to the same display value.
-                self.assertEqual(
-                    calibration.apply(-2), calibration.apply((1 << bits) - 2)
-                )
 
     def test_channel_names_carry_no_candidate_marker(self):
         for binding in self.bindings:

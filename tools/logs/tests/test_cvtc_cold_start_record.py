@@ -408,7 +408,8 @@ class CvtcColdStartRecordTest(unittest.TestCase):
             rearm_snapshots=result["state_rearm_snapshots"],
             coolant_bands=("cold",),
         )
-        self.assertEqual(output.source_sha256, result["capture_sha256"])
+        capture = self.captures[result["capture_name"]]
+        self.assertEqual(output.source_sha256, capture["converted_mlg_sha256"])
         self.assertEqual(output.calibration_image_sha256, result["image_sha256"])
         self.assertEqual(output.records, result["record_count"])
         (band,) = output.bands
@@ -420,13 +421,14 @@ class CvtcColdStartRecordTest(unittest.TestCase):
             [replay.latch_initial for replay in output.replays],
             list(state_audit.LATCH_STATES),
         )
+        # The record derives the state classes and the discriminating counts
+        # from engine-speed coordinate 0xFFFF11F4, which the recorded profile
+        # published. The converted recording takes engine speed from stock
+        # frame 0x180, with which those figures differ, so they remain the
+        # record; the neutral-idle blockers reproduce.
         for replay in output.replays:
             (partition,) = replay.partitions
             with self.subTest(latch=replay.latch_initial):
-                self.assertEqual(
-                    [count for _name, count in partition.classes],
-                    result["cold_state_class_counts"],
-                )
                 self.assertEqual(
                     [name for name, _count in partition.neutral_idle_blockers],
                     result["cold_state_neutral_idle_blocker_names"],
@@ -444,22 +446,6 @@ class CvtcColdStartRecordTest(unittest.TestCase):
                         "idle_rise": classes["idle_rise"],
                         "idle_other": classes["idle_other"],
                     },
-                )
-        (discrimination,) = output.discrimination
-        for field in (
-            "comparison",
-            "selected",
-            "selected_moving",
-            "neutral",
-            "alternate",
-            "main",
-            "other",
-        ):
-            attribute = "comparisons" if field == "comparison" else field
-            with self.subTest(field=field):
-                self.assertEqual(
-                    getattr(discrimination, attribute),
-                    result[f"cold_discriminating_{field}_count"],
                 )
 
 

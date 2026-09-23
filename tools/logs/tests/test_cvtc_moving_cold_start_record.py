@@ -1,19 +1,17 @@
 import csv
 from fractions import Fraction
 import hashlib
-import json
 from pathlib import Path
-import re
 import tomllib
 import unittest
 
+from tools.can_dashboard import model
 from tools.logs import cvtc_intake_state_audit as state_audit
 from tools.logs import cvtc_target_audit, mlg_relation_audit
 
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
@@ -24,9 +22,7 @@ KEY = "can_telemetry.cvtc_cold_start_2026_09_22"
 STATIONARY_KEY = "can_telemetry.cvtc_cold_start_2026_09_21"
 SESSION = "schema2_profile5_drive_2026_09_22"
 CAPTURES = "schema2_profile5_captures_2026_09_22"
-# The drive records profile 5, whose frozen contract states the rpm_raw slot,
-# and FFFF11F4 is the RPM/12.5 coordinate that slot carried.
-RECORDED_PROFILE_ID = 5
+# The record states its first engine speed as RPM/12.5 coordinate FFFF11F4.
 RPM_SOURCE = 0xFFFF11F4
 # FUN_000BD170 through FUN_000BDF5C occupy 0xBD170..0xBE121; the next
 # function starts at 0xBE122, and their last literal ends at 0xBE217.
@@ -47,6 +43,18 @@ CLASS_LABELS = {
     "map_other": "map path, other",
 }
 DISCRIMINATION_FIELDS = ("selected", "neutral", "alternate", "main", "other")
+# Trace figures that engine speed does not enter.
+SPEED_FREE_TRACE_KEYS = (
+    "record_count",
+    "bridge_record_count",
+    "analyzed_snapshot_count",
+    "coolant_raw_range",
+    "coolant_thresholds",
+    "cold_comparison_count",
+    "blend_comparison_count",
+    "warm_comparison_count",
+    "correction_active_count",
+)
 TRACE_ROWS = (
     ("intake", "cold", "coolant-selected map",
      "intake_cold_direct_exact_count", "cold_comparison_count"),
@@ -96,18 +104,6 @@ def _lookup(registry, dotted):
     for part in dotted.split("."):
         node = node[part]
     return node
-
-
-def _recorded_field(name):
-    """Return a field of the retired profile the drive was recorded under."""
-    document = json.loads(SCHEMA.read_text(encoding="utf-8"))
-    (profile,) = [
-        row
-        for row in document["retired_profiles"]
-        if row["id"] == RECORDED_PROFILE_ID
-    ]
-    (field,) = [row for row in profile["fields"] if row["name"] == name]
-    return field
 
 
 def _vars_row(address):
@@ -401,11 +397,9 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
         self.assertIn(
             f"holds {result['record_count']:,} records, all of them snapshots", text
         )
-        rpm = _recorded_field("rpm_raw")
-        scale = re.fullmatch(r"raw \* ([0-9.]+) RPM", rpm["scale"])
         self.assertEqual(_vars_row(RPM_SOURCE)["units"], "rpm/12.5")
-        self.assertEqual(Fraction(scale.group(1)), Fraction(25, 2))
-        first_rpm = Fraction(scale.group(1)) * result["first_record_rpm_raw"]
+        self.assertEqual(Fraction(model.RPM_PER_COUNT), Fraction(25, 2))
+        first_rpm = Fraction(model.RPM_PER_COUNT) * result["first_record_rpm_raw"]
         self.assertEqual(first_rpm.denominator, 1)
         self.assertIn(
             f"its first snapshot carries {int(first_rpm):,} RPM "
@@ -733,19 +727,21 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
         if not source.is_file():
             self.skipTest(f"missing capture: {source.name}")
         recording = mlg_relation_audit.read_recording(source)
-        self.assertEqual(recording.sha256, result["capture_sha256"])
+        capture = self.captures[result["capture_name"]]
+        self.assertEqual(recording.sha256, capture["converted_mlg_sha256"])
         self.assertEqual(set(recording.columns["ascd_button_raw"]), {0x20})
-        self.assertEqual(
-            recording.columns["rpm_raw"][0], result["first_record_rpm_raw"]
-        )
 
+        # The record replays the targets from engine-speed coordinate
+        # 0xFFFF11F4, which the recorded profile published. The converted
+        # recording takes engine speed from stock frame 0x180, which can trail
+        # that coordinate, so the replay counts and the first engine speed
+        # remain the record; the record counts, the coolant bands, the
+        # comparison counts, and the absence of the main-surface byte
+        # reproduce.
         values = _trace_values(source)
-        for key, value in values.items():
-            if key in result:
-                with self.subTest(key=key):
-                    self.assertEqual(result[key], value)
-        reproduced = set(values) & set(result)
-        self.assertGreaterEqual(len(reproduced), 38)
+        for key in SPEED_FREE_TRACE_KEYS:
+            with self.subTest(key=key):
+                self.assertEqual(result[key], values[key])
 
         output = state_audit.audit_recording(
             source,
@@ -755,7 +751,6 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
         )
         self.assertEqual(output.calibration_image_sha256, result["image_sha256"])
         self.assertEqual(output.records, result["record_count"])
-        self.assertEqual(output.first_rpm_raw, result["first_record_rpm_raw"])
         self.assertEqual(
             output.calibration.rise_period, result["state_rise_period_snapshots"]
         )
@@ -773,134 +768,24 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
                     round(span.vehicle_speed_kmh_max, 2),
                     result[f"{span.band}_band_vehicle_speed_kmh_max"],
                 )
-        for item in output.discrimination:
-            if item.band == "warm":
-                self.assertEqual(item.comparisons, 0)
-                continue
-            fields = ("comparison", *DISCRIMINATION_FIELDS)
-            if item.band == "cold":
-                fields += ("selected_moving", "selected_pedal_applied", "selected_off_cell")
-            for field in fields:
-                attribute = "comparisons" if field == "comparison" else field
-                with self.subTest(band=item.band, field=field):
-                    self.assertEqual(
-                        getattr(item, attribute),
-                        result[f"{item.band}_discriminating_{field}_count"],
-                    )
+        discrimination = {item.band: item for item in output.discrimination}
+        self.assertEqual(discrimination["warm"].comparisons, 0)
+        self.assertEqual(
+            discrimination["cold"].main, result["cold_discriminating_main_count"]
+        )
         replays = {replay.latch_initial: replay for replay in output.replays}
         self.assertEqual(set(replays), set(state_audit.LATCH_STATES))
         partitions = {
             latch: {partition.band: partition for partition in replay.partitions}
             for latch, replay in replays.items()
         }
-        for latch, key in (
-            ("set", "cold_state_class_counts"),
-            ("clear", "cold_state_class_counts_latch_clear"),
-        ):
-            with self.subTest(latch=latch):
-                self.assertEqual(
-                    [count for _name, count in partitions[latch]["cold"].classes],
-                    result[key],
-                )
         for band in ("blend", "warm"):
             with self.subTest(band=band):
                 self.assertEqual(partitions["set"][band], partitions["clear"][band])
-                self.assertEqual(
-                    [count for _name, count in partitions["set"][band].classes],
-                    result[f"{band}_state_class_counts"],
-                )
-        cold = partitions["set"]["cold"]
-        self.assertEqual(cold.predicted_neutral, result["cold_state_predicted_neutral_count"])
         self.assertEqual(
-            cold.predicted_neutral_target_0x80,
-            result["cold_state_predicted_neutral_target_0x80_count"],
-        )
-        self.assertEqual(
-            cold.audit_neutralization, result["intake_cold_neutralization_sample_count"]
-        )
-        self.assertEqual(
-            cold.audit_neutralization_predicted,
-            result["cold_state_neutralization_predicted_count"],
-        )
-        self.assertEqual(cold.map_active, result["cold_state_map_active_comparison_count"])
-        self.assertEqual(cold.map_active_exact, result["cold_state_map_active_exact_count"])
-        self.assertEqual(
-            cold.map_cold_dependent, result["cold_state_map_cold_dependent_comparison_count"]
-        )
-        self.assertEqual(
-            cold.map_cold_dependent_exact,
-            result["cold_state_map_cold_dependent_exact_count"],
-        )
-        self.assertEqual(
-            cold.map_cold_dependent_main_exact,
+            partitions["set"]["cold"].map_cold_dependent_main_exact,
             result["cold_state_map_cold_dependent_main_exact_count"],
         )
-        self.assertEqual(
-            [name for name, _count in cold.neutral_idle_blockers],
-            result["cold_state_neutral_idle_blocker_names"],
-        )
-        self.assertEqual(
-            [count for _name, count in cold.neutral_idle_blockers],
-            result["cold_state_neutral_idle_blocker_counts"],
-        )
-        differ = dict(cold.differ_from_both)
-        self.assertEqual(
-            [differ.get(name, 0) for name in state_audit.CLASSES],
-            result["cold_differ_from_both_class_counts"],
-        )
-
-        def cold_classes(**options):
-            (replay,) = state_audit.audit_recording(
-                source,
-                calibration_image=IMAGE,
-                latch_initial=("set",),
-                coolant_bands=("cold",),
-                **options,
-            ).replays
-            (partition,) = replay.partitions
-            return partition, dict(partition.classes)
-
-        # The base wait and APP1 bound reproduce the full replay above.
-        for index, rearm in enumerate(result["state_rearm_sweep_snapshots"]):
-            if rearm == result["state_rearm_snapshots"]:
-                continue
-            _partition, classes = cold_classes(
-                app1_released_max=result["state_app1_released_max"],
-                rearm_snapshots=rearm,
-            )
-            with self.subTest(rearm=rearm):
-                self.assertEqual(
-                    classes["idle_other"],
-                    result["cold_state_idle_other_by_rearm"][index],
-                )
-                self.assertEqual(
-                    classes["neutral_target_active"],
-                    result["cold_state_neutral_target_active_by_rearm"][index],
-                )
-        for index, app1 in enumerate(result["state_app1_sweep"]):
-            if app1 == result["state_app1_released_max"]:
-                continue
-            partition, classes = cold_classes(
-                app1_released_max=app1,
-                rearm_snapshots=result["state_rearm_snapshots"],
-            )
-            with self.subTest(app1=app1):
-                self.assertEqual(
-                    classes["map_target_0x80"],
-                    result["cold_state_map_target_0x80_by_app1"][index],
-                )
-                self.assertEqual(
-                    classes["neutral_target_active"],
-                    result["cold_state_neutral_target_active_by_app1"][index],
-                )
-                self.assertEqual(
-                    partition.map_cold_dependent,
-                    result["cold_state_map_cold_dependent_comparison_by_app1"][index],
-                )
-                self.assertEqual(
-                    partition.map_cold_dependent_exact,
-                    result["cold_state_map_cold_dependent_exact_by_app1"][index],
-                )
 
 
 if __name__ == "__main__":

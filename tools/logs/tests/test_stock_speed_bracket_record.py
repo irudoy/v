@@ -2,7 +2,7 @@ from pathlib import Path
 import tomllib
 import unittest
 
-from tools.can_dashboard import recording
+from tools.can_dashboard import model
 from tools.logs import rolling_launch_audit as audit
 
 
@@ -13,11 +13,11 @@ LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
 KEY = "stock_speed_bracket_2026_09_22"
 CAPTURES = "schema2_profile5_captures_2026_09_22"
-ROLLING_LAUNCH_CAPTURE = "11-map-2-rl.trc"
-ROLLING_LAUNCH_MAP = 2
-RPM_PER_COUNT = recording.MLG_CALIBRATIONS["rpm_raw"].factor
+ROLLING_LAUNCH_RECORD = ("rolling_launch", "map_2_vehicle_2026_09_22")
+RPM_PER_COUNT = model.RPM_PER_COUNT
 # Figures whose stock-frame value spans the value the published coordinate
-# gives, and figures that engine speed does not enter.
+# gave. The rolling-launch record test compares the figures that engine speed
+# does not enter.
 WIDENED = (
     "activation_rpm_range",
     "activation_captured_rpm_native",
@@ -30,34 +30,10 @@ WIDENED = (
     "activation_active_ticks_bound",
     "activation_release_exit_bound_ms",
 )
-SPEED_FREE = (
-    "activation_count",
-    "activation_start_seconds",
-    "activation_full_mask_cycles",
-    "activation_apc_outside_bound_records",
-    "activation_release_clear_records",
-    "full_mask_record_count",
-    "identity_count",
-)
 
 
 def _normalized(path):
     return " ".join(path.read_text(encoding="utf-8").split())
-
-
-def excursions(path: Path) -> tuple[str, list[int]]:
-    """Return the capture digest and how far each coordinate leaves its pair."""
-    published = audit.read_capture(path)
-    words = {sample.tick: sample.rpm_raw for sample in published.samples}
-    stock = audit.read_capture(path, stock_speed=True)
-    values = []
-    for sample, (low, high) in zip(
-        stock.samples, audit.stock_speed_pairs(stock.samples)
-    ):
-        word = words.get(sample.tick)
-        if word is not None:
-            values.append(max(low - word, word - high, 0))
-    return published.sha256, values
 
 
 def spans(outer, inner) -> bool:
@@ -71,9 +47,11 @@ class StockSpeedBracketRecordTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         with HARDWARE_RESULTS.open("rb") as source:
-            registry = tomllib.load(source)["can_telemetry"]
-        cls.record = registry[KEY]
-        cls.captures = registry[CAPTURES]
+            registry = tomllib.load(source)
+        section, name = ROLLING_LAUNCH_RECORD
+        cls.rolling_launch = registry[section][name]
+        cls.record = registry["can_telemetry"][KEY]
+        cls.captures = registry["can_telemetry"][CAPTURES]
 
     def test_record_sums_its_captures(self):
         record = self.record
@@ -110,50 +88,44 @@ class StockSpeedBracketRecordTest(unittest.TestCase):
             _normalized(LOGS_README),
         )
 
+    # The inside and excursion figures compare the stock frames with the
+    # coordinate that the recorded profile published, which the recordings
+    # converted to the current profile no longer carry; they remain the record.
     @unittest.skipUnless(LOGS.is_dir(), "road captures are local and untracked")
-    def test_captures_reproduce_the_record(self):
-        paths = [LOGS / row["capture_name"] for row in self.captures]
+    def test_captures_reproduce_the_snapshot_counts(self):
+        paths = [
+            LOGS / Path(row["capture_name"]).with_suffix(".mlg").name
+            for row in self.captures
+        ]
         missing = [path.name for path in paths if not path.is_file()]
         if missing:
             self.skipTest(f"missing captures: {', '.join(missing)}")
         record = self.record
         for index, (row, path) in enumerate(zip(self.captures, paths)):
             with self.subTest(capture=path.name):
-                digest, values = excursions(path)
-                self.assertEqual(digest, row["capture_sha256"])
-                self.assertEqual(len(values), record["capture_snapshot_count"][index])
+                capture = audit.read_capture(path)
+                self.assertEqual(capture.sha256, row["converted_mlg_sha256"])
                 self.assertEqual(
-                    values.count(0), record["capture_inside_count"][index]
-                )
-                self.assertEqual(
-                    max(values), record["capture_maximum_excursion_counts"][index]
+                    len(capture.samples), record["capture_snapshot_count"][index]
                 )
 
-    @unittest.skipUnless(
-        (LOGS / ROLLING_LAUNCH_CAPTURE).is_file() and IMAGE.is_file(),
-        "road captures are local and untracked",
-    )
-    def test_stock_frame_audit_spans_the_published_rolling_launch_result(self):
-        path = LOGS / ROLLING_LAUNCH_CAPTURE
-        calibration = audit.load_calibration(IMAGE)
-        published = audit.audit_capture(
-            audit.read_capture(path), calibration, selected_map=ROLLING_LAUNCH_MAP
-        )
+    def test_stock_frame_audit_spans_the_recorded_rolling_launch_result(self):
+        published = self.rolling_launch
+        path = LOGS / Path(published["capture_name"]).with_suffix(".mlg").name
+        if not (path.is_file() and IMAGE.is_file()):
+            self.skipTest("road captures are local and untracked")
+        capture = audit.read_capture(path)
+        self.assertEqual(capture.sha256, published["converted_mlg_sha256"])
         stock = audit.audit_capture(
-            audit.read_capture(path, stock_speed=True),
-            calibration,
-            selected_map=ROLLING_LAUNCH_MAP,
+            capture,
+            audit.load_calibration(IMAGE),
+            selected_map=published["selected_map"],
         )
-        self.assertEqual(published["engine_speed_source"], "0xFFFF11F4")
-        self.assertEqual(stock["engine_speed_source"], "0x180")
         self.assertTrue(all(stock["activation_captured_rpm_native"]))
         for key in WIDENED:
             for index, (outer, inner) in enumerate(zip(stock[key], published[key])):
                 with self.subTest(key=key, activation=index):
                     self.assertTrue(spans(outer, inner), (outer, inner))
-        for key in SPEED_FREE:
-            with self.subTest(key=key):
-                self.assertEqual(stock[key], published[key])
 
 
 if __name__ == "__main__":

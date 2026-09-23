@@ -514,7 +514,7 @@ observed_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_name = "11-map-2-rl.trc"
 capture_sha256 = "ef8dfd08cc7f6aff66013091d30f80af9abcd19423db4f3ebe6908cf76e1f28d"
-converted_mlg_sha256 = "9da5517ae1d86d3a36a4765e20eb27078b7854eca34174133ecef842ac392e13"
+converted_mlg_sha256 = "76c5ec21313b44e47c9df6f914ef269c359f62b0798dd30682ec35b0a5e78ce2"
 capture_registry = "can_telemetry.schema2_profile5_captures_2026_09_22"
 feedback_record = "map_switching.feedback_vehicle_2026_09_22"
 audit_tool = "tools/logs/rolling_launch_audit.py"
@@ -921,7 +921,7 @@ calibration_basis = "the image carries registered-stock intake cold surface 0xB5
 software_status = "pass"
 hardware_status = "functional_pass_with_unexercised_boundaries"
 mlg_equivalence_trc_captures = ["2-stationary-cruise-on-off.trc", "2-stationary-map-1-3-hold.trc", "2-stationary-parking-map-1-3-hold.trc", "3-map-1-3-drive-brake.trc", "3-map-1-stops.trc", "3-map-3-stops.trc", "9-turn-off.trc"]
-mlg_equivalence_inputs = "the converted_mlg_sha256 recording registered for each capture"
+mlg_equivalence_inputs = "the MLG that tools/logs/trc_to_mlg.py converted from each capture"
 mlg_equivalence_record_count = 94684
 mlg_equivalence_bridge_record_count = 219
 mlg_equivalence_snapshot_count = 94436
@@ -1216,6 +1216,7 @@ result = "every record carries profile 5 with CRC 0xE144 and a verified schema, 
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "0-mixed-map-3.mlg"
 capture_sha256 = "d3fd614656d13f60686b83109ab57c7450be07afaf92b71015a022db76e991eb"
+converted_mlg_sha256 = "49e8840397bce4307f552bc4df92afa557dcbf38f0d920b615687f42aa9ccd5c"
 record_count = 40298
 span_seconds = 412.634
 peak_stock_can_rpm = 6225
@@ -1223,6 +1224,7 @@ peak_stock_can_rpm = 6225
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "1-crank-cold.mlg"
 capture_sha256 = "8f0dbb2d8610949d6035ea904fe52662a1e1c01be1aeb754a70894512e1d5f96"
+converted_mlg_sha256 = "0c7e3bd464c3f4efd921c8684717d314dd642a80896324f8d08d033d43b77d4f"
 record_count = 71706
 span_seconds = 734.250
 peak_stock_can_rpm = 4031
@@ -1230,7 +1232,7 @@ peak_stock_can_rpm = 4031
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "2-stationary-cruise-on-off.trc"
 capture_sha256 = "c5756798799a3587978e823b7dcb766f27c8e883a49e89d0854386e8b32df0b7"
-converted_mlg_sha256 = "586fe3e0a57d3f2125c054020e8f11f6c85b6a1b0da037e01f49bf69e786780f"
+converted_mlg_sha256 = "3588f75492e35d72c4a66df1bd0e5556bee8da0cf6257e1033e76e3ac354684c"
 record_count = 3508
 span_seconds = 35.909
 peak_stock_can_rpm = 675
@@ -1238,7 +1240,7 @@ peak_stock_can_rpm = 675
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "2-stationary-map-1-3-hold.trc"
 capture_sha256 = "8253665cd99489b26a3ca03cdb5aa07c832945b0289f9ecd967458744ec8c0ba"
-converted_mlg_sha256 = "8a9e0d182756112a93ede688dd20ba8467df3852ffc91d38fd9e4d83ecb4fb71"
+converted_mlg_sha256 = "3effbb9c2b6894a20357636f38e7c5c4cd5724800622cdb066cba9cde32cd91d"
 record_count = 30814
 span_seconds = 315.501
 peak_stock_can_rpm = 3916
@@ -1246,7 +1248,7 @@ peak_stock_can_rpm = 3916
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "2-stationary-parking-map-1-3-hold.trc"
 capture_sha256 = "577ce99c756ec0c736c460d77bb3e6587a212bf6cf31ed965caeec7205adc3cf"
-converted_mlg_sha256 = "2aa2a6a898bfada8e80db830a7f84bb4d0ec450685238fe51a99810db9e7f1d3"
+converted_mlg_sha256 = "cbe8f4ff750479f4f8d454cf5bd99d16358df7f5cfda11c1750812b24e17adf6"
 record_count = 18478
 span_seconds = 189.192
 peak_stock_can_rpm = 3331
@@ -1254,7 +1256,7 @@ peak_stock_can_rpm = 3331
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "3-map-1-3-drive-brake.trc"
 capture_sha256 = "e7d726358048c6509ae48bccddb804203a789fb36abed0bb2766b1f8c7fd61b9"
-converted_mlg_sha256 = "75bee1ac7d9b2f6d69a899ce31cc6da58a1cefa4bbc8385137bcbe7f6bcee3e9"
+converted_mlg_sha256 = "4c6767a3475a3b35f6d53012bb8ecb4d216998edde57532c2a3586907f1ab8d5"
 record_count = 5193
 span_seconds = 53.165
 peak_stock_can_rpm = 822
@@ -1262,7 +1264,7 @@ peak_stock_can_rpm = 822
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "3-map-1-stops.trc"
 capture_sha256 = "1a160b4e4942b631ccfedda6d9401faed90caa0734f23ce6c2c79b55ec16b07b"
-converted_mlg_sha256 = "8770232ff4a582332ee17039c5bfe69b63795646e2d6a3513c701bd0a34301fc"
+converted_mlg_sha256 = "09df9fcf63ad0b28d35a75f654ef9ba4325e00b0e57298260aaccd2d5df00a4c"
 record_count = 17528
 span_seconds = 179.476
 peak_stock_can_rpm = 3978
@@ -1270,7 +1272,7 @@ peak_stock_can_rpm = 3978
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "3-map-3-stops.trc"
 capture_sha256 = "6ff31bf1f19d4989b47ca6424063b37cfef8b0c23dc6ef9be5c2951b0cf1afbe"
-converted_mlg_sha256 = "093101602d06d371e8cb58b5c10162d6ceea89f83f0d59edb1f4301d38fcd741"
+converted_mlg_sha256 = "b52e236d439f339750f32195053c9875b74b2f39a02b5c845298e86bfc33294f"
 record_count = 12952
 span_seconds = 132.616
 peak_stock_can_rpm = 4388
@@ -1278,6 +1280,7 @@ peak_stock_can_rpm = 4388
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "4-starts-ab.mlg"
 capture_sha256 = "ed39b1cecd4b07c0c689304849c43ca6f66c57cbb1ad01f2303dd2891521b406"
+converted_mlg_sha256 = "35347596859f47f562d6bae8324dc2f741af41bb6615faf725d670308cf1dd27"
 record_count = 50742
 span_seconds = 519.625
 peak_stock_can_rpm = 4197
@@ -1285,6 +1288,7 @@ peak_stock_can_rpm = 4197
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "6-map-1-3-4-limiter.mlg"
 capture_sha256 = "b07fd8c73c35267f9216f745274d5ea8d45fc4821e2012d506f6ed509d7a674f"
+converted_mlg_sha256 = "40f4c4306a3439593f887adcaf9b2a13316a6dde071f426967ef286e1d591a06"
 record_count = 21713
 span_seconds = 222.316
 peak_stock_can_rpm = 7781
@@ -1292,7 +1296,7 @@ peak_stock_can_rpm = 7781
 [[can_telemetry.schema2_profile5_captures]]
 capture_name = "9-turn-off.trc"
 capture_sha256 = "0847001e4be811b9648b943ef5b817ebcac40458902200aec9a9a68760ed979d"
-converted_mlg_sha256 = "6e58cbd4284f07ed4d5e2e2a84d2c41acd23bb02e72c87d0ba2b178ce0dccdee"
+converted_mlg_sha256 = "6736235e2110d99aa2cedccaf87f4fa9762a841664f6e4d788556bb189de7f19"
 record_count = 6211
 span_seconds = 127.308
 peak_stock_can_rpm = 1228
@@ -1343,6 +1347,7 @@ result = "every record that carries the identity page reports profile 5 with CRC
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "10-map-1-cold.mlg"
 capture_sha256 = "10071d018b6f1c956cf2600447b290b13c5e5e59f365d44f0d80c2577dc3328f"
+converted_mlg_sha256 = "b4fd273c0e1be00dd91abdaf2d49d812f54df0da4892c866abf62ff793513f70"
 record_count = 52622
 span_seconds = 538.897
 peak_stock_can_rpm = 3856
@@ -1350,7 +1355,7 @@ peak_stock_can_rpm = 3856
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "5-shifts-map-3.trc"
 capture_sha256 = "0248a39e2177a0b234a492a092c1e0cdb3e013632ec5255cfb87598389449f19"
-converted_mlg_sha256 = "18656528bf16c588160e55f341867141bd9d4a7b58efd41b85d33cf0a8224973"
+converted_mlg_sha256 = "3e4f57956f7e85b477e41361665d15c283e172bc3f8a9fb57cfbfa721510bc67"
 record_count = 15759
 span_seconds = 161.473
 peak_stock_can_rpm = 5278
@@ -1358,7 +1363,7 @@ peak_stock_can_rpm = 5278
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "5-downshifts-map-3.trc"
 capture_sha256 = "494c2209f148c4365a26dc27e0a8d25c92bfa2243cdbd23c0c6bff68154b130c"
-converted_mlg_sha256 = "7cf7451bc500604a23b9dcc55b63633b1a99bd197abb82881c05dee00d12067e"
+converted_mlg_sha256 = "2506949c8f0ae48fa09f30410d1bfc526f11d5f5537cb4b528805a9b71e37316"
 record_count = 17618
 span_seconds = 180.527
 peak_stock_can_rpm = 6768
@@ -1366,6 +1371,7 @@ peak_stock_can_rpm = 6768
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "7-cruise.mlg"
 capture_sha256 = "53ff07299c8aa03ea80644f419ad0df20425ccf74a0f711a91999d008ce660bc"
+converted_mlg_sha256 = "22247723cba1c81a3c3a8fd056ea5fbd086b09453f3cb51a80535c67b6305036"
 record_count = 65329
 span_seconds = 669.322
 peak_stock_can_rpm = 4081
@@ -1373,6 +1379,7 @@ peak_stock_can_rpm = 4081
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "ex-torque-2nd-gear.mlg"
 capture_sha256 = "559a4beb60da9f425eb733fc6821c9326c2fd662519a11001579b2adfb69cbfb"
+converted_mlg_sha256 = "36bd2d2fed98101415a9ed381789903cbb23baaa29dd7f3cab13825c52c37695"
 record_count = 29585
 span_seconds = 303.138
 peak_stock_can_rpm = 7006
@@ -1380,7 +1387,7 @@ peak_stock_can_rpm = 7006
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "11-map-2-rl.trc"
 capture_sha256 = "ef8dfd08cc7f6aff66013091d30f80af9abcd19423db4f3ebe6908cf76e1f28d"
-converted_mlg_sha256 = "9da5517ae1d86d3a36a4765e20eb27078b7854eca34174133ecef842ac392e13"
+converted_mlg_sha256 = "76c5ec21313b44e47c9df6f914ef269c359f62b0798dd30682ec35b0a5e78ce2"
 record_count = 17324
 span_seconds = 177.470
 peak_stock_can_rpm = 5268
@@ -1388,6 +1395,7 @@ peak_stock_can_rpm = 5268
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-0-100-map-1-1.mlg"
 capture_sha256 = "1082a663e457008f6cb0865b28fab9660b42d12b8d37bcb2247821cdb79a5f3a"
+converted_mlg_sha256 = "09b9291ec2c1639c3da6fe6ff820f437b79577e3fa7dd34be7a2fbd782779b46"
 record_count = 6390
 span_seconds = 65.453
 peak_stock_can_rpm = 7037
@@ -1395,6 +1403,7 @@ peak_stock_can_rpm = 7037
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-0-100-map-3-1.mlg"
 capture_sha256 = "e7b2cc3f158c3e2e214e3b5738ea8311f2253caa549a2ddcb9478599637fc414"
+converted_mlg_sha256 = "680580f54b8fa796a3f6f3c3cab07cd2b314ec8da3b52848dff5d5b72f013c22"
 record_count = 8191
 span_seconds = 83.913
 peak_stock_can_rpm = 7140
@@ -1402,6 +1411,7 @@ peak_stock_can_rpm = 7140
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-0-100-map-1-2.mlg"
 capture_sha256 = "0157a682adbd8134e898047daa80b76ceedbd2925b9737f9270047e444923529"
+converted_mlg_sha256 = "a2316bd520cce539cc8ae8b8bde6250b46c1c31d7715aab45a8dc38474925c4f"
 record_count = 3167
 span_seconds = 32.440
 peak_stock_can_rpm = 7140
@@ -1409,6 +1419,7 @@ peak_stock_can_rpm = 7140
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-3rd-gear-map-1-1.mlg"
 capture_sha256 = "ad892245835b94fa5fdd64c77507fa6f96ebcca7f26f2a0a6422753dc0e3a177"
+converted_mlg_sha256 = "cdf5a0ebf068a84f7b387487efe0d9a8b48ea0d606101f18f6232f14dae41f8a"
 record_count = 3949
 span_seconds = 40.450
 peak_stock_can_rpm = 7140
@@ -1416,6 +1427,7 @@ peak_stock_can_rpm = 7140
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-3rd-gear-map-1-2.mlg"
 capture_sha256 = "c2a6e7d6634261a7e382f40d093814785c429d8e5f0c1ec2e75811304902295a"
+converted_mlg_sha256 = "d713b27727e52e492a7449de8285b91d899290188cff4539a9600240925094b4"
 record_count = 3032
 span_seconds = 31.055
 peak_stock_can_rpm = 6612
@@ -1423,6 +1435,7 @@ peak_stock_can_rpm = 6612
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-3rd-gear-map-3-1.mlg"
 capture_sha256 = "214dbdf18429ac7b4af19a2881ba0ea9ea97cb5591fd88e5ff577077c9eec1bf"
+converted_mlg_sha256 = "cef560806c88854b654e8ec61404152423e7b6694abe9baac02aa5ba439cafef"
 record_count = 6568
 span_seconds = 67.287
 peak_stock_can_rpm = 7412
@@ -1430,6 +1443,7 @@ peak_stock_can_rpm = 7412
 [[can_telemetry.schema2_profile5_captures_2026_09_22]]
 capture_name = "xxx-3rd-gear-map-3-2.mlg"
 capture_sha256 = "351b11e9b33018dade9375b5e6c044162ea84e8672ef46430371dce472383f2d"
+converted_mlg_sha256 = "9a949efbcaa6ec8ce3deab0ce1f5e07b236ee2bbdb19e57b8fe0af0a3d6b7eba"
 record_count = 5123
 span_seconds = 52.480
 peak_stock_can_rpm = 7612
@@ -1444,6 +1458,7 @@ hardware_scope = "whole-bus load, stock-frame cadence, and group timing of the p
 audit_tool = "tools/logs/peak_trc_audit.py"
 nominal_bitrate = 500000
 candidate_id = 0x6F0
+page_count = 11
 stream_theoretical_load_percent = [23.848, 29.004]
 error_frame_recording = "enabled"
 planning_baseline_capture = "startup.trc"
@@ -1566,7 +1581,7 @@ tool = "tools/logs/ltft_publication_audit.py"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 session = "can_telemetry.schema2_profile5_drive_2026_09_22"
 capture_registry = "can_telemetry.schema2_profile5_captures_2026_09_22"
-inputs = "the MLG of each registered capture, which for a TRC capture is the recording registered as its converted_mlg_sha256"
+inputs = "the MLG of each registered capture, which for a TRC capture is the recording that tools/logs/trc_to_mlg.py converted from it"
 calibration_basis = "the image and the registered stock ROM hold identical bytes at 0x4F736..0x4F758, 0x57900..0x58700, and 0x5911C..0x59240 and at every constant the tool reads"
 publication_clamp_percent = [90, 110]
 cell_bounds_percent = [90, 110]

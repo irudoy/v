@@ -57,12 +57,10 @@ python3 tools/logs/can_telemetry.py \
 The schema-2 `tuning` profile requires pages 0 through 10. It starts with
 `schema_verified=false` and enables engineering-unit transforms only after
 page 9 context tag 3 reports the exact protocol version, profile ID, and
-profile CRC16. The schema declares the current profile ID and keeps the frozen
-contract of every retired ID, so a run that reports retired profile 5 with its
-own CRC16 decodes with the fields of profile 5. A later health mismatch
-disables conversion and increments the reported mismatch counter. Raw source values remain present in every accepted
-snapshot; transforms are emitted only for scales explicitly declared by the
-schema.
+profile CRC16 of the schema. A later health mismatch disables conversion and
+increments the reported mismatch counter. Raw source values remain present in
+every accepted snapshot; transforms are emitted only for scales explicitly
+declared by the schema.
 
 Fuel-trim words retain the firmware's Q8.8 absolute-percent representation,
 whose neutral value is 100.00%. The engineering correction emitted by the
@@ -347,13 +345,10 @@ channels of a dashboard MLVLG recording. Channels are matched to their wire
 sources through the recorder field table, so any recording with the schema-2
 `tuning` layout is accepted, and every replay constant, curve, and axis is
 read from the calibration image. Engine speed in every relation is the RPM/12.5
-coordinate `0xFFFF11F4`. A recording of profile 7, which does not publish it,
-takes it from stock CAN RPM as `(round(8 * rpm) // 25) >> 2`, because frame
-`0x180` carries `25 * 0xFFFF11EE` and the coordinate is `0xFFFF11EE >> 2`. The
-relations are:
+coordinate `0xFFFF11F4`, which the audit takes from stock CAN RPM as
+`(round(8 * rpm) // 25) >> 2`, because frame `0x180` carries `25 * 0xFFFF11EE`
+and the coordinate is `0xFFFF11EE >> 2`. The relations are:
 
-- stock CAN RPM against the RPM/12.5 word in a recording that publishes the
-  word, with the share of records whose stock value reproduces it;
 - the live intake-VTC duty pair against its scheduler latch, the duty
   command pair;
 - intake and exhaust actual positions against a target unchanged for the
@@ -474,13 +469,12 @@ python3 tools/logs/rolling_launch_audit.py \
   the first `ACTIVE` record and by every such transition. Clear records after
   the release, after the earliest possible timeout, or at an RPM word below
   the configured minimum do not bound the window.
-- Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM. A
-  capture whose snapshots omit it takes the word from stock frame `0x180`,
-  which is sampled at another instant of the cycle, and every RPM word above
-  becomes the interval between the frames recorded with the snapshot and with
-  the next one, widened by 8 counts, 100 RPM, beyond the excursion that
-  registry entry `can_telemetry.stock_speed_bracket_2026_09_22` records.
-  `engine_speed_source` names the source.
+- Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM, which
+  the audit takes from stock frame `0x180`. The frame is sampled at another
+  instant of the cycle, so every RPM word above is the interval between the
+  frames recorded with the snapshot and with the next one, widened by 8
+  counts, 100 RPM, beyond the excursion that registry entry
+  `can_telemetry.stock_speed_bracket_2026_09_22` records.
 - Full-mask cycles are counted inside the CANCEL hold and after its release,
   and full-mask records outside every activation window are counted
   separately.
@@ -647,11 +641,7 @@ the current telemetry field table. Channel identity, units, display digits,
 category, and MegaLogViewer scaling live in the header, so a recording adopts
 corrected calibrations without touching its data blocks. Field types and record
 layout are preserved, and a channel the current table does not declare keeps
-its recorded descriptor. A channel whose calibration reads the raw value as
-signed also keeps its recorded descriptor when the log stores a value that the
-signed view reads as negative. The current recorder stores the signed value,
-and a descriptor's scale and transform cannot reinterpret an unsigned one; the
-tool lists such channels.
+its recorded descriptor.
 
 ```bash
 python3 tools/logs/mlg_restamp.py --dry-run tmp/*.mlg
@@ -662,9 +652,10 @@ Channels are matched by name with the candidate marker removed, so a log
 written before the marker moved from names to units is still recognised. The
 rewritten file is validated before it atomically replaces the original.
 
-The current decoder and converter intentionally reject historical schema-1
-`core32` and `wide54` captures. Those logs require a repository revision whose
-generated schema matches their recorded profile CRC.
+The decoder and `trc_to_mlg.py` verify only the current profile, so a capture
+of an earlier profile requires a repository revision whose generated schema
+matches its recorded profile CRC. `mlg_relayout.py` carries a dashboard
+recording of an earlier profile into the current channel layout.
 
 ## MLG record retiming
 
@@ -694,10 +685,10 @@ the real gap across the restart is not recorded in it.
 `mlg_relayout.py` carries a dashboard MLG recording into the channel layout
 that the recorder writes for the current profile. A recorded channel whose
 name, without the candidate marker, names a current channel keeps every
-recorded value, and a signed slot stored unsigned takes its signed value. A
-current channel the recording lacks reads `NaN` in every record, as the
-recorder writes a field it has not received, and a recorded channel the
-current profile does not bind is left out; the tool lists both sets.
+recorded value. A current channel the recording lacks reads `NaN` in every
+record, as the recorder writes a field it has not received, and a recorded
+channel the current profile does not bind is left out; the tool lists both
+sets.
 
 ```bash
 python3 tools/logs/mlg_relayout.py tmp/drive.mlg --output-dir tmp/current

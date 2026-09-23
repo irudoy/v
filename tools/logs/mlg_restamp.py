@@ -4,11 +4,9 @@
 Channel identity, units, and MegaLogViewer scaling live in the header, so a
 recorded log adopts corrected calibrations without rewriting its data blocks.
 Field types and record layout are preserved; a channel that the current table
-does not declare keeps its existing descriptor, and a channel that an earlier
-recorder named differently takes its current name. A channel whose calibration
-reads its slot as signed also keeps its descriptor when the log stores a value
-that the signed view reads as negative: the recorder stores such a value
-signed, and scale and transform cannot reinterpret an unsigned one.
+does not declare keeps its existing descriptor, and a channel whose name
+differs from the current one only by the candidate marker takes its current
+name.
 """
 
 from __future__ import annotations
@@ -46,7 +44,6 @@ class RestampSummary:
     changed: tuple[FieldChange, ...]
     unmatched: tuple[str, ...]
     written: bool
-    unsigned: tuple[str, ...] = ()
 
 
 def _stored_float(value: float) -> float:
@@ -56,8 +53,7 @@ def _stored_float(value: float) -> float:
 
 
 def match_key(name: str) -> str:
-    """Return the identity a channel keeps across candidate-marker moves
-    and renames."""
+    """Return the identity a channel keeps across candidate-marker moves."""
 
     return recording.current_channel_name(name)
 
@@ -67,35 +63,8 @@ def current_bindings(
 ) -> dict[str, recording.FieldBinding]:
     return {
         match_key(binding.spec.name): binding
-        for binding in recording.known_bindings(profile, schema_path)
+        for binding in recording.build_bindings(profile, schema_path)
     }
-
-
-def _unsigned_records(data, fields, sources) -> set[int]:
-    """Return the channels that store a value their signed view reads as negative."""
-
-    limits = {}
-    for index, source in enumerate(sources):
-        calibration = recording.MLG_CALIBRATIONS.get(source)
-        if calibration is not None and calibration.signed_bits:
-            limits[index] = 1 << (calibration.signed_bits - 1)
-    if not limits:
-        return set()
-    record = struct.Struct(
-        ">" + "".join(mlvlg.FIELD_STRUCTS[field.field_type][1:] for field in fields)
-    )
-    found = set()
-    offset = mlvlg.MLG_HEADER_SIZE + len(fields) * mlvlg.MLG_FIELD_SIZE
-    while offset < len(data):
-        if data[offset] != 0:
-            offset += 4 + mlvlg.MLG_MARKER_MESSAGE_SIZE
-            continue
-        values = record.unpack_from(data, offset + 4)
-        offset += 4 + record.size + 1
-        for index, limit in limits.items():
-            if values[index] >= limit:
-                found.add(index)
-    return found
 
 
 def restamp(
@@ -123,23 +92,14 @@ def restamp(
         )
     ]
     targets = [bindings.get(match_key(field.name)) for field in fields]
-    unsigned_records = _unsigned_records(
-        data,
-        fields,
-        [None if target is None else target.source for target in targets],
-    )
 
     changed = []
     unmatched = []
-    unsigned = []
     for index, (before, binding) in enumerate(zip(fields, targets)):
         start = mlvlg.MLG_HEADER_SIZE + index * mlvlg.MLG_FIELD_SIZE
         end = start + mlvlg.MLG_FIELD_SIZE
         if binding is None:
             unmatched.append(before.name)
-            continue
-        if index in unsigned_records:
-            unsigned.append(before.name)
             continue
         target = binding.spec
         after = replace(
@@ -176,7 +136,6 @@ def restamp(
         changed=tuple(changed),
         unmatched=tuple(unmatched),
         written=written,
-        unsigned=tuple(unsigned),
     )
 
 
@@ -244,11 +203,6 @@ def main(argv=None) -> int:
                 print(
                     "  undeclared channels kept as recorded: "
                     + ", ".join(summary.unmatched)
-                )
-            if summary.unsigned:
-                print(
-                    "  signed channels with unsigned records kept as "
-                    "recorded: " + ", ".join(summary.unsigned)
                 )
     except (mlvlg.MlvlgError, OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)

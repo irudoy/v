@@ -54,23 +54,19 @@ class Snapshot:
     context_name: str | None
     schema_verified: bool
     timestamp: float | None
-    # The profile ID the health context identified for this run, or None
-    # while the run has not published an ID the schema declares.
+    # The profile ID the health context of this run verified, or None until
+    # the run publishes the identity of the selected profile.
     profile_id: int | None = None
 
 
 @dataclass(frozen=True)
 class Layout:
-    """Byte placement of the fields one decoder state reads.
+    """Byte placement of the fields of one profile.
 
     ``fixed`` holds (field, page, offset) and ``contexts`` maps (page, tag)
-    to the context name and its (field, offset) pairs. The layout of an
-    identified profile ID reads every field of that ID; the common layout
-    reads only the fields that every ID of the profile places, sizes, signs,
-    and names identically.
+    to the context name and its (field, offset) pairs.
     """
 
-    profile_id: int | None
     fixed: tuple
     contexts: dict
 
@@ -86,19 +82,16 @@ def load_schema(path=DEFAULT_SCHEMA):
 
 
 def parse_schema(raw):
-    """Validate a schema document and return it with its current profiles.
+    """Validate a schema document and return it with its profiles by name.
 
-    The result maps each profile name to its current profile. The key
-    ``_versions`` of a current profile maps every profile ID of that name,
-    the current one and each retired one, to its validated profile, and
-    ``_common`` holds the layout the IDs share.
+    The key ``_layout`` of each profile holds the byte placement of its
+    fields.
     """
     if not isinstance(raw, dict):
         raise DecodeError("telemetry schema root must be an object")
     protocol_version = raw.get("protocol_version")
     frame = raw.get("frame")
     profile_rows = raw.get("profiles")
-    retired_rows = raw.get("retired_profiles", [])
     if (
         raw.get("schema_version") != 2
         or type(protocol_version) is not int
@@ -109,7 +102,6 @@ def parse_schema(raw):
         or frame.get("dlc") != 8
         or not isinstance(profile_rows, list)
         or not profile_rows
-        or not isinstance(retired_rows, list)
     ):
         raise DecodeError("telemetry schema transport contract differs")
 
@@ -123,24 +115,9 @@ def parse_schema(raw):
             raise DecodeError(
                 f"profile[{profile_index}] repeats a profile name or ID"
             )
-        profile["_versions"] = {profile["id"]: profile}
+        profile["_layout"] = _profile_layout(profile)
         profiles[profile["name"]] = profile
         profile_ids.add(profile["id"])
-    for retired_index, source_profile in enumerate(retired_rows):
-        context = f"retired_profile[{retired_index}]"
-        profile = _parse_profile(source_profile, context, protocol_version)
-        current = profiles.get(profile["name"])
-        if current is None or profile["id"] in profile_ids:
-            raise DecodeError(
-                f"{context} must retire an unused ID of a current profile"
-            )
-        _require_compatible_version(current, profile, context)
-        current["_versions"][profile["id"]] = profile
-        profile_ids.add(profile["id"])
-    for profile in profiles.values():
-        for version in profile["_versions"].values():
-            version["_layout"] = _profile_layout(version)
-        profile["_common"] = _common_layout(profile["_versions"].values())
     return raw, profiles
 
 
@@ -280,39 +257,6 @@ def _parse_profile(source_profile, context, protocol_version):
     return profile
 
 
-def _require_compatible_version(current, retired, context):
-    """Require a retired ID to be framed and identified like the current one.
-
-    A decoder assembles a group before its health context names the profile
-    ID, so every ID of one profile shares the page count, the context pages
-    and tags, and the health context in place and layout.
-    """
-    if (
-        retired["id"] >= current["id"]
-        or retired["page_count"] != current["page_count"]
-        or retired["_context_pages"] != current["_context_pages"]
-        or retired["_health"] != current["_health"]
-        or {(row["page"], row["tag"]) for row in retired["contexts"]}
-        != {(row["page"], row["tag"]) for row in current["contexts"]}
-        or _health_fields(retired) != _health_fields(current)
-    ):
-        raise DecodeError(
-            f"{context} differs from the current profile in framing or health"
-        )
-
-
-def _health_fields(profile):
-    page, tag = profile["_health"]
-    (row,) = (
-        item for item in profile["contexts"]
-        if (item["page"], item["tag"]) == (page, tag)
-    )
-    return [
-        (field["name"], field["width"], field["signed"])
-        for field in row["fields"]
-    ]
-
-
 def _profile_layout(profile):
     fixed = tuple(
         (field, field["page"], field["offset"]) for field in profile["fields"]
@@ -325,41 +269,7 @@ def _profile_layout(profile):
             placed.append((field, offset))
             offset += field["width"]
         contexts[(row["page"], row["tag"])] = (row["name"], tuple(placed))
-    return Layout(profile["id"], fixed, contexts)
-
-
-def _slot(field, page, offset):
-    return (field["name"], page, offset, field["width"], field["signed"])
-
-
-def _common_layout(versions):
-    """Return the layout of the fields every profile ID places identically."""
-    layouts = [version["_layout"] for version in versions]
-    first, others = layouts[0], layouts[1:]
-    fixed = tuple(
-        item for item in first.fixed
-        if all(
-            _slot(*item) in {_slot(*other) for other in layout.fixed}
-            for layout in others
-        )
-    )
-    contexts = {}
-    for key, (name, placed) in first.contexts.items():
-        page = key[0]
-        shared = tuple(
-            (field, offset) for field, offset in placed
-            if all(
-                _slot(field, page, offset)
-                in {
-                    _slot(other, page, other_offset)
-                    for other, other_offset in layout.contexts[key][1]
-                }
-                for layout in others
-            )
-        )
-        same_name = all(layout.contexts[key][0] == name for layout in others)
-        contexts[key] = (name if same_name else None, shared)
-    return Layout(None, fixed, contexts)
+    return Layout(fixed, contexts)
 
 
 def _validate_schema_field(field, context):
@@ -394,9 +304,9 @@ def _decode_value(payload, field, *, offset=None):
 class Decoder:
     """Strictly assemble complete, ordered telemetry snapshot groups.
 
-    A profile name covers its current ID and every retired ID of the schema.
-    The health context of a run names the ID, and the decoder then reads the
-    layout of that ID; until then it reads only the fields all IDs share.
+    The health context of a run verifies the protocol version, the profile
+    ID, and the CRC16 of the selected profile; a group whose health context
+    publishes another identity is dropped.
     """
 
     def __init__(self, profile, can_id=0x6F0, schema_path=DEFAULT_SCHEMA):
@@ -406,19 +316,18 @@ class Decoder:
         if type(can_id) is not int or not 1 <= can_id <= 0x7FF:
             raise DecodeError("CAN ID must be a nonzero standard 11-bit ID")
         self.profile = profiles[profile]
-        self.versions = self.profile["_versions"]
         self.context_pages = self.profile["_context_pages"]
         self.can_id = can_id
         self.page_count = self.profile["page_count"]
+        self._layout = self.profile["_layout"]
         self._health = self.profile["_health"]
-        self._health_fields = self.profile["_layout"].contexts[self._health][1]
+        self._health_fields = self._layout.contexts[self._health][1]
         self._pages = []
         self._sequence = None
         self._last_tick = None
         self._unwrapped_tick = None
         self._run = 0
         self._schema_verified = False
-        self._active = None
         self._seen_page_zero = False
         self.incomplete_groups = 0
         self.malformed_frames = 0
@@ -429,11 +338,6 @@ class Decoder:
     @property
     def schema_verified(self):
         return self._schema_verified
-
-    @property
-    def active_profile(self):
-        """Return the profile the current run identified, or None."""
-        return self._active
 
     def _discard(self):
         if self._pages:
@@ -503,7 +407,6 @@ class Decoder:
         if run != self._run:
             # A new run republishes its identity on the next health context.
             self._schema_verified = False
-            self._active = None
 
         context_tags = {page: pages[page][1] for page in self.context_pages}
         if len(set(context_tags.values())) != 1:
@@ -518,32 +421,24 @@ class Decoder:
                 )
                 for field, offset in self._health_fields
             }
-            version = self.versions.get(health["profile_id"])
             if (
                 health["protocol_version"] != self.schema["protocol_version"]
-                or version is None
-                or health["profile_crc16"] != version["_crc16"]
+                or health["profile_id"] != self.profile["id"]
+                or health["profile_crc16"] != self.profile["_crc16"]
             ):
                 self.schema_mismatches += 1
                 self._schema_verified = False
-                self._active = None
                 return None
-            self._active = version
             self._schema_verified = True
-        layout = (
-            self.profile["_common"]
-            if self._active is None
-            else self._active["_layout"]
-        )
 
         values = {}
-        for field, page, offset in layout.fixed:
+        for field, page, offset in self._layout.fixed:
             values[field["name"]] = _decode_value(
                 pages[page], field, offset=offset
             )
         context_names = []
         for page in self.context_pages:
-            context = layout.contexts.get((page, context_tag))
+            context = self._layout.contexts.get((page, context_tag))
             if context is None:
                 self.malformed_frames += 1
                 return None
@@ -553,9 +448,7 @@ class Decoder:
                 values[field["name"]] = _decode_value(
                     pages[page], field, offset=offset
                 )
-        context_name = (
-            None if None in context_names else " + ".join(context_names)
-        )
+        context_name = " + ".join(context_names)
 
         if run != self._run:
             self._run = run
@@ -573,36 +466,23 @@ class Decoder:
             context_name=context_name,
             schema_verified=self._schema_verified,
             timestamp=timestamp,
-            profile_id=None if self._active is None else self._active["id"],
+            profile_id=self.profile["id"] if self._schema_verified else None,
         )
 
 
 @dataclass(frozen=True)
 class Calibration:
-    """Affine conversion of one raw telemetry field to engineering units.
-
-    A nonzero ``signed_bits`` first reads the raw value as a two's complement
-    integer of that width. It serves a producer value that is signed while
-    its wire slot is declared unsigned, and it leaves a value that is already
-    negative unchanged.
-    """
+    """Affine conversion of one raw telemetry field to engineering units."""
 
     target: str
     factor: float = 1.0
     offset: float = 0.0
-    signed_bits: int = 0
-
-    def signed(self, raw):
-        if self.signed_bits and raw >= 1 << (self.signed_bits - 1):
-            return raw - (1 << self.signed_bits)
-        return raw
 
     def apply(self, raw):
-        return self.signed(raw) * self.factor + self.offset
+        return raw * self.factor + self.offset
 
 
 RAW_CALIBRATIONS = {
-    "rpm_raw": Calibration("rpm", 12.5),
     "maf_b1_raw": Calibration("maf_b1_v", 1 / 200),
     "maf_b2_raw": Calibration("maf_b2_v", 1 / 200),
     "maf_total_raw": Calibration("maf_total_g_s", 1 / 100),

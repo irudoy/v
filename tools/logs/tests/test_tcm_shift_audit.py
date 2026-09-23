@@ -53,7 +53,6 @@ def row(tick):
         request = min(PRE_LIMITER, audit.unpack(word_b(tick - 1)))
     closed = DOWN_TARGET <= tick <= DOWN_IDLE
     return {
-        "rpm_raw": 200,
         "app1_raw": 100 if closed else 400,
         "engine_torque_state_raw": 1000,
         "throttle_request_bounded_raw": request,
@@ -389,6 +388,12 @@ class TraceErrorTest(unittest.TestCase):
             return [(i, d) for i, d in frames if not (tick == 10 and i == audit.GEAR_ID)]
 
         self.check(mutate, "outside a group")
+
+    def test_capture_without_verified_snapshots(self):
+        def mutate(tick, frames):
+            return [(i, d) for i, d in frames if i != audit.TELEMETRY_ID]
+
+        self.check(mutate, "no verified snapshot of telemetry profile 'tuning'")
 
 
 if __name__ == "__main__":

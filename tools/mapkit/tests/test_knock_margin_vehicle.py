@@ -1,6 +1,5 @@
 """Knock channel schedule and the 2026-09-21 knock margin vehicle result."""
 
-import json
 import math
 import re
 import struct
@@ -8,14 +7,13 @@ import tomllib
 from fractions import Fraction
 from pathlib import Path
 
+from tools.can_dashboard.model import RPM_PER_COUNT
+
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = (ROOT / "rom-images/23710-JK08A/1JK08A-20260726-stock.bin").read_bytes()
 PROFILE = tomllib.loads(
     (ROOT / "patches/can-telemetry-profile.toml").read_text(encoding="utf-8")
-)
-SCHEMA = json.loads(
-    (ROOT / "patches/can-telemetry-schema.json").read_text(encoding="utf-8")
 )
 REGISTRY = tomllib.loads(
     (ROOT / "patches/hardware-results.toml").read_text(encoding="utf-8")
@@ -117,18 +115,8 @@ def adcsr2_fields(value):
 
 
 AXIS = struct.unpack_from(f">{ROW_WORDS}H", ROM, SPEED_AXIS)
-# The 2026-09-21 recording carries profile 5, whose frozen contract states the
-# engine-speed step of the rpm_raw slot it published.
-RPM_FIELD = next(
-    field
-    for profile in SCHEMA["retired_profiles"]
-    if profile["id"] == 5
-    for field in profile["fields"]
-    if field["name"] == "rpm_raw"
-)
-RPM_STEP = Fraction(
-    re.fullmatch(r"raw \* ([0-9.]+) RPM", RPM_FIELD["scale"]).group(1)
-)
+# The record states engine speed as the coordinate 0xFFFF11F4.
+RPM_STEP = Fraction(RPM_PER_COUNT)
 INTERVAL = Fraction(
     PROFILE["context_count"] * PROFILE["base_tick_numerator"], PROFILE["pphi_hz"]
 )
@@ -368,21 +356,12 @@ def test_record_uses_the_registered_session_and_captures():
     for key in ("recorded_on", "image_sha256", "profile_id", "profile_crc16"):
         assert RESULT[key] == session[key]
     assert RESULT["hardware_status"] == session["hardware_status"] == "pass"
-    tuning = {
-        profile["id"]: profile
-        for profile in (*SCHEMA["profiles"], *SCHEMA["retired_profiles"])
-        if profile["name"] == "tuning"
-    }
-    assert int(tuning[RESULT["profile_id"]]["crc16_ccitt_false"], 16) == (
-        RESULT["profile_crc16"]
-    )
     assert RESULT["capture_name"] == [row["capture_name"] for row in captures]
     assert RESULT["capture_sha256"] == [row["capture_sha256"] for row in captures]
     assert RESULT["mlg_record_count"] == session["record_count_total"]
     assert RESULT["mlg_record_count"] == sum(row["record_count"] for row in captures)
     traces = [name for name in RESULT["capture_name"] if name.endswith(".trc")]
-    converted = [row["capture_name"] for row in captures if "converted_mlg_sha256" in row]
-    assert traces == converted
+    assert all("converted_mlg_sha256" in row for row in captures)
     assert len(RESULT["tag4_group_count_by_trc_capture"]) == len(traces)
     assert sum(RESULT["tag4_group_count_by_trc_capture"]) == RESULT["tag4_group_count"]
 
@@ -406,8 +385,8 @@ def test_every_interval_holds_an_evaluation_from_the_profile_speed():
     assert FULL_COVERAGE_RPM == Fraction(234375, 100)
     rpm_raw = math.ceil(FULL_COVERAGE_RPM / RPM_STEP)
     assert RESULT["full_coverage_rpm_raw_min"] == rpm_raw
-    assert f"{float(FULL_COVERAGE_RPM):g} RPM, `rpm_raw` {rpm_raw}," in KNOCK_DOC
-    assert f"`rpm_raw` {rpm_raw} or more" in KNOCK_DOC
+    assert f"{float(FULL_COVERAGE_RPM):g} RPM, `0xFFFF11F4` {rpm_raw}," in KNOCK_DOC
+    assert f"`0xFFFF11F4` {rpm_raw} or more" in KNOCK_DOC
     groups = RESULT["full_coverage_group_count"]
     assert (
         f"{groups:,} groups at {float(rpm_raw * RPM_STEP):g} RPM or more"
@@ -507,7 +486,7 @@ def test_documents_publish_the_registry_figures():
         assert f"{result[name]:,}" in KNOCK_DOC
     observed = result["cadence_idle_group_count"]
     assert f"{min(observed):,}..{max(observed):,}" in KNOCK_DOC
-    assert f"From `rpm_raw` {result['cadence_rpm_raw_min']}," in KNOCK_DOC
+    assert f"From `0xFFFF11F4` {result['cadence_rpm_raw_min']}," in KNOCK_DOC
 
     valued = dict(
         zip(
@@ -535,8 +514,8 @@ def test_documents_publish_the_registry_figures():
         f"{row(channel)[-1]:,}"
     ) in KNOCK_DOC
     speeds = result["metric_max_rpm_raw_by_channel"]
-    assert f"`rpm_raw` {min(speeds)}..{max(speeds)}" in KNOCK_DOC
-    assert f"`rpm_raw` {AXIS[-1]} upward" in KNOCK_DOC
+    assert f"`0xFFFF11F4` {min(speeds)}..{max(speeds)}" in KNOCK_DOC
+    assert f"`0xFFFF11F4` {AXIS[-1]} upward" in KNOCK_DOC
     assert f"`{result['metric_max_capture']}`" in KNOCK_DOC
     assert (
         f"nonzero in {result['latched_bitmap_nonzero_record_count']} records"

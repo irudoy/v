@@ -2,7 +2,7 @@
 """Audit the JK08A transmission interface frames in road TRC captures.
 
 The TCM sends frames 0x174, 0x176, and 0x177 back to back every 10 ms. The
-audit replays a PEAK TRC through the dashboard model into verified profile 5
+audit replays a PEAK TRC through the dashboard model into verified
 snapshots, groups the three TCM frames, and pairs snapshot j with the 0x180 and
 0x160 frames that follow the first page of snapshot j + 1, which carry the
 values of the same scheduler pass. Per capture it reports:
@@ -56,7 +56,11 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.can_dashboard.model import DashboardModel, FrameRecord  # noqa: E402
+from tools.can_dashboard.model import (  # noqa: E402
+    DashboardModel,
+    FrameRecord,
+    RPM_PER_COUNT,
+)
 from tools.logs import mlg_relation_audit  # noqa: E402
 from tools.logs import peak_trc_audit  # noqa: E402
 from tools.logs.torque_scale_audit import RE5R05A_RATIOS  # noqa: E402
@@ -77,7 +81,6 @@ SNAPSHOT_FIELDS = (
     "final_timing_raw",
     "fuel_inhibit_mask",
 )
-RPM_PER_COUNT = 12.5
 PACK_DIVISOR = 5
 PACK_ZERO = 800
 PACK_MAX = 4094
@@ -618,6 +621,8 @@ def read_trc(
                 fuel_inhibit_mask=int(raw["fuel_inhibit_mask"]),
             )
         )
+    if not snapshots:
+        raise ValueError(f"{path}: no verified snapshot of telemetry profile {profile!r}")
     return Capture(
         path,
         sha256_file(path),

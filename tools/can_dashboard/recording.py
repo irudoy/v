@@ -46,7 +46,6 @@ class RecordingSummary:
 # units marks a candidate transform, exactly as the dashboard marks it.
 RAW_FIELD_DISPLAY = {
     "tick16": ("Telemetry tick", "", 0, "Transport"),
-    "rpm_raw": ("Engine speed", "rpm", 0, "Engine"),
     "request_flow_raw": ("QH0 flow potential", "%*", 2, "Throttle"),
     "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
     "apc_command_raw": ("APC command", "degBTDC", 0, "Ignition"),
@@ -121,9 +120,6 @@ RAW_FIELD_DISPLAY = {
     "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
     "active_map_index": ("Selected map", "", 0, "Context"),
     "alpha_n_flow_raw": ("QH0 flow quantity", "%*", 2, "Fuel"),
-    "ignition_timing_adjustment_raw": (
-        "Timing adjustment", "deg", 0, "Ignition"
-    ),
     "protocol_version": ("Protocol version", "", 0, "Transport"),
     "profile_id": ("Profile ID", "", 0, "Transport"),
     "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
@@ -155,18 +151,14 @@ RAW_FIELD_DISPLAY = {
     "secondary_tps_b2_raw": ("Secondary TPS B2", "V", 3, "Throttle"),
 }
 
-# Channel names that earlier recorders wrote, mapped to the current names, so
-# a replay or a restamp of an earlier recording finds the channel.
-RENAMED_CHANNELS = {
-    "Timing state 564C": "Timing adjustment",
-}
-
-
 def current_channel_name(name: str) -> str:
-    """Return the current name of a recorded channel without candidate marks."""
+    """Return the name of a recorded channel without candidate marks.
 
-    name = name.replace("*", "").strip()
-    return RENAMED_CHANNELS.get(name, name)
+    A channel keeps its identity when its transform gains or loses the
+    candidate marker.
+    """
+
+    return name.replace("*", "").strip()
 
 
 MLG_CALIBRATIONS = {
@@ -179,9 +171,7 @@ def mlg_scaling(source: str) -> tuple[float, float]:
     """Return the MLVLG scale and transform for one raw telemetry field.
 
     MegaLogViewer evaluates ``(raw + transform) * scale``, so the transform is
-    expressed in raw counts rather than in engineering units. A calibration
-    that reads its slot as signed records the signed value, which
-    ``recorded_value`` returns.
+    expressed in raw counts rather than in engineering units.
     """
 
     calibration = MLG_CALIBRATIONS.get(source)
@@ -189,12 +179,6 @@ def mlg_scaling(source: str) -> tuple[float, float]:
         return 1.0, 0.0
     return calibration.factor, calibration.offset / calibration.factor
 
-
-def recorded_value(source: str, raw):
-    """Return the value one MLVLG channel stores for a raw telemetry field."""
-
-    calibration = MLG_CALIBRATIONS.get(source)
-    return raw if calibration is None else calibration.signed(raw)
 
 
 def _injection_display(index: int):
@@ -340,34 +324,6 @@ def build_bindings(
     return tuple(bindings)
 
 
-def known_bindings(
-    profile: str, schema_path: Path = DEFAULT_SCHEMA
-) -> tuple[FieldBinding, ...]:
-    """Return the bindings of the current profile and of every retired one.
-
-    A recording carries the channels of the profile ID it was made under, so
-    reading one made before a field left the stream resolves names the
-    current profile no longer publishes. A retired name that the current
-    profile renamed resolves to its current source. The current profile owns
-    every name it publishes.
-    """
-
-    bindings = list(build_bindings(profile, schema_path))
-    bound = {binding.source for binding in bindings}
-    document, _profiles = can_telemetry.load_schema(schema_path)
-    for retired in document.get("retired_profiles", ()):
-        names = [field["name"] for field in retired["fields"]]
-        for context in retired.get("contexts", ()):
-            names.extend(field["name"] for field in context["fields"])
-        for name in names:
-            source = model.current_field_name(name)
-            if source in bound:
-                continue
-            bound.add(source)
-            bindings.append(_raw_binding(source))
-    return tuple(bindings)
-
-
 class TelemetryMlgRecorder:
     """Write atomic MLVLG files from complete dashboard snapshots."""
 
@@ -432,9 +388,7 @@ class TelemetryMlgRecorder:
                 if value is None:
                     value = math.nan
             else:
-                value = recorded_value(
-                    binding.source, model.raw.get(binding.source, math.nan)
-                )
+                value = model.raw.get(binding.source, math.nan)
             values.append(value)
         return tuple(values)
 

@@ -90,12 +90,8 @@ the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 4 into
 `0xFFFF11EE`, which `FUN_000C577A` multiplies by 25 into frame `0x180` bytes 0
 and 1 at `raw / 8` RPM, 3.125 RPM per count, and right by 6 into the
 coordinate `0xFFFF11F4` at 12.5 RPM per count that the ECU tables read.
-Profile 7 does not stream the coordinate, because the frame carries the word
-it is a shift of. A replay of a profile 5 or 6 recording shows the coordinate
-as `Engine speed`: it belongs to the snapshot taken at the scheduler boundary,
-while the frame is serialized in its own `Tcan` slot and the display holds the
-latest frame received, so there the two rows differ by their resolution and
-by the change of engine speed between the two sampling moments.
+The profile does not stream the coordinate, because the frame carries the word
+it is a shift of.
 
 ## Stream control
 
@@ -242,8 +238,7 @@ snapshot byte `0xFFFF102C` on JK08A, the Base Fuel Schedule as a Q7 ratio to
 reference word `ROM16[0x9534]` of the flashed ROM, saturated at raw 255. The
 stream carries the byte as `normalized_load_raw`, so the value comes from the
 running ECU and needs no ROM open in RomRaider. Raw 128 is 100 percent of the
-reference, and raw 255 is 199.2 percent. A replay of a profile 5 recording has
-no load byte, and its datagrams leave `load` out.
+reference, and raw 255 is 199.2 percent.
 
 `--publish-udp [HOST:]PORT` turns the feed on at that endpoint for one run
 without changing the settings file.
@@ -375,8 +370,7 @@ An MLG record replaces a decoded group: it restores the raw value of every
 field, the stock context, and the schema verification that the recording
 dashboard held, so the replayed engineering values equal the recorded
 channels. A rotating context that had not arrived when the record was written
-stays `--`. A record of retired profile 5 restores the fields of that profile,
-and a field it does not carry stays `--`.
+stays `--`, and so does a field whose channel reads `NaN`.
 
 While a replay is loaded, a transport bar appears under the status fields,
 or under the timer bar while it is shown:
@@ -446,13 +440,13 @@ the value as the `Gear` channel, `NaN` where the TCM reports no forward gear.
 
 ### Selected map
 
-Profiles 6 and 7 carry the active map index `0xFFFF5D00` of the map-switching
+The profile carries the active map index `0xFFFF5D00` of the map-switching
 runtime in context tag 2, and `Selected map` shows the index plus 1. An index
 outside 0 through 4 shows `1`, because the runtime resolves an invalid index to
 Map 1. Hover over the row name names the stream as the source.
 
-A stream without the index, such as a replay of a profile 5 recording, infers
-the map from the stock bus under the runtime contract of
+Until a verified stream publishes the index, the dashboard infers the map from
+the stock bus under the runtime contract of
 [`../../patches/map-switching-selector.md`](../../patches/map-switching-selector.md):
 every controller start selects Map 1, a SET + CANCEL gesture with N CANCEL
 taps commits Map N, and the runtime answers the commit with N pulses of ASCD
@@ -481,8 +475,7 @@ fails, in `ACTIVE` it reads `NONE`, and in `COOLDOWN` it keeps the reason that
 ended the run. A code outside the enumeration shows as hex, such as `0x13`.
 The phase refreshes with every snapshot and the reason with context tag 0.
 [`../../patches/rolling-launch.md`](../../patches/rolling-launch.md) specifies
-the gates and the abort reasons. A replay of a profile 5 recording shows `--`
-in both rows.
+the gates and the abort reasons.
 
 ### Acceleration timer
 
@@ -673,13 +666,11 @@ The decoder retains the latest values from the paired page-9 and page-10
 contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. The bundled schema declares
-profile ID 7 with CRC16 `0x6474` and keeps the frozen contracts of retired
-profiles 6 with CRC16 `0xF14E` and 5 with CRC16 `0xE144`, so a recording of
-any of these IDs decodes with the fields of its own profile, and the `Schema`
-status field names a retired profile. A producer that reports another profile
-ID or CRC keeps raw values only, because its slots carry other quantities. The
-CRC covers the wire layout alone, so a restated field name or scale string
-leaves it unchanged. Stale context values remain visible while their update
+profile ID 7 with CRC16 `0x6474`, and the `Schema` status field names the
+verified profile ID. A producer that reports another profile ID or CRC keeps
+raw values only, because its slots carry other quantities. The CRC covers the
+wire layout alone, so a restated field name or scale string leaves it
+unchanged. Stale context values remain visible while their update
 cadence is one fifth of the snapshot rate.
 
 Context tag 4 carries six knock margin latches, one per knock channel. Each
@@ -699,32 +690,16 @@ event that opens the knock window, and the combustion event a window observes
 is not measured. The metric has no physical unit, so the display labels the
 signed evaluator counts `cnt`.
 
-Profiles 6 and 7 do not stream the front heated-oxygen-sensor bytes
-`0xFFFF22C4..22C5`, timing state `0xFFFF2023`, or the atmospheric-pressure
-byte `0xFFFF4544`: no traced code writes the first three, and every recording
-reads them as 0, and the fourth holds the default 207 of the disabled
-barometric input. Profile 5 carries them, and the display and the MLG
-recording leave them out of its replays.
+The profile does not stream the front heated-oxygen-sensor bytes
+`0xFFFF22C4..22C5`, timing state `0xFFFF2023`, the atmospheric-pressure byte
+`0xFFFF4544`, or the work-support ignition-timing adjustment `0xFFFF564C`: no
+traced code writes the first three, the fourth holds the default 207 of the
+disabled barometric input, and only its service-0x3B adjustment changes the
+fifth; every recording reads the first three and the fifth as 0.
 
-Profile 7 does not stream the work-support ignition-timing adjustment
-`0xFFFF564C` either: only its service-0x3B adjustment changes it, and every
-recording reads it as 0. The window has no row for it. Profiles 5 and 6 carry
-it, and the model converts it to signed degrees in their replays.
-
-The A/F adjustment words and the ignition-timing adjustment hold signed
-producer values. Profiles 6 and 7 declare their slots signed. Profile 5
-declares them unsigned, and its scale strings read them as `signed raw`: two's
-complement values of the slot width. The model converts the signed value
-under every profile, and the MLG recorder stores the signed value, because
-MegaLogViewer applies only scale and transform. A replay of a recording that
-stored the unsigned value decodes to the same display value.
-
-Profile 5 names the slot of the ignition-timing adjustment
-`timing_state_564c_raw`, and recordings of earlier versions name its channel
-`Timing state 564C`. The model keeps the slot under the name
-`ignition_timing_adjustment_raw` of profile 6 for both profile IDs, and the
-replay and `tools/logs/mlg_restamp.py` read the earlier channel as
-`Timing adjustment`.
+The A/F adjustment words hold signed producer values, and the profile declares
+their slots signed. The MLG recorder stores the signed value, because
+MegaLogViewer applies only scale and transform.
 
 A field marked with `*` uses a candidate transform: engine torque state and
 torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
@@ -760,7 +735,7 @@ Compensation Main column coordinates at `raw * 0.00152588` and
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
 | exhaust CVTC target and actual B1/B2 | `0xFFFF2327`, `0xFFFF2324..2325` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count; recordings keep the actual bytes within two counts of a steady target in 98 percent of Map 3 samples |
 | intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count, advance positive; recordings keep the actual bytes within two counts of a steady target in 95 to 100 percent of samples |
-| intake CVTC duty live pair and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion; the command pair is the scheduler block-copy latch of the live pair, both pairs share context tag 1 and come from one capture pass, and profile 5 recordings hold them equal in every record |
+| intake CVTC duty live pair and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion; the command pair is the scheduler block-copy latch of the live pair, both pairs share context tag 1 and come from one capture pass, and the recorded drives hold them equal in every record |
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
 | throttle target B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw * 34285 / 1114112 percent` | each target is `4 * (TPS counts - learned closed position)`, the coordinate of throttle opening table `0x155A0`; `FUN_0006F236` publishes that coordinate, divided by four and less idle base `0xFFFF28F8`, as J1979 PID 0x11 absolute throttle at gradient `0x505B / 65536`, so one count is `34285 / 1114112` percent of throttle opening and 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
 | throttle area request | `0xFFFF19B2` word | candidate `raw * 0.0008 cm2` | opening area of both throttle bodies in the counts of table `0x13202`; the unit rests on the catalog scale of that table |

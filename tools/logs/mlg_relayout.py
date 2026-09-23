@@ -132,13 +132,8 @@ def relayout(
             continue
         values = reader.unpack_from(data, offset + 4)
         row = []
-        for binding, position in zip(bindings, sources):
-            if position is None:
-                row.append(math.nan)
-            elif binding.source_kind == "raw":
-                row.append(recording.recorded_value(binding.source, values[position]))
-            else:
-                row.append(values[position])
+        for position in sources:
+            row.append(math.nan if position is None else values[position])
         record = mlvlg.encode_record_data(fields, row)
         payload += prefix + record + bytes((sum(record) & 0xFF,))
         offset += 4 + record_length + 1

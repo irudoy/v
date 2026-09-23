@@ -3,7 +3,6 @@ import copy
 import hashlib
 import json
 from pathlib import Path
-import tempfile
 import unittest
 
 from patches import can_telemetry
@@ -235,71 +234,6 @@ class CanTelemetryContractTest(unittest.TestCase):
                 "only a rename of the same quantity replaces the digest "
                 "under the same ID.",
             )
-
-    def test_retired_profiles_keep_their_pinned_slot_assignment(self):
-        retired = self.manifest.retired_profiles
-        self.assertEqual([item["id"] for item in retired], [5, 6])
-        for item in retired:
-            with self.subTest(profile_id=item["id"]):
-                assignment = {
-                    "fields": sorted(
-                        [field["page"], field["offset"], field["name"]]
-                        for field in item["fields"]
-                    ),
-                    "contexts": [
-                        [
-                            context["page"],
-                            context["tag"],
-                            [field["name"] for field in context["fields"]],
-                        ]
-                        for context in item["contexts"]
-                    ],
-                }
-                self.assertEqual(
-                    _assignment_digest(assignment),
-                    SLOT_ASSIGNMENT_SHA256[item["id"]],
-                )
-        schema = json.loads(
-            can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8")
-        )
-        self.assertEqual(schema["retired_profiles"], list(retired))
-
-    def test_retired_profiles_reject_reused_ids_and_foreign_framing(self):
-        source = json.loads(
-            can_telemetry_profile.DEFAULT_RETIRED.read_text(encoding="utf-8")
-        )
-        tracked = source["retired_profiles"]
-        retired = {row["id"]: row for row in tracked}[6]
-
-        def load(rows):
-            with tempfile.TemporaryDirectory() as directory:
-                path = Path(directory) / "retired.json"
-                path.write_text(
-                    json.dumps({"retired_profiles": rows}), encoding="utf-8"
-                )
-                manifest = can_telemetry_profile.load_manifest(retired=path)
-                return can_telemetry_profile.render_schema(manifest)
-
-        self.assertIn('"retired_profiles"', load(tracked))
-        reused = (
-            [dict(retired, id=7)],
-            [dict(retired, id=8)],
-            [retired, retired],
-            [dict(retired, name="missing")],
-        )
-        for rows in reused:
-            with self.subTest(ids=[row["id"] for row in rows]):
-                with self.assertRaises(ValueError):
-                    load(rows)
-        foreign = {
-            "page_count": dict(retired, page_count=12),
-            "crc16": dict(retired, crc16_ccitt_false="0xF14F"),
-            "contexts": dict(retired, contexts=retired["contexts"][:-1]),
-        }
-        for change, row in foreign.items():
-            with self.subTest(change=change):
-                with self.assertRaises(ValueError):
-                    load([row])
 
     def test_configuration_round_trip_and_mailbox_encoding(self):
         cases = (

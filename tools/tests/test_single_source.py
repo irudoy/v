@@ -57,8 +57,7 @@ def test_the_tree_matches_its_sources(facts):
         ("100 - raw / 2 percent", (-0.5, 100.0)),
         ("110 - raw + 3 deg", None),
         ("raw / 800 V above the learned closed position", (1 / 800, 0.0)),
-        ("candidate signed raw * 0.002 A/F ADJ factor", (0.002, 0.0)),
-        ("signed raw deg", (1.0, 0.0)),
+        ("candidate raw * 0.002 A/F ADJ factor, bounded -1..1", (0.002, 0.0)),
         ("signed internal request coordinate", None),
         ("bit mask", None),
         ("unresolved physical conversion", None),
@@ -66,20 +65,6 @@ def test_the_tree_matches_its_sources(facts):
 )
 def test_a_scale_string_declares_its_conversion(scale, conversion):
     assert single_source.declared_conversion(scale) == conversion
-
-
-@pytest.mark.parametrize(
-    "scale, signed_view",
-    [
-        ("candidate signed raw * 0.002 A/F ADJ factor", True),
-        ("signed raw deg", True),
-        ("candidate raw * 0.1 Nm", False),
-        ("110 - raw degBTDC", False),
-        ("signed internal request coordinate", False),
-    ],
-)
-def test_a_scale_string_declares_its_signed_view(scale, signed_view):
-    assert single_source.declares_signed_view(scale) is signed_view
 
 
 @pytest.mark.parametrize(
@@ -163,54 +148,6 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
     assert "stft_b1_raw" in str(error.value)
 
 
-def test_a_host_conversion_a_retired_profile_declares_otherwise_fails(monkeypatch):
-    # The current profile no longer carries rpm_raw, so the frozen
-    # declarations of the retired profiles bind its host conversion.
-    declarations = single_source._retired_declarations()
-    assert "rpm_raw" not in single_source._profile_scales()
-    declarations["rpm_raw"] = {
-        ("raw * 25 RPM", 2, False, single_source.RETIRED_PROFILES)
-    }
-    monkeypatch.setattr(
-        single_source, "_retired_declarations", lambda: declarations
-    )
-    with pytest.raises(single_source.SourceError) as error:
-        single_source.check_conversions()
-    assert "rpm_raw" in str(error.value)
-    assert single_source.RETIRED_PROFILES in str(error.value)
-
-
-@pytest.mark.parametrize(
-    "name, scale",
-    [
-        # The host reads the slot as unsigned, the profile as signed.
-        ("front_af_sensor_b1_word_raw", "signed raw / 200 V"),
-        # A signed view of a slot that is signed on the wire.
-        ("engine_torque_state_raw", "candidate signed raw * 0.1 Nm"),
-    ],
-)
-def test_a_signed_view_the_profile_does_not_declare_fails(
-    monkeypatch, name, scale
-):
-    scales = single_source._profile_scales()
-    scales[name] = {scale}
-    monkeypatch.setattr(single_source, "_profile_scales", lambda: scales)
-    with pytest.raises(single_source.SourceError) as error:
-        single_source.check_conversions()
-    assert name in str(error.value)
-
-
-def test_a_signed_reading_of_an_unsigned_slot_needs_a_signed_view(monkeypatch):
-    # The host reads the A/F ADJ slot as signed. A profile that carries the
-    # slot unsigned, as profile 5 did, must declare a signed view of it.
-    slots = single_source._profile_slots()
-    slots["af_adjustment_b1_raw"] = {(2, False)}
-    monkeypatch.setattr(single_source, "_profile_slots", lambda: slots)
-    with pytest.raises(single_source.SourceError) as error:
-        single_source.check_conversions()
-    assert "af_adjustment_b1_raw" in str(error.value)
-
-
 @pytest.mark.parametrize(
     "path, old, new",
     [
@@ -261,13 +198,13 @@ def test_a_signed_reading_of_an_unsigned_slot_needs_a_signed_view(monkeypatch):
         ),
         (
             "patches/can-telemetry.md",
-            "profile 6 with CRC `0xF14E` and profile 5",
-            "profile 6 with CRC `0xF14E` and profile 4",
+            "2, profile ID 7, and CRC `0x6474`. A later",
+            "2, profile ID 6, and CRC `0x6474`. A later",
         ),
         (
             "tools/can_dashboard/README.md",
-            "retired\nprofiles 6 with CRC16 `0xF14E` and 5 with",
-            "retired\nprofiles 6 with CRC16 `0xF14E`, 5 with",
+            "profile ID 7 with CRC16 `0x6474`",
+            "profile ID 7 with CRC16 `0x6475`",
         ),
         (
             "rom-images/23710-1ME3B/README.md",

@@ -574,13 +574,6 @@ class CvtcRecordingInputTest(unittest.TestCase):
         self.assertEqual([sample.tick for sample in samples], [11, 12])
         self.assertEqual([sample.rpm_raw for sample in samples], [120, 121])
 
-    def test_a_retired_recording_keeps_its_published_coordinate(self):
-        recording = recording_with(rpm_raw=[119.0, 120.0, 121.0])
-        _events, _bridges, samples = cvtc_target_audit._recording_samples(
-            recording, "tuning"
-        )
-        self.assertEqual([sample.rpm_raw for sample in samples], [119, 120, 121])
-
     def test_recording_rejects_values_that_are_not_wire_integers(self):
         for value in (140.5, -1.0, 256.0, math.inf):
             with self.subTest(value=value):

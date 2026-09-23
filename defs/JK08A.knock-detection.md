@@ -150,7 +150,7 @@ limited at `-32768`. Context tag 4 of the `tuning` profile publishes the six
 minimums and rearms them with `32767`, which stands for an interval without an
 evaluation of the channel or a margin of 32767 or more. With one evaluation of
 each channel per engine cycle, every 51.2 ms tag-4 interval holds an
-evaluation of every channel from 2343.75 RPM, `rpm_raw` 188, upward; below
+evaluation of every channel from 2343.75 RPM, `0xFFFF11F4` 188, upward; below
 that speed an interval can end without one. A row of `0xFFFF` thresholds
 publishes a value below `32767` only for a metric above 32768, so on channels
 3 and 5 the value `32767` does not distinguish an interval without an
@@ -166,12 +166,12 @@ the knock margins of the eleven profile-5 captures of the 2026-09-21 road
 session. The image carries the stock `0x1108E` rows and evaluator constants.
 Channels 3 and 5 publish `32767` in all 18,893 tag-4 groups of the seven TRC
 captures and carry no value in any of the 279,143 MLG records. Of those
-groups, 1,158 have `rpm_raw` 188 or more; there channels 1, 2, 4, and 6 carry
-an evaluated margin in every group and channels 3 and 5 in none. Every
+groups, 1,158 have `0xFFFF11F4` 188 or more; there channels 1, 2, 4, and 6
+carry an evaluated margin in every group and channels 3 and 5 in none. Every
 evaluation of channels 3 and 5 in those intervals therefore has a metric of
 at most 32768.
 
-From `rpm_raw` 64, the first axis point at which rows 1, 2, 4, and 6 hold
+From `0xFFFF11F4` 64, the first axis point at which rows 1, 2, 4, and 6 hold
 finite thresholds, one evaluation per engine cycle predicts 2,968 of 11,340
 groups without an evaluation of a given channel; channels 1, 2, 4, and 6
 publish `32767` in 2,936..2,944 of them. The idle values of the valued
@@ -187,9 +187,9 @@ channels follow the evaluation cadence.
 | 6 | 8,732 | -3,939 | 13,226 |
 
 The lowest margins cover all eleven captures, and none reaches `-32768`. The
-metric of a group is the image threshold at the captured `rpm_raw` minus the
-published margin. From `rpm_raw` 512 upward the threshold is the last row
-cell, so the largest metrics, all at `rpm_raw` 603..617 in the Map 3
+metric of a group is the image threshold at the captured `0xFFFF11F4` minus the
+published margin. From `0xFFFF11F4` 512 upward the threshold is the last row
+cell, so the largest metrics, all at `0xFFFF11F4` 603..617 in the Map 3
 full-pedal run of `6-map-1-3-4-limiter.mlg`, are exact. The largest, 20,627 on
 channel 4 at 7537.5 RPM with margin -697 against threshold 19,930, falls
 inside the main fuel-cut cycling of `main_fuel_cut.vehicle_2026_09_21`. The

@@ -3,9 +3,9 @@
 The runtime keeps a zero-based active index that its startup wrapper resets to
 Map 1 at every controller start. A committed selection queues one state-4
 pulse per map number on the ASCD display state of frame 0x551, and selector
-input stays blocked until the queue is empty. Telemetry profiles 6 and 7 carry
-the index, and the dashboard model takes the map from it. For a stream without
-the index, such as retired profile 5, the tracker establishes the map from two
+input stays blocked until the queue is empty. The telemetry profile carries
+the index, and the dashboard model takes the map from it. Until a verified
+stream publishes the index, the tracker establishes the map from two
 observations:
 
 - a controller start: a telemetry run that opens after a silent bus, or a

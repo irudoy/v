@@ -137,11 +137,11 @@ class RecordingReplayTest(unittest.TestCase):
             places=3,
         )
 
-    def test_a_channel_of_an_earlier_name_replays_under_its_source(self):
-        bindings = recording.known_bindings("tuning")
+    def test_a_channel_named_with_the_candidate_marker_replays_under_its_source(self):
+        bindings = recording.build_bindings("tuning")
         specs = tuple(
-            replace(binding.spec, name="Timing state 564C")
-            if binding.source == "ignition_timing_adjustment_raw"
+            replace(binding.spec, name=binding.spec.name + "*")
+            if binding.source == "af_adjustment_b1_raw"
             else binding.spec
             for binding in bindings
         )
@@ -151,12 +151,12 @@ class RecordingReplayTest(unittest.TestCase):
             with output.open("wb") as stream:
                 writer = mlvlg.StreamWriter(stream, specs, 1_776_000_000)
                 values = [1] * len(specs)
-                values[sources.index("ignition_timing_adjustment_raw")] = -2
+                values[sources.index("af_adjustment_b1_raw")] = -2
                 writer.write(tuple(values), 0.0)
             timeline = replay.load_timeline(output, 0x6F0)
 
         record = timeline.item(0, 10.0)
-        self.assertEqual(record.values["ignition_timing_adjustment_raw"], -2)
+        self.assertEqual(record.values["af_adjustment_b1_raw"], -2)
 
 
 class CheckpointTest(unittest.TestCase):

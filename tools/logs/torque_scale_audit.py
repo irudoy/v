@@ -34,7 +34,12 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.can_dashboard.model import BASE_TICK_SECONDS, DashboardModel, FrameRecord
+from tools.can_dashboard.model import (
+    BASE_TICK_SECONDS,
+    DashboardModel,
+    FrameRecord,
+    RPM_PER_COUNT,
+)
 from tools.logs import can_telemetry
 from tools.logs import mlg_relation_audit
 from tools.logs import peak_trc_audit
@@ -48,7 +53,6 @@ SELECTOR_NEUTRAL = 0x18
 # Frame 0x421 byte 0 codes of the manual positions (defs/JK08A.can.md).
 MANUAL_SELECTOR_GEAR = {0x80: 1, 0x88: 2, 0x90: 3, 0x98: 4, 0xA0: 5}
 G = 9.80665
-RPM_PER_COUNT = 12.5
 TICK_MODULUS = 0x10000
 
 BASE_TABLE_ADDRESS = 0x154A0
@@ -323,6 +327,8 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
                 fuel_inhibit_mask=int(model.raw["fuel_inhibit_mask"]),
             )
         )
+    if not samples:
+        raise ValueError(f"{path}: no verified snapshot of telemetry profile {profile!r}")
     return Capture(path, sha256_file(path), tuple(samples))
 
 
@@ -442,7 +448,7 @@ def locked_ratio(samples, *, min_speed=LOCKED_MIN_SPEED_KMH, window=LOCKED_WINDO
 
 
 def _rpm(sample: Sample) -> float:
-    return sample.stock_rpm if sample.stock_rpm else sample.rpm_raw * RPM_PER_COUNT
+    return sample.stock_rpm
 
 
 def shift_instants(samples, start, end):

@@ -43,7 +43,6 @@ COMPOSE = "tools/memgraph/docker-compose.yml"
 EXPORT_OWNER = "tools/rom_sources.py"
 PRODUCT_OWNER = "tools/can_dashboard/__init__.py"
 TELEMETRY_PROFILE = "patches/can-telemetry-profile.toml"
-RETIRED_PROFILES = "patches/can-telemetry-retired-profiles.json"
 IMAGE_REGISTRY = "rom-images/roms.csv"
 IDENTITY_REGISTRY = "defs/rom-identities.toml"
 HOMOLOGY_REGISTRY = "rom-images/homology.toml"
@@ -73,11 +72,9 @@ CAN_ID_COMMAND = re.compile(r"--(?:can|candidate)-id[ =](0x[0-9A-Fa-f]+)")
 
 # A profile scale string either states an affine conversion of the raw field or
 # a fixed-point format, or it describes a quantity without a numeric claim.
-# "signed raw" reads an unsigned slot as a two's complement integer of the slot
-# width, and "N - raw" subtracts the scaled raw value from N.
+# "N - raw" subtracts the scaled raw value from N.
 AFFINE_SCALE = re.compile(
     r"(?:candidate )?"
-    r"(?P<signed>signed )?"
     r"(?:(?P<base>\d+(?:\.\d+)?) - )?"
     r"raw"
     r"(?: \* (?P<factor>\d+(?:\.\d+)?))?"
@@ -262,12 +259,6 @@ def declared_conversion(scale):
     return None
 
 
-def declares_signed_view(scale):
-    """Return whether a profile scale string reads its slot as signed."""
-    match = AFFINE_SCALE.match(scale)
-    return bool(match and match["signed"])
-
-
 def _profile_fields():
     manifest = can_telemetry_profile.load_manifest()
     return (*manifest.fields, *(f for c in manifest.contexts for f in c.fields))
@@ -280,32 +271,6 @@ def _profile_scales():
     return scales
 
 
-def _profile_slots():
-    slots = {}
-    for field in _profile_fields():
-        slots.setdefault(field.name, set()).add((field.width, field.signed))
-    return slots
-
-
-def _retired_declarations():
-    """Return the scale and slot of every field a retired profile carries.
-
-    The model reads a renamed slot of a retired profile under its current
-    name, so the declaration joins that name.
-    """
-    declarations = {}
-    for profile in can_telemetry_profile.load_manifest().retired_profiles:
-        fields = (
-            *profile["fields"],
-            *(field for context in profile["contexts"] for field in context["fields"]),
-        )
-        for field in fields:
-            declarations.setdefault(model.current_field_name(field["name"]), set()).add(
-                (field["scale"], field["width"], field["signed"], RETIRED_PROFILES)
-            )
-    return declarations
-
-
 def check_conversions():
     """Require every host conversion to be the one the profile declares."""
     decoder = can_telemetry.RAW_CALIBRATIONS
@@ -316,35 +281,19 @@ def check_conversions():
             "the decoder and the dashboard both convert " + ", ".join(sorted(shared))
         )
     scales = _profile_scales()
-    slots = _profile_slots()
-    retired = _retired_declarations()
     for name, calibration in sorted({**decoder, **dashboard}.items()):
-        if name in scales or name in slots:
-            if len(scales.get(name, ())) != 1 or len(slots.get(name, ())) != 1:
-                raise SourceError(
-                    f"the host converts {name}, which {TELEMETRY_PROFILE} does "
-                    "not declare with one scale"
-                )
-            (scale,) = scales[name]
-            ((width, signed),) = slots[name]
-            declarations = {(scale, width, signed, TELEMETRY_PROFILE)}
-        elif name in retired:
-            # The host converts a field the current profile no longer carries
-            # for the recordings of the retired profiles that carried it, so
-            # every frozen declaration of the field binds the conversion.
-            declarations = retired[name]
-        else:
+        if len(scales.get(name, ())) != 1:
             raise SourceError(
-                f"the host converts {name}, which neither {TELEMETRY_PROFILE} "
-                "nor a retired profile declares"
+                f"the host converts {name}, which {TELEMETRY_PROFILE} does "
+                "not declare with one scale"
             )
-        for declaration in sorted(declarations):
-            _check_conversion(name, calibration, *declaration)
+        (scale,) = scales[name]
+        _check_conversion(name, calibration, scale)
     return len(decoder) + len(dashboard)
 
 
-def _check_conversion(name, calibration, scale, width, signed, owner):
-    """Require one host conversion to equal one declared scale and slot."""
+def _check_conversion(name, calibration, scale):
+    """Require one host conversion to equal its declared scale."""
     declared = declared_conversion(scale)
     if declared is None:
         raise SourceError(
@@ -358,29 +307,7 @@ def _check_conversion(name, calibration, scale, width, signed, owner):
     ):
         raise SourceError(
             f"the host converts {name} as raw * {calibration.factor} + "
-            f"{calibration.offset}, {owner} declares {scale!r}"
-        )
-    signed_view = declares_signed_view(scale)
-    if signed_view and signed:
-        raise SourceError(
-            f"{owner} declares a signed view of {name}, whose slot is "
-            "already signed"
-        )
-    # Sign extension leaves the value of a signed slot unchanged, and a
-    # retired profile or an earlier MLG file can carry the same slot
-    # unsigned, so a signed slot accepts both readings.
-    if signed_view:
-        allowed = {8 * width}
-    elif signed:
-        allowed = {0, 8 * width}
-    else:
-        allowed = {0}
-    if calibration.signed_bits not in allowed:
-        raise SourceError(
-            f"the host reads {name} with signed_bits "
-            f"{calibration.signed_bits}, {owner} declares "
-            f"{scale!r} on a {'signed' if signed else 'unsigned'} "
-            f"{8 * width}-bit slot"
+            f"{calibration.offset}, {TELEMETRY_PROFILE} declares {scale!r}"
         )
 
 
@@ -542,18 +469,6 @@ class Sources:
         self.protocol = manifest.protocol_version
         tuning = manifest.profile_by_name["tuning"]
         self.identity = (tuning.profile_id, tuning.crc16)
-        # The documents name every retired ID the host decodes beside the
-        # current one, newest first.
-        self.retired = tuple(
-            sorted(
-                (
-                    (row["id"], int(row["crc16_ccitt_false"], 16))
-                    for row in manifest.retired_profiles
-                    if row["name"] == "tuning"
-                ),
-                reverse=True,
-            )
-        )
         self.bindings = len(recording.build_bindings("tuning"))
         roms = (dtc_projection.SOURCE_ROM, *dtc_projection.PROJECTED_ROMS)
         self.registries = {rom: dtc_projection.read_registry(rom) for rom in roms}
@@ -621,7 +536,6 @@ def published_facts(sources=None):
     supported = runtime_targets.SUPPORTED_ROMS
     me_tables, nd_tables = s.tables["1ME3B"], s.tables["1ND0A"]
     shared = s.shared_codes("1ME3B", "1ND0A")
-    retired = tuple(value for identity in s.retired for value in identity)
     adapters = sum("adapter" in family for family in s.layout_families)
     canonical = _toml(HOMOLOGY_REGISTRY)["family"][runtime_targets.EXACT_FAMILY][
         "canonical"
@@ -853,11 +767,8 @@ def published_facts(sources=None):
         ),
         Fact(
             "tools/can_dashboard/README.md",
-            r"The bundled schema declares profile ID {n} with CRC16 `{a}` and "
-            r"keeps the frozen contracts of retired profiles "
-            + " and ".join([r"{n} with CRC16 `{a}`"] * len(s.retired))
-            + ", so",
-            (*s.identity, *retired),
+            r"The bundled schema declares profile ID {n} with CRC16 `{a}`",
+            s.identity,
         ),
         Fact(
             telemetry,
@@ -871,12 +782,9 @@ def published_facts(sources=None):
         ),
         Fact(
             telemetry,
-            r"reports version {n} and a profile ID with the CRC that the host "
-            r"schema declares for it: current profile {n} with CRC `{a}`, or "
-            r"a retired profile with the CRC frozen for its ID, "
-            + " and ".join([r"profile {n} with CRC `{a}`"] * len(s.retired))
-            + ", whose",
-            (s.protocol, *s.identity, *retired),
+            r"until page 9 tag 3 reports version {n}, profile ID {n}, and CRC "
+            r"`{a}`\.",
+            (s.protocol, *s.identity),
         ),
         Fact(
             telemetry,

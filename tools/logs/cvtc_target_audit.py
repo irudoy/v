@@ -617,22 +617,15 @@ def is_mlg(path: Path) -> bool:
 
 
 def _raw_limits(profile: str) -> dict[str, tuple[int, int]]:
-    """Return the wire range of every field a known profile carries.
-
-    A capture holds the fields of the profile ID it was made under, so the
-    ranges span the current profile and every retired one. A field name
-    states one quantity across IDs, and the current profile owns its own.
-    """
-    document, profiles = can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)
+    """Return the wire range of every field the profile carries."""
+    _document, profiles = can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)
     try:
         selected = profiles[profile]
     except KeyError as error:
         raise ValueError(f"unknown telemetry profile {profile!r}") from error
-    fields = []
-    for version in (*document.get("retired_profiles", ()), selected):
-        fields.extend(version["fields"])
-        for context in version.get("contexts", ()):
-            fields.extend(context["fields"])
+    fields = list(selected["fields"])
+    for context in selected.get("contexts", ()):
+        fields.extend(context["fields"])
     limits = {}
     for field in fields:
         bits = 8 * field["width"]

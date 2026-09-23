@@ -268,5 +268,20 @@ class OutputTest(unittest.TestCase):
         self.assertNotIn("word_gap_median_raw", parsed)
 
 
+class TraceTest(unittest.TestCase):
+    def test_trace_without_verified_snapshots_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            trace = Path(directory) / "capture.trc"
+            trace.write_text(
+                ";$FILEVERSION=1.1\n;$STARTTIME=46251.0734343518\n"
+                "      1)    1000.0000 Rx   0180  8  00 00 00 00 00 00 00 00\n",
+                encoding="ascii",
+            )
+            with self.assertRaisesRegex(
+                ValueError, "no verified snapshot of telemetry profile 'tuning'"
+            ):
+                audit.read_trc(trace)
+
+
 if __name__ == "__main__":
     unittest.main()

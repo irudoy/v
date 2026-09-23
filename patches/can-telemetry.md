@@ -10,9 +10,7 @@ gate use the same profile identity.
 The generated host schema contains only transport layout, field semantics, and
 profile identity. It contains no ROM name, producer RAM address, physical
 mailbox, or patch location. Host tools load that file directly and do not import
-the JK08A producer manifest. The schema also carries the frozen host contract
-of every retired profile ID, so recordings of a retired profile stay
-decodable. The producer binding retains the exact ROM, RAM,
+the JK08A producer manifest. The producer binding retains the exact ROM, RAM,
 hook, source-address, and mailbox constraints required to build safe firmware.
 The profile CRC covers the wire layout alone: protocol version, profile ID,
 page count, the page, offset, width, and signedness of every fixed field, and
@@ -382,11 +380,8 @@ or more. At one evaluation of a channel per engine cycle, every tag-4 interval
 at divisor 1 holds an evaluation only above about 2350 rpm.
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2 and a profile ID with the CRC that the host schema declares for it: current
-profile 7 with CRC `0x6474`, or a retired profile with the CRC frozen for its
-ID, profile 6 with CRC `0xF14E` and profile 5 with CRC `0xE144`, whose frozen
-contracts decode the fields of their recordings. A later mismatch disables
-conversions again.
+2, profile ID 7, and CRC `0x6474`. A later mismatch disables conversions
+again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 

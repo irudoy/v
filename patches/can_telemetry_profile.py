@@ -20,7 +20,6 @@ from tools.logs import can_telemetry_schema
 
 
 DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
-DEFAULT_RETIRED = Path(__file__).with_name("can-telemetry-retired-profiles.json")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
 RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
@@ -92,7 +91,6 @@ class Manifest:
     profiles: tuple[Profile, ...]
     fields: tuple[Field, ...]
     contexts: tuple[Context, ...]
-    retired_profiles: tuple[dict, ...] = ()
 
     @property
     def profile_by_name(self):
@@ -261,7 +259,7 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
     }
 
 
-def load_manifest(path=DEFAULT_SOURCE, retired=DEFAULT_RETIRED):
+def load_manifest(path=DEFAULT_SOURCE):
     path = Path(path)
     with path.open("rb") as source:
         raw = tomllib.load(source)
@@ -380,7 +378,6 @@ def load_manifest(path=DEFAULT_SOURCE, retired=DEFAULT_RETIRED):
             can_telemetry_schema.crc16_ccitt_false(encoded),
         ))
     profiles = tuple(profiles)
-    retired_profiles = _load_retired_profiles(retired, profiles)
 
     manifest = Manifest(
         schema_version=raw["schema_version"],
@@ -403,44 +400,9 @@ def load_manifest(path=DEFAULT_SOURCE, retired=DEFAULT_RETIRED):
         profiles=profiles,
         fields=fields,
         contexts=contexts,
-        retired_profiles=retired_profiles,
     )
     _validate_coverage(manifest)
     return manifest
-
-
-def _load_retired_profiles(path, profiles):
-    """Load the frozen host contracts of the retired profile IDs.
-
-    A retired entry keeps the exact profile object the schema published for
-    its ID. It must retire an ID below the current ID of the same name; the
-    rendered schema is then validated by the host parser, which recomputes
-    every CRC and requires the framing the decoder shares across IDs.
-    """
-    path = Path(path)
-    with path.open("r", encoding="utf-8") as source:
-        raw = json.load(source)
-    if not isinstance(raw, dict) or set(raw) != {"retired_profiles"}:
-        raise ValueError(f"{path.name}: expected one retired_profiles list")
-    rows = raw["retired_profiles"]
-    if not isinstance(rows, list):
-        raise ValueError(f"{path.name}: retired_profiles must be a list")
-    current = {profile.name: profile.profile_id for profile in profiles}
-    seen = set(current.values())
-    for index, row in enumerate(rows):
-        if (
-            not isinstance(row, dict)
-            or row.get("name") not in current
-            or type(row.get("id")) is not int
-            or not 0 <= row["id"] < current[row["name"]]
-            or row["id"] in seen
-        ):
-            raise ValueError(
-                f"{path.name}: retired_profiles[{index}] must retire an "
-                "unused ID below the current ID of its profile"
-            )
-        seen.add(row["id"])
-    return tuple(rows)
 
 
 def _validate_coverage(manifest):
@@ -548,7 +510,6 @@ def render_schema(manifest):
             }
             for profile in manifest.profiles
         ],
-        "retired_profiles": list(manifest.retired_profiles),
     }
     try:
         can_telemetry.parse_schema(document)
@@ -593,7 +554,6 @@ def main(argv=None):
     print(
         "status=PASS"
         f" profiles={len(manifest.profiles)}"
-        f" retired_profiles={len(manifest.retired_profiles)}"
         f" fields={len(manifest.fields)}"
         f" contexts={len(manifest.contexts)}"
         f" table_bytes={len(manifest.page_sources) * 4 + len(manifest.contexts) * 24}"

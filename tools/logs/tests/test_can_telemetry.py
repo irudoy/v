@@ -87,8 +87,6 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         profile = document["profiles"][0]
         profile["name"] = "portable"
         profile["id"] = 7
-        for retired in document["retired_profiles"]:
-            retired["name"] = "portable"
         portable_crc = can_telemetry_schema.profile_crc16(
             profile, document["protocol_version"]
         )
@@ -122,10 +120,8 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(snapshot.tick16, 0x1234)
         self.assertEqual(snapshot.sequence, 0x04)
         self.assertFalse(snapshot.schema_verified)
-        # Retired profiles place the engine-speed coordinate where the current
-        # one places the request flow, so an unidentified group reads neither.
-        self.assertNotIn("rpm_raw", snapshot.fields)
-        self.assertNotIn("request_flow_raw", snapshot.fields)
+        self.assertIsNone(snapshot.profile_id)
+        self.assertEqual(snapshot.fields["request_flow_raw"], 0x0304)
         self.assertEqual(snapshot.fields["final_timing_raw"], 5)
         self.assertEqual(snapshot.fields["injection_0_raw"], 0x1213)
         self.assertIn("injection_end_angle_raw", snapshot.fields)
@@ -141,11 +137,12 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         )
         self.assertFalse(temperature.schema_verified)
         self.assertIsNone(temperature.profile_id)
-        # Profile 5 names the page-10 context of tag 0 differently, so an
-        # unidentified run reports no context name for the pair.
-        self.assertIsNone(temperature.context_name)
+        self.assertEqual(
+            temperature.context_name,
+            "temperatures_af + launch_abort_voltage_and_trim_terms",
+        )
         self.assertIn("ltft_learned_b1_raw", temperature.fields)
-        self.assertNotIn("rolling_launch_abort_reason", temperature.fields)
+        self.assertIn("rolling_launch_abort_reason", temperature.fields)
         with self.assertRaises(can_telemetry.DecodeError):
             can_telemetry.engineering_values(temperature)
 
@@ -221,95 +218,25 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             health.fields["injection_end_angle_raw"] * 2 - 590,
         )
 
-    def test_retired_profile_stream_decodes_with_its_own_layout(self):
+    def test_verification_ends_with_its_run(self):
         decoder = can_telemetry.Decoder("tuning")
-        self.assertEqual(sorted(decoder.versions), [5, 6, 7])
-        retired = decoder.versions[5]
-        identity = (5, retired["_crc16"])
-        self.assertEqual(identity, (5, 0xE144))
-
-        unidentified = feed_group(decoder, frames("tuning", 1, identity=identity))
-        self.assertFalse(unidentified.schema_verified)
-        self.assertIsNone(unidentified.profile_id)
-        for name in (
-            "front_oxygen_sensor_b1_raw",
-            "normalized_load_raw",
-            "rolling_launch_phase",
-            "rpm_raw",
-        ):
-            self.assertNotIn(name, unidentified.fields)
-        self.assertIn("maf_total_raw", unidentified.fields)
-
-        health = feed_group(
-            decoder, frames("tuning", 2, context_tag=3, identity=identity)
-        )
-        self.assertTrue(health.schema_verified)
-        self.assertEqual(health.profile_id, 5)
-        self.assertEqual(decoder.active_profile["id"], 5)
-        # Profile 5 carries the A/F adjustment B2 slot unsigned.
-        self.assertIn("af_adjustment_b2_raw", health.fields)
-        self.assertGreaterEqual(health.fields["af_adjustment_b2_raw"], 0)
-
-        identified = feed_group(
-            decoder, frames("tuning", 3, context_tag=0, identity=identity)
-        )
-        self.assertEqual(identified.profile_id, 5)
-        self.assertEqual(
-            identified.context_name,
-            "temperatures_af + pressure_voltage_and_trim_terms",
-        )
-        self.assertEqual(
-            identified.fields["front_oxygen_sensor_b1_raw"],
-            frames("tuning", 3)[1][7],
-        )
-        self.assertIn("atmospheric_pressure_raw", identified.fields)
-        self.assertEqual(identified.fields["rpm_raw"], 0x0304)
-        self.assertNotIn("normalized_load_raw", identified.fields)
-        self.assertNotIn("rolling_launch_abort_reason", identified.fields)
-        physical = can_telemetry.engineering_values(identified)
-        self.assertNotIn("normalized_load_percent", physical)
-        self.assertEqual(
-            physical["coolant_deg_c"], identified.fields["coolant_raw"] - 50
-        )
-
-        current = feed_group(decoder, frames("tuning", 4, context_tag=3))
-        self.assertEqual(current.profile_id, 7)
-        loaded = feed_group(decoder, frames("tuning", 5))
-        self.assertEqual(loaded.fields["normalized_load_raw"], frames("tuning", 5)[1][7])
-        self.assertAlmostEqual(
-            can_telemetry.engineering_values(loaded)["normalized_load_percent"],
-            loaded.fields["normalized_load_raw"] * 100 / 128,
-        )
-        self.assertNotIn("front_oxygen_sensor_b1_raw", loaded.fields)
-        self.assertEqual(loaded.fields["request_flow_raw"], 0x0304)
-        self.assertNotIn("rpm_raw", loaded.fields)
-
-        previous = can_telemetry.Decoder("tuning")
-        identity = (6, previous.versions[6]["_crc16"])
-        self.assertEqual(identity, (6, 0xF14E))
-        feed_group(previous, frames("tuning", 1, context_tag=3, identity=identity))
-        speed = feed_group(previous, frames("tuning", 2, identity=identity))
-        self.assertEqual(speed.profile_id, 6)
-        self.assertEqual(speed.fields["rpm_raw"], 0x0304)
-        self.assertNotIn("request_flow_raw", speed.fields)
-
-    def test_identified_profile_ends_with_its_run(self):
-        decoder = can_telemetry.Decoder("tuning")
-        feed_group(
-            decoder, frames("tuning", 0x281F, context_tag=3, identity=(5, 0xE144))
-        )
-        self.assertEqual(decoder.active_profile["id"], 5)
+        health = feed_group(decoder, frames("tuning", 0x281F, context_tag=3))
+        self.assertEqual(health.profile_id, 7)
         restarted = feed_group(decoder, frames("tuning", 1))
         self.assertEqual(restarted.run, 1)
+        self.assertFalse(restarted.schema_verified)
         self.assertIsNone(restarted.profile_id)
-        self.assertIsNone(decoder.active_profile)
-        self.assertNotIn("front_oxygen_sensor_b1_raw", restarted.fields)
 
-    def test_unknown_or_mismatched_profile_identity_is_rejected(self):
+    def test_another_profile_identity_is_rejected(self):
         decoder = can_telemetry.Decoder("tuning")
         feed_group(decoder, frames("tuning", 1, context_tag=3))
-        self.assertEqual(decoder.active_profile["id"], 7)
-        for identity in ((4, 0xE144), (5, 0xF14E), (7, 0xF14E)):
+        self.assertTrue(decoder.schema_verified)
+        profile_id, crc16 = decoder.profile["id"], decoder.profile["_crc16"]
+        for identity in (
+            (profile_id - 1, crc16),
+            (profile_id, crc16 ^ 1),
+            (profile_id + 1, crc16 ^ 0x8000),
+        ):
             with self.subTest(identity=identity):
                 result = feed_group(
                     decoder,
@@ -321,51 +248,8 @@ class CanTelemetryDecoderTest(unittest.TestCase):
                     ),
                 )
                 self.assertIsNone(result)
-                self.assertIsNone(decoder.active_profile)
                 self.assertFalse(decoder.schema_verified)
         self.assertEqual(decoder.schema_mismatches, 3)
-
-    def test_schema_rejects_a_retired_profile_with_foreign_framing(self):
-        document = json.loads(
-            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
-        )
-        (current_id,) = (
-            row["id"] for row in document["profiles"] if row["name"] == "tuning"
-        )
-        self.assertEqual(
-            [row["id"] for row in document["retired_profiles"]], [5, 6]
-        )
-        for retired in document["retired_profiles"]:
-            changes = {
-                "reused_id": dict(retired, id=current_id),
-                "later_id": dict(retired, id=current_id + 1),
-                "unknown_name": dict(retired, name="missing"),
-                "health_moved": dict(
-                    retired,
-                    contexts=[
-                        dict(row, tag=(row["tag"] + 1) % 5)
-                        if row["page"] == 9
-                        else row
-                        for row in retired["contexts"]
-                    ],
-                ),
-            }
-            for change, row in changes.items():
-                with self.subTest(retired=retired["id"], change=change):
-                    # A consistent CRC leaves the framing rules to reject the row.
-                    crc16 = can_telemetry_schema.profile_crc16(
-                        row, document["protocol_version"]
-                    )
-                    row = dict(row, crc16_ccitt_false=f"0x{crc16:04X}")
-                    damaged = dict(document, retired_profiles=[row])
-                    with self.assertRaisesRegex(
-                        can_telemetry.DecodeError, "retired_profile"
-                    ):
-                        can_telemetry.parse_schema(damaged)
-            crc16 = can_telemetry_schema.profile_crc16(
-                retired, document["protocol_version"]
-            )
-            self.assertEqual(retired["crc16_ccitt_false"], f"0x{crc16:04X}")
 
     def test_health_mismatch_is_rejected(self):
         decoder = can_telemetry.Decoder("tuning")

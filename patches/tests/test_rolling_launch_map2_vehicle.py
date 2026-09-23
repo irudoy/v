@@ -5,7 +5,7 @@ import unittest
 
 from patches import rolling_launch
 from patches import rolling_launch_layout
-from tools.can_dashboard import recording
+from tools.can_dashboard import model
 from tools.logs import mlg_relation_audit
 
 
@@ -21,7 +21,7 @@ MAP_3_KEY = "rolling_launch.map_3_vehicle_2026_09_21"
 SESSION_KEY = "can_telemetry.schema2_profile5_drive_2026_09_22"
 # Frame 0x551 leaves the serializer on every tenth 10.24 ms invocation.
 SERIALIZER_CALLS_PER_FRAME = 10
-RPM_PER_NATIVE = recording.MLG_CALIBRATIONS["rpm_raw"].factor
+RPM_PER_NATIVE = model.RPM_PER_COUNT
 NEUTRAL_EXHAUST_TARGET = 0x80
 MAP_3_SLOT = 2
 CONFIGURATION_FIELDS = (
@@ -78,6 +78,28 @@ PER_HOLD = (
     "trace_hold_seconds",
     "trace_hold_active_frames",
     "trace_hold_failed_frames",
+)
+# The record comes from the TRC, whose snapshots published the engine-speed
+# coordinate 0xFFFF11F4 and whose frames carry their times. The recording
+# converted from it takes engine speed from stock frame 0x180 and holds no
+# frame times, so the figures that the coordinate or a frame time enters
+# remain the record; the stock-frame bracket record test binds the recording
+# to the engine-speed figures among them.
+RECORD_ONLY = frozenset(
+    {
+        "exhaust_cvtc_slot_exact_counts",
+        "activation_rpm_range",
+        "activation_captured_rpm_native",
+        "activation_captured_rpm",
+        "activation_cut_rpm",
+        "activation_restore_rpm",
+        "activation_capture_records",
+        "activation_full_mask_rpm",
+        "activation_exit_records",
+        "activation_active_ticks_bound",
+        "activation_release_exit_bound_ms",
+        "activation_release_clear_by_window_removal",
+    }
 )
 
 
@@ -656,21 +678,27 @@ class RollingLaunchMap2VehicleTest(unittest.TestCase):
         from tools.logs import rolling_launch_audit as audit
 
         result = self.result
-        path = LOGS / result["capture_name"]
+        path = LOGS / Path(result["capture_name"]).with_suffix(".mlg").name
         if not path.is_file():
             self.skipTest(f"missing capture: {path.name}")
         calibration = audit.load_calibration(IMAGE, "JK08A")
         self.assertEqual(calibration.image_sha256, result["image_sha256"])
         capture = audit.read_capture(path)
-        self.assertEqual(capture.sha256, result["capture_sha256"])
+        self.assertEqual(capture.sha256, result["converted_mlg_sha256"])
         output = audit.audit_capture(capture, calibration, selected_map=result["selected_map"])
-        compared = [key for key in output if key in result]
+        compared = [
+            key
+            for key in output
+            if key in result
+            and key not in RECORD_ONLY
+            and key not in ("capture_name", "capture_sha256")
+        ]
         per_event = {
             key
             for key, value in result.items()
-            if key.startswith(("activation_", "trace_")) and not isinstance(value, str)
+            if key.startswith("activation_") and not isinstance(value, str)
         }
-        self.assertLessEqual(per_event, set(compared))
+        self.assertLessEqual(per_event - RECORD_ONLY, set(compared))
         for key in compared:
             with self.subTest(key=key):
                 self.assertEqual(output[key], result[key])

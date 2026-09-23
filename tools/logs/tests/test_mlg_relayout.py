@@ -13,20 +13,20 @@ BINDINGS = recording.build_bindings("tuning")
 SPEC_BY_SOURCE = {binding.source: binding.spec for binding in BINDINGS}
 MARKER = b"key off".ljust(mlvlg.MLG_MARKER_MESSAGE_SIZE, b"\x00")
 
-# An earlier recorder put the candidate marker in the name, stored a signed
-# slot unsigned, and recorded a channel the current profile does not bind.
+# An earlier recorder put the candidate marker in the name and recorded a
+# channel the current profile does not bind.
 SOURCE_SPECS = (
     SPEC_BY_SOURCE["date"],
     SPEC_BY_SOURCE["elapsed"],
     SPEC_BY_SOURCE["tick16"],
     mlvlg.FieldSpec(SPEC_BY_SOURCE["af_adjustment_b1_raw"].name + "*", "", "Fuel"),
     mlvlg.FieldSpec("Stock CAN RPM", "rpm", "Context"),
-    mlvlg.FieldSpec("Retired slot", "raw", "Telemetry"),
+    mlvlg.FieldSpec("Unbound slot", "raw", "Telemetry"),
 )
 # The second record repeats the tick of the first: a bridge record.
 ROWS = (
-    (START_EPOCH, 0.0, 100.0, 65535.0, 812.5, 7.0),
-    (START_EPOCH, 0.3, 100.0, 65535.0, 812.5, 7.0),
+    (START_EPOCH, 0.0, 100.0, -1.0, 812.5, 7.0),
+    (START_EPOCH, 0.3, 100.0, -1.0, 812.5, 7.0),
     (START_EPOCH + 1, 0.3125, 101.0, 12.0, 825.0, 8.0),
 )
 
@@ -90,7 +90,7 @@ class MlgRelayoutTest(unittest.TestCase):
             )
             self.assertEqual(header[2], source_header[2])
             self.assertEqual((summary.data_records, summary.marker_records), (3, 1))
-            self.assertEqual(summary.dropped, ("Retired slot",))
+            self.assertEqual(summary.dropped, ("Unbound slot",))
             carried = {"Date", "Elapsed", "Telemetry tick", "Stock CAN RPM"}
             carried.add(SPEC_BY_SOURCE["af_adjustment_b1_raw"].name)
             self.assertEqual(

@@ -193,10 +193,10 @@ reset, and START activates telemetry even when the definition flag is off. The
 dashboard can send these commands only through an active/ACK PCAN connection.
 
 The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
-this current schema. They decode recordings of retired profiles 5 and 6
-through their frozen contracts in the host schema. Historical schema 1
-captures require the historical decoder revision and are not accepted as
-schema 2 input.
+this current schema. A capture of an earlier profile or of schema 1 requires
+the decoder revision whose generated schema matches its recorded identity, and
+`tools/logs/mlg_relayout.py` carries a dashboard recording of an earlier
+profile into the current channel layout.
 
 The firmware and executable SH-2E gate are complete. Three road drives on
 2026-08-26 with profile 1 and a road session on 2026-09-21 with profile 5

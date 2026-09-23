@@ -72,12 +72,6 @@ KNOCK_MARGIN_IDLE = 0x7FFF
 KNOCK_MARGIN_FIELDS = tuple(
     f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
 )
-# Retired profile IDs name some slots of the current profile differently.
-# The model keeps such a slot under its current name, so the display, the
-# MLG recorder, and the replay treat every ID alike.
-RENAMED_FIELDS = {
-    "timing_state_564c_raw": "ignition_timing_adjustment_raw",
-}
 # Rolling Launch phase and abort reason codes of the runtime state bytes
 # 0xFFFF5D40 and 0xFFFF5D41, in the order of the enumerations of
 # patches/rolling_launch.py.
@@ -129,9 +123,6 @@ DASHBOARD_CALIBRATIONS = {
         "oil_temperature_deg_c", 1.0, -50
     ),
     "apc_command_raw": can_telemetry.Calibration("apc_command_deg", -1.0, 110),
-    "ignition_timing_adjustment_raw": can_telemetry.Calibration(
-        "ignition_timing_adjustment_deg", signed_bits=8
-    ),
     "throttle_request_bounded_raw": can_telemetry.Calibration(
         "torque_request_nm", 0.1
     ),
@@ -162,12 +153,8 @@ DASHBOARD_CALIBRATIONS = {
     "front_af_sensor_b2_word_raw": can_telemetry.Calibration(
         "af_sensor_b2_v", 1 / 200
     ),
-    "af_adjustment_b1_raw": can_telemetry.Calibration(
-        "af_adjustment_b1", 0.002, signed_bits=16
-    ),
-    "af_adjustment_b2_raw": can_telemetry.Calibration(
-        "af_adjustment_b2", 0.002, signed_bits=16
-    ),
+    "af_adjustment_b1_raw": can_telemetry.Calibration("af_adjustment_b1", 0.002),
+    "af_adjustment_b2_raw": can_telemetry.Calibration("af_adjustment_b2", 0.002),
     # The zero-based slot index of the map-switching runtime names Map
     # index + 1; the runtime reads an index outside the slots as Map 1.
     "active_map_index": can_telemetry.Calibration(
@@ -200,17 +187,10 @@ def _code_name(names, code):
     return names[code] if 0 <= code < len(names) else f"0x{code:02X}"
 
 
-def current_field_name(name):
-    """Return the current name of a field that a retired ID names."""
-    return RENAMED_FIELDS.get(name, name)
-
-
 def profile_field_names(profile):
-    """Return the current fixed and context field names of one profile."""
-    return tuple(
-        current_field_name(field["name"]) for field in profile["fields"]
-    ) + tuple(
-        current_field_name(field["name"])
+    """Return the fixed and context field names of one profile."""
+    return tuple(field["name"] for field in profile["fields"]) + tuple(
+        field["name"]
         for context in profile.get("contexts", ())
         for field in context["fields"]
     )
@@ -285,6 +265,10 @@ def speed_counts(stock_rpm):
     if not _finite(stock_rpm):
         return None
     return int(round(stock_rpm * 8)) // 25
+
+
+# One count of the ECU engine-speed coordinate FFFF11F4.
+RPM_PER_COUNT = 12.5
 
 
 def rpm_counts(stock_rpm):
@@ -428,12 +412,7 @@ def _window_rate(samples, now, window=2.0):
 
 
 class DashboardModel:
-    """Retain the latest fixed and rotating fields from strict snapshots.
-
-    The fields belong to the profile ID the stream identifies. A stream of a
-    retired ID keeps the fields of that ID, and a change of ID drops every
-    retained field the new ID does not carry.
-    """
+    """Retain the latest fixed and rotating fields from strict snapshots."""
 
     def __init__(
         self,
@@ -482,24 +461,6 @@ class DashboardModel:
         self._record_run = 0
         self._record_unwrapped = None
         self._field_names = profile_field_names(self.decoder.profile)
-        self._version_fields = {
-            profile_id: frozenset(profile_field_names(version))
-            for profile_id, version in self.decoder.versions.items()
-        }
-        # A recording of a retired ID carries the fields of that ID, which the
-        # current profile need not publish, so a record is read over every
-        # name a known profile names and then limited to the fields of the ID
-        # the record itself states.
-        self._known_field_names = tuple(
-            dict.fromkeys(
-                self._field_names
-                + tuple(
-                    name
-                    for version in self.decoder.versions.values()
-                    for name in profile_field_names(version)
-                )
-            )
-        )
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 
@@ -582,11 +543,10 @@ class DashboardModel:
         profile_id = (
             int(profile_id) if verified and _finite(profile_id) else None
         )
-        carried = self._version_fields.get(profile_id, self._field_names)
         fields = {}
-        for name in self._known_field_names:
+        for name in self._field_names:
             value = values.get(name)
-            if name in carried and _finite(value):
+            if _finite(value):
                 fields[name] = int(round(value))
         snapshot = can_telemetry.Snapshot(
             tick16=tick16,
@@ -625,13 +585,10 @@ class DashboardModel:
         self.last_snapshot_monotonic = now
         self._snapshot_times.append(now)
         self.schema_verified = snapshot.schema_verified
-        if (
-            snapshot.profile_id is not None
-            and snapshot.profile_id != self.profile_id
-        ):
-            self._select_version(snapshot.profile_id)
+        if snapshot.profile_id is not None:
+            self.profile_id = snapshot.profile_id
         fields = {
-            current_field_name(name): value
+            name: value
             for name, value in snapshot.fields.items()
             if name not in KNOCK_MARGIN_FIELDS or value != KNOCK_MARGIN_IDLE
         }
@@ -642,18 +599,6 @@ class DashboardModel:
             retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
             self.engineering.update(can_telemetry.engineering_values(retained))
             self.engineering.update(_dashboard_engineering_values(self.raw))
-
-    def _select_version(self, profile_id):
-        """Keep only the retained fields that the new profile ID carries."""
-        self.profile_id = profile_id
-        names = self._version_fields.get(profile_id)
-        if names is None:
-            return
-        for retained in (self.raw, self.updated_at):
-            for name in [name for name in retained if name not in names]:
-                del retained[name]
-        # The snapshot that selected the ID rebuilds the engineering values.
-        self.engineering.clear()
 
     def _set_gear(self, code):
         self.gear_raw = code
@@ -752,13 +697,9 @@ class DashboardModel:
     def engine_speed_counts(self):
         """Engine speed in the RPM/12.5 counts of the ECU coordinate FFFF11F4.
 
-        A profile that publishes the coordinate serves it from the snapshot.
-        Otherwise the stock engine-speed frame carries the word the coordinate
-        is a shift of, so the two sources name one quantity.
+        The stock engine-speed frame carries the word the coordinate is a
+        shift of, so the frame serves the coordinate.
         """
-        published = self.raw.get("rpm_raw")
-        if published is not None:
-            return int(published)
         return rpm_counts(self.stock_rpm)
 
     @property

@@ -260,21 +260,19 @@ class RollingLaunchAuditTest(unittest.TestCase):
         root = Path(cls.directory.name)
         cls.image = root / "image.bin"
         cls.log = root / "capture.mlg"
-        cls.stock_log = root / "stock.mlg"
         cls.trace = root / "capture.trc"
         cls.rows = scenario()
         write_image(cls.image)
-        # A recording of a retired profile carries the published coordinate;
-        # one of the current profile leaves engine speed to the stock frame.
-        write_log(cls.log, cls.rows, recording.known_bindings("tuning"))
-        write_log(cls.stock_log, cls.rows, recording.build_bindings("tuning"))
+        write_log(cls.log, cls.rows, recording.build_bindings("tuning"))
         write_trace(cls.trace, cls.rows)
         cls.calibration = audit.load_calibration(cls.image)
+        # A capture of exact RPM words pins every bound that the stock
+        # engine-speed frame of a recording widens.
         cls.result = audit.audit_capture(
-            audit.read_mlg(cls.log), cls.calibration, selected_map=SELECTED_MAP
+            capture_from(cls.rows), cls.calibration, selected_map=SELECTED_MAP
         )
         cls.stock_result = audit.audit_capture(
-            audit.read_mlg(cls.stock_log), cls.calibration, selected_map=SELECTED_MAP
+            audit.read_mlg(cls.log), cls.calibration, selected_map=SELECTED_MAP
         )
 
     @classmethod
@@ -534,7 +532,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
 
     def test_trace_replay_yields_the_recorded_snapshots(self):
         trace = audit.read_trc(self.trace)
-        log = audit.read_mlg(self.stock_log)
+        log = audit.read_mlg(self.log)
         by_tick = {sample.tick: sample for sample in log.samples}
         self.assertGreater(len(trace.samples), RECORDS - 10)
         for sample in trace.samples:
@@ -552,24 +550,19 @@ class RollingLaunchAuditTest(unittest.TestCase):
                 self.assertEqual(result[key], value, key)
 
     def test_stock_frame_bounds_each_word_by_the_frames_around_its_snapshot(self):
-        published = audit.read_mlg(self.log)
-        stock = audit.read_mlg(self.stock_log)
-        self.assertEqual(published.engine_speed_source, audit.PUBLISHED_SPEED_SOURCE)
-        self.assertEqual(stock.engine_speed_source, audit.STOCK_SPEED_SOURCE)
-        for sample in published.samples:
-            self.assertEqual((sample.rpm_low, sample.rpm_high), (sample.rpm_raw,) * 2)
+        stock = audit.read_mlg(self.log)
+        self.assertEqual(
+            [sample.rpm_raw for sample in stock.samples],
+            [row["rpm_raw"] for row in self.rows],
+        )
         margin = audit.STOCK_RPM_MARGIN
         for sample, after in zip(stock.samples, [*stock.samples[1:], None]):
             words = [sample.rpm_raw] + ([after.rpm_raw] if after else [])
             self.assertEqual(sample.rpm_low, min(words) - margin)
             self.assertEqual(sample.rpm_high, max(words) + margin)
-        # A reader told to take the stock frame ignores a published coordinate.
-        forced = audit.read_mlg(self.log, stock_speed=True)
-        self.assertEqual(forced.engine_speed_source, audit.STOCK_SPEED_SOURCE)
-        self.assertEqual(forced.samples, stock.samples)
 
-    def test_stock_frame_figures_span_the_published_figures(self):
-        published = self.result
+    def test_stock_frame_figures_span_the_exact_word_figures(self):
+        exact = self.result
         stock = self.stock_result
         widened = {
             "activation_rpm_range",
@@ -584,7 +577,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
             "activation_release_exit_bound_ms",
         }
         for key in widened:
-            for outer, inner in zip(stock[key], published[key]):
+            for outer, inner in zip(stock[key], exact[key]):
                 with self.subTest(key=key):
                     self.assertTrue(
                         not outer
@@ -598,7 +591,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
             stock["activation_captured_rpm_native"],
             [
                 [low - margin, high + margin]
-                for low, high in published["activation_captured_rpm_native"]
+                for low, high in exact["activation_captured_rpm_native"]
             ],
         )
         # The widened words no longer prove that the removal of the window
@@ -609,10 +602,9 @@ class RollingLaunchAuditTest(unittest.TestCase):
         exempt = widened | {
             "capture_name",
             "capture_sha256",
-            "engine_speed_source",
             "activation_release_clear_by_window_removal",
         }
-        for key, value in published.items():
+        for key, value in exact.items():
             if key not in exempt:
                 with self.subTest(key=key):
                     self.assertEqual(stock[key], value)
@@ -633,7 +625,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
         self.assertEqual(status, 0)
         self.assertIn("activation_count = 3", lines)
         self.assertIn(
-            "activation_captured_rpm_native = [[200, 200], [180, 182], [240, 240]]",
+            "activation_captured_rpm_native = [[192, 208], [172, 190], [232, 248]]",
             lines,
         )
         self.assertIn("timeout_exercised = false", lines)

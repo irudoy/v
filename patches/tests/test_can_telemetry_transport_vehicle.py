@@ -46,13 +46,6 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         cls.captures = _entry(cls.registry, cls.session["capture_registry"])
         cls.by_name = {row["capture_name"]: row for row in cls.captures}
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-        # A session recorded under a retired profile ID reads its frozen
-        # contract from the retired list of the same schema.
-        cls.profile = {
-            row["id"]: row
-            for row in (*schema["profiles"], *schema["retired_profiles"])
-            if row["name"] == "tuning"
-        }.get(cls.session["profile_id"])
         (cls.current_profile_id,) = (
             row["id"] for row in schema["profiles"] if row["name"] == "tuning"
         )
@@ -62,9 +55,8 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         session = self.session
         previous = _entry(self.registry, PREVIOUS_SESSION_KEY)
         self.assertEqual(session["image_sha256"], previous["image_sha256"])
-        self.assertIsNotNone(self.profile)
         self.assertEqual(session["profile_id"], previous["profile_id"])
-        self.assertEqual(session["profile_crc16"], int(self.profile["crc16_ccitt_false"], 16))
+        self.assertEqual(session["profile_crc16"], previous["profile_crc16"])
         self.assertEqual(len(self.by_name), len(self.captures))
         self.assertEqual(
             session["record_count_total"],
@@ -95,7 +87,7 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
             if row["capture_name"].endswith(".trc")
         ]
         self.assertEqual([row["capture_name"] for row in result["captures"]], traces)
-        pages = self.profile["page_count"]
+        pages = result["page_count"]
         for row in result["captures"]:
             with self.subTest(capture=row["capture_name"]):
                 session_row = self.by_name[row["capture_name"]]
@@ -126,7 +118,7 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
             number=1, offset_ms=0.0, direction="Rx",
             can_id=result["candidate_id"], data=bytes(8),
         )
-        frames_per_second = self.profile["page_count"] * SNAPSHOT_RATE_HZ
+        frames_per_second = result["page_count"] * SNAPSHOT_RATE_HZ
         theory = [
             round(100 * frames_per_second * bits / result["nominal_bitrate"], 3)
             for bits in peak_trc_audit.frame_bit_bounds(frame)

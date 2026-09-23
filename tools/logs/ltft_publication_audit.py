@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Audit JK08A long-term fuel-trim publication and learning in dashboard MLGs.
 
-Telemetry profile 5 carries the published LTFT words 0xFFFF2302/0xFFFF2304 in
-context tag 2 and the bank 1 learned cell 0xFFFF2306 and adjustment term
-0xFFFF5648 in context tag 0. An MLG retains every context value between its
-refreshes and stores no tag, so the audit derives the refresh phase from the
-tick residue on which the tag-2 front A/F word 0xFFFF2780 changes. A recording
-whose changes fall on more than one residue is refused.
+The tuning telemetry profile carries the published LTFT words
+0xFFFF2302/0xFFFF2304 in context tag 2 and the bank 1 learned cell 0xFFFF2306
+and adjustment term 0xFFFF5648 in context tag 0. An MLG retains every context
+value between its refreshes and stores no tag, so the audit derives the
+refresh phase from the tick residue on which the tag-2 front A/F word
+0xFFFF2780 changes. A recording whose changes fall on more than one residue is
+refused.
 
 At each tag-2 refresh the audit brackets published B1 with the tag-0 refreshes
 two snapshots before and three snapshots after it. When both brackets hold the
@@ -24,9 +25,8 @@ Learning is counted as a change of the learned word between tag-0 refreshes
 five snapshots apart. The audit replays the FUN 0005796C cell selector from
 the captured Base Fuel Schedule word and the RPM/12.5 word, whose right shift
 by two equals the selector's engine-speed byte, and counts the changes inside
-one replayed cell visit. A recording of a profile that publishes no RPM/12.5
-word takes it from the stock engine-speed frame, which carries the word it is
-a shift of. A single FUN 00057D1E update cannot exceed the
+one replayed cell visit. The RPM/12.5 word comes from the stock engine-speed
+frame, which carries the word it is a shift of. A single FUN 00057D1E update cannot exceed the
 largest captured STFT deviation times the largest gain divided by 256, so a
 larger in-visit change marks a cell switch that the replay does not reproduce.
 Near idle the Base Fuel Schedule word lies inside the column hysteresis band of

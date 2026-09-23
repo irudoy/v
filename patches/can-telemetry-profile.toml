@@ -6,10 +6,9 @@
 # contract. The profile CRC covers the wire layout alone: protocol version,
 # profile ID, page count, and the placement, width, and signedness of every
 # slot. Names and scale strings are outside it, and a slot that carries a
-# different quantity takes a new profile ID. The host contract of every
-# retired profile ID stays frozen in can-telemetry-retired-profiles.json, so
-# recordings of that ID remain decodable. Runtime arbitrary-address
-# interpretation is intentionally unsupported.
+# different quantity takes a new profile ID. The host decodes the current
+# profile ID alone. Runtime arbitrary-address interpretation is intentionally
+# unsupported.
 
 schema_version = 2
 rom = "JK08A"

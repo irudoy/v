@@ -3,8 +3,8 @@
 
 The dashboard recorder stores every custom-telemetry channel as its raw wire
 value, so a recording can be replayed against the exact JK08A formulas that
-connect those values: stock CAN RPM against the RPM/12.5 word, the live
-intake-VTC duty pair against its duty command latch, cam-position bytes against
+connect those values: the live intake-VTC duty pair against its duty command
+latch, cam-position bytes against
 their common targets, the MAF transfer chain, the J1979 Calculated Load byte,
 the Base Fuel Schedule producer, the compensated injection words, the code
 chain from the schedule to the pulse words, and the final timing to APC
@@ -81,7 +81,6 @@ APC_COMMAND_BASE = 110
 KNOCK_EVENT_STEP = -307
 KNOCK_RECOVERY_STEP = 13
 
-RPM_PER_COUNT = recording.MLG_CALIBRATIONS["rpm_raw"].factor
 DUTY_TOLERANCE = 3
 CVTC_TOLERANCE = 2
 
@@ -305,20 +304,10 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-# Channels of telemetry profile 3 recordings whose slot carries another
-# quantity in the current profile.
-PROFILE_3_CHANNEL_SOURCES = {
-    "Injection timing state": "injection_timing_state_raw",
-}
-
-
 def _source_by_channel_name() -> dict[str, str]:
     return {
-        **PROFILE_3_CHANNEL_SOURCES,
-        **{
-            binding.spec.name: binding.source
-            for binding in recording.known_bindings("tuning")
-        },
+        binding.spec.name: binding.source
+        for binding in recording.build_bindings("tuning")
     }
 
 
@@ -366,24 +355,14 @@ def _ints(recording_: Recording, source: str) -> list[int] | None:
     return [int(round(value)) for value in column]
 
 
-def engine_speed_counts(
-    recording_: Recording, *, stock: bool = False
-) -> list[int | None] | None:
+def engine_speed_counts(recording_: Recording) -> list[int | None] | None:
     """Engine speed per record in the RPM/12.5 counts of FFFF11F4.
 
-    A recording of a profile that publishes the coordinate carries it as a
-    channel. Otherwise, or with `stock`, the stock engine-speed channel
-    carries the word the coordinate is a shift of. A record without either
-    value, such as one written before the first stock engine-speed frame,
-    holds no count.
+    The stock engine-speed channel carries the word the coordinate is a shift
+    of. A record without that value, such as one written before the first
+    stock engine-speed frame, holds no count.
     """
 
-    published = None if stock else recording_.columns.get("rpm_raw")
-    if published is not None:
-        return [
-            int(round(value)) if math.isfinite(value) else None
-            for value in published
-        ]
     stock = recording_.columns.get("stock_rpm")
     if stock is None:
         return None
@@ -434,37 +413,6 @@ def linear_fit(xs: list[float], ys: list[float]) -> tuple[float, float]:
         return 0.0, mean_y
     slope = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys)) / variance
     return slope, mean_y - slope * mean_x
-
-
-def audit_stock_rpm(recording_: Recording) -> dict:
-    """Measure the stock engine-speed frame against the published coordinate.
-
-    Only a recording of a profile that publishes FFFF11F4 carries both
-    sources, so the reconstruction share states how often the stock frame
-    reproduces the coordinate an audit reads from it.
-    """
-
-    rpm = _ints(recording_, "rpm_raw")
-    stock = recording_.columns.get("stock_rpm")
-    if rpm is None or stock is None:
-        return {}
-    differences = [
-        abs(value - count * RPM_PER_COUNT) for count, value in zip(rpm, stock)
-    ]
-    reconstructed = [
-        rpm_counts(value) == count for count, value in zip(rpm, stock)
-    ]
-    return {
-        "stock_rpm_pair_count": len(differences),
-        "stock_rpm_mean_absolute_difference": statistics.fmean(differences),
-        "stock_rpm_within_one_count_share": _share(
-            sum(1 for value in differences if value <= RPM_PER_COUNT),
-            len(differences),
-        ),
-        "stock_rpm_reconstructs_coordinate_share": _share(
-            sum(reconstructed), len(reconstructed)
-        ),
-    }
 
 
 def audit_duty_pairs(recording_: Recording) -> dict:
@@ -779,7 +727,6 @@ def audit_states(recording_: Recording) -> dict:
         ("coolant_raw", "coolant_raw_range"),
         ("iat_raw", "iat_raw_range"),
         ("battery_voltage_raw", "battery_raw_range"),
-        ("injection_timing_state_raw", "injection_timing_state_raw_range"),
         ("injection_end_angle_raw", "injection_end_angle_raw_range"),
     ):
         column = _ints(recording_, source)
@@ -805,7 +752,6 @@ def audit_recording(
         "steady_target_hold_records": target_hold,
         "steady_schedule_hold_records": schedule_hold,
     }
-    result.update(audit_stock_rpm(recording_))
     result.update(audit_duty_pairs(recording_))
     result.update(audit_cvtc_tracking(recording_, target_hold))
     result.update(audit_maf_chain(recording_, calibration, hold))

@@ -756,7 +756,7 @@ STATUS_FIELDS = (
     ("source_var", "Telemetry source", "text", "left",
      "Source: PCAN_USBBUS1, 500000 bit/s"),
     ("schema_var", "Wire schema state", "amber", "left",
-     "Schema: VERIFIED, retired profile 5"),
+     "Schema: VERIFIED, profile 255"),
     ("rate_var", "Group and frame rates", "cyan", "left",
      "Groups: 100.0 Hz | Frames: 1000.0 Hz"),
     ("loss_var", "Loss and integrity counters", "muted", "left",
@@ -798,16 +798,11 @@ RUN_TOOLTIPS = {
 
 
 def schema_status(model):
-    """Name the verified profile ID and whether the schema retired it."""
+    """Name the verified profile ID."""
     if not model.schema_verified:
         return "Schema: waiting"
     if model.profile_id is None:
         return "Schema: VERIFIED"
-    if (
-        model.profile_id != model.decoder.profile["id"]
-        and model.profile_id in model.decoder.versions
-    ):
-        return f"Schema: VERIFIED, retired profile {model.profile_id}"
     return f"Schema: VERIFIED, profile {model.profile_id}"
 
 

@@ -33,8 +33,6 @@ class DashboardModelTest(unittest.TestCase):
             profile, document["protocol_version"]
         )
         profile["crc16_ccitt_false"] = f"0x{portable_crc:04X}"
-        for retired in document["retired_profiles"]:
-            retired["name"] = "portable"
         with tempfile.TemporaryDirectory() as directory:
             schema_path = Path(directory) / "portable-schema.json"
             schema_path.write_text(
@@ -135,7 +133,7 @@ class DashboardModelTest(unittest.TestCase):
             "throttle_target_channel_1_raw": 2149,
             "front_af_sensor_b1_word_raw": 440,
             "front_af_sensor_b2_word_raw": 1013,
-            "af_adjustment_b1_raw": 0xFFFE,
+            "af_adjustment_b1_raw": -2,
             "af_adjustment_b2_raw": 165,
             "fuel_inhibit_mask": 0x15,
             "knock_channel_mask_latched": 0x2B,
@@ -158,12 +156,7 @@ class DashboardModelTest(unittest.TestCase):
                 self.assertAlmostEqual(dashboard.value(key), value)
         self.assertEqual(dashboard.value("fuel_inhibit_cylinders"), "cyl 1 3 5")
         self.assertEqual(dashboard.value("knock_channels_latched"), "ch 1 2 4 6")
-        self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], 0xFFFE)
-
-        # A recording stores a signed view as the signed value itself.
-        values.update(tick16=2, af_adjustment_b1_raw=-2)
-        dashboard.process_record(model.SnapshotRecord(0.01, values), now=0.01)
-        self.assertAlmostEqual(dashboard.value("af_adjustment_b1"), -0.004)
+        self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], -2)
 
     def test_masks_name_their_members(self):
         self.assertEqual(model.inhibited_cylinders(0), "none")
@@ -190,7 +183,7 @@ class DashboardModelTest(unittest.TestCase):
             scales["knock_channel_mask_latched"],
         )
 
-    def test_demo_signed_views_stay_inside_their_bounds(self):
+    def test_demo_af_adjustments_stay_inside_their_bounds(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         seen = set()
@@ -205,9 +198,6 @@ class DashboardModelTest(unittest.TestCase):
                 if value is not None:
                     self.assertLessEqual(abs(value), 1.0)
                     seen.add(value < 0)
-            offset = dashboard.engineering.get("ignition_timing_adjustment_deg")
-            if offset is not None:
-                self.assertTrue(-5 <= offset <= 0)
         self.assertEqual(seen, {False, True})
 
     def test_hot_ignition_surface_selector_decodes_bit_6(self):
@@ -426,56 +416,6 @@ class DashboardModelTest(unittest.TestCase):
         self.assertFalse(dashboard.schema_verified)
         self.assertIsNone(dashboard.value("normalized_load_percent"))
 
-    def test_a_retired_profile_keeps_only_the_fields_of_its_id(self):
-        generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
-        retired = dashboard.decoder.versions[5]
-
-        def feed(tick, profile_id, crc16):
-            group = list(generator.group(tick))
-            if group[9].data[1] == 3:
-                health = bytearray(group[9].data)
-                health[3] = profile_id
-                health[4:6] = crc16.to_bytes(2, "big")
-                group[9] = model.FrameRecord(0x6F0, bytes(health))
-            feed_group(dashboard, group, tick * model.BASE_TICK_SECONDS)
-
-        current = (7, dashboard.decoder.profile["_crc16"])
-        for tick in range(1, 9):
-            feed(tick, *current)
-        self.assertEqual(dashboard.profile_id, 7)
-        self.assertIn("normalized_load_percent", dashboard.engineering)
-        self.assertEqual(dashboard.value("rolling_launch_phase_name"), "IDLE")
-        self.assertEqual(dashboard.telemetry_map, 1)
-
-        for tick in range(9, 19):
-            feed(tick, 5, retired["_crc16"])
-        self.assertEqual(dashboard.profile_id, 5)
-        names = set(model.profile_field_names(retired))
-        self.assertLessEqual(set(dashboard.raw), names)
-        self.assertLessEqual(set(dashboard.updated_at), names)
-        self.assertIn("front_oxygen_sensor_b1_raw", dashboard.raw)
-        # Profile 5 names this slot timing_state_564c_raw.
-        self.assertIn("ignition_timing_adjustment_raw", dashboard.raw)
-        self.assertNotIn("timing_state_564c_raw", dashboard.raw)
-        self.assertIn("ignition_timing_adjustment_deg", dashboard.engineering)
-        for key in (
-            "normalized_load_percent",
-            "rolling_launch_phase_name",
-            "rolling_launch_abort_name",
-            "selected_map_number",
-        ):
-            self.assertNotIn(key, dashboard.engineering)
-        self.assertIsNone(dashboard.telemetry_map)
-        self.assertEqual(dashboard.selected_map, dashboard.drive.map.number)
-        self.assertIsNotNone(dashboard.value("rpm"))
-
-        for tick in range(19, 29):
-            feed(tick, *current)
-        self.assertEqual(dashboard.profile_id, 7)
-        self.assertNotIn("front_oxygen_sensor_b1_raw", dashboard.raw)
-        self.assertIn("normalized_load_percent", dashboard.engineering)
-
     def test_the_telemetry_map_index_names_the_selected_map(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for tick, (index, number) in enumerate(
@@ -498,23 +438,6 @@ class DashboardModelTest(unittest.TestCase):
         dashboard.schema_verified = False
         self.assertIsNone(dashboard.telemetry_map)
         self.assertEqual(dashboard.selected_map, 3)
-
-    def test_a_retired_record_keeps_only_the_fields_of_its_id(self):
-        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
-        values = {
-            "tick16": 1,
-            "schema_verified": 1,
-            "profile_id": 5,
-            "active_map_index": 3,
-            "coolant_raw": 140,
-            "ignition_timing_adjustment_raw": 0xFE,
-        }
-        dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
-        self.assertEqual(dashboard.profile_id, 5)
-        self.assertNotIn("active_map_index", dashboard.raw)
-        self.assertIsNone(dashboard.telemetry_map)
-        self.assertEqual(dashboard.value("coolant_deg_c"), 90)
-        self.assertEqual(dashboard.value("ignition_timing_adjustment_deg"), -2)
 
     def test_rolling_launch_codes_follow_the_runtime_enumerations(self):
         for names, enumeration in (

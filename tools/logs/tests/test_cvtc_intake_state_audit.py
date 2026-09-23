@@ -367,7 +367,7 @@ class RecordIndexTest(unittest.TestCase):
             "schema_verified": [1.0, 1.0, 1.0, 1.0],
             "tick16": [10.0, 10.0, 11.0, 12.0],
             "bfs_raw": [8192.0] * 4,
-            "rpm_raw": [120.0] * 4,
+            "stock_rpm": [1500.0] * 4,
             "coolant_raw": [80.0] * 4,
             "knock_surface_state": [0.0] * 4,
             "intake_cvtc_target_raw": [150.0] * 4,

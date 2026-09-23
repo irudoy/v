@@ -37,9 +37,7 @@ def _knock_margin(channel):
 DESCRIPTIONS = {
     "rpm": (
         "Engine speed that the ECU measures from crank events, from the "
-        "stock frame 0x180 at 3.125 RPM per count. A replay of a profile 5 "
-        "or 6 recording shows the 12.5 RPM word the ECU tables read, sampled "
-        "with the rest of the telemetry snapshot."
+        "stock frame 0x180 at 3.125 RPM per count."
     ),
     "vehicle_speed_kmh": (
         "Vehicle speed from the ABS frame 0x280 at 0.01 km/h per count. "
@@ -97,8 +95,8 @@ DESCRIPTIONS = {
     "selected_map": (
         "Map selected through the ASCD switch. The telemetry stream carries "
         "the zero-based index of the map-switching runtime, shown as index + "
-        "1; the runtime reads an index outside Maps 1..5 as Map 1. A stream "
-        "without the index, such as profile 5, infers the map from the stock "
+        "1; the runtime reads an index outside Maps 1..5 as Map 1. Until a "
+        "verified stream publishes the index, the map follows the stock "
         "bus: every controller start selects Map 1, and a SET + CANCEL "
         "gesture that the CRUISE and SET lamps answer with N pulses selects "
         "Map N."
@@ -273,9 +271,8 @@ DESCRIPTIONS = {
     "oil_temperature_deg_c": "Engine oil temperature.",
     "stock_rpm": (
         "Engine speed in the stock frame 0x180 at 3.125 RPM per count, taken "
-        "when the frame is serialized. Engine speed shows the same frame, "
-        "except in a replay of a profile 5 or 6 recording, so the row is not "
-        "an independent sensor."
+        "when the frame is serialized. Engine speed shows the same frame, so "
+        "the row is not an independent sensor."
     ),
     "ascd_button": (
         "Cruise control (ASCD) switch input from frame 0x239: RELEASE, SET, "
@@ -343,11 +340,11 @@ DESCRIPTIONS = {
     ),
     "intake_cvtc_duty_command_b1_percent": (
         "Scheduler copy of the bank 1 intake valve timing solenoid duty, in "
-        "percent. Every profile 5 recording holds it equal to the live duty."
+        "percent. Every recorded drive holds it equal to the live duty."
     ),
     "intake_cvtc_duty_command_b2_percent": (
         "Scheduler copy of the bank 2 intake valve timing solenoid duty, in "
-        "percent. Every profile 5 recording holds it equal to the live duty."
+        "percent. Every recorded drive holds it equal to the live duty."
     ),
     "exhaust_cvtc_duty_b1_word_percent": (
         "Duty of the bank 1 exhaust valve timing solenoid, in percent."

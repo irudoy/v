@@ -16,11 +16,10 @@ whose compared RPM word can carry the captured word bound the activation pass,
 and a stock APC command with a clear mask at RPM words that reach every
 consistent cut word bounds the end of `ACTIVE`.
 
-Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM. A capture
-whose snapshots omit it takes the word from stock frame 0x180, which is
-sampled at another instant of the cycle, and every RPM bound spans the frames
-recorded with the snapshot and with the next one, widened by
-`STOCK_RPM_MARGIN` counts.
+Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM, which is a
+shift of the word that stock frame 0x180 carries. The frame is sampled at
+another instant of the cycle, so every RPM bound spans the frames recorded
+with the snapshot and with the next one, widened by `STOCK_RPM_MARGIN` counts.
 
 A TRC adds frame times. The `trace_` figures split the 0x239 CANCEL frames
 into holds and map-selection taps, count the dashboard states of frame 0x551
@@ -51,7 +50,7 @@ from tools.can_dashboard.model import (
     DASHBOARD_STATE_ID,
     DashboardModel,
     FrameRecord,
-    rpm_counts,
+    RPM_PER_COUNT,
 )
 from tools.logs import cvtc_target_audit
 from tools.logs import mlg_relation_audit
@@ -61,7 +60,6 @@ from tools.mapkit import rom as romkit
 
 FULL_MASK = 0x3F
 APC_COMMAND_BASE = mlg_relation_audit.APC_COMMAND_BASE
-RPM_PER_COUNT = recording.MLG_CALIBRATIONS["rpm_raw"].factor
 APP1_VOLTS_PER_COUNT = recording.MLG_CALIBRATIONS["app1_raw"].factor
 ACTIVE_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE_SET >> 4
 FAILED_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE >> 4
@@ -78,8 +76,6 @@ EXIT_LAG_RECORDS = 2
 # and with the next snapshot apart from the update jitter that registry entry
 # can_telemetry.stock_speed_bracket_2026_09_22 bounds; the margin exceeds it.
 STOCK_RPM_MARGIN = 8
-PUBLISHED_SPEED_SOURCE = "0xFFFF11F4"
-STOCK_SPEED_SOURCE = "0x180"
 TELEMETRY_SOURCES = (
     "fuel_inhibit_mask",
     "final_timing_raw",
@@ -146,7 +142,6 @@ class Capture:
     sha256: str
     samples: tuple[Sample, ...]
     timing: TraceTiming | None = None
-    engine_speed_source: str = PUBLISHED_SPEED_SOURCE
 
 
 def load_calibration(
@@ -252,18 +247,13 @@ def _stock_speed_bounds(samples: list[Sample]) -> list[Sample]:
     ]
 
 
-def read_mlg(path: Path, *, stock_speed: bool = False) -> Capture:
-    """Read the verified snapshots of one dashboard MLVLG recording.
-
-    With `stock_speed` the engine speed comes from the stock frame even where
-    the snapshots publish the coordinate.
-    """
+def read_mlg(path: Path) -> Capture:
+    """Read the verified snapshots of one dashboard MLVLG recording."""
     recording_ = mlg_relation_audit.read_recording(path)
     columns = recording_.columns
     required = ("tick16", "schema_verified", *TELEMETRY_SOURCES, *CONTEXT_SOURCES)
     missing = [name for name in required if name not in columns]
-    stock = stock_speed or "rpm_raw" not in columns
-    rpm = mlg_relation_audit.engine_speed_counts(recording_, stock=stock)
+    rpm = mlg_relation_audit.engine_speed_counts(recording_)
     if rpm is None:
         missing.append("engine speed")
     if missing:
@@ -281,13 +271,8 @@ def read_mlg(path: Path, *, stock_speed: bool = False) -> Capture:
         samples.append(
             _sample(tick, lambda name: columns[name][index], rpm[index])
         )
-    if stock:
-        samples = _stock_speed_bounds(samples)
     return Capture(
-        Path(path),
-        recording_.sha256,
-        tuple(samples),
-        engine_speed_source=STOCK_SPEED_SOURCE if stock else PUBLISHED_SPEED_SOURCE,
+        Path(path), recording_.sha256, tuple(_stock_speed_bounds(samples))
     )
 
 
@@ -297,13 +282,8 @@ def read_trc(
     profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
-    stock_speed: bool = False,
 ) -> Capture:
-    """Replay a PEAK TRC through the dashboard model into verified snapshots.
-
-    With `stock_speed` the engine speed comes from the stock frame even where
-    the snapshots publish the coordinate.
-    """
+    """Replay a PEAK TRC through the dashboard model into verified snapshots."""
     path = Path(path)
     digest = _sha256_file(path)
     trace = peak_trc_audit.load_trace(path)
@@ -315,7 +295,6 @@ def read_trc(
     dashboard = []
     group_start = None
     run = None
-    stock = stock_speed
     for frame in trace.frames:
         timestamp = frame.offset_ms / 1000.0
         standard = not frame.extended and not frame.remote
@@ -344,10 +323,7 @@ def read_trc(
             continue
         if any(name not in model.raw for name in TELEMETRY_SOURCES):
             continue
-        stock = stock or "rpm_raw" not in model.raw
-        rpm_raw = (
-            rpm_counts(model.stock_rpm) if stock else model.engine_speed_counts
-        )
+        rpm_raw = model.engine_speed_counts
         if rpm_raw is None:
             continue
         if run is None:
@@ -366,21 +342,13 @@ def read_trc(
     timing = TraceTiming(
         tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard)
     )
-    if stock:
-        samples = _stock_speed_bounds(samples)
-    return Capture(
-        path,
-        digest,
-        tuple(samples),
-        timing,
-        STOCK_SPEED_SOURCE if stock else PUBLISHED_SPEED_SOURCE,
-    )
+    return Capture(path, digest, tuple(_stock_speed_bounds(samples)), timing)
 
 
-def read_capture(path: Path, *, stock_speed: bool = False, **options) -> Capture:
+def read_capture(path: Path, **options) -> Capture:
     if Path(path).suffix.lower() == ".trc":
-        return read_trc(path, stock_speed=stock_speed, **options)
-    return read_mlg(path, stock_speed=stock_speed)
+        return read_trc(path, **options)
+    return read_mlg(path)
 
 
 def runs(flags: list[bool]) -> list[tuple[int, int]]:
@@ -984,7 +952,6 @@ def audit_capture(
     result = {
         "capture_name": capture.path.name,
         "capture_sha256": capture.sha256,
-        "engine_speed_source": capture.engine_speed_source,
         "calibration_image_sha256": calibration.image_sha256,
         "configuration_hex": calibration.configuration_hex,
         "selected_map": selected_map,

@@ -621,10 +621,10 @@ running engine in raw units. At steady MAF inputs the published total word
 equals `floor(105 * (A + B) / 256)` exactly in 57 to 85 percent of records and
 within one count in 62 to 93 percent, with the median ratio of the total to
 `A + B` at `105/256`. Base Fuel Schedule matches the primary-branch producer
-with `Q = A + B` and `N = 2 * rpm_raw` at a median ratio of 0.98 to 0.99
-(p5 0.87 to 0.94, p95 1.01 to 1.04). The J1979 Calculated Load byte matches
-its formula from the prior record exactly in 77 to 80 percent of records and
-within one count in 95 to 97 percent.
+with `Q = A + B` and `N` twice the RPM/12.5 coordinate `0xFFFF11F4` at a
+median ratio of 0.98 to 0.99 (p5 0.87 to 0.94, p95 1.01 to 1.04). The J1979
+Calculated Load byte matches its formula from the prior record exactly in 77
+to 80 percent of records and within one count in 95 to 97 percent.
 
 The same audit replays the code chain from the schedule to both bank pulse
 words. For each closed-loop record whose schedule stays within 2 percent over

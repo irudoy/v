@@ -4,7 +4,7 @@ import unittest
 
 from patches import rolling_launch
 from patches import rolling_launch_layout
-from tools.can_dashboard import recording
+from tools.can_dashboard import model
 from tools.logs import mlg_relation_audit
 
 
@@ -16,7 +16,7 @@ FEEDBACK_KEY = "map_switching.feedback_vehicle_2026_09_21"
 SESSION_KEY = "can_telemetry.schema2_profile5_drive_2026_09_21"
 # Frame 0x551 leaves the serializer on every tenth 10.24 ms invocation.
 SERIALIZER_CALLS_PER_FRAME = 10
-RPM_PER_NATIVE = recording.MLG_CALIBRATIONS["rpm_raw"].factor
+RPM_PER_NATIVE = model.RPM_PER_COUNT
 NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven")
 ORDINALS = ("first", "second", "third", "fourth", "fifth", "sixth")
 FUNCTIONAL_TERMS = (
