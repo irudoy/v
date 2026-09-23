@@ -112,7 +112,7 @@ can_symbol,occupied_mailbox_record_address,000097c6,000094b6,04000000,,mapped,Ad
 can_symbol,mailbox_index,,0000001a,,,mapped,Target uses physical mailbox 26
 can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
 can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask is unchanged
-telemetry,rpm_raw,ffff11f4,ffff11e0,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,request_flow_raw,ffff1980,,,,unsupported,No homolog is established for the requested-torque column coordinate: the target conversion chain is not traced to a stored forward coordinate
 telemetry,final_timing_raw,ffff11d4,ffff1f45,,,mapped,Exact-size homologous command builder binds the final timing byte at equal instruction ordinal
 telemetry,apc_command_raw,ffff2022,ffff11cf,,,mapped,Aligned diagnostic pointer table and homologous producer agree
 telemetry,fuel_inhibit_mask,ffff22e0,ffff223c,,,mapped,Aligned diagnostic pointer table preserves the inhibit mask position
@@ -158,7 +158,7 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,ffff239a,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,ffff239b,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
 telemetry,ltft_b1_raw,ffff2302,ffff225a,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_b2_raw,ffff2304,ffff225c,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,ignition_timing_adjustment_raw,ffff564c,ffff5be4,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,alpha_n_flow_raw,ffff1170,,,,unsupported,No homolog is established for the Fuel Compensation Main column coordinate: the target curve pair and its consumer are not traced
 telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,ffff2308,,,mapped,Target ATU-II channel-7 duty programming reads this cell before writing buffer register fffff592
 telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,ffff2309,,,mapped,The same function reads the adjacent cell before writing buffer register fffff590
 telemetry,ltft_learned_b1_raw,ffff2306,ffff225e,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand

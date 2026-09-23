@@ -238,16 +238,19 @@ def read_mlg(path: Path) -> Capture:
     recording_ = mlg_relation_audit.read_recording(path)
     columns = recording_.columns
     required = (
-        "tick16", "schema_verified", "rpm_raw", "app1_raw", "final_timing_raw",
+        "tick16", "schema_verified", "app1_raw", "final_timing_raw",
         "engine_torque_state_raw", "bfs_raw", "vehicle_speed_kmh", "stock_rpm",
         "gear_raw", "fuel_inhibit_mask",
     )
     missing = [name for name in required if name not in columns]
+    rpm = mlg_relation_audit.engine_speed_counts(recording_)
+    if rpm is None:
+        missing.append("engine speed")
     if missing:
         raise ValueError(f"{path}: missing channels {', '.join(missing)}")
     samples = []
     for index, run, tick in new_tick_records(columns["tick16"]):
-        if columns["schema_verified"][index] != 1:
+        if columns["schema_verified"][index] != 1 or rpm[index] is None:
             continue
         samples.append(
             Sample(
@@ -255,7 +258,7 @@ def read_mlg(path: Path) -> Capture:
                 run=run,
                 speed_kmh=_optional(columns["vehicle_speed_kmh"][index], float),
                 stock_rpm=_optional(columns["stock_rpm"][index], float),
-                rpm_raw=int(columns["rpm_raw"][index]),
+                rpm_raw=rpm[index],
                 app1_raw=int(columns["app1_raw"][index]),
                 timing_raw=int(columns["final_timing_raw"][index]),
                 torque_raw=int(columns["engine_torque_state_raw"][index]),
@@ -278,7 +281,7 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
     path = Path(path)
     trace = peak_trc_audit.load_trace(path)
     model = DashboardModel(profile, can_id, tick_divisor)
-    names = ("rpm_raw", "app1_raw", "final_timing_raw", "engine_torque_state_raw", "bfs_raw",
+    names = ("app1_raw", "final_timing_raw", "engine_torque_state_raw", "bfs_raw",
              "fuel_inhibit_mask")
     samples = []
     word = None
@@ -301,13 +304,16 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
             continue
         if any(name not in model.raw for name in names):
             continue
+        rpm_raw = model.engine_speed_counts
+        if rpm_raw is None:
+            continue
         samples.append(
             Sample(
                 seconds=snapshot.unwrapped_tick * BASE_TICK_SECONDS,
                 run=snapshot.run,
                 speed_kmh=model.vehicle_speed_kmh,
                 stock_rpm=model.stock_rpm,
-                rpm_raw=int(model.raw["rpm_raw"]),
+                rpm_raw=rpm_raw,
                 app1_raw=int(model.raw["app1_raw"]),
                 timing_raw=int(model.raw["final_timing_raw"]),
                 torque_raw=int(model.raw["engine_torque_state_raw"]),

@@ -125,7 +125,11 @@ two-byte-aligned stock throttle container with `MOV.W`; using the canonical
 Telemetry uses stock-inactive mailbox 24 and a completion ISR that handles that
 mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR
-boundary.
+boundary. JK00C and JK00D telemetry binds 58 of the 60 ECU-RAM fields. The
+requested-torque column coordinate and the Fuel Compensation Main column
+coordinate are encoded from cleared reserved RAM and remain identified as
+unavailable in metadata, because no target homolog of their JK08A producers
+`0x073948` and `0x03B498` is traced.
 
 The 1ND runtime uses a uniform ROM relocation of `0x60000` and a RAM relocation
 of `-0x5100`, with explicit nonuniform SH7059 stock hooks and application-RAM
@@ -242,15 +246,17 @@ The 1ND address profile binds eighteen switched families: four DFCO rows, the
 two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
 surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
-curves, and the throttle-limiter scalar. Custom CAN telemetry binds 56 of the
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds 54 of the
 60 schema fields. The unavailable knock timing field, the normalized load
-snapshot, and the two intake CVTC duty command fields are encoded from cleared
-reserved RAM and remain identified as unavailable in metadata: the target
-selects ignition surfaces directly instead of retaining a signed Q8 state, the
-32-instruction JK08A producer of the normalized load snapshot at `0x03BD1C`
-has no match in the image with PC-relative displacements masked, and the
-target never references the ATU-II channel-7 buffer registers that establish
-the duty command pair. 1ND0A
+snapshot, the two intake CVTC duty command fields, and the requested-torque and
+Fuel Compensation Main column coordinates are encoded from cleared reserved RAM
+and remain identified as unavailable in metadata: the target selects ignition
+surfaces directly instead of retaining a signed Q8 state, the 32-instruction
+JK08A producer of the normalized load snapshot at `0x03BD1C` has no match in
+the image with PC-relative displacements masked, the target never references
+the ATU-II channel-7 buffer registers that establish the duty command pair,
+and no target homolog of the column-coordinate producers `0x073948` and
+`0x03B498` is traced. 1ND0A
 and 1ND3B share executable payload bytes but retain separate stock identities,
 stage hashes, and six-field checksum closure.
 
@@ -278,13 +284,14 @@ coordinator with private lookup literals; the profile table
 in which an aligned word points into that range or a PC-relative branch outside
 it targets its entry, so the hooked literals are the complete live set.
 
-Custom CAN telemetry binds 55 of the 60 ECU-RAM fields. The knock timing
-state, the knock surface state, the normalized load snapshot, and both intake
-solenoid duty commands are encoded from cleared reserved RAM and remain
-identified as unavailable in metadata: the image packs the surface flag into
-bit 7 of `0xFFFE945B`, while the wire contract decodes bit 6 of the source
-byte, and the JK08A producer of the normalized load snapshot has no match in
-the image.
+Custom CAN telemetry binds 53 of the 60 ECU-RAM fields. The knock timing
+state, the knock surface state, the normalized load snapshot, both intake
+solenoid duty commands, and the requested-torque and Fuel Compensation Main
+column coordinates are encoded from cleared reserved RAM and remain identified
+as unavailable in metadata: the image packs the surface flag into bit 7 of
+`0xFFFE945B`, while the wire contract decodes bit 6 of the source byte, the
+JK08A producer of the normalized load snapshot has no match in the image, and
+no target homolog of the column-coordinate producers is traced.
 
 ## SH7058 JK78C correspondence
 
@@ -303,10 +310,11 @@ equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
 belong to no family and pass through the adapter under the same validator
 rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
 path and the gated half only, so every call through them passes through. Custom CAN telemetry
-binds 58 available schema fields. The unavailable signed Q8 knock timing field
-and the normalized load snapshot, whose JK08A producer has no match in the
-image, are encoded from cleared reserved RAM and remain identified as
-unavailable in metadata. The profile also binds both SUM16 regions and both runtime SUM/XOR
+binds 56 available schema fields. The unavailable signed Q8 knock timing field,
+the normalized load snapshot, whose JK08A producer has no match in the image,
+and the requested-torque and Fuel Compensation Main column coordinates, whose
+target homologs are not traced, are encoded from cleared reserved RAM and
+remain identified as unavailable in metadata. The profile also binds both SUM16 regions and both runtime SUM/XOR
 regions to the independently reproduced stock checksum values.
 
 The complete flash-envelope reference audit found four erased stock targets

@@ -1543,6 +1543,23 @@ invalid_control_rejection = "untested"
 override_priority = "untested"
 mailbox_31_after_recovery = "untested"
 
+[can_telemetry.stock_speed_bracket_2026_09_22]
+recorded_on = "2026-09-22"
+tool = "tools/logs/rolling_launch_audit.py"
+session = "can_telemetry.schema2_profile5_drive_2026_09_22"
+capture_registry = "can_telemetry.schema2_profile5_captures_2026_09_22"
+inputs = "each registered capture, read once with engine speed from published coordinate 0xFFFF11F4 and once from stock frame 0x180"
+pairing = "the stock frame recorded with a snapshot precedes its group, and the frame recorded with the next snapshot follows it"
+software_status = "pass"
+snapshot_count = 234650
+inside_count = 205463
+maximum_excursion_counts = 7
+capture_snapshot_count = [52622, 15757, 17617, 65329, 29585, 17320, 6390, 8191, 3167, 3949, 3032, 6568, 5123]
+capture_inside_count = [46488, 13751, 14193, 61560, 25956, 14660, 5465, 6585, 2396, 3009, 2185, 5298, 3917]
+capture_maximum_excursion_counts = [7, 6, 6, 4, 5, 7, 7, 7, 7, 3, 5, 4, 2]
+result = "the coordinate of 205463 of 234650 snapshots lies between the stock frames around its group, and every other coordinate lies at most 7 counts, 87.5 RPM, outside them"
+evidence_boundary = "the excursion bound is an observation of this session; engine-speed changes faster than those of its captures can exceed it"
+
 [can_telemetry.ltft_learning_2026_09_22]
 recorded_on = "2026-09-22"
 tool = "tools/logs/ltft_publication_audit.py"

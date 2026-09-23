@@ -342,7 +342,6 @@ def _samples(trace, commits, profile: str, can_id: int, tick_divisor: int):
     samples = []
     required = (
         "bfs_raw",
-        "rpm_raw",
         "knock_timing_state_raw",
         "knock_surface_state",
         "knock_count_latched",
@@ -365,13 +364,16 @@ def _samples(trace, commits, profile: str, can_id: int, tick_divisor: int):
             continue
         if not all(name in model.raw for name in required):
             continue
+        rpm_raw = model.engine_speed_counts
+        if rpm_raw is None:
+            continue
         samples.append(
             IgnitionSample(
                 timestamp=timestamp,
                 run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
-                rpm_raw=model.raw["rpm_raw"],
+                rpm_raw=rpm_raw,
                 state_q8=model.raw["knock_timing_state_raw"],
                 surface_state=model.raw["knock_surface_state"],
                 knock_count=model.raw["knock_count_latched"],

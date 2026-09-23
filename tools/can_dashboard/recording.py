@@ -338,6 +338,34 @@ def build_bindings(
     return tuple(bindings)
 
 
+def known_bindings(
+    profile: str, schema_path: Path = DEFAULT_SCHEMA
+) -> tuple[FieldBinding, ...]:
+    """Return the bindings of the current profile and of every retired one.
+
+    A recording carries the channels of the profile ID it was made under, so
+    reading one made before a field left the stream resolves names the
+    current profile no longer publishes. A retired name that the current
+    profile renamed resolves to its current source. The current profile owns
+    every name it publishes.
+    """
+
+    bindings = list(build_bindings(profile, schema_path))
+    bound = {binding.source for binding in bindings}
+    document, _profiles = can_telemetry.load_schema(schema_path)
+    for retired in document.get("retired_profiles", ()):
+        names = [field["name"] for field in retired["fields"]]
+        for context in retired.get("contexts", ()):
+            names.extend(field["name"] for field in context["fields"])
+        for name in names:
+            source = model.current_field_name(name)
+            if source in bound:
+                continue
+            bound.add(source)
+            bindings.append(_raw_binding(source))
+    return tuple(bindings)
+
+
 class TelemetryMlgRecorder:
     """Write atomic MLVLG files from complete dashboard snapshots."""
 

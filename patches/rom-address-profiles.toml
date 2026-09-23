@@ -22,7 +22,8 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
-telemetry_unavailable = []
+telemetry_unavailable = ["alpha_n_flow_raw", "request_flow_raw"]
+telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00D.capabilities]
 map_switching = true
@@ -150,7 +151,6 @@ mailbox_data = 0xFFFFDC08
 mailbox_mask = 0x0100
 
 [profile.JK00D.telemetry_sources]
-rpm_raw = 0xFFFF1206
 final_timing_raw = 0xFFFF11E4
 apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF235C
@@ -196,7 +196,6 @@ intake_cvtc_duty_b1_raw = 0xFFFF24CC
 intake_cvtc_duty_b2_raw = 0xFFFF24CD
 ltft_b1_raw = 0xFFFF237E
 ltft_b2_raw = 0xFFFF2380
-ignition_timing_adjustment_raw = 0xFFFF56D8
 intake_cvtc_duty_command_b1_raw = 0xFFFF2438
 intake_cvtc_duty_command_b2_raw = 0xFFFF2439
 ltft_learned_b1_raw = 0xFFFF2382
@@ -223,7 +222,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recove
 maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the intake-cam and exhaust-cam target families switch independently."
 rolling = "Scheduler, startup, ignition, selector, diagnostic pointer, and direct RAM bindings are recovered from exact or normalized homologs and target stock tables."
 can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 24 is stock inactive while mailbox 26 is occupied."
-telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind every schema-2 ECU source. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095F6."
+telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind 58 of the 60 schema-2 ECU sources; the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095F6."
 
 [profile.JK00C]
 family = "sh7058_8mfk"
@@ -241,7 +240,8 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
-telemetry_unavailable = []
+telemetry_unavailable = ["alpha_n_flow_raw", "request_flow_raw"]
+telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00C.capabilities]
 map_switching = true
@@ -369,7 +369,6 @@ mailbox_data = 0xFFFFDC08
 mailbox_mask = 0x0100
 
 [profile.JK00C.telemetry_sources]
-rpm_raw = 0xFFFF1206
 final_timing_raw = 0xFFFF11E4
 apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF2354
@@ -415,7 +414,6 @@ intake_cvtc_duty_b1_raw = 0xFFFF24C4
 intake_cvtc_duty_b2_raw = 0xFFFF24C5
 ltft_b1_raw = 0xFFFF2376
 ltft_b2_raw = 0xFFFF2378
-ignition_timing_adjustment_raw = 0xFFFF56C4
 intake_cvtc_duty_command_b1_raw = 0xFFFF2430
 intake_cvtc_duty_command_b2_raw = 0xFFFF2431
 ltft_learned_b1_raw = 0xFFFF237A
@@ -442,7 +440,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recove
 maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both CVTC target families remain explicit."
 rolling = "Exact JK00D-to-JK00C functions, stock scheduler and UDS tables, and direct RAM references bind all Rolling Launch addresses."
 can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources."
-telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind every schema-2 ECU source. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8."
+telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind 58 of the 60 schema-2 ECU sources; the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8."
 
 [profile.1ND0A]
 family = "sh7059_1nd"
@@ -461,10 +459,12 @@ injected_ram_end = 0xFFFF0F00
 map_variant = "sh7059-1nd"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
+    "alpha_n_flow_raw",
     "knock_timing_state_raw",
     "normalized_load_raw",
     "intake_cvtc_duty_command_b1_raw",
     "intake_cvtc_duty_command_b2_raw",
+    "request_flow_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -603,7 +603,6 @@ mailbox_data = 0xFFFFDC48
 mailbox_mask = 0x0400
 
 [profile.1ND0A.telemetry_sources]
-rpm_raw = 0xFFFE81EE
 final_timing_raw = 0xFFFE81CC
 apc_command_raw = 0xFFFE81DD
 fuel_inhibit_mask = 0xFFFE92E4
@@ -647,7 +646,6 @@ intake_cvtc_duty_b1_raw = 0xFFFE945B
 intake_cvtc_duty_b2_raw = 0xFFFE945C
 ltft_b1_raw = 0xFFFE9302
 ltft_b2_raw = 0xFFFE9304
-ignition_timing_adjustment_raw = 0xFFFECFE8
 ltft_learned_b1_raw = 0xFFFE9306
 ltft_adjustment_b1_raw = 0xFFFECFE4
 exhaust_cvtc_duty_b1_word_raw = 0xFFFE8B10
@@ -686,7 +684,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovere
 maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind eighteen supported families. The two 16x16 ignition families and the four 8x8 state-code ignition families are the surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter. The literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the 8x8 lookup 0x000285B4 for the four state-code surfaces; the second literal 0x00075570 serves only the reference surface 0x0000A650, which the stock configuration leaves unread."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "56 of the 60 ECU-RAM fields bind to 1ND0A sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, and the two intake solenoid duty command cells are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
+telemetry = "54 of the 60 ECU-RAM fields bind to 1ND0A sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, the two intake solenoid duty command cells, and the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
 
 [profile.1ND3B]
 inherits = "1ND0A"
@@ -708,11 +706,13 @@ injected_ram_end = 0xFFFF0F00
 map_variant = "sh7059-1me3b"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
+    "alpha_n_flow_raw",
     "knock_timing_state_raw",
     "knock_surface_state",
     "normalized_load_raw",
     "intake_cvtc_duty_command_b1_raw",
     "intake_cvtc_duty_command_b2_raw",
+    "request_flow_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 ascd_enabled_mask = 0x08
@@ -847,7 +847,6 @@ mailbox_data = 0xFFFFDC48
 mailbox_mask = 0x0400
 
 [profile.1ME3B.telemetry_sources]
-rpm_raw = 0xFFFE81D6
 final_timing_raw = 0xFFFE81B4
 apc_command_raw = 0xFFFE81C3
 fuel_inhibit_mask = 0xFFFE92B0
@@ -890,7 +889,6 @@ intake_cvtc_duty_b1_raw = 0xFFFE942B
 intake_cvtc_duty_b2_raw = 0xFFFE942C
 ltft_b1_raw = 0xFFFE92CC
 ltft_b2_raw = 0xFFFE92CE
-ignition_timing_adjustment_raw = 0xFFFED0E8
 ltft_learned_b1_raw = 0xFFFE92D0
 ltft_adjustment_b1_raw = 0xFFFED0E4
 exhaust_cvtc_duty_b1_word_raw = 0xFFFE8AA4
@@ -933,7 +931,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovere
 maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock. The ASCD-enabled flag is bit 3 of 0xFFFEB985 by the 1ME3B packing of the flag byte."
 rolling = "The scheduler task behind periodic task-list word 0x000220C8, the sole final-mask coordinator 31 words above it, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "55 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, the two intake solenoid duty command cells, and the knock surface state, whose flag occupies a bit outside the wire contract, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
+telemetry = "53 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, the two intake solenoid duty command cells, the knock surface state, whose flag occupies a bit outside the wire contract, and the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
 
 [profile.JK78C]
 family = "sh7058_jk78c"
@@ -951,7 +949,12 @@ injected_ram_start = 0xFFFF0C00
 injected_ram_end = 0xFFFF0F00
 map_variant = "sh7058-jk78"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = ["knock_timing_state_raw", "normalized_load_raw"]
+telemetry_unavailable = [
+    "alpha_n_flow_raw",
+    "knock_timing_state_raw",
+    "normalized_load_raw",
+    "request_flow_raw",
+]
 telemetry_zero_source = 0xFFFF0DE0
 
 [profile.JK78C.capabilities]
@@ -1084,7 +1087,6 @@ mailbox_data = 0xFFFFDC48
 mailbox_mask = 0x0400
 
 [profile.JK78C.telemetry_sources]
-rpm_raw = 0xFFFF11E0
 final_timing_raw = 0xFFFF1F45
 apc_command_raw = 0xFFFF11CF
 fuel_inhibit_mask = 0xFFFF223C
@@ -1128,7 +1130,6 @@ intake_cvtc_duty_b1_raw = 0xFFFF239A
 intake_cvtc_duty_b2_raw = 0xFFFF239B
 ltft_b1_raw = 0xFFFF225A
 ltft_b2_raw = 0xFFFF225C
-ignition_timing_adjustment_raw = 0xFFFF5BE4
 intake_cvtc_duty_command_b1_raw = 0xFFFF2308
 intake_cvtc_duty_command_b2_raw = 0xFFFF2309
 ltft_learned_b1_raw = 0xFFFF225E
@@ -1149,4 +1150,4 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recove
 maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "58 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
+telemetry = "56 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, and the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."

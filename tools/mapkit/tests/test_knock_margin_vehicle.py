@@ -117,7 +117,15 @@ def adcsr2_fields(value):
 
 
 AXIS = struct.unpack_from(f">{ROW_WORDS}H", ROM, SPEED_AXIS)
-RPM_FIELD = next(field for field in PROFILE["field"] if field["name"] == "rpm_raw")
+# The 2026-09-21 recording carries profile 5, whose frozen contract states the
+# engine-speed step of the rpm_raw slot it published.
+RPM_FIELD = next(
+    field
+    for profile in SCHEMA["retired_profiles"]
+    if profile["id"] == 5
+    for field in profile["fields"]
+    if field["name"] == "rpm_raw"
+)
 RPM_STEP = Fraction(
     re.fullmatch(r"raw \* ([0-9.]+) RPM", RPM_FIELD["scale"]).group(1)
 )

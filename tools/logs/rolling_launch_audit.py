@@ -16,6 +16,12 @@ whose compared RPM word can carry the captured word bound the activation pass,
 and a stock APC command with a clear mask at RPM words that reach every
 consistent cut word bounds the end of `ACTIVE`.
 
+Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM. A capture
+whose snapshots omit it takes the word from stock frame 0x180, which is
+sampled at another instant of the cycle, and every RPM bound spans the frames
+recorded with the snapshot and with the next one, widened by
+`STOCK_RPM_MARGIN` counts.
+
 A TRC adds frame times. The `trace_` figures split the 0x239 CANCEL frames
 into holds and map-selection taps, count the dashboard states of frame 0x551
 in each hold, and measure the release-to-clear distance from the first
@@ -45,6 +51,7 @@ from tools.can_dashboard.model import (
     DASHBOARD_STATE_ID,
     DashboardModel,
     FrameRecord,
+    rpm_counts,
 )
 from tools.logs import cvtc_target_audit
 from tools.logs import mlg_relation_audit
@@ -67,8 +74,13 @@ CAPTURE_LEAD_RECORDS = 3
 # The APC command of a record can follow the compared RPM word of the pass
 # before the preceding record.
 EXIT_LAG_RECORDS = 2
+# The coordinate of a snapshot lies between the stock frames recorded with it
+# and with the next snapshot apart from the update jitter that registry entry
+# can_telemetry.stock_speed_bracket_2026_09_22 bounds; the margin exceeds it.
+STOCK_RPM_MARGIN = 8
+PUBLISHED_SPEED_SOURCE = "0xFFFF11F4"
+STOCK_SPEED_SOURCE = "0x180"
 TELEMETRY_SOURCES = (
-    "rpm_raw",
     "fuel_inhibit_mask",
     "final_timing_raw",
     "apc_command_raw",
@@ -103,6 +115,8 @@ class Sample:
     speed_kmh: float | None
     coolant_raw: int | None
     rpm_raw: int
+    rpm_low: int
+    rpm_high: int
     fuel_inhibit_mask: int
     final_timing_raw: int
     apc_command_raw: int
@@ -132,6 +146,7 @@ class Capture:
     sha256: str
     samples: tuple[Sample, ...]
     timing: TraceTiming | None = None
+    engine_speed_source: str = PUBLISHED_SPEED_SOURCE
 
 
 def load_calibration(
@@ -195,23 +210,62 @@ def _optional_float(value) -> float | None:
     return float(value)
 
 
-def _sample(tick: int, value) -> Sample:
+def _sample(tick: int, value, rpm_raw: int) -> Sample:
     return Sample(
         tick=tick,
         button=_optional_int(value("ascd_button_raw")),
         dashboard=_optional_int(value("dashboard_state_raw")),
         speed_kmh=_optional_float(value("vehicle_speed_kmh")),
         coolant_raw=_optional_int(value("coolant_raw")),
+        rpm_raw=rpm_raw,
+        rpm_low=rpm_raw,
+        rpm_high=rpm_raw,
         **{name: int(value(name)) for name in TELEMETRY_SOURCES},
     )
 
 
-def read_mlg(path: Path) -> Capture:
-    """Read the verified snapshots of one dashboard MLVLG recording."""
+def stock_speed_pairs(samples) -> list[tuple[int, int]]:
+    """Return the lower and upper word of the stock frames around each snapshot.
+
+    The stock frame recorded with a snapshot precedes its group, and the frame
+    recorded with the next snapshot follows it. A snapshot without a next one
+    keeps its own frame.
+    """
+    pairs = []
+    for index, sample in enumerate(samples):
+        words = [sample.rpm_raw]
+        if index + 1 < len(samples) and samples[index + 1].tick == sample.tick + 1:
+            words.append(samples[index + 1].rpm_raw)
+        pairs.append((min(words), max(words)))
+    return pairs
+
+
+def _stock_speed_bounds(samples: list[Sample]) -> list[Sample]:
+    """Widen each stock-frame word to the words its snapshot can carry."""
+    return [
+        replace(
+            sample,
+            rpm_low=max(0, low - STOCK_RPM_MARGIN),
+            rpm_high=high + STOCK_RPM_MARGIN,
+        )
+        for sample, (low, high) in zip(samples, stock_speed_pairs(samples))
+    ]
+
+
+def read_mlg(path: Path, *, stock_speed: bool = False) -> Capture:
+    """Read the verified snapshots of one dashboard MLVLG recording.
+
+    With `stock_speed` the engine speed comes from the stock frame even where
+    the snapshots publish the coordinate.
+    """
     recording_ = mlg_relation_audit.read_recording(path)
     columns = recording_.columns
     required = ("tick16", "schema_verified", *TELEMETRY_SOURCES, *CONTEXT_SOURCES)
     missing = [name for name in required if name not in columns]
+    stock = stock_speed or "rpm_raw" not in columns
+    rpm = mlg_relation_audit.engine_speed_counts(recording_, stock=stock)
+    if rpm is None:
+        missing.append("engine speed")
     if missing:
         raise ValueError(f"{path}: missing channels {', '.join(missing)}")
     ticks = mlg_retime.unwrap_ticks(columns["tick16"])
@@ -222,8 +276,19 @@ def read_mlg(path: Path) -> Capture:
         if tick == previous or columns["schema_verified"][index] != 1:
             continue
         previous = tick
-        samples.append(_sample(tick, lambda name: columns[name][index]))
-    return Capture(Path(path), recording_.sha256, tuple(samples))
+        if rpm[index] is None:
+            continue
+        samples.append(
+            _sample(tick, lambda name: columns[name][index], rpm[index])
+        )
+    if stock:
+        samples = _stock_speed_bounds(samples)
+    return Capture(
+        Path(path),
+        recording_.sha256,
+        tuple(samples),
+        engine_speed_source=STOCK_SPEED_SOURCE if stock else PUBLISHED_SPEED_SOURCE,
+    )
 
 
 def read_trc(
@@ -232,8 +297,13 @@ def read_trc(
     profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
+    stock_speed: bool = False,
 ) -> Capture:
-    """Replay a PEAK TRC through the dashboard model into verified snapshots."""
+    """Replay a PEAK TRC through the dashboard model into verified snapshots.
+
+    With `stock_speed` the engine speed comes from the stock frame even where
+    the snapshots publish the coordinate.
+    """
     path = Path(path)
     digest = _sha256_file(path)
     trace = peak_trc_audit.load_trace(path)
@@ -245,6 +315,7 @@ def read_trc(
     dashboard = []
     group_start = None
     run = None
+    stock = stock_speed
     for frame in trace.frames:
         timestamp = frame.offset_ms / 1000.0
         standard = not frame.extended and not frame.remote
@@ -273,6 +344,12 @@ def read_trc(
             continue
         if any(name not in model.raw for name in TELEMETRY_SOURCES):
             continue
+        stock = stock or "rpm_raw" not in model.raw
+        rpm_raw = (
+            rpm_counts(model.stock_rpm) if stock else model.engine_speed_counts
+        )
+        if rpm_raw is None:
+            continue
         if run is None:
             run = snapshot.run
         elif snapshot.run != run:
@@ -283,19 +360,27 @@ def read_trc(
                 return model.raw[name]
             return getattr(model, name, None)
 
-        samples.append(_sample(snapshot.unwrapped_tick, value))
+        samples.append(_sample(snapshot.unwrapped_tick, value, rpm_raw))
         first_pages.append(group_start)
         last_pages.append(frame.offset_ms)
     timing = TraceTiming(
         tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard)
     )
-    return Capture(path, digest, tuple(samples), timing)
+    if stock:
+        samples = _stock_speed_bounds(samples)
+    return Capture(
+        path,
+        digest,
+        tuple(samples),
+        timing,
+        STOCK_SPEED_SOURCE if stock else PUBLISHED_SPEED_SOURCE,
+    )
 
 
-def read_capture(path: Path, **options) -> Capture:
+def read_capture(path: Path, *, stock_speed: bool = False, **options) -> Capture:
     if Path(path).suffix.lower() == ".trc":
-        return read_trc(path, **options)
-    return read_mlg(path)
+        return read_trc(path, stock_speed=stock_speed, **options)
+    return read_mlg(path, stock_speed=stock_speed)
 
 
 def runs(flags: list[bool]) -> list[tuple[int, int]]:
@@ -347,9 +432,9 @@ def _rpm_hull(samples: tuple[Sample, ...], index: int) -> tuple[int, int] | None
     """Bound the compared RPM word, copied between two adjacent captures."""
     if index == 0 or samples[index].tick - samples[index - 1].tick != 1:
         return None
-    first = samples[index - 1].rpm_raw
-    second = samples[index].rpm_raw
-    return min(first, second), max(first, second)
+    first = samples[index - 1]
+    second = samples[index]
+    return min(first.rpm_low, second.rpm_low), max(first.rpm_high, second.rpm_high)
 
 
 def _certain_end(samples, configuration, start, active_start, release) -> int:
@@ -364,7 +449,7 @@ def _certain_end(samples, configuration, start, active_start, release) -> int:
         if samples[index].tick >= timeout_tick:
             return index
         hull = _rpm_hull(samples, index)
-        low = hull[0] if hull is not None else samples[index].rpm_raw
+        low = hull[0] if hull is not None else samples[index].rpm_low
         if low < configuration.min_rpm_native:
             return index
     return release
@@ -458,7 +543,7 @@ def _exit_records(
             and sample.fuel_inhibit_mask == 0
             and all(
                 samples[index - lag].tick == sample.tick - lag
-                and samples[index - lag].rpm_raw >= max(cuts)
+                and samples[index - lag].rpm_low >= max(cuts)
                 for lag in range(EXIT_LAG_RECORDS + 1)
             )
         ):
@@ -699,7 +784,7 @@ def audit_capture(
         hold = samples[start:release]
         window = samples[start:window_end]
         lead = max(0, start - CAPTURE_LEAD_RECORDS)
-        capture_rpm = [sample.rpm_raw for sample in samples[lead : active_start + 1]]
+        capture_window = samples[lead : active_start + 1]
         certain_end = _certain_end(
             samples, configuration, start, active_start, release
         )
@@ -707,7 +792,10 @@ def audit_capture(
             samples, active_start, certain_end, window_end
         )
         candidates = []
-        for captured in range(min(capture_rpm), max(capture_rpm) + 1):
+        for captured in range(
+            min(s.rpm_low for s in capture_window),
+            max(s.rpm_high for s in capture_window) + 1,
+        ):
             window_words = thresholds(configuration, slot, captured)
             if window_words is not None and _satisfies(window_words, constraints):
                 candidates.append((captured, *window_words))
@@ -715,7 +803,7 @@ def audit_capture(
             (first + start, stop + start)
             for first, stop in runs([s.fuel_inhibit_mask == FULL_MASK for s in window])
         ]
-        full_rpm = [s.rpm_raw for s in window if s.fuel_inhibit_mask == FULL_MASK]
+        full_records = [s for s in window if s.fuel_inhibit_mask == FULL_MASK]
         after_release = [
             index
             for index in range(release, window_end)
@@ -798,8 +886,8 @@ def audit_capture(
                     _rounded(max(s.app1_raw for s in hold) * APP1_VOLTS_PER_COUNT),
                 ],
                 "rpm_range": [
-                    min(s.rpm_raw for s in hold) * RPM_PER_COUNT,
-                    max(s.rpm_raw for s in hold) * RPM_PER_COUNT,
+                    min(s.rpm_low for s in hold) * RPM_PER_COUNT,
+                    max(s.rpm_high for s in hold) * RPM_PER_COUNT,
                 ],
                 "captured_rpm_native": (
                     [candidates[0][0], candidates[-1][0]] if candidates else []
@@ -835,8 +923,11 @@ def audit_capture(
                     1 for first, _ in mask_runs if first >= release
                 ),
                 "full_mask_rpm": (
-                    [min(full_rpm) * RPM_PER_COUNT, max(full_rpm) * RPM_PER_COUNT]
-                    if full_rpm
+                    [
+                        min(s.rpm_low for s in full_records) * RPM_PER_COUNT,
+                        max(s.rpm_high for s in full_records) * RPM_PER_COUNT,
+                    ]
+                    if full_records
                     else []
                 ),
                 "apc_max": max(s.apc_command_raw for s in window),
@@ -893,6 +984,7 @@ def audit_capture(
     result = {
         "capture_name": capture.path.name,
         "capture_sha256": capture.sha256,
+        "engine_speed_source": capture.engine_speed_source,
         "calibration_image_sha256": calibration.image_sha256,
         "configuration_hex": calibration.configuration_hex,
         "selected_map": selected_map,

@@ -22,6 +22,7 @@ SLOT_ASSIGNMENT_SHA256 = {
     4: "3e03c72b5d80187d2335f3ea42996aab9b48c3e0e09c4fc11fe7a6b6405e11fd",
     5: "aee00366d786afd544790945cddd28ca26ddda9f092e60ab2a4221b628391681",
     6: "2110176f4c4c6be218b8e3356ba6f69185082a6e234a9699aa6297f2375d5f19",
+    7: "99f46715917a3e0d3d8c4dd666b6fc5848764f36377fb5898161e181ffd43228",
 }
 
 
@@ -43,8 +44,8 @@ class CanTelemetryContractTest(unittest.TestCase):
     def test_rom_configuration_guard_follows_the_manifest_identity(self):
         base = can_telemetry_assembly._manifest_identity
         drifts = (
-            ("crc16", 0xF14F),
-            ("profile_id", 7),
+            ("crc16", 0x6475),
+            ("profile_id", 6),
             ("page_count", 12),
             ("version", 3),
         )
@@ -69,9 +70,9 @@ class CanTelemetryContractTest(unittest.TestCase):
                 "magic": can_telemetry.CONFIG_MAGIC,
                 "version": can_telemetry.CONFIG_VERSION,
                 "can_id_max": can_telemetry.MAX_DATA_CAN_ID,
-                "profile_id": 6,
+                "profile_id": 7,
                 "page_count": 11,
-                "crc16": 0xF14E,
+                "crc16": 0x6474,
             },
         )
 
@@ -82,7 +83,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 6, 11, 0xF14E),
+                ("tuning", 7, 11, 0x6474),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)
@@ -237,7 +238,7 @@ class CanTelemetryContractTest(unittest.TestCase):
 
     def test_retired_profiles_keep_their_pinned_slot_assignment(self):
         retired = self.manifest.retired_profiles
-        self.assertEqual([item["id"] for item in retired], [5])
+        self.assertEqual([item["id"] for item in retired], [5, 6])
         for item in retired:
             with self.subTest(profile_id=item["id"]):
                 assignment = {
@@ -267,7 +268,8 @@ class CanTelemetryContractTest(unittest.TestCase):
         source = json.loads(
             can_telemetry_profile.DEFAULT_RETIRED.read_text(encoding="utf-8")
         )
-        (retired,) = source["retired_profiles"]
+        tracked = source["retired_profiles"]
+        retired = {row["id"]: row for row in tracked}[6]
 
         def load(rows):
             with tempfile.TemporaryDirectory() as directory:
@@ -278,10 +280,10 @@ class CanTelemetryContractTest(unittest.TestCase):
                 manifest = can_telemetry_profile.load_manifest(retired=path)
                 return can_telemetry_profile.render_schema(manifest)
 
-        self.assertIn('"retired_profiles"', load([retired]))
+        self.assertIn('"retired_profiles"', load(tracked))
         reused = (
-            [dict(retired, id=6)],
             [dict(retired, id=7)],
+            [dict(retired, id=8)],
             [retired, retired],
             [dict(retired, name="missing")],
         )
@@ -291,7 +293,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                     load(rows)
         foreign = {
             "page_count": dict(retired, page_count=12),
-            "crc16": dict(retired, crc16_ccitt_false="0xE145"),
+            "crc16": dict(retired, crc16_ccitt_false="0xF14F"),
             "contexts": dict(retired, contexts=retired["contexts"][:-1]),
         }
         for change, row in foreign.items():

@@ -82,18 +82,20 @@ The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 
 The default hardware filter accepts custom telemetry plus stock context IDs
 `0x174`, `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide the
-transmission gear, an RPM cross-check over the stock transmit path, vehicle
-speed, ASCD input, selector state, and dashboard indication state.
+transmission gear, engine speed, vehicle speed, ASCD input, selector state,
+and dashboard indication state.
 
-`Engine speed` and `Stock CAN RPM` come from one ECU word. `FUN_000384FE`
-shifts the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 6
-into telemetry field `0xFFFF11F4` at 12.5 RPM per count, and right by 4 into
+`Engine speed` and `Stock CAN RPM` show frame `0x180`. `FUN_000384FE` shifts
+the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 4 into
 `0xFFFF11EE`, which `FUN_000C577A` multiplies by 25 into frame `0x180` bytes 0
-and 1 at `raw / 8` RPM, 3.125 RPM per count. The telemetry value belongs to
-the snapshot taken at the scheduler boundary, while the frame is serialized in
-its own `Tcan` slot and the display holds the latest frame received, so the
-two values differ by their resolution and by the change of engine speed
-between the two sampling moments.
+and 1 at `raw / 8` RPM, 3.125 RPM per count, and right by 6 into the
+coordinate `0xFFFF11F4` at 12.5 RPM per count that the ECU tables read.
+Profile 7 does not stream the coordinate, because the frame carries the word
+it is a shift of. A replay of a profile 5 or 6 recording shows the coordinate
+as `Engine speed`: it belongs to the snapshot taken at the scheduler boundary,
+while the frame is serialized in its own `Tcan` slot and the display holds the
+latest frame received, so there the two rows differ by their resolution and
+by the change of engine speed between the two sampling moments.
 
 ## Stream control
 
@@ -248,7 +250,7 @@ without changing the settings file.
 
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
-| `rpm` | `X_VQ_Engine_Speed` | RPM | `rpm_raw * 12.5` |
+| `rpm` | `X_VQ_Engine_Speed` | RPM | `0x180` bytes 0..1 `/ 8` |
 | `load` | `X_VQ_Engine_Load` | % | `normalized_load_raw * 100 / 128` |
 | `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw / 2048` |
 | `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
@@ -433,7 +435,7 @@ the value as the `Gear` channel, `NaN` where the TCM reports no forward gear.
 
 ### Selected map
 
-Profile 6 carries the active map index `0xFFFF5D00` of the map-switching
+Profiles 6 and 7 carry the active map index `0xFFFF5D00` of the map-switching
 runtime in context tag 2, and `Selected map` shows the index plus 1. An index
 outside 0 through 4 shows `1`, because the runtime resolves an invalid index to
 Map 1. Hover over the row name names the stream as the source.
@@ -659,11 +661,11 @@ The decoder retains the latest values from the paired page-9 and page-10
 contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. The bundled schema declares
-profile ID 6 with CRC16 `0xF14E` and keeps the frozen contract of retired
-profile 5 with CRC16 `0xE144`, so a recording of either ID decodes with the
-fields of its own profile, and the `Schema` status field names a retired
-profile. A producer that reports another profile ID or CRC keeps raw values
-only, because its slots carry other quantities. The
+profile ID 7 with CRC16 `0x6474` and keeps the frozen contracts of retired
+profiles 6 with CRC16 `0xF14E` and 5 with CRC16 `0xE144`, so a recording of
+any of these IDs decodes with the fields of its own profile, and the `Schema`
+status field names a retired profile. A producer that reports another profile
+ID or CRC keeps raw values only, because its slots carry other quantities. The
 CRC covers the wire layout alone, so a restated field name or scale string
 leaves it unchanged. Stale context values remain visible while their update
 cadence is one fifth of the snapshot rate.
@@ -685,26 +687,32 @@ event that opens the knock window, and the combustion event a window observes
 is not measured. The metric has no physical unit, so the display labels the
 signed evaluator counts `cnt`.
 
-Profile 6 does not stream the front heated-oxygen-sensor bytes
+Profiles 6 and 7 do not stream the front heated-oxygen-sensor bytes
 `0xFFFF22C4..22C5`, timing state `0xFFFF2023`, or the atmospheric-pressure
 byte `0xFFFF4544`: no traced code writes the first three, and every recording
 reads them as 0, and the fourth holds the default 207 of the disabled
 barometric input. Profile 5 carries them, and the display and the MLG
 recording leave them out of its replays.
 
-The A/F adjustment words and the ignition-timing adjustment `0xFFFF564C` hold
-signed producer values. Profile 6 declares their slots signed. Profile 5
+Profile 7 does not stream the work-support ignition-timing adjustment
+`0xFFFF564C` either: only its service-0x3B adjustment changes it, and every
+recording reads it as 0. The window has no row for it. Profiles 5 and 6 carry
+it, and the model converts it to signed degrees in their replays.
+
+The A/F adjustment words and the ignition-timing adjustment hold signed
+producer values. Profiles 6 and 7 declare their slots signed. Profile 5
 declares them unsigned, and its scale strings read them as `signed raw`: two's
 complement values of the slot width. The model converts the signed value
-under either profile, and the MLG recorder stores the signed value, because
+under every profile, and the MLG recorder stores the signed value, because
 MegaLogViewer applies only scale and transform. A replay of a recording that
 stored the unsigned value decodes to the same display value.
 
 Profile 5 names the slot of the ignition-timing adjustment
 `timing_state_564c_raw`, and recordings of earlier versions name its channel
-`Timing state 564C`. The model keeps the slot under its current name
-`ignition_timing_adjustment_raw` for every profile ID, and the replay and
-`tools/logs/mlg_restamp.py` read the earlier channel as `Timing adjustment`.
+`Timing state 564C`. The model keeps the slot under the name
+`ignition_timing_adjustment_raw` of profile 6 for both profile IDs, and the
+replay and `tools/logs/mlg_restamp.py` read the earlier channel as
+`Timing adjustment`.
 
 A field marked with `*` uses a candidate transform: engine torque state and
 torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
@@ -729,7 +737,6 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | coolant and intake air | `0xFFFF1079`, `0xFFFF2837` | `raw - 50 degC` | J1979 PIDs 0x05 and 0x0F publish the same `0x12DEA` transfer codes minus 10 as `A - 40` degC |
 | absolute throttle | `0xFFFF1075` byte | `raw * 100 / 255 percent` | J1979 PID 0x11 returns the byte as `A * 100 / 255` percent |
 | APC command | `0xFFFF2022` byte | `110 - raw degBTDC` | `FUN_0004DF82` normally writes `110 - final timing`, and J1979 PID 0x0E reports `110 - raw` as the timing advance in every mode, so the field is the delivered command also where Rolling Launch or a stock mode moves it away from the timing coordinate; `tools/logs/mlg_relation_audit.py` checks `final timing = 110 - raw` on recordings; a software command, not a measured spark angle |
-| timing adjustment | `0xFFFF564C` byte | signed `raw deg` | the work-support ignition-timing adjustment `TARGET IGN TIM ADJ` of `defs/JK08A.work-support.md`, published as DID `0x112D`; `FUN_0004AAD0` bounds it to -5..0, and `FUN_0004DBE8` adds it to the final timing coordinate only inside its coolant, speed, and load window above idle speed |
 | fuel inhibit | `0xFFFF22E0` byte | `none`, `all`, or the list of cut cylinders | code-proven bit `k` = injector output `k`: a set bit replaces channel word `k` with the opening time and withholds the channel from the fire mask; output `k` drives cylinder `k + 1` by the diagnostic Power Balance order, which is not measured electrically |
 | selected map | `0xFFFF5D00` byte | `raw + 1`, `1` outside 0..4 | active index of the map-switching runtime, which resolves an invalid index to Map 1 |
 | Rolling Launch phase and reason | `0xFFFF5D40`, `0xFFFF5D41` bytes | names of the `Phase` and `AbortReason` codes of `patches/rolling_launch.py`, hex outside them | runtime state of the Rolling Launch patch |

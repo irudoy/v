@@ -76,7 +76,7 @@ def recording_with(**overrides):
         "schema_verified": [1.0, 1.0, 1.0],
         "tick16": [10.0, 11.0, 12.0],
         "bfs_raw": [8192.0, 8192.0, 8192.0],
-        "rpm_raw": [120.0, 120.0, 120.0],
+        "stock_rpm": [1500.0, 1500.0, 1500.0],
         "coolant_raw": [140.0, 140.0, 140.0],
         "knock_surface_state": [0.0, 0.0, 0.0],
         "intake_cvtc_target_raw": [150.0, 150.0, 150.0],
@@ -554,6 +554,7 @@ class CvtcRecordingInputTest(unittest.TestCase):
                 name: [value[0]] * 4
                 for name, value in recording_with().columns.items()
                 if name in cvtc_target_audit.CVTC_INPUT_FIELDS
+                or name == "stock_rpm"
             },
         )
         events, bridges, samples = cvtc_target_audit._recording_samples(
@@ -563,6 +564,22 @@ class CvtcRecordingInputTest(unittest.TestCase):
         self.assertEqual([sample.tick for sample in samples], [10, 11])
         self.assertEqual([sample.timestamp for sample in samples], [0.0, 0.61])
         self.assertTrue(all(math.isnan(sample.coolant_age_ms) for sample in samples))
+
+    def test_recording_reads_engine_speed_from_the_stock_frame(self):
+        # 1512.5 RPM is word FFFF11EE = 484, whose coordinate FFFF11F4 is 121.
+        recording = recording_with(stock_rpm=[math.nan, 1500.0, 1512.5])
+        _events, _bridges, samples = cvtc_target_audit._recording_samples(
+            recording, "tuning"
+        )
+        self.assertEqual([sample.tick for sample in samples], [11, 12])
+        self.assertEqual([sample.rpm_raw for sample in samples], [120, 121])
+
+    def test_a_retired_recording_keeps_its_published_coordinate(self):
+        recording = recording_with(rpm_raw=[119.0, 120.0, 121.0])
+        _events, _bridges, samples = cvtc_target_audit._recording_samples(
+            recording, "tuning"
+        )
+        self.assertEqual([sample.rpm_raw for sample in samples], [119, 120, 121])
 
     def test_recording_rejects_values_that_are_not_wire_integers(self):
         for value in (140.5, -1.0, 256.0, math.inf):
@@ -616,6 +633,10 @@ class CvtcRecordingInputTest(unittest.TestCase):
         recording = recording_with()
         del recording.columns["coolant_raw"]
         with self.assertRaisesRegex(ValueError, "MLG lacks coolant_raw"):
+            cvtc_target_audit._recording_samples(recording, "tuning")
+        recording = recording_with()
+        del recording.columns["stock_rpm"]
+        with self.assertRaisesRegex(ValueError, "MLG lacks engine speed"):
             cvtc_target_audit._recording_samples(recording, "tuning")
 
 

@@ -54,8 +54,16 @@ class FeedChannel:
         return "X_" + self.name.replace(" ", "_")
 
 
+# Sources the stock bus carries rather than the telemetry profile. The model
+# attribute of the same name holds the decoded value, so the channel follows
+# the bus whatever the telemetry profile publishes. Engine speed is frame
+# 0x180 at RPM * 8 every 10.24 ms; defs/JK08A.can.md states that frame.
+STOCK_FRAME_SOURCES = frozenset({"stock_rpm"})
+
 CHANNELS = (
-    FeedChannel("rpm", "VQ Engine Speed", "RPM", "0", 0, 8000, 1000, "rpm"),
+    FeedChannel(
+        "rpm", "VQ Engine Speed", "RPM", "0", 0, 8000, 1000, "stock_rpm"
+    ),
     FeedChannel(
         LOAD_KEY,
         "VQ Engine Load",
@@ -155,7 +163,10 @@ def feed_values(model):
         return {}
     values = {}
     for channel in CHANNELS:
-        value = model.engineering.get(channel.source)
+        if channel.source in STOCK_FRAME_SOURCES:
+            value = getattr(model, channel.source, None)
+        else:
+            value = model.engineering.get(channel.source)
         if isinstance(value, (int, float)) and math.isfinite(value):
             values[channel.key] = float(value)
     return values

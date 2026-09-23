@@ -346,9 +346,14 @@ engineering value across a raw range.
 channels of a dashboard MLVLG recording. Channels are matched to their wire
 sources through the recorder field table, so any recording with the schema-2
 `tuning` layout is accepted, and every replay constant, curve, and axis is
-read from the calibration image. The relations are:
+read from the calibration image. Engine speed in every relation is the RPM/12.5
+coordinate `0xFFFF11F4`. A recording of profile 7, which does not publish it,
+takes it from stock CAN RPM as `(round(8 * rpm) // 25) >> 2`, because frame
+`0x180` carries `25 * 0xFFFF11EE` and the coordinate is `0xFFFF11EE >> 2`. The
+relations are:
 
-- stock CAN RPM against the RPM/12.5 word;
+- stock CAN RPM against the RPM/12.5 word in a recording that publishes the
+  word, with the share of records whose stock value reproduces it;
 - the live intake-VTC duty pair against its scheduler latch, the duty
   command pair;
 - intake and exhaust actual positions against a target unchanged for the
@@ -358,7 +363,7 @@ read from the calibration image. The relations are:
 - the J1979 Calculated Load byte against its exact formula for the same and
   the prior record;
 - Base Fuel Schedule against the primary-branch producer with `Q = A + B` and
-  `N = 2 * rpm_raw` at steady inputs;
+  `N` twice the RPM/12.5 coordinate at steady inputs;
 - each closed-loop compensated pulse word as a linear fit against
   `BFS * STFT / 0x6400 / 20.48`;
 - the `110 - final timing = APC command` identity, the fuel-inhibit mask
@@ -469,6 +474,13 @@ python3 tools/logs/rolling_launch_audit.py \
   the first `ACTIVE` record and by every such transition. Clear records after
   the release, after the earliest possible timeout, or at an RPM word below
   the configured minimum do not bound the window.
+- Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM. A
+  capture whose snapshots omit it takes the word from stock frame `0x180`,
+  which is sampled at another instant of the cycle, and every RPM word above
+  becomes the interval between the frames recorded with the snapshot and with
+  the next one, widened by 8 counts, 100 RPM, beyond the excursion that
+  registry entry `can_telemetry.stock_speed_bracket_2026_09_22` records.
+  `engine_speed_source` names the source.
 - Full-mask cycles are counted inside the CANCEL hold and after its release,
   and full-mask records outside every activation window are counted
   separately.

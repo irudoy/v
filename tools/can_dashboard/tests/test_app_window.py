@@ -101,9 +101,9 @@ class SchemaStatusTest(unittest.TestCase):
         self.assertEqual(app.schema_status(dashboard), "Schema: waiting")
         self.record(dashboard, 1)
         self.assertEqual(app.schema_status(dashboard), "Schema: VERIFIED")
-        self.record(dashboard, 2, profile_id=6)
+        self.record(dashboard, 2, profile_id=7)
         self.assertEqual(
-            app.schema_status(dashboard), "Schema: VERIFIED, profile 6"
+            app.schema_status(dashboard), "Schema: VERIFIED, profile 7"
         )
         self.record(dashboard, 3, profile_id=5)
         self.assertEqual(
@@ -617,7 +617,7 @@ class DashboardReplayWindowTest(unittest.TestCase):
         values = {
             "tick16": 1,
             "schema_verified": 1,
-            "profile_id": 6,
+            "profile_id": 7,
             "active_map_index": 1,
             "rolling_launch_phase": 2,
             "rolling_launch_abort_reason": 7,
@@ -639,7 +639,7 @@ class DashboardReplayWindowTest(unittest.TestCase):
             f"Source: {app.TELEMETRY_MAP_SOURCE}.",
         )
         self.assertEqual(
-            dashboard.schema_var.get(), "Schema: VERIFIED, profile 6"
+            dashboard.schema_var.get(), "Schema: VERIFIED, profile 7"
         )
 
     def test_hover_over_a_metric_name_describes_the_metric(self):

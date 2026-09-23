@@ -113,7 +113,7 @@ can_symbol,occupied_mailbox_record_address,000097c6,00009838,04000000,,mapped,Ad
 can_symbol,mailbox_index,,0000001a,,,mapped,Target uses physical mailbox 26
 can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
 can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask is unchanged
-telemetry,rpm_raw,ffff11f4,fffe81d6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,request_flow_raw,ffff1980,,,,unsupported,No homolog is established for the requested-torque column coordinate: the target conversion chain is not traced to a stored forward coordinate
 telemetry,final_timing_raw,ffff11d4,fffe81b4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,apc_command_raw,ffff2022,fffe81c3,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,fuel_inhibit_mask,ffff22e0,fffe92b0,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
@@ -159,7 +159,7 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe942b,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe942c,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,ltft_b1_raw,ffff2302,fffe92cc,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,ltft_b2_raw,ffff2304,fffe92ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,ignition_timing_adjustment_raw,ffff564c,fffed0e8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,alpha_n_flow_raw,ffff1170,,,,unsupported,No homolog is established for the Fuel Compensation Main column coordinate: the target curve pair and its consumer are not traced
 telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,No intake solenoid duty command cell is established for the target
 telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The adjacent command cell follows the same unestablished pair
 telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim block whose offsets 4 and 6 are the diagnostic long-term trim words

@@ -1,4 +1,5 @@
 import importlib.util
+import re
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -341,6 +342,28 @@ mov #0x5,r1
             f"entry and of profile ID {previous} by the control receiver",
             published,
         )
+
+    def test_can_telemetry_latest_wins_writes_the_page_0_word_source(self):
+        # The pending and latest-wins cases change the source bytes of the
+        # word at bank bytes 3 and 4 and read the newest value back there, so
+        # they must write the source the profile reads into that word.
+        (field,) = (
+            field
+            for field in can_telemetry_profile.load_manifest().fields
+            if field.page == 0 and field.offset == 3
+        )
+        harness = (
+            ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(field.width, 2)
+        self.assertIn(
+            "ram_pointer(BANK_A)[3] != 0xab || ram_pointer(BANK_A)[4] != 0xcd",
+            harness,
+        )
+        written = re.findall(r"ram_pointer\((0x[0-9a-f]+)U\)\[[01]\] = ", harness)
+        self.assertEqual(len(written), 4)
+        self.assertEqual(set(written), {f"0x{field.source:08x}"})
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
         fixture = bytearray(32)

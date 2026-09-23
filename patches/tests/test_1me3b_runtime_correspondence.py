@@ -55,9 +55,11 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
     assert {row["key"] for row in rows} == _canonical_telemetry_keys()
     unsupported = [row["key"] for row in rows if row["status"] == "unsupported"]
     assert unsupported == [
+        "request_flow_raw",
         "normalized_load_raw",
         "knock_timing_state_raw",
         "knock_surface_state",
+        "alpha_n_flow_raw",
         "intake_cvtc_duty_command_b1_raw",
         "intake_cvtc_duty_command_b2_raw",
     ]

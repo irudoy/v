@@ -163,6 +163,23 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
     assert "stft_b1_raw" in str(error.value)
 
 
+def test_a_host_conversion_a_retired_profile_declares_otherwise_fails(monkeypatch):
+    # The current profile no longer carries rpm_raw, so the frozen
+    # declarations of the retired profiles bind its host conversion.
+    declarations = single_source._retired_declarations()
+    assert "rpm_raw" not in single_source._profile_scales()
+    declarations["rpm_raw"] = {
+        ("raw * 25 RPM", 2, False, single_source.RETIRED_PROFILES)
+    }
+    monkeypatch.setattr(
+        single_source, "_retired_declarations", lambda: declarations
+    )
+    with pytest.raises(single_source.SourceError) as error:
+        single_source.check_conversions()
+    assert "rpm_raw" in str(error.value)
+    assert single_source.RETIRED_PROFILES in str(error.value)
+
+
 @pytest.mark.parametrize(
     "name, scale",
     [
@@ -214,7 +231,7 @@ def test_a_signed_reading_of_an_unsigned_slot_needs_a_signed_view(monkeypatch):
         ),
         (
             "patches/rom-builder.md",
-            "binds 55 of the 60 ECU-RAM fields",
+            "binds 53 of the 60 ECU-RAM fields",
             "binds 56 of the 60 ECU-RAM fields",
         ),
         (
@@ -224,13 +241,33 @@ def test_a_signed_reading_of_an_unsigned_slot_needs_a_signed_view(monkeypatch):
         ),
         (
             "patches/rom-address-profiles.toml",
-            "56 of the 60 ECU-RAM fields bind to 1ND0A sources",
+            "54 of the 60 ECU-RAM fields bind to 1ND0A sources",
             "57 of the 60 ECU-RAM fields bind to 1ND0A sources",
         ),
         (
             "rom-images/support-matrix.md",
-            "ECU RAM; 41 of those",
+            "ECU RAM; 39 of those",
             "ECU RAM; 45 of those",
+        ),
+        (
+            "rom-images/support-matrix.md",
+            "mailbox 26; seven fields unavailable",
+            "mailbox 26; five fields unavailable",
+        ),
+        (
+            "patches/rom-builder.md",
+            "JK00C and JK00D telemetry binds 58 of the 60",
+            "JK00C and JK00D telemetry binds 60 of the 60",
+        ),
+        (
+            "patches/can-telemetry.md",
+            "profile 6 with CRC `0xF14E` and profile 5",
+            "profile 6 with CRC `0xF14E` and profile 4",
+        ),
+        (
+            "tools/can_dashboard/README.md",
+            "retired\nprofiles 6 with CRC16 `0xF14E` and 5 with",
+            "retired\nprofiles 6 with CRC16 `0xF14E`, 5 with",
         ),
         (
             "rom-images/23710-1ME3B/README.md",

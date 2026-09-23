@@ -28,15 +28,16 @@ so each tagged field set refreshes at `19.53125 Hz`.
 
 The fixed pages provide:
 
-- engine speed, both MAF sensor words, combined airflow, base fuel schedule,
-  normalized load, and calculated load;
+- both MAF sensor words, combined airflow, base fuel schedule, normalized
+  load, and calculated load;
 - final ignition coordinate, APC command, ignition state, knock state, and
   latched knock interval count and channel mask;
 - all six calculated injection words, the end-of-injection angle word, and the
   final fuel-output inhibit mask;
 - both accelerator channels, primary throttle feedback, absolute throttle,
   bounded request, shared target, and both final channel targets;
-- engine torque state;
+- engine torque state and the column coordinate `FFFF1980` of
+  requested-torque surface `0xE98E`;
 - intake and exhaust CVTC targets plus both-bank actual intake and exhaust
   positions;
 - the Rolling Launch phase.
@@ -54,16 +55,21 @@ The rotating contexts provide:
 - secondary throttle feedback for both banks;
 - the minimum knock threshold margin of each of the six evaluator channels
   since the previous capture of its tag;
-- the active map index, the work-support ignition-timing adjustment
-  `FFFF564C`, and the in-band transport identity and counters.
+- the active map index, the Fuel Compensation Main column coordinate
+  `FFFF1170`, and the in-band transport identity and counters.
 
 The front heated-oxygen-sensor bytes `FFFF22C4/22C5` and timing state
-`FFFF2023` have no producer on this engine, and the atmospheric-pressure byte
-`FFFF4544` reads the default 207 of the disabled barometric input, so the
-profile streams none of them.
+`FFFF2023` have no producer on this engine, the atmospheric-pressure byte
+`FFFF4544` reads the default 207 of the disabled barometric input, and the
+work-support ignition-timing adjustment `FFFF564C` changes only through its
+service-0x3B adjustment and reads 0 in every recording, so the profile streams
+none of them.
 
-Stock CAN independently provides RPM, vehicle speed, selector position, ASCD
-input, and dashboard state. The dashboard and MLVLG recorder retain those
+Stock CAN provides engine speed, vehicle speed, selector position, ASCD input,
+and dashboard state. Frame `0x180` carries `sat_u16(FFFF11EE * 25)`, and
+`FUN_000384FE` writes the RPM/12.5 coordinate `FFFF11F4` as `FFFF11EE >> 2` in
+the same pass, so the host derives the coordinate from the frame and the
+profile does not stream it. The dashboard and MLVLG recorder retain those
 values without consuming custom payload capacity.
 
 ## Closed control-loop coverage
@@ -90,8 +96,7 @@ CVTC targets and positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 `raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
 oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
-injected cylinder, the APC command at `110 - raw` degrees BTDC, the
-ignition-timing adjustment `FFFF564C` as a signed byte in degrees, the final
+injected cylinder, the APC command at `110 - raw` degrees BTDC, the final
 channel throttle targets at `raw * 34285 / 1114112` percent of throttle opening
 above the learned closed position, which is the J1979 PID 0x11 gradient of
 their coordinate table `0x155A0`, and the front A/F sensor words at
@@ -171,7 +176,7 @@ in JK08A, reads zero, and is not streamed.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 6, generated CRC16 `0xF14E`, one
+Schema 2 uses protocol version 2, profile ID 7, generated CRC16 `0x6474`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The CRC covers the wire layout alone:
 protocol version, profile ID, page count, and the placement, width, and
@@ -186,13 +191,14 @@ reset, and START activates telemetry even when the definition flag is off. The
 dashboard can send these commands only through an active/ACK PCAN connection.
 
 The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
-this current schema. They decode recordings of retired profile 5 through its
-frozen contract in the host schema. Historical schema 1 captures require the
-historical decoder revision and are not accepted as schema 2 input.
+this current schema. They decode recordings of retired profiles 5 and 6
+through their frozen contracts in the host schema. Historical schema 1
+captures require the historical decoder revision and are not accepted as
+schema 2 input.
 
 The firmware and executable SH-2E gate are complete. Three road drives on
 2026-08-26 with profile 1 and a road session on 2026-09-21 with profile 5
 carried the eleven-frame stream with the overrun and abort counters at zero;
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml)
-records the captures. The current profile 6 has no vehicle recording, and
+records the captures. The current profile 7 has no vehicle recording, and
 physical validation of mailbox-31 START/STOP remains required.

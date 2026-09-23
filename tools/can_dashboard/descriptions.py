@@ -36,10 +36,10 @@ def _knock_margin(channel):
 
 DESCRIPTIONS = {
     "rpm": (
-        "Engine speed that the ECU measures from crank events, as the "
-        "12.5 RPM word its own tables read, sampled with the rest of the "
-        "telemetry snapshot. Stock CAN RPM carries the same measurement at "
-        "a finer resolution from another moment."
+        "Engine speed that the ECU measures from crank events, from the "
+        "stock frame 0x180 at 3.125 RPM per count. A replay of a profile 5 "
+        "or 6 recording shows the 12.5 RPM word the ECU tables read, sampled "
+        "with the rest of the telemetry snapshot."
     ),
     "vehicle_speed_kmh": (
         "Vehicle speed from the ABS frame 0x280 at 0.01 km/h per count. "
@@ -178,14 +178,6 @@ DESCRIPTIONS = {
         "Launch and the stock modes that move the command away from the "
         "timing coordinate. A software command, not a measured spark angle."
     ),
-    "ignition_timing_adjustment_deg": (
-        "Ignition timing adjustment of 0 to -5 degrees that the CONSULT "
-        "work-support item TARGET IGN TIM ADJ sets and the ECU stores. The "
-        "ECU adds it to the final timing coordinate only while coolant is "
-        "above about 60 degC, engine speed is about 1200..3000 RPM, and the "
-        "normalized load is about 50..72 percent, so it has no effect at "
-        "idle. 0 means no adjustment."
-    ),
     "app1_v": (
         "Accelerator pedal position sensor 1 in volts; it rises with pedal "
         "travel. Factory bands: 0.5..1.0 V released and 4.2..4.8 V fully "
@@ -271,10 +263,10 @@ DESCRIPTIONS = {
     ),
     "oil_temperature_deg_c": "Engine oil temperature.",
     "stock_rpm": (
-        "Engine speed in the stock frame 0x180: the same ECU measurement as "
-        "Engine speed at 3.125 RPM per count, taken when the frame is "
-        "serialized. It cross-checks the stock transmit path and is not an "
-        "independent sensor."
+        "Engine speed in the stock frame 0x180 at 3.125 RPM per count, taken "
+        "when the frame is serialized. Engine speed shows the same frame, "
+        "except in a replay of a profile 5 or 6 recording, so the row is not "
+        "an independent sensor."
     ),
     "ascd_button": (
         "Cruise control (ASCD) switch input from frame 0x239: RELEASE, SET, "

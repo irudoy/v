@@ -265,6 +265,31 @@ def _finite(value) -> bool:
     return isinstance(value, (int, float)) and math.isfinite(value)
 
 
+def speed_counts(stock_rpm):
+    """The ECU engine-speed word FFFF11EE from a stock engine-speed value.
+
+    Bytes 0 and 1 of frame 0x180 carry that word multiplied by 25 and
+    saturated at 0xFFFF, and the decoded value is the byte pair over 8, so
+    the pair recovers the word. The result counts 3.125 RPM.
+    """
+
+    if not _finite(stock_rpm):
+        return None
+    return int(round(stock_rpm * 8)) // 25
+
+
+def rpm_counts(stock_rpm):
+    """The ECU engine-speed coordinate FFFF11F4 in counts of 12.5 RPM.
+
+    FUN_000384FE writes FFFF11EE as FFFF1196 >> 4 and FFFF11F4 as
+    FFFF1196 >> 6 in one pass, so the coordinate is the word FFFF11EE that
+    the stock frame publishes shifted by two.
+    """
+
+    counts = speed_counts(stock_rpm)
+    return None if counts is None else counts >> 2
+
+
 class FrameClock:
     """Elapsed seconds of one source session, measured on the frame clock.
 
@@ -452,6 +477,20 @@ class DashboardModel:
             profile_id: frozenset(profile_field_names(version))
             for profile_id, version in self.decoder.versions.items()
         }
+        # A recording of a retired ID carries the fields of that ID, which the
+        # current profile need not publish, so a record is read over every
+        # name a known profile names and then limited to the fields of the ID
+        # the record itself states.
+        self._known_field_names = tuple(
+            dict.fromkeys(
+                self._field_names
+                + tuple(
+                    name
+                    for version in self.decoder.versions.values()
+                    for name in profile_field_names(version)
+                )
+            )
+        )
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 
@@ -536,7 +575,7 @@ class DashboardModel:
         )
         carried = self._version_fields.get(profile_id, self._field_names)
         fields = {}
-        for name in self._field_names:
+        for name in self._known_field_names:
             value = values.get(name)
             if name in carried and _finite(value):
                 fields[name] = int(round(value))
@@ -701,6 +740,19 @@ class DashboardModel:
         return self.raw.get(name, default)
 
     @property
+    def engine_speed_counts(self):
+        """Engine speed in the RPM/12.5 counts of the ECU coordinate FFFF11F4.
+
+        A profile that publishes the coordinate serves it from the snapshot.
+        Otherwise the stock engine-speed frame carries the word the coordinate
+        is a shift of, so the two sources name one quantity.
+        """
+        published = self.raw.get("rpm_raw")
+        if published is not None:
+            return int(published)
+        return rpm_counts(self.stock_rpm)
+
+    @property
     def telemetry_map(self):
         """Return the map the telemetry map index names, or None."""
         if not self.schema_verified:
@@ -779,7 +831,11 @@ class DemoGenerator:
         bfs_ms = 2.0 + 4.0 * wave
         launch = wave > 0.97
         return {
-            "rpm_raw": rpm / 12.5,
+            "stock_rpm": rpm,
+            # Both flow coordinates rise with the opening area at a given
+            # engine speed, so the demo drives them from the same load wave.
+            "request_flow_raw": 655 * load,
+            "alpha_n_flow_raw": 16 + 2.39 * load,
             "final_timing_raw": timing,
             "apc_command_raw": 110 - timing,
             "fuel_inhibit_mask": 0,
@@ -833,7 +889,6 @@ class DemoGenerator:
             "ltft_b1_raw": 102.1 * 256,
             "ltft_b2_raw": 101.6 * 256,
             "active_map_index": 0,
-            "ignition_timing_adjustment_raw": -round(2 * wave),
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
@@ -898,7 +953,7 @@ class DemoGenerator:
     def stock_context(self, tick, elapsed=None):
         elapsed = tick * BASE_TICK_SECONDS if elapsed is None else elapsed
         values = self._values(elapsed)
-        rpm = int(values["rpm_raw"] * 12.5)
+        rpm = int(values["stock_rpm"])
         rpm_payload = bytearray(8)
         rpm_payload[0:2] = int(rpm * 8).to_bytes(2, "big")
         prnd = bytearray(8)

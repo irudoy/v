@@ -92,8 +92,7 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.high_detonation_selected, 0)
         self.assertGreater(dashboard.value("stft_b1_percent"), -5)
         self.assertLess(dashboard.value("stft_b1_percent"), 5)
-        self.assertGreater(dashboard.value("rpm"), 800)
-        self.assertLess(dashboard.value("rpm"), 4_100)
+        self.assertIsNone(dashboard.value("rpm"))
         self.assertEqual(dashboard.missed_snapshots, 0)
         self.assertEqual(
             dashboard.value("intake_cvtc_target_deg_ca"),
@@ -130,7 +129,6 @@ class DashboardModelTest(unittest.TestCase):
             "tick16": 1,
             "schema_verified": 1,
             "apc_command_raw": 90,
-            "ignition_timing_adjustment_raw": 0xFE,
             "throttle_request_bounded_raw": 2565,
             "throttle_target_shared_raw": 26845,
             "throttle_target_channel_0_raw": 2143,
@@ -146,7 +144,6 @@ class DashboardModelTest(unittest.TestCase):
 
         expected = {
             "apc_command_deg": 20,
-            "ignition_timing_adjustment_deg": -2,
             "torque_request_nm": 256.5,
             "throttle_area_request_cm2": 21.476,
             "throttle_target_b1_percent": 2143 * 34285 / 1114112,
@@ -164,12 +161,9 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], 0xFFFE)
 
         # A recording stores a signed view as the signed value itself.
-        values.update(
-            tick16=2, af_adjustment_b1_raw=-2, ignition_timing_adjustment_raw=-2
-        )
+        values.update(tick16=2, af_adjustment_b1_raw=-2)
         dashboard.process_record(model.SnapshotRecord(0.01, values), now=0.01)
         self.assertAlmostEqual(dashboard.value("af_adjustment_b1"), -0.004)
-        self.assertEqual(dashboard.value("ignition_timing_adjustment_deg"), -2)
 
     def test_masks_name_their_members(self):
         self.assertEqual(model.inhibited_cylinders(0), "none")
@@ -421,7 +415,7 @@ class DashboardModelTest(unittest.TestCase):
         for tick in range(1, 5):
             feed_group(dashboard, generator.group(tick), 4.0 + tick * 0.01)
         self.assertTrue(dashboard.schema_verified)
-        self.assertIsNotNone(dashboard.value("rpm"))
+        self.assertIsNotNone(dashboard.value("normalized_load_percent"))
 
         bad = list(generator.group(9))
         self.assertEqual(bad[9].data[1], 3)
@@ -430,7 +424,7 @@ class DashboardModelTest(unittest.TestCase):
         bad[9] = model.FrameRecord(0x6F0, bytes(health))
         self.assertIsNone(feed_group(dashboard, bad, 4.1))
         self.assertFalse(dashboard.schema_verified)
-        self.assertIsNone(dashboard.value("rpm"))
+        self.assertIsNone(dashboard.value("normalized_load_percent"))
 
     def test_a_retired_profile_keeps_only_the_fields_of_its_id(self):
         generator = model.DemoGenerator()
@@ -446,10 +440,10 @@ class DashboardModelTest(unittest.TestCase):
                 group[9] = model.FrameRecord(0x6F0, bytes(health))
             feed_group(dashboard, group, tick * model.BASE_TICK_SECONDS)
 
-        current = (6, dashboard.decoder.profile["_crc16"])
+        current = (7, dashboard.decoder.profile["_crc16"])
         for tick in range(1, 9):
             feed(tick, *current)
-        self.assertEqual(dashboard.profile_id, 6)
+        self.assertEqual(dashboard.profile_id, 7)
         self.assertIn("normalized_load_percent", dashboard.engineering)
         self.assertEqual(dashboard.value("rolling_launch_phase_name"), "IDLE")
         self.assertEqual(dashboard.telemetry_map, 1)
@@ -478,7 +472,7 @@ class DashboardModelTest(unittest.TestCase):
 
         for tick in range(19, 29):
             feed(tick, *current)
-        self.assertEqual(dashboard.profile_id, 6)
+        self.assertEqual(dashboard.profile_id, 7)
         self.assertNotIn("front_oxygen_sensor_b1_raw", dashboard.raw)
         self.assertIn("normalized_load_percent", dashboard.engineering)
 
@@ -491,13 +485,13 @@ class DashboardModelTest(unittest.TestCase):
                 values = {
                     "tick16": tick,
                     "schema_verified": 1,
-                    "profile_id": 6,
+                    "profile_id": 7,
                     "active_map_index": index,
                 }
                 dashboard.process_record(
                     model.SnapshotRecord(tick * 0.01, values), now=tick * 0.01
                 )
-                self.assertEqual(dashboard.profile_id, 6)
+                self.assertEqual(dashboard.profile_id, 7)
                 self.assertEqual(dashboard.telemetry_map, number)
                 self.assertEqual(dashboard.selected_map, number)
         dashboard.drive.map.number = 3

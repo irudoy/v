@@ -29,6 +29,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import recording
+from tools.can_dashboard.model import rpm_counts
 from tools.logs import mlvlg
 from tools.logs.load_axis_audit import (
     CALCULATED_LOAD_REFERENCE_ADDRESS,
@@ -316,7 +317,7 @@ def _source_by_channel_name() -> dict[str, str]:
         **PROFILE_3_CHANNEL_SOURCES,
         **{
             binding.spec.name: binding.source
-            for binding in recording.build_bindings("tuning")
+            for binding in recording.known_bindings("tuning")
         },
     }
 
@@ -363,6 +364,30 @@ def _ints(recording_: Recording, source: str) -> list[int] | None:
     if column is None:
         return None
     return [int(round(value)) for value in column]
+
+
+def engine_speed_counts(
+    recording_: Recording, *, stock: bool = False
+) -> list[int | None] | None:
+    """Engine speed per record in the RPM/12.5 counts of FFFF11F4.
+
+    A recording of a profile that publishes the coordinate carries it as a
+    channel. Otherwise, or with `stock`, the stock engine-speed channel
+    carries the word the coordinate is a shift of. A record without either
+    value, such as one written before the first stock engine-speed frame,
+    holds no count.
+    """
+
+    published = None if stock else recording_.columns.get("rpm_raw")
+    if published is not None:
+        return [
+            int(round(value)) if math.isfinite(value) else None
+            for value in published
+        ]
+    stock = recording_.columns.get("stock_rpm")
+    if stock is None:
+        return None
+    return [rpm_counts(value) for value in stock]
 
 
 def steady_mask(columns: list[list[int]], hold: int) -> list[bool]:
@@ -412,6 +437,13 @@ def linear_fit(xs: list[float], ys: list[float]) -> tuple[float, float]:
 
 
 def audit_stock_rpm(recording_: Recording) -> dict:
+    """Measure the stock engine-speed frame against the published coordinate.
+
+    Only a recording of a profile that publishes FFFF11F4 carries both
+    sources, so the reconstruction share states how often the stock frame
+    reproduces the coordinate an audit reads from it.
+    """
+
     rpm = _ints(recording_, "rpm_raw")
     stock = recording_.columns.get("stock_rpm")
     if rpm is None or stock is None:
@@ -419,12 +451,18 @@ def audit_stock_rpm(recording_: Recording) -> dict:
     differences = [
         abs(value - count * RPM_PER_COUNT) for count, value in zip(rpm, stock)
     ]
+    reconstructed = [
+        rpm_counts(value) == count for count, value in zip(rpm, stock)
+    ]
     return {
         "stock_rpm_pair_count": len(differences),
         "stock_rpm_mean_absolute_difference": statistics.fmean(differences),
         "stock_rpm_within_one_count_share": _share(
             sum(1 for value in differences if value <= RPM_PER_COUNT),
             len(differences),
+        ),
+        "stock_rpm_reconstructs_coordinate_share": _share(
+            sum(reconstructed), len(reconstructed)
         ),
     }
 
@@ -525,12 +563,14 @@ def audit_calculated_load(
     recording_: Recording, calibration: RelationCalibration
 ) -> dict:
     bfs = _ints(recording_, "bfs_raw")
-    rpm = _ints(recording_, "rpm_raw")
+    rpm = engine_speed_counts(recording_)
     load = _ints(recording_, "calculated_load_raw")
     if bfs is None or rpm is None or load is None:
         return {}
     predicted = [
-        calculated_load_raw(b, r, calibration.calculated_load_reference)
+        None
+        if r is None
+        else calculated_load_raw(b, r, calibration.calculated_load_reference)
         for b, r in zip(bfs, rpm)
     ]
     result = {}
@@ -538,6 +578,7 @@ def audit_calculated_load(
         errors = [
             load[index] - predicted[index - lag]
             for index in range(lag, len(load))
+            if predicted[index - lag] is not None
         ]
         result[f"calculated_load_{label}_comparison_count"] = len(errors)
         if errors:
@@ -556,13 +597,13 @@ def audit_bfs_producer(
     maf_b1 = _ints(recording_, "maf_b1_raw")
     maf_b2 = _ints(recording_, "maf_b2_raw")
     bfs = _ints(recording_, "bfs_raw")
-    rpm = _ints(recording_, "rpm_raw")
+    rpm = engine_speed_counts(recording_)
     if maf_b1 is None or maf_b2 is None or bfs is None or rpm is None:
         return {}
     steady = steady_mask([maf_b1, maf_b2, rpm], hold)
     ratios = []
     for b1, b2, observed, count, keep in zip(maf_b1, maf_b2, bfs, rpm, steady):
-        if not keep:
+        if not keep or count is None:
             continue
         output_a, output_b, _total = maf_total_raw(calibration, b1, b2)
         reference = bfs_reference_raw(
@@ -631,11 +672,11 @@ def audit_injection_chain(
         "af_state_factor_raw",
         "fuel_inhibit_mask",
         "iat_raw",
-        "rpm_raw",
         "battery_voltage_raw",
     )
     columns = {name: _ints(recording_, name) for name in names}
-    if any(column is None for column in columns.values()):
+    rpm = engine_speed_counts(recording_)
+    if rpm is None or any(column is None for column in columns.values()):
         return {}
     bfs = columns["bfs_raw"]
     result = {}
@@ -653,6 +694,7 @@ def audit_injection_chain(
                 columns["af_state_factor_raw"][index] != AF_STATE_NEUTRAL
                 or columns["fuel_inhibit_mask"][index] != 0
                 or pulse[index] <= 0
+                or rpm[index] is None
             ):
                 continue
             window = bfs[index - hold : index + 1]
@@ -662,7 +704,7 @@ def audit_injection_chain(
                 calibration,
                 bfs[index],
                 columns["iat_raw"][index],
-                min(0xFF, columns["rpm_raw"][index] >> 1),
+                min(0xFF, rpm[index] >> 1),
             )
             reference = pulse_reference_raw(
                 calibration,

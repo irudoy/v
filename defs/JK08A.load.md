@@ -70,8 +70,8 @@ ffff1048..ffff1063 -> ffff102c..ffff1047
 Consequently `ffff102c` is the scheduler snapshot of `ffff1048`. The copy runs
 before periodic tasks produce the next `ffff1026` and `ffff1048` values. Maps
 executed in that scheduler pass consume `ffff102c`; the end-of-pass custom CAN
-snapshot contains the newly produced `ffff1026`. Telemetry profile 6 also
-carries `ffff102c` itself, the coordinate those maps consumed. A log of profile
+snapshot contains the newly produced `ffff1026`. Telemetry profiles 6 and 7
+also carry `ffff102c` itself, the coordinate those maps consumed. A log of profile
 5 or earlier reconstructs the map coordinate aligned with pass N from the
 contiguous BFS sample at pass N-1, and a missing telemetry tick breaks that
 reconstruction for the following sample.

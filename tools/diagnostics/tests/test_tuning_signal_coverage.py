@@ -2,6 +2,7 @@ from dataclasses import replace
 
 import pytest
 
+from patches import can_telemetry_profile
 from tools.diagnostics import sid22_inventory
 from tools.diagnostics import tuning_signal_coverage
 
@@ -13,9 +14,9 @@ def test_catalog_covers_every_current_tuning_field():
         for signal in catalog.signals
         for field in signal.current_fields
     }
-    assert owners["rpm_raw"] == "engine_speed"
+    assert owners["request_flow_raw"] == "requested_torque_column"
+    assert owners["alpha_n_flow_raw"] == "fuel_compensation_column"
     assert owners["normalized_load_raw"] == "normalized_load"
-    assert owners["ignition_timing_adjustment_raw"] == "ignition_control_state"
     assert owners["intake_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["exhaust_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["knock_count_latched"] == "knock_event_latches"
@@ -34,6 +35,22 @@ def test_catalog_separates_stream_coverage_from_external_measurement():
     assert catalog.by_id["physical_spark_angle"].coverage == "external"
 
 
+def test_catalog_signals_outside_the_stream_share_no_source_with_it():
+    catalog = tuning_signal_coverage.load_catalog()
+    manifest = can_telemetry_profile.load_manifest()
+    streamed = {field.source for field in manifest.fields} | {
+        field.source for context in manifest.contexts for field in context.fields
+    }
+    for signal_id, coverage in (
+        ("engine_speed", "stock-can"),
+        ("ignition_control_state", "absent"),
+    ):
+        signal = catalog.by_id[signal_id]
+        assert signal.coverage == coverage
+        assert signal.current_fields == ()
+        assert streamed.isdisjoint(signal.sources)
+
+
 def test_catalog_did_bindings_include_high_value_gaps():
     catalog = tuning_signal_coverage.load_catalog()
     assert catalog.by_id["front_af_sensor_words"].dids == (0x1225, 0x1226)
@@ -48,15 +65,15 @@ def test_catalog_did_bindings_include_high_value_gaps():
 
 def test_summary_has_stable_coverage_counts():
     report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
-    assert report["signal_count"] == 39
+    assert report["signal_count"] == 41
     assert report["rotating_rate_hz"] == 19.53125
     assert report["coverage"] == {
-        "absent": 4,
+        "absent": 5,
         "external": 1,
         "fixed": 19,
         "latched": 1,
         "rotating": 13,
-        "stock-can": 1,
+        "stock-can": 2,
     }
 
 

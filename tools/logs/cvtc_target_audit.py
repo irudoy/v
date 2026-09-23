@@ -66,7 +66,6 @@ INTAKE_ALTERNATE_WEIGHT_STEP = 16
 COOLANT_BANDS = ("cold", "blend", "warm")
 CVTC_INPUT_FIELDS = (
     "bfs_raw",
-    "rpm_raw",
     "coolant_raw",
     "knock_surface_state",
     "intake_cvtc_target_raw",
@@ -588,6 +587,9 @@ def _trace_samples(trace, profile: str, can_id: int, tick_divisor: int):
             continue
         if not all(name in model.raw for name in CVTC_INPUT_FIELDS):
             continue
+        rpm_raw = model.engine_speed_counts
+        if rpm_raw is None:
+            continue
         coolant_updated = model.updated_at["coolant_raw"]
         samples.append(
             CvtcSample(
@@ -595,7 +597,7 @@ def _trace_samples(trace, profile: str, can_id: int, tick_divisor: int):
                 run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
-                rpm_raw=model.raw["rpm_raw"],
+                rpm_raw=rpm_raw,
                 coolant_raw=model.raw["coolant_raw"],
                 coolant_age_ms=(timestamp - coolant_updated) * 1000,
                 knock_surface_state=model.raw["knock_surface_state"],
@@ -615,15 +617,22 @@ def is_mlg(path: Path) -> bool:
 
 
 def _raw_limits(profile: str) -> dict[str, tuple[int, int]]:
-    """Return the wire range of every fixed and context field of a profile."""
-    _document, profiles = can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)
+    """Return the wire range of every field a known profile carries.
+
+    A capture holds the fields of the profile ID it was made under, so the
+    ranges span the current profile and every retired one. A field name
+    states one quantity across IDs, and the current profile owns its own.
+    """
+    document, profiles = can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)
     try:
         selected = profiles[profile]
     except KeyError as error:
         raise ValueError(f"unknown telemetry profile {profile!r}") from error
-    fields = list(selected["fields"])
-    for context in selected.get("contexts", ()):
-        fields.extend(context["fields"])
+    fields = []
+    for version in (*document.get("retired_profiles", ()), selected):
+        fields.extend(version["fields"])
+        for context in version.get("contexts", ()):
+            fields.extend(context["fields"])
     limits = {}
     for field in fields:
         bits = 8 * field["width"]
@@ -653,6 +662,9 @@ def _recording_samples(recording, profile: str):
     columns = recording.columns
     required = ("elapsed", "schema_verified", "tick16", *CVTC_INPUT_FIELDS)
     missing = [name for name in required if name not in columns]
+    rpm = mlg_relation_audit.engine_speed_counts(recording)
+    if rpm is None:
+        missing.append("engine speed")
     if missing:
         raise ValueError(f"{recording.path}: MLG lacks {', '.join(missing)}")
     limits = _raw_limits(profile)
@@ -711,6 +723,8 @@ def _recording_samples(recording, profile: str):
             continue
         if any(math.isnan(columns[name][index]) for name in CVTC_INPUT_FIELDS):
             continue
+        if rpm[index] is None:
+            continue
         values = {name: raw(name, index) for name in CVTC_INPUT_FIELDS}
         samples.append(
             CvtcSample(
@@ -718,7 +732,7 @@ def _recording_samples(recording, profile: str):
                 run=run,
                 tick=tick,
                 bfs_raw=values["bfs_raw"],
-                rpm_raw=values["rpm_raw"],
+                rpm_raw=rpm[index],
                 coolant_raw=values["coolant_raw"],
                 coolant_age_ms=math.nan,
                 knock_surface_state=values["knock_surface_state"],

@@ -62,8 +62,8 @@ static size_t case_count;
 static uint8_t margin_snapshot[12];
 
 static const uint8_t configuration[16] = {
-    0x43, 0x54, 0x02, 0x01, 0x06, 0x0b, 0x01, 0x00,
-    0x06, 0xf0, 0xf1, 0x4e, 0x54, 0x45, 0x4c, 0x32,
+    0x43, 0x54, 0x02, 0x01, 0x07, 0x0b, 0x01, 0x00,
+    0x06, 0xf0, 0x64, 0x74, 0x54, 0x45, 0x4c, 0x32,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)
@@ -408,10 +408,10 @@ static void mutate_configuration(enum config_mutation mutation)
         config[4] = 0;
         break;
     case CONFIG_PROFILE_PREVIOUS:
-        config[4] = 5;
+        config[4] = 6;
         break;
     case CONFIG_PROFILE_HIGH:
-        config[4] = 7;
+        config[4] = 8;
         break;
     case CONFIG_PAGE_COUNT:
         config[5] = 10;
@@ -567,7 +567,7 @@ static int run_control_cases(void)
 
     count_case();
     reset_case();
-    rom_pointer(CONFIG)[4] = 5;
+    rom_pointer(CONFIG)[4] = 6;
     seed_control_command(start_command, 8);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
@@ -648,8 +648,8 @@ static int run_capture_cases(void)
     count_case();
     reset_case();
     (void)invoke_r4(CAPTURE, 0);
-    ram_pointer(0xffff11f4U)[0] = 0x12;
-    ram_pointer(0xffff11f4U)[1] = 0x34;
+    ram_pointer(0xffff1980U)[0] = 0x12;
+    ram_pointer(0xffff1980U)[1] = 0x34;
     (void)invoke_r4(CAPTURE, 0);
     state = ram_pointer(TELEMETRY_STATE);
     if (state[1] != 1 || state[0] != 1)
@@ -658,8 +658,8 @@ static int run_capture_cases(void)
         return 0;
 
     count_case();
-    ram_pointer(0xffff11f4U)[0] = 0xab;
-    ram_pointer(0xffff11f4U)[1] = 0xcd;
+    ram_pointer(0xffff1980U)[0] = 0xab;
+    ram_pointer(0xffff1980U)[1] = 0xcd;
     (void)invoke_r4(CAPTURE, 0);
     if (state[7] != 1 || state[14] != 1)
         return fail_value("latest-wins", "overrun", state[14], 1);

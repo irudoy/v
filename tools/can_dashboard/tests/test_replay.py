@@ -138,7 +138,7 @@ class RecordingReplayTest(unittest.TestCase):
         )
 
     def test_a_channel_of_an_earlier_name_replays_under_its_source(self):
-        bindings = recording.build_bindings("tuning")
+        bindings = recording.known_bindings("tuning")
         specs = tuple(
             replace(binding.spec, name="Timing state 564C")
             if binding.source == "ignition_timing_adjustment_raw"

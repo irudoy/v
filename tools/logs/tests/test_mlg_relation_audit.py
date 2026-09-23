@@ -26,7 +26,8 @@ def synthetic_values(calibration, index):
         knock = min(0, -307 + 13 * ((index - 110) // 10 + 1))
     values = {
         "rpm_raw": rpm,
-        "stock_rpm": rpm * 12.5 + (3.125 if index % 2 else -3.125),
+        # The stock engine-speed frame of the pass that wrote the coordinate.
+        "stock_rpm": rpm * 12.5,
         "maf_b1_raw": maf_b1,
         "maf_b2_raw": maf_b2,
         "maf_total_raw": total,
@@ -84,8 +85,14 @@ def chain_values(calibration, index):
     return values
 
 
-def write_synthetic_log(path, calibration, records=300, producer=synthetic_values):
-    bindings = recording.build_bindings("tuning")
+def write_synthetic_log(
+    path,
+    calibration,
+    records=300,
+    producer=synthetic_values,
+    bindings=None,
+):
+    bindings = recording.build_bindings("tuning") if bindings is None else bindings
     specs = [binding.spec for binding in bindings]
     with path.open("wb") as stream:
         writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
@@ -155,11 +162,10 @@ class MlgRelationAuditTest(unittest.TestCase):
             )
 
         self.assertEqual(result["record_count"], 300)
-        self.assertEqual(result["stock_rpm_pair_count"], 300)
-        self.assertAlmostEqual(
-            result["stock_rpm_mean_absolute_difference"], 3.125
-        )
-        self.assertEqual(result["stock_rpm_within_one_count_share"], 1.0)
+        # The current profile publishes no engine-speed coordinate, so every
+        # relation reads the count from the stock engine-speed channel and the
+        # comparison of the two publications reports nothing.
+        self.assertNotIn("stock_rpm_pair_count", result)
 
         self.assertEqual(result["intake_duty_b1_nonzero_pair_count"], 300)
         self.assertEqual(result["intake_duty_b1_monitor_minus_command_mean"], 0)
@@ -308,6 +314,51 @@ class MlgRelationAuditTest(unittest.TestCase):
         self.assertEqual(decoded.columns["stock_rpm"], [1000.0] * 4)
         summary = mlg_relation_audit.audit_stock_rpm(decoded)
         self.assertEqual(summary["stock_rpm_within_one_count_share"], 1.0)
+        self.assertEqual(summary["stock_rpm_reconstructs_coordinate_share"], 1.0)
+
+    def test_a_retired_recording_compares_the_stock_frame_with_the_coordinate(self):
+        # A retired profile records FFFF11F4 beside the stock engine-speed
+        # frame. A frame of a neighbouring pass reads one word count away from
+        # the coordinate, and a count below a coordinate boundary reconstructs
+        # the neighbouring coordinate.
+        def jittered(calibration, index):
+            values = synthetic_values(calibration, index)
+            values["stock_rpm"] += 3.125 if index % 2 else -3.125
+            return values
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "retired.mlg"
+            write_synthetic_log(
+                log,
+                self.calibration,
+                producer=jittered,
+                bindings=recording.known_bindings("tuning"),
+            )
+            decoded = mlg_relation_audit.read_recording(log)
+        result = mlg_relation_audit.audit_stock_rpm(decoded)
+
+        self.assertEqual(result["stock_rpm_pair_count"], 300)
+        self.assertAlmostEqual(
+            result["stock_rpm_mean_absolute_difference"], 3.125
+        )
+        self.assertEqual(result["stock_rpm_within_one_count_share"], 1.0)
+        self.assertEqual(result["stock_rpm_reconstructs_coordinate_share"], 0.5)
+        # The published coordinate takes precedence over the reconstruction.
+        self.assertEqual(
+            mlg_relation_audit.engine_speed_counts(decoded),
+            [int(value) for value in decoded.columns["rpm_raw"]],
+        )
+
+    def test_the_stock_frame_supplies_the_count_of_the_current_profile(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "current.mlg"
+            write_synthetic_log(log, self.calibration, records=20)
+            decoded = mlg_relation_audit.read_recording(log)
+        self.assertNotIn("rpm_raw", decoded.columns)
+        self.assertEqual(
+            mlg_relation_audit.engine_speed_counts(decoded),
+            [synthetic_values(self.calibration, index)["rpm_raw"] for index in range(20)],
+        )
 
     def test_toml_value_formatting(self):
         self.assertEqual(mlg_relation_audit.format_value(3), "3")

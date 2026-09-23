@@ -67,7 +67,7 @@ def current_bindings(
 ) -> dict[str, recording.FieldBinding]:
     return {
         match_key(binding.spec.name): binding
-        for binding in recording.build_bindings(profile, schema_path)
+        for binding in recording.known_bindings(profile, schema_path)
     }
 
 

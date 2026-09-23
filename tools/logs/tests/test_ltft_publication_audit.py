@@ -49,6 +49,7 @@ def synthetic_row(tick):
         published = NEUTRAL
     elif published_tick == OTHER_TICK:
         published = OTHER_WORD
+    rpm = HIGH_RPM_RAW if tick >= HIGH_RPM_TICK else CELL_RPM_RAW
     return {
         "tick16": tick,
         "schema_verified": 1,
@@ -61,7 +62,9 @@ def synthetic_row(tick):
         "stft_b1_raw": STFT,
         "stft_b2_raw": NEUTRAL,
         "bfs_raw": CELL_BFS,
-        "rpm_raw": HIGH_RPM_RAW if tick >= HIGH_RPM_TICK else CELL_RPM_RAW,
+        "rpm_raw": rpm,
+        # The stock engine-speed frame of the snapshot's pass.
+        "stock_rpm": rpm * 12.5,
         "gear_raw": audit.GEAR_D if tick < 140 else audit.GEAR_P,
         "vehicle_speed_kmh": 90.0 if tick < 140 else 0.0,
         "fuel_inhibit_mask": (
@@ -98,6 +101,7 @@ def write_log(path):
 
 def snapshots_from(rows):
     columns = {name: [row.get(name) for row in rows] for name in audit.COLUMNS}
+    columns["rpm_raw"] = [row.get("rpm_raw") for row in rows]
     columns["elapsed"] = [
         (row["tick16"] - FIRST_TICK) * audit.TICK_SECONDS for row in rows
     ]

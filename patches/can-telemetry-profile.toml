@@ -31,7 +31,7 @@ state_address = 0xFFFF5E00
 
 [[profile]]
 name = "tuning"
-id = 6
+id = 7
 page_count = 11
 
 [[field]]
@@ -46,15 +46,15 @@ signed = false
 scale = "base scheduler ticks"
 
 [[field]]
-name = "rpm_raw"
+name = "request_flow_raw"
 page = 0
 offset = 3
 width = 2
-source = 0xFFFF11F4
+source = 0xFFFF1980
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 12.5 RPM"
+scale = "raw column coordinate of the requested-torque conversion surfaces"
 
 [[field]]
 name = "final_timing_raw"
@@ -559,7 +559,7 @@ scale = "raw * 39 / 100 percent"
 [[context]]
 page = 9
 tag = 2
-name = "long_fuel_trim_map_index_timing"
+name = "long_fuel_trim_map_index_flow"
 
 [[context.field]]
 name = "ltft_b1_raw"
@@ -586,12 +586,12 @@ signed = false
 scale = "raw + 1 map number; 0 through 4 select Maps 1 through 5, and any other value selects Map 1"
 
 [[context.field]]
-name = "ignition_timing_adjustment_raw"
+name = "alpha_n_flow_raw"
 width = 1
-source = 0xFFFF564C
+source = 0xFFFF1170
 kind = "ecu_ram"
-signed = true
-scale = "raw deg added to the final timing coordinate, bounded -5..0"
+signed = false
+scale = "raw column coordinate of Fuel Compensation Main"
 
 [[context]]
 page = 9

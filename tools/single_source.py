@@ -43,6 +43,7 @@ COMPOSE = "tools/memgraph/docker-compose.yml"
 EXPORT_OWNER = "tools/rom_sources.py"
 PRODUCT_OWNER = "tools/can_dashboard/__init__.py"
 TELEMETRY_PROFILE = "patches/can-telemetry-profile.toml"
+RETIRED_PROFILES = "patches/can-telemetry-retired-profiles.json"
 IMAGE_REGISTRY = "rom-images/roms.csv"
 IDENTITY_REGISTRY = "defs/rom-identities.toml"
 HOMOLOGY_REGISTRY = "rom-images/homology.toml"
@@ -286,6 +287,25 @@ def _profile_slots():
     return slots
 
 
+def _retired_declarations():
+    """Return the scale and slot of every field a retired profile carries.
+
+    The model reads a renamed slot of a retired profile under its current
+    name, so the declaration joins that name.
+    """
+    declarations = {}
+    for profile in can_telemetry_profile.load_manifest().retired_profiles:
+        fields = (
+            *profile["fields"],
+            *(field for context in profile["contexts"] for field in context["fields"]),
+        )
+        for field in fields:
+            declarations.setdefault(model.current_field_name(field["name"]), set()).add(
+                (field["scale"], field["width"], field["signed"], RETIRED_PROFILES)
+            )
+    return declarations
+
+
 def check_conversions():
     """Require every host conversion to be the one the profile declares."""
     decoder = can_telemetry.RAW_CALIBRATIONS
@@ -297,52 +317,71 @@ def check_conversions():
         )
     scales = _profile_scales()
     slots = _profile_slots()
+    retired = _retired_declarations()
     for name, calibration in sorted({**decoder, **dashboard}.items()):
-        if len(scales.get(name, ())) != 1 or len(slots.get(name, ())) != 1:
-            raise SourceError(
-                f"the host converts {name}, which {TELEMETRY_PROFILE} does not "
-                "declare with one scale"
-            )
-        (scale,) = scales[name]
-        ((width, signed),) = slots[name]
-        declared = declared_conversion(scale)
-        if declared is None:
-            raise SourceError(
-                f"the host converts {name}, whose scale {scale!r} declares no "
-                "numeric conversion"
-            )
-        factor, offset = declared
-        if not (
-            math.isclose(calibration.factor, factor, rel_tol=1e-12)
-            and math.isclose(calibration.offset, offset, abs_tol=1e-12)
-        ):
-            raise SourceError(
-                f"the host converts {name} as raw * {calibration.factor} + "
-                f"{calibration.offset}, {TELEMETRY_PROFILE} declares {scale!r}"
-            )
-        signed_view = declares_signed_view(scale)
-        if signed_view and signed:
-            raise SourceError(
-                f"{TELEMETRY_PROFILE} declares a signed view of {name}, whose "
-                "slot is already signed"
-            )
-        # Sign extension leaves the value of a signed slot unchanged, and a
-        # retired profile or an earlier MLG file can carry the same slot
-        # unsigned, so a signed slot accepts both readings.
-        if signed_view:
-            allowed = {8 * width}
-        elif signed:
-            allowed = {0, 8 * width}
+        if name in scales or name in slots:
+            if len(scales.get(name, ())) != 1 or len(slots.get(name, ())) != 1:
+                raise SourceError(
+                    f"the host converts {name}, which {TELEMETRY_PROFILE} does "
+                    "not declare with one scale"
+                )
+            (scale,) = scales[name]
+            ((width, signed),) = slots[name]
+            declarations = {(scale, width, signed, TELEMETRY_PROFILE)}
+        elif name in retired:
+            # The host converts a field the current profile no longer carries
+            # for the recordings of the retired profiles that carried it, so
+            # every frozen declaration of the field binds the conversion.
+            declarations = retired[name]
         else:
-            allowed = {0}
-        if calibration.signed_bits not in allowed:
             raise SourceError(
-                f"the host reads {name} with signed_bits "
-                f"{calibration.signed_bits}, {TELEMETRY_PROFILE} declares "
-                f"{scale!r} on a {'signed' if signed else 'unsigned'} "
-                f"{8 * width}-bit slot"
+                f"the host converts {name}, which neither {TELEMETRY_PROFILE} "
+                "nor a retired profile declares"
             )
+        for declaration in sorted(declarations):
+            _check_conversion(name, calibration, *declaration)
     return len(decoder) + len(dashboard)
+
+
+def _check_conversion(name, calibration, scale, width, signed, owner):
+    """Require one host conversion to equal one declared scale and slot."""
+    declared = declared_conversion(scale)
+    if declared is None:
+        raise SourceError(
+            f"the host converts {name}, whose scale {scale!r} declares no "
+            "numeric conversion"
+        )
+    factor, offset = declared
+    if not (
+        math.isclose(calibration.factor, factor, rel_tol=1e-12)
+        and math.isclose(calibration.offset, offset, abs_tol=1e-12)
+    ):
+        raise SourceError(
+            f"the host converts {name} as raw * {calibration.factor} + "
+            f"{calibration.offset}, {owner} declares {scale!r}"
+        )
+    signed_view = declares_signed_view(scale)
+    if signed_view and signed:
+        raise SourceError(
+            f"{owner} declares a signed view of {name}, whose slot is "
+            "already signed"
+        )
+    # Sign extension leaves the value of a signed slot unchanged, and a
+    # retired profile or an earlier MLG file can carry the same slot
+    # unsigned, so a signed slot accepts both readings.
+    if signed_view:
+        allowed = {8 * width}
+    elif signed:
+        allowed = {0, 8 * width}
+    else:
+        allowed = {0}
+    if calibration.signed_bits not in allowed:
+        raise SourceError(
+            f"the host reads {name} with signed_bits "
+            f"{calibration.signed_bits}, {owner} declares "
+            f"{scale!r} on a {'signed' if signed else 'unsigned'} "
+            f"{8 * width}-bit slot"
+        )
 
 
 def _image_rows():
@@ -503,12 +542,17 @@ class Sources:
         self.protocol = manifest.protocol_version
         tuning = manifest.profile_by_name["tuning"]
         self.identity = (tuning.profile_id, tuning.crc16)
-        # The documents name the retired ID the host decodes beside the
-        # current one; a second retired ID needs its own statements.
-        (self.retired,) = (
-            (row["id"], int(row["crc16_ccitt_false"], 16))
-            for row in manifest.retired_profiles
-            if row["name"] == "tuning"
+        # The documents name every retired ID the host decodes beside the
+        # current one, newest first.
+        self.retired = tuple(
+            sorted(
+                (
+                    (row["id"], int(row["crc16_ccitt_false"], 16))
+                    for row in manifest.retired_profiles
+                    if row["name"] == "tuning"
+                ),
+                reverse=True,
+            )
         )
         self.bindings = len(recording.build_bindings("tuning"))
         roms = (dtc_projection.SOURCE_ROM, *dtc_projection.PROJECTED_ROMS)
@@ -544,6 +588,13 @@ class Sources:
     def bound(self, rom):
         return len(self.profiles[rom].telemetry_sources)
 
+    def unavailable(self, roms):
+        """Return the one unavailable telemetry field count the ROMs share."""
+        counts = {len(self.profiles[rom].telemetry_unavailable) for rom in roms}
+        if len(counts) != 1:
+            raise SourceError(f"{sorted(roms)} leave different field counts unavailable")
+        return counts.pop()
+
     def did_confirmed(self, rom):
         """Count the telemetry cells the target DID pointer table confirms."""
         rows = csv.DictReader(io.StringIO(_text(CORRESPONDENCE[rom])))
@@ -570,6 +621,7 @@ def published_facts(sources=None):
     supported = runtime_targets.SUPPORTED_ROMS
     me_tables, nd_tables = s.tables["1ME3B"], s.tables["1ND0A"]
     shared = s.shared_codes("1ME3B", "1ND0A")
+    retired = tuple(value for identity in s.retired for value in identity)
     adapters = sum("adapter" in family for family in s.layout_families)
     canonical = _toml(HOMOLOGY_REGISTRY)["family"][runtime_targets.EXACT_FAMILY][
         "canonical"
@@ -586,6 +638,20 @@ def published_facts(sources=None):
         Fact(matrix, r"\| JK78C \| [^|]+ \| {n} families \|", (s.switched(jk78),)),
         Fact(matrix, r"\| `1ND` \| [^|]+ \| {n} families", (s.switched(nd),)),
         Fact(matrix, r"\| `1ME3B` \| [^|]+ \| {n} families", (s.switched(me),)),
+        *(
+            Fact(
+                matrix,
+                rf"\| {label} \|(?: [^|]+ \|){{3}} Schema 2, mailbox \d+; "
+                r"{n} fields unavailable \|",
+                (s.unavailable(roms),),
+            )
+            for label, roms in (
+                ("`8MFK`", eight),
+                ("JK78C", jk78),
+                ("`1ND`", nd),
+                ("`1ME3B`", me),
+            )
+        ),
         Fact(
             matrix,
             r"its registries hold {n} codes rather than {n},",
@@ -689,6 +755,11 @@ def published_facts(sources=None):
         ),
         Fact(
             builder,
+            r"JK00C and JK00D telemetry binds {n} of the {n} ECU-RAM fields",
+            (s.ecu_fields - s.unavailable(eight), s.ecu_fields),
+        ),
+        Fact(
+            builder,
             r"The 1ND address profile binds {n} switched families",
             (s.switched(nd),),
         ),
@@ -783,8 +854,10 @@ def published_facts(sources=None):
         Fact(
             "tools/can_dashboard/README.md",
             r"The bundled schema declares profile ID {n} with CRC16 `{a}` and "
-            r"keeps the frozen contract of retired profile {n} with CRC16 `{a}`",
-            (*s.identity, *s.retired),
+            r"keeps the frozen contracts of retired profiles "
+            + " and ".join([r"{n} with CRC16 `{a}`"] * len(s.retired))
+            + ", so",
+            (*s.identity, *retired),
         ),
         Fact(
             telemetry,
@@ -800,8 +873,10 @@ def published_facts(sources=None):
             telemetry,
             r"reports version {n} and a profile ID with the CRC that the host "
             r"schema declares for it: current profile {n} with CRC `{a}`, or "
-            r"retired profile {n} with CRC `{a}`",
-            (s.protocol, *s.identity, *s.retired),
+            r"a retired profile with the CRC frozen for its ID, "
+            + " and ".join([r"profile {n} with CRC `{a}`"] * len(s.retired))
+            + ", whose",
+            (s.protocol, *s.identity, *retired),
         ),
         Fact(
             telemetry,

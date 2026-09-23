@@ -154,6 +154,11 @@ def scenario():
     return rows
 
 
+def stock_rpm(row):
+    """The stock engine-speed value of the pass that wrote the row's word."""
+    return row["rpm_raw"] * 12.5
+
+
 def capture_from(rows):
     samples = tuple(
         audit.Sample(
@@ -162,6 +167,9 @@ def capture_from(rows):
             dashboard=row["dashboard_state_raw"],
             speed_kmh=row["vehicle_speed_kmh"],
             coolant_raw=row["coolant_raw"],
+            rpm_raw=row["rpm_raw"],
+            rpm_low=row["rpm_raw"],
+            rpm_high=row["rpm_raw"],
             **{name: row[name] for name in audit.TELEMETRY_SOURCES},
         )
         for index, row in enumerate(rows)
@@ -169,8 +177,7 @@ def capture_from(rows):
     return audit.Capture(Path("synthetic.mlg"), "0" * 64, samples)
 
 
-def write_log(path, rows):
-    bindings = recording.build_bindings("tuning")
+def write_log(path, rows, bindings):
     specs = [binding.spec for binding in bindings]
     with Path(path).open("wb") as stream:
         writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
@@ -187,6 +194,8 @@ def write_log(path, rows):
                         row.append(index + 1)
                     elif binding.source == "schema_verified":
                         row.append(1)
+                    elif binding.source == "stock_rpm":
+                        row.append(stock_rpm(values))
                     else:
                         row.append(values.get(binding.source, 0))
                 writer.write(row, index * model.BASE_TICK_SECONDS)
@@ -203,7 +212,10 @@ class ScenarioGenerator(model.DemoGenerator):
 
     def context_frames(self, elapsed):
         values = self.rows[self.index]
-        frames = []
+        # The stock engine-speed frame follows the previous group.
+        rpm = bytearray(8)
+        rpm[0:2] = round(stock_rpm(values) * 8).to_bytes(2, "big")
+        frames = [model.FrameRecord(model.STOCK_RPM_ID, bytes(rpm), elapsed)]
         for can_id, offset, name in CONTEXT_FRAMES:
             payload = bytearray(8)
             payload[offset] = values[name]
@@ -248,14 +260,21 @@ class RollingLaunchAuditTest(unittest.TestCase):
         root = Path(cls.directory.name)
         cls.image = root / "image.bin"
         cls.log = root / "capture.mlg"
+        cls.stock_log = root / "stock.mlg"
         cls.trace = root / "capture.trc"
         cls.rows = scenario()
         write_image(cls.image)
-        write_log(cls.log, cls.rows)
+        # A recording of a retired profile carries the published coordinate;
+        # one of the current profile leaves engine speed to the stock frame.
+        write_log(cls.log, cls.rows, recording.known_bindings("tuning"))
+        write_log(cls.stock_log, cls.rows, recording.build_bindings("tuning"))
         write_trace(cls.trace, cls.rows)
         cls.calibration = audit.load_calibration(cls.image)
         cls.result = audit.audit_capture(
             audit.read_mlg(cls.log), cls.calibration, selected_map=SELECTED_MAP
+        )
+        cls.stock_result = audit.audit_capture(
+            audit.read_mlg(cls.stock_log), cls.calibration, selected_map=SELECTED_MAP
         )
 
     @classmethod
@@ -476,7 +495,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
         self.assertEqual(result["trace_gesture_tap_count"], 0)
         self.assertEqual(result["trace_hold_count"], 4)
         self.assertEqual(
-            result["trace_hold_start_seconds"], [1.41, 3.048, 3.662, 5.096]
+            result["trace_hold_start_seconds"], [1.41, 3.048, 3.663, 5.096]
         )
         self.assertEqual(result["trace_hold_seconds"], [0.44, 0.307, 0.061, 0.205])
         self.assertEqual(result["trace_hold_active_frames"], [45, 36, 0, 29])
@@ -515,7 +534,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
 
     def test_trace_replay_yields_the_recorded_snapshots(self):
         trace = audit.read_trc(self.trace)
-        log = audit.read_mlg(self.log)
+        log = audit.read_mlg(self.stock_log)
         by_tick = {sample.tick: sample for sample in log.samples}
         self.assertGreater(len(trace.samples), RECORDS - 10)
         for sample in trace.samples:
@@ -524,13 +543,79 @@ class RollingLaunchAuditTest(unittest.TestCase):
             trace, self.calibration, selected_map=SELECTED_MAP
         )
         lead = (trace.samples[0].tick - log.samples[0].tick) * 0.01024
-        for key, value in self.result.items():
+        for key, value in self.stock_result.items():
             if key == "activation_start_seconds":
                 self.assertEqual(
                     result[key], [round(start - lead, 3) for start in value]
                 )
             elif key.startswith("activation_"):
                 self.assertEqual(result[key], value, key)
+
+    def test_stock_frame_bounds_each_word_by_the_frames_around_its_snapshot(self):
+        published = audit.read_mlg(self.log)
+        stock = audit.read_mlg(self.stock_log)
+        self.assertEqual(published.engine_speed_source, audit.PUBLISHED_SPEED_SOURCE)
+        self.assertEqual(stock.engine_speed_source, audit.STOCK_SPEED_SOURCE)
+        for sample in published.samples:
+            self.assertEqual((sample.rpm_low, sample.rpm_high), (sample.rpm_raw,) * 2)
+        margin = audit.STOCK_RPM_MARGIN
+        for sample, after in zip(stock.samples, [*stock.samples[1:], None]):
+            words = [sample.rpm_raw] + ([after.rpm_raw] if after else [])
+            self.assertEqual(sample.rpm_low, min(words) - margin)
+            self.assertEqual(sample.rpm_high, max(words) + margin)
+        # A reader told to take the stock frame ignores a published coordinate.
+        forced = audit.read_mlg(self.log, stock_speed=True)
+        self.assertEqual(forced.engine_speed_source, audit.STOCK_SPEED_SOURCE)
+        self.assertEqual(forced.samples, stock.samples)
+
+    def test_stock_frame_figures_span_the_published_figures(self):
+        published = self.result
+        stock = self.stock_result
+        widened = {
+            "activation_rpm_range",
+            "activation_captured_rpm_native",
+            "activation_captured_rpm",
+            "activation_cut_rpm",
+            "activation_restore_rpm",
+            "activation_capture_records",
+            "activation_full_mask_rpm",
+            "activation_exit_records",
+            "activation_active_ticks_bound",
+            "activation_release_exit_bound_ms",
+        }
+        for key in widened:
+            for outer, inner in zip(stock[key], published[key]):
+                with self.subTest(key=key):
+                    self.assertTrue(
+                        not outer
+                        or bool(inner)
+                        and outer[0] <= inner[0]
+                        and inner[-1] <= outer[-1],
+                        (outer, inner),
+                    )
+        margin = audit.STOCK_RPM_MARGIN
+        self.assertEqual(
+            stock["activation_captured_rpm_native"],
+            [
+                [low - margin, high + margin]
+                for low, high in published["activation_captured_rpm_native"]
+            ],
+        )
+        # The widened words no longer prove that the removal of the window
+        # clears the first mask.
+        self.assertEqual(
+            stock["activation_release_clear_by_window_removal"], [False] * 3
+        )
+        exempt = widened | {
+            "capture_name",
+            "capture_sha256",
+            "engine_speed_source",
+            "activation_release_clear_by_window_removal",
+        }
+        for key, value in published.items():
+            if key not in exempt:
+                with self.subTest(key=key):
+                    self.assertEqual(stock[key], value)
 
     def test_command_line_prints_one_assignment_per_figure(self):
         output = io.StringIO()

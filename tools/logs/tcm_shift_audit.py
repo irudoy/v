@@ -70,7 +70,6 @@ LIMITED_ID = 0x160
 SELECTOR_ID = 0x421
 TCM_GROUP_MS = 2.0
 SNAPSHOT_FIELDS = (
-    "rpm_raw",
     "app1_raw",
     "engine_torque_state_raw",
     "throttle_request_bounded_raw",
@@ -598,6 +597,9 @@ def read_trc(
             continue
         if any(name not in model.raw for name in SNAPSHOT_FIELDS):
             continue
+        rpm_raw = model.engine_speed_counts
+        if rpm_raw is None:
+            continue
         if run is None:
             run = snapshot.run
         elif snapshot.run != run:
@@ -607,7 +609,7 @@ def read_trc(
             Snapshot(
                 tick=snapshot.unwrapped_tick,
                 first_page_s=group_start,
-                rpm_raw=int(raw["rpm_raw"]),
+                rpm_raw=rpm_raw,
                 app1_raw=int(raw["app1_raw"]),
                 torque_state_raw=int(raw["engine_torque_state_raw"]),
                 request_raw=int(raw["throttle_request_bounded_raw"]),

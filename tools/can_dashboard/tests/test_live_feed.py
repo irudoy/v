@@ -14,7 +14,10 @@ def verified_model():
     dashboard = model.DashboardModel("tuning", 0x6F0, 1)
     for tick in range(1, 9):
         timestamp = tick * model.BASE_TICK_SECONDS
-        for index, frame in enumerate(generator.group(tick, timestamp)):
+        frames = generator.group(tick, timestamp) + generator.stock_context(
+            tick, timestamp
+        )
+        for index, frame in enumerate(frames):
             dashboard.process_frame(frame, now=timestamp + index * 0.00025)
     assert dashboard.schema_verified
     return dashboard
@@ -31,6 +34,9 @@ class ChannelTableTest(unittest.TestCase):
             for calibration in table.values()
         }
         for channel in live_feed.CHANNELS:
+            if channel.source in live_feed.STOCK_FRAME_SOURCES:
+                self.assertTrue(hasattr(model.DashboardModel(), channel.source))
+                continue
             self.assertIn(channel.source, targets)
 
     def test_keys_and_logger_ids_are_unique_wire_safe_tokens(self):
@@ -97,7 +103,7 @@ class FeedValuesTest(unittest.TestCase):
         self.assertEqual(
             list(values), [channel.key for channel in live_feed.CHANNELS]
         )
-        self.assertEqual(values["rpm"], dashboard.raw["rpm_raw"] * 12.5)
+        self.assertEqual(values["rpm"], dashboard.stock_rpm)
         self.assertEqual(
             values["load"], dashboard.raw["normalized_load_raw"] * 100 / 128
         )
@@ -111,7 +117,7 @@ class FeedValuesTest(unittest.TestCase):
 
     def test_missing_and_non_finite_values_are_left_out(self):
         dashboard = verified_model()
-        dashboard.engineering["rpm"] = math.nan
+        dashboard.stock_rpm = math.nan
         del dashboard.engineering["coolant_deg_c"]
         values = live_feed.feed_values(dashboard)
         for key in ("rpm", "coolant_c"):
@@ -161,7 +167,7 @@ class LiveFeedTest(unittest.TestCase):
         self.assertEqual(tokens[0], live_feed.MAGIC)
         received = dict(token.split("=") for token in tokens[1:])
         self.assertEqual(
-            float(received["rpm"]), dashboard.raw["rpm_raw"] * 12.5
+            float(received["rpm"]), dashboard.stock_rpm
         )
         self.assertEqual(
             round(float(received["bfs_ms"]) * 2048), dashboard.raw["bfs_raw"]

@@ -166,8 +166,11 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
         )
         if snapshot is None or not model.schema_verified:
             continue
-        required = ("bfs_raw", "rpm_raw", "calculated_load_raw")
+        required = ("bfs_raw", "calculated_load_raw")
         if not all(name in model.raw for name in required):
+            continue
+        rpm_raw = model.engine_speed_counts
+        if rpm_raw is None:
             continue
         samples.append(
             LoadSample(
@@ -175,7 +178,7 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
                 run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
-                rpm_raw=model.raw["rpm_raw"],
+                rpm_raw=rpm_raw,
                 calculated_load_raw=model.raw["calculated_load_raw"],
             )
         )

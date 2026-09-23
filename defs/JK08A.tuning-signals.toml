@@ -17,13 +17,13 @@ id = "engine_speed"
 domain = "engine"
 label = "Engine speed"
 priority = "core"
-coverage = "fixed"
-current_fields = ["rpm_raw"]
+coverage = "stock-can"
+current_fields = []
 sources = [0xFFFF11F4]
 widths = [2]
 dids = [0x1201]
 evidence = "exact-code"
-note = "The custom stream carries the exact RPM/12.5 word every scheduler pass; stock CAN 0x180 carries the same event-interval engine speed 0xFFFF1196 at 3.125 RPM per count in its own transmit slot, so it cross-checks the stock transmit path rather than measuring the speed independently."
+note = "FUN 000384FE writes 0xFFFF11EE = 0xFFFF1196 >> 4 and the RPM/12.5 coordinate 0xFFFF11F4 = 0xFFFF1196 >> 6 in one pass, and FUN 000C577A serializes stock CAN 0x180 bytes 0..1 as sat_u16(0xFFFF11EE * 25), so (word // 25) >> 2 of the frame word is the coordinate while the product does not saturate, below 8193.75 RPM. The frame is sampled at another instant of the scheduler cycle than a snapshot; registry entry can_telemetry.stock_speed_bracket_2026_09_22 bounds the difference, and the custom stream does not carry the coordinate."
 
 [[signal]]
 id = "airflow_banks"
@@ -199,13 +199,13 @@ id = "ignition_control_state"
 domain = "ignition"
 label = "Ignition control state"
 priority = "high"
-coverage = "rotating"
-current_fields = ["ignition_timing_adjustment_raw"]
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF2023, 0xFFFF564C]
 widths = [1, 1]
 dids = [0x1162, 0x112D]
 evidence = "exact-code"
-note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is the work-support ignition-timing adjustment TARGET IGN TIM ADJ of JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window; the profile declares its slot signed."
+note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is the work-support ignition-timing adjustment TARGET IGN TIM ADJ of JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window. Only the service-0x3B adjustment changes it, and every recording reads 0, so it is not streamed; DID 0x112D publishes it."
 
 [[signal]]
 id = "knock_control_state"
@@ -403,6 +403,19 @@ evidence = "exact-code"
 note = "The bounded shared request, shared target area, and two final channel targets close the command side of the electronic-throttle loop. The request is the output of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. The shared target is the opening area of both throttle bodies in the counts of table 0x13202, candidate 0.0008 cm2 per count. Each channel target is 4 * (TPS counts - learned closed position), so raw/800 V is the target sensor voltage above the learned closed position; the target is the coordinate of throttle opening table 0x155A0, whose J1979 PID 0x11 gradient makes one count 34285/1114112 percent of throttle opening, and recordings bind channel 0 to bank 1."
 
 [[signal]]
+id = "requested_torque_column"
+domain = "torque"
+label = "Requested-torque surface column coordinate"
+priority = "core"
+coverage = "fixed"
+current_fields = ["request_flow_raw"]
+sources = [0xFFFF1980]
+widths = [2]
+dids = []
+evidence = "exact-code"
+note = "FUN 00073948 interpolates curve 0x15690 over axis 0x15500 at area-over-speed coordinate 0xFFFF1824, 8192 * 0xFFFF12A0 / RPM, while that coordinate does not exceed ROM16[0x1553E] = 45187, and curve 0x156D0 over axis 0x15540 at min(0xFFFF, 0xFFFF1824 >> 4) above it, and passes the result as the column input of requested-torque surface 0xE98E with row 0xFFFF1702. FUN 000730FC arbitrates the forward coordinate with inverse coordinate 0xFFFF198A. No service-0x22 DID publishes the word."
+
+[[signal]]
 id = "engine_torque_state"
 domain = "torque"
 label = "Engine torque state"
@@ -440,6 +453,19 @@ widths = [2, 2, 2, 2]
 dids = [0x122D, 0x122E, 0x122F, 0x1230]
 evidence = "exact-code"
 note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
+
+[[signal]]
+id = "fuel_compensation_column"
+domain = "fuel"
+label = "Fuel Compensation Main column coordinate"
+priority = "high"
+coverage = "rotating"
+current_fields = ["alpha_n_flow_raw"]
+sources = [0xFFFF1170]
+widths = [1]
+dids = []
+evidence = "exact-code"
+note = "FUN 0003B498 forms u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) + (0xFFFF120E * 0xFFFF114E >> 11)), about 3522 * (throttle opening area + inflow area / 4) / RPM, and writes the high byte of curve 0x15042 at 4 * u while u < 0x3C00 and of curve 0x15022 at u - 0x3C00 otherwise. FUN 0002C648 and FUN 0003BE3C pass the byte as the column input of Fuel Compensation Map 0xA29A. No service-0x22 DID publishes it."
 
 [[signal]]
 id = "injection_end_angle"

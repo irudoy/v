@@ -157,7 +157,7 @@ class MlgRestampTest(unittest.TestCase):
             )
             if binding.spec.name in raw_view
             else binding.spec
-            for binding in recording.build_bindings("tuning")
+            for binding in recording.known_bindings("tuning")
         )
         position = {spec.name: index for index, spec in enumerate(specs)}
         with tempfile.TemporaryDirectory() as directory:
@@ -174,8 +174,9 @@ class MlgRestampTest(unittest.TestCase):
 
             summary = mlg_restamp.restamp(log)
 
+            # A retired channel follows the channels of the current profile.
             self.assertEqual(
-                summary.unsigned, ("Timing adjustment", "A/F adjustment B1")
+                summary.unsigned, ("A/F adjustment B1", "Timing adjustment")
             )
             fields = {field.name: field for field in mlvlg.read_fields(log)}
             for name in ("Timing adjustment", "A/F adjustment B1"):
@@ -188,7 +189,7 @@ class MlgRestampTest(unittest.TestCase):
 
     def test_signed_records_take_the_current_descriptor(self):
         specs = tuple(
-            binding.spec for binding in recording.build_bindings("tuning")
+            binding.spec for binding in recording.known_bindings("tuning")
         )
         position = {spec.name: index for index, spec in enumerate(specs)}
         with tempfile.TemporaryDirectory() as directory:
@@ -210,7 +211,7 @@ class MlgRestampTest(unittest.TestCase):
             replace(binding.spec, name="Timing state 564C")
             if binding.source == "ignition_timing_adjustment_raw"
             else binding.spec
-            for binding in recording.build_bindings("tuning")
+            for binding in recording.known_bindings("tuning")
         )
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "earlier.mlg"

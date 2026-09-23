@@ -1,6 +1,7 @@
 import csv
 from fractions import Fraction
 import hashlib
+import json
 from pathlib import Path
 import re
 import tomllib
@@ -12,7 +13,8 @@ from tools.logs import cvtc_target_audit, mlg_relation_audit
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-PROFILE = ROOT / "patches" / "can-telemetry-profile.toml"
+SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
+VARS = ROOT / "defs" / "JK08A.vars.csv"
 CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
@@ -22,6 +24,10 @@ KEY = "can_telemetry.cvtc_cold_start_2026_09_22"
 STATIONARY_KEY = "can_telemetry.cvtc_cold_start_2026_09_21"
 SESSION = "schema2_profile5_drive_2026_09_22"
 CAPTURES = "schema2_profile5_captures_2026_09_22"
+# The drive records profile 5, whose frozen contract states the rpm_raw slot,
+# and FFFF11F4 is the RPM/12.5 coordinate that slot carried.
+RECORDED_PROFILE_ID = 5
+RPM_SOURCE = 0xFFFF11F4
 # FUN_000BD170 through FUN_000BDF5C occupy 0xBD170..0xBE121; the next
 # function starts at 0xBE122, and their last literal ends at 0xBE217.
 CODE_START = 0xBD170
@@ -92,11 +98,22 @@ def _lookup(registry, dotted):
     return node
 
 
-def _field(name):
-    with PROFILE.open("rb") as source:
-        profile = tomllib.load(source)
-    (field,) = [row for row in profile["field"] if row["name"] == name]
+def _recorded_field(name):
+    """Return a field of the retired profile the drive was recorded under."""
+    document = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    (profile,) = [
+        row
+        for row in document["retired_profiles"]
+        if row["id"] == RECORDED_PROFILE_ID
+    ]
+    (field,) = [row for row in profile["fields"] if row["name"] == name]
     return field
+
+
+def _vars_row(address):
+    with VARS.open(newline="", encoding="utf-8") as source:
+        (row,) = [row for row in csv.DictReader(source) if row["addr"] == f"{address:08x}"]
+    return row
 
 
 def _counts(errors):
@@ -384,13 +401,15 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
         self.assertIn(
             f"holds {result['record_count']:,} records, all of them snapshots", text
         )
-        rpm = _field("rpm_raw")
+        rpm = _recorded_field("rpm_raw")
         scale = re.fullmatch(r"raw \* ([0-9.]+) RPM", rpm["scale"])
+        self.assertEqual(_vars_row(RPM_SOURCE)["units"], "rpm/12.5")
+        self.assertEqual(Fraction(scale.group(1)), Fraction(25, 2))
         first_rpm = Fraction(scale.group(1)) * result["first_record_rpm_raw"]
         self.assertEqual(first_rpm.denominator, 1)
         self.assertIn(
             f"its first snapshot carries {int(first_rpm):,} RPM "
-            f"(`0x{rpm['source']:08X}` = {result['first_record_rpm_raw']})",
+            f"(`0x{RPM_SOURCE:08X}` = {result['first_record_rpm_raw']})",
             text,
         )
         low, high = result["coolant_raw_range"]

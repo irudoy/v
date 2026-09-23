@@ -281,12 +281,23 @@ class MlgCalibrationGateTest(unittest.TestCase):
         self.bindings = recording.build_bindings("tuning")
 
     def test_every_declared_calibration_reaches_a_recorded_channel(self):
+        # A calibration converts one field of a known profile. A recording of
+        # a retired ID replays under the current field names, so the declared
+        # set spans the current profile and every retired one, and every
+        # current field that a calibration names reaches a channel.
+        dashboard = model.DashboardModel()
+        current = set(model.profile_field_names(dashboard.decoder.profile))
+        known = set(current)
+        for version in dashboard.decoder.versions.values():
+            known.update(model.profile_field_names(version))
+        declared = set(recording.MLG_CALIBRATIONS)
         calibrated = {
             binding.source
             for binding in self.bindings
-            if binding.source in recording.MLG_CALIBRATIONS
+            if binding.source in declared
         }
-        self.assertEqual(calibrated, set(recording.MLG_CALIBRATIONS))
+        self.assertEqual(calibrated, declared & current)
+        self.assertLessEqual(declared, known)
 
     def test_channel_values_equal_dashboard_engineering_values(self):
         for binding in self.bindings:

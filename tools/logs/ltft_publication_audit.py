@@ -24,7 +24,9 @@ Learning is counted as a change of the learned word between tag-0 refreshes
 five snapshots apart. The audit replays the FUN 0005796C cell selector from
 the captured Base Fuel Schedule word and the RPM/12.5 word, whose right shift
 by two equals the selector's engine-speed byte, and counts the changes inside
-one replayed cell visit. A single FUN 00057D1E update cannot exceed the
+one replayed cell visit. A recording of a profile that publishes no RPM/12.5
+word takes it from the stock engine-speed frame, which carries the word it is
+a shift of. A single FUN 00057D1E update cannot exceed the
 largest captured STFT deviation times the largest gain divided by 256, so a
 larger in-visit change marks a cell switch that the replay does not reproduce.
 Near idle the Base Fuel Schedule word lies inside the column hysteresis band of
@@ -91,7 +93,6 @@ RPM_HYSTERESIS_ADDRESS = 0x881A
 COLUMNS = (
     "date",
     "elapsed",
-    "rpm_raw",
     "bfs_raw",
     "vehicle_speed_kmh",
     "gear_raw",
@@ -199,6 +200,10 @@ def read_snapshots(path: Path) -> Snapshots:
             ]
         else:
             selected[name] = [_value(source[index]) for index in kept]
+    rpm = mlg_relation_audit.engine_speed_counts(recording)
+    if rpm is None:
+        raise ValueError(f"{Path(path).name}: the MLG carries no engine speed")
+    selected["rpm_raw"] = [rpm[index] for index in kept]
     return Snapshots(
         Path(path),
         recording.sha256,

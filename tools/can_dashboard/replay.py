@@ -239,7 +239,7 @@ def _load_mlg(path, can_id, profile, schema_path):
     fields = mlvlg.read_fields(path)
     sources_by_name = {
         _channel_key(binding.spec.name): binding.source
-        for binding in recording.build_bindings(profile, schema_path)
+        for binding in recording.known_bindings(profile, schema_path)
     }
     sources = [sources_by_name.get(_channel_key(field.name)) for field in fields]
     if "elapsed" not in sources or "tick16" not in sources:
