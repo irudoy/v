@@ -58,6 +58,15 @@ DESCRIPTIONS = {
         "percent is the reference schedule, and the value saturates at "
         "199.2 percent. The live value feed sends it as VQ Engine Load."
     ),
+    "alpha_n_flow_percent": (
+        "QH0 flow quantity: the column coordinate of the five Fuel "
+        "Compensation Main surfaces. The ECU writes it as the high byte of "
+        "curve 0x15042 or 0x15022 over the throttle opening area divided by "
+        "engine speed, and the byte lookup compares each point of axis "
+        "0x11D4C with it directly. The percent scale, 0.390625 per count, is "
+        "the catalog candidate of that axis. The live value feed sends it as "
+        "VQ QH0 Flow Quantity."
+    ),
     "timing_command_deg": (
         "Final ignition timing coordinate in degrees before TDC. A software "
         "command, not a measured spark angle. During a Rolling Launch late "
@@ -294,6 +303,15 @@ DESCRIPTIONS = {
         "Bounded torque request that the electronic throttle serves: the "
         "pedal demand of table 0xE98E minus 0x8000, candidate 0.1 Nm per "
         "count. Transmission requests can bound it during gear changes."
+    ),
+    "request_flow_percent": (
+        "QH0 flow potential: the column coordinate of Requested Torque "
+        "Conversion by QH0 - Primary. The ECU looks it up from the opening "
+        "area over engine speed through curve 0x15690 or 0x156D0, and the "
+        "word lookup compares each point of axis 0x14114 with it directly. "
+        "The percent scale, 0.00152588 per count, is the catalog candidate "
+        "of that axis. The live value feed sends it as VQ QH0 Flow "
+        "Potential."
     ),
     "throttle_area_request_cm2": (
         "Target opening area of both throttle bodies, candidate 0.0008 cm2 "

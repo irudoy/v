@@ -281,6 +281,7 @@ PANELS = (
         Metric("maf_b2_v", "MAF bank 2", "V", 3),
         Metric("bfs_ms", "BFS", "ms", 3),
         Metric("normalized_load_percent", "Engine load", "%", 1),
+        Metric("alpha_n_flow_percent", "QH0 flow quantity", "%*", 2),
         Metric("af_sensor_b1_v", "A/F sensor 1 B1", "V", 3),
         Metric("af_sensor_b2_v", "A/F sensor 1 B2", "V", 3),
         Metric("af_state_factor", "A/F state factor", "", 4),
@@ -344,6 +345,7 @@ EXTENDED_PANELS = (
     ("Torque and requests", (
         Metric("engine_torque_state_nm", "Engine torque state", "Nm*", 1),
         Metric("torque_request_nm", "Torque request", "Nm*", 1),
+        Metric("request_flow_percent", "QH0 flow potential", "%*", 2),
         Metric("throttle_area_request_cm2", "Throttle area request", "cm2*", 2),
         Metric("throttle_target_b1_percent", "Throttle target B1", "%", 2),
         Metric("throttle_target_b2_percent", "Throttle target B2", "%", 2),

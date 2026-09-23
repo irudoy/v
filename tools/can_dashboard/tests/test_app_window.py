@@ -16,6 +16,7 @@ from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
 from tools.can_dashboard import widgets
 from tools.can_dashboard.descriptions import describe
+from tools.logs import can_telemetry
 
 
 try:
@@ -87,6 +88,59 @@ class HeroCatalogTest(unittest.TestCase):
             for _title, metrics in panels:
                 for metric in metrics:
                     self.assertIn(metric.key, app.HERO_CATALOG)
+
+
+class ProfileCoverageTest(unittest.TestCase):
+    # The Selected map row shows the map number the stream index gives
+    # through the tracker, which also follows the stock bus.
+    SHOWN_THROUGH = {"selected_map_number": "selected_map"}
+
+    def test_every_converted_field_of_the_current_profile_has_a_row(self):
+        shown = {metric.key for metric in app.HERO_METRICS}
+        shown.update(
+            metric.key
+            for _tab, panels in app.TABS
+            for _title, metrics in panels
+            for metric in metrics
+        )
+        calibrations = {
+            **can_telemetry.RAW_CALIBRATIONS,
+            **model.DASHBOARD_CALIBRATIONS,
+        }
+        _document, profiles = can_telemetry.load_schema()
+        checked = 0
+        for field in model.profile_field_names(profiles["tuning"]):
+            calibration = calibrations.get(field)
+            if calibration is None:
+                continue
+            checked += 1
+            key = self.SHOWN_THROUGH.get(
+                calibration.target, calibration.target
+            )
+            with self.subTest(field=field):
+                self.assertIn(key, shown)
+        self.assertGreater(checked, 50)
+
+    def test_the_column_coordinates_show_their_candidate_percent(self):
+        metrics = {
+            metric.key: (title, metric)
+            for _tab, panels in app.TABS
+            for title, panel in panels
+            for metric in panel
+        }
+        for key, title, label in (
+            ("alpha_n_flow_percent", "Air and fuel", "QH0 flow quantity"),
+            (
+                "request_flow_percent",
+                "Torque and requests",
+                "QH0 flow potential",
+            ),
+        ):
+            with self.subTest(key=key):
+                panel, metric = metrics[key]
+                self.assertEqual(panel, title)
+                self.assertEqual(metric.label, label)
+                self.assertEqual(metric.unit, "%*")
 
 
 class SchemaStatusTest(unittest.TestCase):

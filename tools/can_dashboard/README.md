@@ -275,7 +275,10 @@ directly.
 requested-torque conversion surfaces and of Fuel Compensation Main. Each lookup
 compares the stored points of its column axis, `0x14114` and `0x11D4C`, with
 the coordinate directly, so each factor is the expression of that axis. The
-percent unit of both axes is a catalog candidate, which the `*` marks.
+percent unit of both axes is a catalog candidate, which the `*` marks. The
+window shows the same values in the `QH0 flow potential` row of the
+`Torque and requests` panel and the `QH0 flow quantity` row of the
+`Air and fuel` panel.
 
 ### RomRaider table overlay
 
@@ -520,7 +523,8 @@ by coordinates inside itself, without row frames. The timer bar follows the
 status fields while the `0-100` button shows it, and a loaded replay adds its
 transport bar under the status fields or the timer bar. The card
 and panel area scrolls vertically when the remaining height is short. `PRIMARY` and
-`EXTENDED` select the panel set.
+`EXTENDED` select the panel set. Every field of the current profile that
+carries a conversion has a panel row or a card.
 
 The four detail panels of a set share one row and shrink with the window down
 to a `250 px` cell. A narrower window folds them into two rows of two, and a
