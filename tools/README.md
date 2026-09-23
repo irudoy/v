@@ -19,6 +19,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 |---|---|---|
 | Ghidra | Import ROMs, recover structure, export calls/xrefs, inspect addresses, and run p-code fixtures | [`ghidra/README.md`](ghidra/README.md) |
 | Memgraph | Validate tracked sources, ingest ROM and diagnostic layers, audit provenance, query relationships, and back up graph state | [`memgraph/README.md`](memgraph/README.md) |
+| Knowledge model | Specify the per-layout symbols, meanings, links, and evidence, the `kb` entry point, and the transition from the current registries | [`kb/SPEC.md`](kb/SPEC.md) |
 | Map analysis | Inputs, graph schema, current analysis stages, confidence, provenance, and reproducibility | [`map-analysis-pipeline.md`](map-analysis-pipeline.md) |
 | Definitions | Project reviewed facts into RomRaider XML, TunerPro XDF, and the map ledger | [`mapkit/README.md`](mapkit/README.md) |
 | Diagnostics | Build, validate, ingest, and query factory and community diagnostic evidence | [`diagnostics/README.md`](diagnostics/README.md) |
