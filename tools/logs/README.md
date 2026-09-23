@@ -689,6 +689,27 @@ refused: the tick index cannot order them. A log that spans a producer restart
 is refused for the same reason: the tick index restarts with the controller and
 the real gap across the restart is not recorded in it.
 
+## MLG channel relayout
+
+`mlg_relayout.py` carries a dashboard MLG recording into the channel layout
+that the recorder writes for the current profile. A recorded channel whose
+name, without the candidate marker, names a current channel keeps every
+recorded value, and a signed slot stored unsigned takes its signed value. A
+current channel the recording lacks reads `NaN` in every record, as the
+recorder writes a field it has not received, and a recorded channel the
+current profile does not bind is left out; the tool lists both sets.
+
+```bash
+python3 tools/logs/mlg_relayout.py tmp/drive.mlg --output-dir tmp/current
+```
+
+Blocks keep their order, counters, and timestamps, markers keep their text,
+and the header keeps the start time, so the time base and the bridge records
+of the recording stay unchanged. The tool writes a new file and never replaces
+its source or, without `--force`, an existing output. A recording without the
+`Date`, `Elapsed`, or `Telemetry tick` channel is not a dashboard recording
+and is refused.
+
 ## Diagnostic CSV to MLG
 
 `csv_to_mlg.py` converts semicolon-delimited, long-form diagnostic logs to
