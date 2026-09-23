@@ -24,7 +24,7 @@ def test_the_table_is_the_only_tool_document_publishing_a_version():
     [
         ("Memgraph Lab", "3.11.0", "3.12.1"),
         ("`tzdata`", "2026.3", "2026.2"),
-        ("CAN dashboard", "8.10.0", "8.10.1"),
+        ("CAN dashboard", "8.11.0", "8.11.1"),
         pytest.param(
             "`mcp-memgraph`",
             "0.4.1",

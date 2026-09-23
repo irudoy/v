@@ -6,7 +6,8 @@ import xml.etree.ElementTree as ET
 
 from tools.can_dashboard import live_feed, model
 from tools.logs import can_telemetry
-from tools.mapkit import emit_def
+from patches import rom_address_profiles
+from tools.mapkit import definition_projections, emit_def
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -499,25 +500,87 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
                     params[name], ("X_VQ_Engine_Load", "X_VQ_Engine_Speed")
                 )
 
-    def test_fuel_compensation_rows_follow_engine_speed(self):
-        # The column coordinate 0xFFFF1170 has no feed parameter, so the
-        # surfaces follow engine speed on the rows alone.
+    def test_fuel_compensation_surfaces_support_the_overlay(self):
+        # The stream carries column coordinate 0xFFFF1170, and the feed
+        # publishes it at the expression of column axis 0x11D4C.
         params = self.surface_parameters()
         for index in range(1, 6):
             name = f"Map {index} - Fuel Compensation - Main"
             with self.subTest(table=name):
-                self.assertEqual(params[name], (None, "X_VQ_Engine_Speed"))
+                self.assertEqual(
+                    params[name], ("X_VQ_QH0_Flow_Quantity", "X_VQ_Engine_Speed")
+                )
 
-    def test_requested_torque_conversion_rows_follow_engine_speed(self):
-        # The column coordinates 0xFFFF1980 and 0xFFFF1D0E have no feed
-        # parameter, so the surfaces follow engine speed on the rows alone.
+    def test_requested_torque_conversion_columns_follow_the_streamed_operand(self):
+        # The stream carries primary column coordinate 0xFFFF1980 and not the
+        # trustful coordinate 0xFFFF1D0E, so only the primary surface follows
+        # its column.
         params = self.surface_parameters()
-        for name in (
-            "Requested Torque Conversion by QH0 - Primary",
-            "Requested Torque Conversion by QH0 - Validation Copy",
-        ):
-            with self.subTest(table=name):
-                self.assertEqual(params[name], (None, "X_VQ_Engine_Speed"))
+        self.assertEqual(
+            params["Requested Torque Conversion by QH0 - Primary"],
+            ("X_VQ_QH0_Flow_Potential", "X_VQ_Engine_Speed"),
+        )
+        self.assertEqual(
+            params["Requested Torque Conversion by QH0 - Validation Copy"],
+            (None, "X_VQ_Engine_Speed"),
+        )
+
+
+class ProjectedDefinitionLogparamTest(unittest.TestCase):
+    """A relocated target streams zero for a field it cannot bind."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.overrides = tracked_overrides()
+        cls.profiles = rom_address_profiles.load_registry()
+        cls.published = live_feed.published_fields()
+
+    def test_a_parameter_from_an_unavailable_field_loses_its_operands(self):
+        self.assertEqual(
+            definition_projections.unpublished_operands(
+                "JK00C", self.overrides
+            ),
+            {"ffff1170", "ffff1980"},
+        )
+        # Normalized load is unavailable on JK78C, so both operands declared
+        # for the engine load parameter lose it as well.
+        self.assertEqual(
+            definition_projections.unpublished_operands(
+                "JK78C", self.overrides
+            ),
+            {"ffff102c", "ffff15c4", "ffff1170", "ffff1980"},
+        )
+
+    def test_a_stock_bus_parameter_stays_published(self):
+        self.assertNotIn("X_VQ_Engine_Speed", self.published)
+        for rom in self.profiles:
+            with self.subTest(rom=rom):
+                unpublished = definition_projections.unpublished_operands(
+                    rom, self.overrides
+                )
+                self.assertNotIn("ffff11ae", unpublished)
+                self.assertNotIn("ffff1702", unpublished)
+
+    def test_no_projected_axis_names_an_unpublished_parameter(self):
+        checked = 0
+        for rom, profile in sorted(self.profiles.items()):
+            unavailable = set(profile.telemetry_unavailable)
+            missing = {
+                parameter
+                for parameter, field in self.published.items()
+                if field in unavailable
+            }
+            root = ET.parse(ROOT / "defs" / f"{rom}.xml").getroot()
+            bound = {
+                element.get("logparam")
+                for element in root.iter("table")
+                if element.get("logparam")
+            }
+            with self.subTest(rom=rom):
+                self.assertTrue(missing)
+                self.assertFalse(bound & missing)
+            checked += 1
+        self.assertEqual(checked, 6)
 
 
 if __name__ == "__main__":

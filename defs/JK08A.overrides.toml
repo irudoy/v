@@ -35,7 +35,9 @@ enabled = true
 # code. A static axis names it when the map declares
 # static_axis_operand and carries labels under the declared name. The IDs are
 # the external parameters that the CAN dashboard live value feed publishes
-# (tools/can_dashboard/live_feed.py).
+# (tools/can_dashboard/live_feed.py). A relocated target definition leaves out
+# every record whose parameter the feed publishes from a telemetry field that
+# the target encodes from a cleared zero source.
 [logparam.ffff11ae]
 # Scheduler copy of engine speed in 50 RPM counts.
 id = "X_VQ_Engine_Speed"
@@ -93,6 +95,28 @@ units = "Normalized BFS [%]"
 # 0006f236 establishes for that axis.
 id = "X_VQ_Throttle_Target"
 units = "Throttle Valve Opening [%]"
+
+[logparam.ffff1980]
+# Primary requested-torque conversion column coordinate. FUN 00073948 looks it
+# up from area-over-speed coordinate ffff1824 through curve 00015690 over axis
+# 00015500 or curve 000156d0 over axis 00015540 and passes it unscaled to
+# wrapper 000262e0, whose word core 00026984 compares each point of axis
+# 00014114 with it directly. The axis percent scale is a catalog candidate, so
+# the record repeats the axis expression.
+id = "X_VQ_QH0_Flow_Potential"
+units = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+
+[logparam.ffff1170]
+# Fuel Compensation Main column coordinate. FUN 0003b498 writes it as the high
+# byte of curve 00015042 or 00015022 over an opening area divided by engine
+# speed, and FUN 0002c648 and FUN 0003be3c pass it to wrapper 000261f0, whose
+# byte core 00026944 compares each point of axis 00011d4c with it directly. The
+# axis percent scale is a catalog candidate, so the record repeats the axis
+# expression.
+id = "X_VQ_QH0_Flow_Quantity"
+units = "QH0 Flow Quantity [%]"
+scale = "x*0.390625"
 
 [logparam.ffff11b2]
 # Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It

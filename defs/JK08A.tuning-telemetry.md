@@ -104,8 +104,10 @@ their coordinate table `0x155A0`, and the front A/F sensor words at
 command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
 pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
 torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared
-throttle target at `raw * 0.0008 cm2`, and both A/F adjustment states at
-signed `raw * 0.002` keep candidate conversions; the dashboard and MLG schema
+throttle target at `raw * 0.0008 cm2`, both A/F adjustment states at
+signed `raw * 0.002`, and the column coordinates `FFFF1980` and `FFFF1170` at
+the catalog percent scales `raw * 0.00152588` and `raw * 0.390625` of their
+axes `0x14114` and `0x11D4C` keep candidate conversions; the dashboard and MLG schema
 mark them, and each requires synchronized target validation before its
 engineering unit is treated as measured fact.
 

@@ -1115,7 +1115,6 @@ class OverlayLookupOperandTest(unittest.TestCase):
             logparam["ffff11b3"],
             {"id": "X_VQ_Engine_Speed", "static_axis_name": "Engine Speed [RPM]"},
         )
-        self.assertNotIn("ffff1170", logparam)
         for axis, row in (("00011d0c", "ffff1702"), ("00018716", "ffff1cca")):
             with self.subTest(axis=axis):
                 record = self.axes[axis]
@@ -1141,9 +1140,25 @@ class OverlayLookupOperandTest(unittest.TestCase):
         for register in ("ffff1702", "ffff1cca", "ffff11d0", "ffff1208"):
             self.assertEqual(self.vars[register]["units"], "rpm/3.125")
         self.assertEqual(self.vars["ffff1206"]["units"], "rpm*0.64")
-        # The column coordinates and the MAF-table inputs are not streamed.
+        # The streamed column coordinates repeat the candidate expressions of
+        # the axes they index directly.
+        for axis, column, parameter in (
+            ("00011d4c", "ffff1170", "X_VQ_QH0_Flow_Quantity"),
+            ("00014114", "ffff1980", "X_VQ_QH0_Flow_Potential"),
+        ):
+            with self.subTest(column=column):
+                record = self.axes[axis]
+                self.assertEqual(
+                    logparam[column],
+                    {
+                        "id": parameter,
+                        "units": record["units"],
+                        "scale": record["scale_expr"],
+                    },
+                )
+        # The trustful and inverse coordinates and the MAF-table inputs are
+        # not streamed.
         for register in (
-            "ffff1980",
             "ffff1d0e",
             "ffff198a",
             "ffff1d14",

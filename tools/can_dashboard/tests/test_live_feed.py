@@ -39,6 +39,24 @@ class ChannelTableTest(unittest.TestCase):
                 continue
             self.assertIn(channel.source, targets)
 
+    def test_published_fields_name_the_telemetry_source_of_each_channel(self):
+        fields = live_feed.published_fields()
+        # Engine speed follows stock frame 0x180, not a telemetry field.
+        self.assertNotIn("X_VQ_Engine_Speed", fields)
+        self.assertEqual(
+            len(fields),
+            sum(
+                channel.source not in live_feed.STOCK_FRAME_SOURCES
+                for channel in live_feed.CHANNELS
+            ),
+        )
+        self.assertEqual(fields["X_VQ_Engine_Load"], "normalized_load_raw")
+        self.assertEqual(
+            fields["X_VQ_Throttle_Target"], "throttle_target_channel_0_raw"
+        )
+        self.assertEqual(fields["X_VQ_QH0_Flow_Potential"], "request_flow_raw")
+        self.assertEqual(fields["X_VQ_QH0_Flow_Quantity"], "alpha_n_flow_raw")
+
     def test_keys_and_logger_ids_are_unique_wire_safe_tokens(self):
         keys = [channel.key for channel in live_feed.CHANNELS]
         ids = [channel.logger_id for channel in live_feed.CHANNELS]
@@ -55,6 +73,28 @@ class ChannelTableTest(unittest.TestCase):
         self.assertEqual(ids["rpm"], "X_VQ_Engine_Speed")
         self.assertEqual(ids["load"], "X_VQ_Engine_Load")
         self.assertEqual(ids["throttle_target_pct"], "X_VQ_Throttle_Target")
+        self.assertEqual(ids["request_flow_pct"], "X_VQ_QH0_Flow_Potential")
+        self.assertEqual(ids["alpha_n_flow_pct"], "X_VQ_QH0_Flow_Quantity")
+
+    def test_the_column_coordinate_channels_carry_the_axis_scales(self):
+        # Word core 00026984 compares the stored points of axis 00014114 with
+        # ffff1980, and byte core 00026944 those of axis 00011d4c with
+        # ffff1170, so each channel publishes its coordinate at the candidate
+        # percent scale of the axis, and the largest stored point fits.
+        channels = {channel.key: channel for channel in live_feed.CHANNELS}
+        for key, field, factor, largest in (
+            ("request_flow_pct", "request_flow_raw", 0.00152588, 65535),
+            ("alpha_n_flow_pct", "alpha_n_flow_raw", 0.390625, 255),
+        ):
+            with self.subTest(channel=key):
+                calibration = model.DASHBOARD_CALIBRATIONS[field]
+                self.assertEqual(channels[key].source, calibration.target)
+                self.assertEqual(calibration.factor, factor)
+                self.assertEqual(calibration.apply(0), channels[key].minimum)
+                self.assertLessEqual(
+                    calibration.apply(largest), channels[key].maximum
+                )
+                self.assertTrue(channels[key].units.endswith("*"))
 
     def test_the_throttle_target_channel_carries_the_axis_scale(self):
         # Overlay Log compares the published value with the stored points of

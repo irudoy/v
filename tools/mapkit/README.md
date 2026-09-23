@@ -175,7 +175,11 @@ reference, including the baseline lookup and downstream target projection.
   expression puts the stored points and the live parameter in one domain, which
   is what the overlay compares, and leaves the confidence of the physical
   quantity with the axis. The declared IDs are parameters of the CAN dashboard
-  live value feed.
+  live value feed. A relocated target definition leaves out every declaration
+  whose parameter the feed publishes from a field in the
+  `telemetry_unavailable` list of the target address profile: the target
+  encodes such a field from a cleared zero source, so the parameter reads zero
+  there.
 - Canonical category paths use ` / ` internally. RomRaider XML renders those
   paths with its `//` hierarchy separator, while TunerPro retains flat category
   names.

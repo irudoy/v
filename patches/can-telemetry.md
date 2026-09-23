@@ -321,8 +321,10 @@ sensor voltages, the APC command at `110 - raw` degrees BTDC, both final
 channel throttle targets at `raw * 34285 / 1114112` percent of throttle opening
 above the learned closed position, and the front A/F sensor voltage at
 `raw / 200 V`. Engine torque state, the
-bounded throttle request, the shared throttle target area, and both A/F
-adjustment states keep candidate conversions. The A/F adjustment words occupy
+bounded throttle request, the shared throttle target area, both A/F
+adjustment states, and the two column coordinates keep candidate conversions:
+the coordinates carry the catalog percent scales of the axes they index,
+`raw * 0.00152588` for `FFFF1980` and `raw * 0.390625` for `FFFF1170`. The A/F adjustment words occupy
 signed slots, because their producers are signed.
 
 The stream carries the two column coordinates of the tuning surfaces instead

@@ -21,6 +21,8 @@ from pathlib import Path
 import socket
 
 from tools.can_dashboard import PRODUCT_NAME
+from tools.can_dashboard.model import DASHBOARD_CALIBRATIONS
+from tools.logs.can_telemetry import RAW_CALIBRATIONS
 
 MAGIC = "RRUDP1"
 DEFAULT_HOST = "127.0.0.1"
@@ -154,6 +156,29 @@ CHANNELS = (
         10,
         "throttle_target_b1_percent",
     ),
+    # The column coordinates of the requested-torque conversion surfaces and
+    # of Fuel Compensation Main carry the candidate percent scales of axes
+    # 0x14114 and 0x11D4C, which their lookups compare directly.
+    FeedChannel(
+        "request_flow_pct",
+        "VQ QH0 Flow Potential",
+        "%*",
+        "0.00",
+        0,
+        100,
+        10,
+        "request_flow_percent",
+    ),
+    FeedChannel(
+        "alpha_n_flow_pct",
+        "VQ QH0 Flow Quantity",
+        "%*",
+        "0.00",
+        0,
+        100,
+        10,
+        "alpha_n_flow_percent",
+    ),
 )
 
 
@@ -170,6 +195,24 @@ def feed_values(model):
         if isinstance(value, (int, float)) and math.isfinite(value):
             values[channel.key] = float(value)
     return values
+
+
+def published_fields():
+    """Return the telemetry field each channel publishes, by Logger ID.
+
+    A channel that follows the stock bus publishes no telemetry field and is
+    left out.
+    """
+    fields = {
+        calibration.target: field
+        for table in (RAW_CALIBRATIONS, DASHBOARD_CALIBRATIONS)
+        for field, calibration in table.items()
+    }
+    return {
+        channel.logger_id: fields[channel.source]
+        for channel in CHANNELS
+        if channel.source not in STOCK_FRAME_SOURCES
+    }
 
 
 def encode(values):

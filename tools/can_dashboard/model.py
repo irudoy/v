@@ -147,6 +147,15 @@ DASHBOARD_CALIBRATIONS = {
     "throttle_target_channel_1_raw": can_telemetry.Calibration(
         "throttle_target_b2_percent", 34285 / 1114112
     ),
+    # One coordinate count is one count of the column axis the coordinate
+    # indexes directly, 0x14114 and 0x11D4C, so the conversion is the
+    # candidate percent scale of that axis.
+    "request_flow_raw": can_telemetry.Calibration(
+        "request_flow_percent", 0.00152588
+    ),
+    "alpha_n_flow_raw": can_telemetry.Calibration(
+        "alpha_n_flow_percent", 0.390625
+    ),
     "front_af_sensor_b1_word_raw": can_telemetry.Calibration(
         "af_sensor_b1_v", 1 / 200
     ),

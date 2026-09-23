@@ -47,6 +47,7 @@ class RecordingSummary:
 RAW_FIELD_DISPLAY = {
     "tick16": ("Telemetry tick", "", 0, "Transport"),
     "rpm_raw": ("Engine speed", "rpm", 0, "Engine"),
+    "request_flow_raw": ("QH0 flow potential", "%*", 2, "Throttle"),
     "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
     "apc_command_raw": ("APC command", "degBTDC", 0, "Ignition"),
     "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
@@ -119,6 +120,7 @@ RAW_FIELD_DISPLAY = {
     "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
     "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
     "active_map_index": ("Selected map", "", 0, "Context"),
+    "alpha_n_flow_raw": ("QH0 flow quantity", "%*", 2, "Fuel"),
     "ignition_timing_adjustment_raw": (
         "Timing adjustment", "deg", 0, "Ignition"
     ),

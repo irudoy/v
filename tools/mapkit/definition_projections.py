@@ -24,8 +24,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_layout
+from patches import rom_address_profiles
 from patches import rom_checksums
 from patches import runtime_targets
+from tools.can_dashboard import live_feed
 from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_fuel_cut
 from tools.mapkit import vq37_native_tables
@@ -721,6 +723,16 @@ def apply_projection(
         "enabled": projection.rolling_launch
     }
     projected_overrides["rom"]["comment"] = {"text": projection.comment}
+    unpublished = unpublished_operands(projection.target, overrides)
+    if unpublished:
+        projected_overrides["logparam"] = {
+            operand: entry
+            for operand, entry in projected_overrides["logparam"].items()
+            if operand not in unpublished
+        }
+        for table in projected_tables.values():
+            if table.get("static_axis_operand") in unpublished:
+                del table["static_axis_operand"]
 
     try:
         projected_maps, projected_overrides = (
@@ -754,6 +766,36 @@ def apply_projection(
         mapped_map_count=len(projected_maps),
         mapped_axis_count=len(projected_axes),
         unsupported_required_maps=tuple(sorted(required & unsupported)),
+    )
+
+
+def unpublished_operands(rom, overrides):
+    """Return the declared lookup operands whose Logger parameter a target lacks.
+
+    A relocated target encodes every telemetry field that it cannot bind from a
+    cleared zero source, so a live feed parameter published from such a field
+    reads zero there, and the axes of its operands name no parameter.
+    """
+    try:
+        profile = rom_address_profiles.profile_for_rom(rom)
+    except rom_address_profiles.AddressProfileError as error:
+        raise DefinitionProjectionError(str(error)) from error
+    published = live_feed.published_fields()
+    if profile.capabilities.can_telemetry:
+        missing = {
+            parameter
+            for parameter, field in published.items()
+            if field in profile.telemetry_unavailable
+        }
+    else:
+        missing = set(published)
+    declarations = overrides.get("logparam", {})
+    if not isinstance(declarations, dict):
+        raise DefinitionProjectionError("logparam must be a TOML table")
+    return frozenset(
+        operand
+        for operand, entry in declarations.items()
+        if isinstance(entry, dict) and entry.get("id") in missing
     )
 
 

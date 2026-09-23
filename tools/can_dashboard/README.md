@@ -263,11 +263,19 @@ without changing the settings file.
 | `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
 | `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
 | `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw * 34285 / 1114112` |
+| `request_flow_pct` | `X_VQ_QH0_Flow_Potential` | %* | `request_flow_raw * 0.00152588` |
+| `alpha_n_flow_pct` | `X_VQ_QH0_Flow_Quantity` | %* | `alpha_n_flow_raw * 0.390625` |
 
 `throttle_target_pct` carries the channel 0 throttle target, which is the
 coordinate of throttle opening table `0x155A0`. Its factor is the code scale of
 that axis, so Overlay Log compares the live value with the stored points
 directly.
+
+`request_flow_pct` and `alpha_n_flow_pct` carry the column coordinates of the
+requested-torque conversion surfaces and of Fuel Compensation Main. Each lookup
+compares the stored points of its column axis, `0x14114` and `0x11D4C`, with
+the coordinate directly, so each factor is the expression of that axis. The
+percent unit of both axes is a catalog candidate, which the `*` marks.
 
 ### RomRaider table overlay
 
@@ -716,7 +724,9 @@ replay and `tools/logs/mlg_restamp.py` read the earlier channel as
 
 A field marked with `*` uses a candidate transform: engine torque state and
 torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
-and A/F ADJ at signed `raw * 0.002`. The current conversions are:
+A/F ADJ at signed `raw * 0.002`, and the requested-torque and Fuel
+Compensation Main column coordinates at `raw * 0.00152588` and
+`raw * 0.390625` percent. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
@@ -750,6 +760,8 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
 | throttle target B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw * 34285 / 1114112 percent` | each target is `4 * (TPS counts - learned closed position)`, the coordinate of throttle opening table `0x155A0`; `FUN_0006F236` publishes that coordinate, divided by four and less idle base `0xFFFF28F8`, as J1979 PID 0x11 absolute throttle at gradient `0x505B / 65536`, so one count is `34285 / 1114112` percent of throttle opening and 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
 | throttle area request | `0xFFFF19B2` word | candidate `raw * 0.0008 cm2` | opening area of both throttle bodies in the counts of table `0x13202`; the unit rests on the catalog scale of that table |
+| requested-torque column coordinate | `0xFFFF1980` word | candidate `raw * 0.00152588 percent` | `FUN_00073948` looks the coordinate up from an opening area over engine speed and passes it to requested-torque surface `0xE98E`, whose word core `0x26984` compares each point of column axis `0x14114` with it directly; the percent unit is the catalog scale of that axis |
+| Fuel Compensation Main column coordinate | `0xFFFF1170` byte | candidate `raw * 0.390625 percent` | `FUN_0003B498` writes the high byte of curve `0x15042` or `0x15022` over an opening area divided by engine speed, and byte core `0x26944` compares each point of column axis `0x11D4C` with it directly; the percent unit is the catalog scale of that axis |
 | torque request | `0xFFFF19C6` signed word | candidate `raw * 0.1 Nm` | output of table `0xE98E` minus `0x8000`; at full pedal the recorded request follows the maximum of the table row at the recorded engine speed |
 | A/F sensor 1 B1/B2 | `0xFFFF2780`, `0xFFFF2782` | `raw / 200 V` | the ADC count re-based so that the filtered sensor reference reads 440, which is 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm; lower is richer; under sustained enrichment both words read lean of 440, which is unexplained, so the channel does not validate full-load fuelling without an independent wideband |
 | A/F ADJ B1/B2 | `0xFFFF45A0`, `0xFFFF45A2` | candidate signed `raw * 0.002` | signed integrators bounded to -500..500 counts, read as signed by every consumer; the factor maps the bounds to -1..1 and the factory running range of -0.330..0.330 to 165 counts; every recording reads 0 |

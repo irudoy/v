@@ -109,7 +109,7 @@
             },
             {
               "name": "alpha_n_flow_raw",
-              "scale": "raw column coordinate of Fuel Compensation Main",
+              "scale": "candidate raw * 0.390625 percent QH0 flow quantity, the column coordinate of Fuel Compensation Main",
               "signed": false,
               "width": 1
             }
@@ -332,7 +332,7 @@
           "name": "request_flow_raw",
           "offset": 3,
           "page": 0,
-          "scale": "raw column coordinate of the requested-torque conversion surfaces",
+          "scale": "candidate raw * 0.00152588 percent QH0 flow potential, the column coordinate of the requested-torque conversion surfaces",
           "signed": false,
           "width": 2
         },
