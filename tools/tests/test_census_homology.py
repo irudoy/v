@@ -220,3 +220,16 @@ def test_census_ledger_mutations_are_rejected(ledger):
         match="contradicts the published source 0000a410",
     ):
         census_homology.validate_ledger(contradicted, "1ND0A", "1ME3B")
+
+
+def test_check_requires_the_ledger_that_l0_produces(tmp_path, capsys):
+    tracked = census_homology.ledger_path("1ND0A", "1ME3B")
+    ledger = tmp_path / tracked.name
+    ledger.write_text(tracked.read_text(encoding="utf-8"), encoding="utf-8")
+    assert census_homology.main(["--check", "--output", str(ledger)]) == 0
+    lines = ledger.read_text(encoding="utf-8").splitlines(keepends=True)
+    row = next(index for index, line in enumerate(lines) if ",homolog," in line)
+    del lines[row]
+    ledger.write_text("".join(lines), encoding="utf-8")
+    assert census_homology.main(["--check", "--output", str(ledger)]) == 1
+    assert "produce" in capsys.readouterr().err

@@ -525,15 +525,16 @@ def check_layout(layout, root=repo.ROOT, verified=None):
     return failures
 
 
-def check_all(root=repo.ROOT):
-    """The `l0` check over every layout."""
+def check_all(root=repo.ROOT, only=None):
+    """The `l0` check over every layout, or over the layout ids in `only`."""
     cache_path, verified = _normal_cache(root)
     failures = []
     known = repo.layouts(root)
     for layout in known.values():
-        failures += check_layout(layout, root, verified)
+        if only is None or layout.id in only:
+            failures += check_layout(layout, root, verified)
     base = root / repo.L0
-    if base.is_dir():
+    if only is None and base.is_dir():
         for path in sorted(base.iterdir()):
             if path.name not in known:
                 failures.append(Failure(

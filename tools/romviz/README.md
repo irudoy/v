@@ -109,17 +109,18 @@ Each target has `tools/romviz/roms/<ROM>.toml`. Manifest schema version 2 keeps
 stock identity mandatory and makes analysis layers independently declarable.
 Tracked declared sources are strict: missing files, invalid geometry, wrong
 image hashes, out-of-range objects, and unknown patch kinds fail the build.
-Machine-local Ghidra exports are the documented exception and produce a warning
-when unavailable. An undeclared layer remains absent and produces a visible
-warning in the atlas.
+The function structure of every ROM is the L0 of its layout in
+`l0/<layout>/`, and function labels without a reviewed annotation come from
+`tools/ghidra/symbols/<layout>.csv` or read `FUN_<addr>`. An undeclared layer
+remains absent and produces a visible warning in the atlas.
 
 | ROM family | Current atlas evidence |
 |---|---|
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
-| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
-| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
-| JK78C | Target Ghidra structure, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
-| 1ME3B | Projected DTC records and attributes read from the stock image; every other layer is undeclared and warned about |
+| JK00C, JK00D | Target L0 structure, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
+| 1ND0A, 1ND3B | Exact-family 1ND0A L0 structure, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
+| JK78C | Target L0 structure, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
+| 1ME3B | Target L0 structure and projected DTC records and attributes read from the stock image; every other layer is undeclared and warned about |
 
 Every registered image declares its DTC registry, so the diagnostics layer is
 populated independently of how much structure a target carries. The reviewed
@@ -150,11 +151,10 @@ Rolling Launch, and custom CAN telemetry in the audited flash and RAM
 allocations. The checksum layer covers both SUM16 domains and both runtime
 SUM/XOR domains.
 
-Ghidra exports provide exact function entry addresses and body byte counts. The
-export does not preserve discontiguous body ranges, so the atlas draws each
-function as a contiguous byte-count envelope anchored at its entry. Machine-local
-exports are optional at rendering time: reviewed entries retain point extents,
-and a missing structural export produces a warning.
+L0 provides exact function entry addresses and body byte counts. The atlas
+draws each function as a contiguous byte-count envelope anchored at its entry,
+although the instruction addresses of a body in `function_tokens.csv` can be
+non-contiguous.
 
 Patch status is explicit. `composed` marks ranges owned by the current unified
 builder, `available` marks reversible definition controls, and `candidate`

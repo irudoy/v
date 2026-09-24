@@ -5,6 +5,8 @@ Node-owner order is fixed:
   load_graph.py -> load_xrefs.py -> load_maps.py -> load_code.py
   -> load_diagnostic_bindings.py -> audit
 
+The code structure is the tracked L0 of the ROM's layout in l0/<layout>/.
+
 Invocation:
   uv run python tools/memgraph/ingest.py JK08A
 """
@@ -28,7 +30,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MEMGRAPH = Path(__file__).resolve().parent
 
 EXPORT_HEADERS = {
-    "funcs.csv": ["addr", "name", "size", "is_thunk", "is_external"],
+    "funcs.csv": ["addr", "size", "is_thunk", "is_external"],
     "calls.csv": ["src", "dst"],
     "xrefs.csv": ["func_addr", "periph_addr", "kind"],
 }
@@ -43,7 +45,7 @@ class IngestError(ProvenanceError):
 
 def read_export(path, expected):
     if not path.exists():
-        raise IngestError(f"export input not found: {path}")
+        raise IngestError(f"L0 input not found: {path}")
     with path.open(newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
         if reader.fieldnames != expected:
@@ -65,9 +67,9 @@ def check_export_addr(path, row_number, column, value):
         )
 
 
-def validate_exports(exported, export_dir):
+def validate_exports(exported, l0_dir):
     """Validate export values and foreign keys before the first loader runs."""
-    funcs_path = export_dir / "funcs.csv"
+    funcs_path = l0_dir / "funcs.csv"
     func_addrs = set()
     for row_number, row in enumerate(exported["funcs.csv"], 2):
         if None in row or any(value is None for value in row.values()):
@@ -88,7 +90,7 @@ def validate_exports(exported, export_dir):
                     f"{column} is outside {sorted(BOOL_VALUES)}: {row[column]!r}",
                 )
 
-    calls_path = export_dir / "calls.csv"
+    calls_path = l0_dir / "calls.csv"
     for row_number, row in enumerate(exported["calls.csv"], 2):
         if None in row or any(value is None for value in row.values()):
             export_error(calls_path, row_number, "field count does not match the header")
@@ -100,7 +102,7 @@ def validate_exports(exported, export_dir):
                     f"{column}={row[column]} is absent from funcs.csv",
                 )
 
-    xrefs_path = export_dir / "xrefs.csv"
+    xrefs_path = l0_dir / "xrefs.csv"
     for row_number, row in enumerate(exported["xrefs.csv"], 2):
         if None in row or any(value is None for value in row.values()):
             export_error(xrefs_path, row_number, "field count does not match the header")
@@ -141,10 +143,10 @@ def read_code_sources(rom):
     return model, paths, funcs, vars_, maps, axes, claims
 
 
-def preflight_maps(export_dir, rom, model, paths):
+def preflight_maps(l0_dir, rom, model, paths):
     registry = paths["Interp"]
     reg = load_maps.read_registry(str(registry))
-    rows, _ = load_maps.read_censuses(str(export_dir), reg, str(registry))
+    rows, _ = load_maps.read_censuses(str(l0_dir), reg, str(registry))
     load_maps.check_dims(
         rows, {entry["wrapper"]: 2 if entry["height"] else 1 for entry in reg}
     )
@@ -195,12 +197,12 @@ def claim_inventory(export_funcs, xrefs, funcs, vars_, maps, axes):
     return inventory
 
 
-def preflight(export_dir, rom, strict):
+def preflight(l0_dir, rom, strict):
     exported = {
-        name: read_export(export_dir / name, header)
+        name: read_export(l0_dir / name, header)
         for name, header in EXPORT_HEADERS.items()
     }
-    exported_func_addrs = validate_exports(exported, export_dir)
+    exported_func_addrs = validate_exports(exported, l0_dir)
 
     model, paths, funcs, vars_, _, _, claims = read_code_sources(rom)
     binding_rows = load_diagnostic_bindings.validate_rows(
@@ -211,7 +213,7 @@ def preflight(export_dir, rom, strict):
         model, binding_rows
     )
     registry, maps, axes, accesses = preflight_maps(
-        export_dir, rom, model, paths
+        l0_dir, rom, model, paths
     )
 
     orphans = sorted({
@@ -262,13 +264,13 @@ def preflight(export_dir, rom, strict):
     return registry, model, paths
 
 
-def commands(export_dir, rom, registry, paths, strict):
+def commands(l0_dir, rom, registry, paths, strict):
     python = sys.executable
     result = [
-        [python, str(MEMGRAPH / "load_graph.py"), str(export_dir), rom],
-        [python, str(MEMGRAPH / "load_xrefs.py"), str(export_dir), rom],
+        [python, str(MEMGRAPH / "load_graph.py"), str(l0_dir), rom],
+        [python, str(MEMGRAPH / "load_xrefs.py"), str(l0_dir), rom],
         [
-            python, str(MEMGRAPH / "load_maps.py"), str(export_dir), rom,
+            python, str(MEMGRAPH / "load_maps.py"), str(l0_dir), rom,
             str(registry), str(paths["Map"]), str(paths["Axis"]),
         ],
         [python, str(MEMGRAPH / "load_code.py"), rom],
@@ -289,8 +291,9 @@ def parser():
     out = argparse.ArgumentParser(description=__doc__)
     out.add_argument("rom", nargs="?", default="JK08A")
     out.add_argument(
-        "--export-dir", type=Path,
-        help="Ghidra export directory; default: canonical directory registered for the ROM",
+        "--l0-dir", type=Path,
+        help="directory in the L0 format, such as a staged export; "
+        "default: the tracked L0 of the ROM's layout, checked against its manifest",
     )
     out.add_argument(
         "--strict", action="store_true",
@@ -305,17 +308,17 @@ def parser():
 
 def main():
     args = parser().parse_args()
-    export_dir = (
-        args.export_dir.expanduser().resolve()
-        if args.export_dir
-        else rom_sources.default_export_dir(args.rom)
-    )
     try:
-        registry, model, paths = preflight(export_dir, args.rom, args.strict)
+        if args.l0_dir:
+            l0_dir = args.l0_dir.expanduser().resolve()
+        else:
+            l0_dir = rom_sources.l0_dir(args.rom)
+            rom_sources.verify_l0(args.rom)
+        registry, model, paths = preflight(l0_dir, args.rom, args.strict)
     except (OSError, ProvenanceError, ValueError) as error:
         sys.exit(str(error))
 
-    steps = commands(export_dir, args.rom, registry, paths, args.strict)
+    steps = commands(l0_dir, args.rom, registry, paths, args.strict)
     for number, command in enumerate(steps, 1):
         print(
             f"[{number}/{len(steps)}] {shlex.join(display_command(command))}",

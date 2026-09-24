@@ -85,8 +85,11 @@ mutate the local Ghidra project and must run without `-readOnly`. A seed that
 `RecoverFuncs.java` disassembles itself carries no operand references until
 `AnalyzeFuncs.java` runs the program analyzers over the created bodies; without
 that pass `xrefs.csv` lists no RAM or peripheral access for the recovered
-functions. `symbols.csv` is the tracked function-name registry. Export after
-those mutations persist successfully.
+functions. `symbols/<layout>.csv` is the tracked function-name registry of one
+layout: `RenameFuncs.java` applies it to a program of that layout, and the
+Memgraph loaders and the ROM atlas read it through `tools/rom_sources.py`,
+which requires every row to name a function entry of the layout's L0. Export
+after those mutations persist successfully.
 
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
@@ -153,8 +156,8 @@ Run the comparison through the repository entry point:
 
 ```bash
 make rom-correspondence \
-  CORRESPONDENCE_SOURCE_EXPORT=tmp/source-export \
-  CORRESPONDENCE_TARGET_EXPORT=tmp/target-export \
+  CORRESPONDENCE_SOURCE_EXPORT=l0/jk00d \
+  CORRESPONDENCE_TARGET_EXPORT=l0/jk00c \
   CORRESPONDENCE_OUTPUT=tmp/function-correspondence.csv
 ```
 

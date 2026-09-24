@@ -25,7 +25,7 @@ class RomSourcesTest(unittest.TestCase):
         self.assertEqual(model.kind, "canonical")
         self.assertFalse(model.inherited)
 
-    def test_exact_jk08a_export_is_the_canonical_default(self):
+    def test_exact_jk08a_export_is_the_research_export_default(self):
         self.assertEqual(
             rom_sources.default_export_dir("JK08A").name,
             "export-JK08A-exact",
@@ -34,6 +34,69 @@ class RomSourcesTest(unittest.TestCase):
             rom_sources.default_export_dir("JK03A").name,
             "export-JK03A",
         )
+
+    def test_a_rom_reads_the_l0_of_its_layout(self):
+        expected = {
+            "JK08A": "7mfk", "JK00A": "7mfk", "JK03A": "7mfk", "JK03B": "7mfk",
+            "1ND0A": "1nd", "1ND3B": "1nd", "1ME3B": "1me3b",
+            "JK00C": "jk00c", "JK00D": "jk00d", "JK78C": "jk78c",
+        }
+        for rom, layout in expected.items():
+            with self.subTest(rom=rom):
+                self.assertEqual(rom_sources.layout_of(rom), layout)
+                self.assertEqual(rom_sources.l0_dir(rom), ROOT / "l0" / layout)
+        with self.assertRaisesRegex(rom_sources.SourceModelError, "no layout"):
+            rom_sources.layout_of("ZZ99Z")
+
+    def test_curated_names_are_function_entries_of_the_layout(self):
+        names = rom_sources.function_names("JK08A")
+        self.assertEqual(names["0002040c"], "periodic_tick_isr")
+        self.assertEqual(rom_sources.function_names("JK03A"), names)
+        self.assertEqual(rom_sources.function_names("1ND3B")["0011363c"], "hcan1_init")
+        self.assertEqual(rom_sources.function_names("JK00C"), {})
+        self.assertEqual(rom_sources.function_name(names, "00026740"), "FUN_00026740")
+
+    def test_the_name_registry_rejects_rows_the_l0_does_not_support(self):
+        rows = {
+            "0000001,first,": "eight lowercase",
+            "00000010,1st,": "invalid function name",
+            "00000030,third,": "not a function entry",
+            "00000010,first,\n00000010,again,": "named twice",
+            "00000010,first,\n00000020,first,": "names two functions",
+            "00000010,first,a, b": "without commas",
+        }
+        for body, message in rows.items():
+            with self.subTest(body=body):
+                root = self.layout_root(body)
+                with self.assertRaisesRegex(rom_sources.SourceModelError, message):
+                    rom_sources.function_names("T1", root)
+        root = self.layout_root("00000020,second,note")
+        self.assertEqual(rom_sources.function_names("T1", root), {"00000020": "second"})
+        header = self.layout_root("")
+        (header / "tools/ghidra/symbols/t1.csv").write_text("# names\naddr,name\n")
+        with self.assertRaisesRegex(rom_sources.SourceModelError, "header"):
+            rom_sources.function_names("T1", header)
+
+    def layout_root(self, body):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        (root / "rom-images").mkdir()
+        (root / "rom-images/homology.toml").write_text(
+            '[family.t]\nkind = "exact-code"\nmcu = "SH7058"\n'
+            'members = ["T1"]\ncanonical = "T1"\nsame_address_inheritance = true\n'
+            'layouts = { t1 = "T1" }\n'
+        )
+        (root / "l0/t1").mkdir(parents=True)
+        (root / "l0/t1/funcs.csv").write_text(
+            "addr,size,is_thunk,is_external\n"
+            "00000010,2,false,false\n00000020,4,false,false\n"
+        )
+        (root / "tools/ghidra/symbols").mkdir(parents=True)
+        (root / "tools/ghidra/symbols/t1.csv").write_text(
+            "# names of t1\naddr,name,note\n" + body + "\n"
+        )
+        return root
 
     def test_exact_code_inheritance_is_explicit(self):
         digest_a = "a" * 64

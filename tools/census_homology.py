@@ -16,8 +16,9 @@ a source homolog through three independent methods, applied in this order:
    target: the target image stores separate copies of one source table for
    separate readers.
 
-`--check` validates the tracked ledger against the registered stock images and
-the published registries without Ghidra exports.
+The inputs are the L0 exports of the layouts of the two ROMs. `--check`
+validates the tracked ledger against the registered stock images and the
+published registries and requires it to equal the ledger that L0 produces.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ import argparse
 from collections import Counter, defaultdict
 import csv
 from difflib import SequenceMatcher
+import io
 from pathlib import Path
 import sys
 import tomllib
@@ -34,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools import rom_correspondence, rom_homology  # noqa: E402
+from tools import rom_correspondence, rom_homology, rom_sources  # noqa: E402
 
 
 LEDGER_FIELDS = (
@@ -69,6 +71,11 @@ class CensusHomologyError(ValueError):
 
 def ledger_path(source_rom, target_rom):
     return ROOT / "defs" / f"{source_rom}-{target_rom}.census-correspondence.csv"
+
+
+def _shown(path):
+    path = Path(path).resolve()
+    return path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
 
 
 def _map_geometry(entry):
@@ -357,11 +364,16 @@ def read_ledger(path):
         raise CensusHomologyError(f"ledger cannot be read: {path}") from error
 
 
+def render_ledger(rows):
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=LEDGER_FIELDS, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    return output.getvalue()
+
+
 def write_ledger(path, rows):
-    with Path(path).open("w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=LEDGER_FIELDS, lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
+    Path(path).write_text(render_ledger(rows), encoding="utf-8")
 
 
 def validate_ledger(rows, source_rom, target_rom, images=None):
@@ -444,30 +456,27 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--source", default="1ND0A")
     parser.add_argument("--target", default="1ME3B")
-    parser.add_argument("--source-export", type=Path)
-    parser.add_argument("--target-export", type=Path)
+    parser.add_argument("--source-export", type=Path,
+                        help="default: the L0 of the source ROM's layout")
+    parser.add_argument("--target-export", type=Path,
+                        help="default: the L0 of the target ROM's layout")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     path = args.output or ledger_path(args.source, args.target)
     try:
-        if args.check:
-            summary = validate_ledger(read_ledger(path), args.source, args.target)
-            print(render_summary(summary))
-            print(f"status=PASS ledger={path.relative_to(ROOT)}")
-            return 0
-        if args.source_export is None or args.target_export is None:
-            parser.error("--source-export and --target-export are required")
+        source_export = args.source_export or rom_sources.l0_dir(args.source)
+        target_export = args.target_export or rom_sources.l0_dir(args.target)
         registered = rom_homology.load_images()
         images = (registered[args.source].data, registered[args.target].data)
         source_entities = read_entities(
-            ROOT / "defs" / f"{args.source}.interp.csv", args.source_export, len(images[0])
+            ROOT / "defs" / f"{args.source}.interp.csv", source_export, len(images[0])
         )
         target_entities = read_entities(
-            ROOT / "defs" / f"{args.target}.interp.csv", args.target_export, len(images[1])
+            ROOT / "defs" / f"{args.target}.interp.csv", target_export, len(images[1])
         )
         votes = reference_votes(
-            args.source_export, args.target_export, source_entities, target_entities
+            source_export, target_export, source_entities, target_entities
         )
         rows = build_ledger(
             source_entities,
@@ -476,6 +485,17 @@ def main(argv=None):
             published_pairs(args.source, args.target),
             images,
         )
+        if args.check:
+            summary = validate_ledger(read_ledger(path), args.source, args.target, images)
+            if path.read_text(encoding="utf-8") != render_ledger(rows):
+                raise CensusHomologyError(
+                    f"{_shown(path)} differs from the ledger that "
+                    f"{_shown(source_export)} and {_shown(target_export)} produce; "
+                    "regenerate it"
+                )
+            print(render_summary(summary))
+            print(f"status=PASS ledger={_shown(path)}")
+            return 0
         write_ledger(path, rows)
         print(render_summary(validate_ledger(rows, args.source, args.target, images)))
         print(f"source_entities={len(source_entities)} output={path}")
@@ -484,6 +504,7 @@ def main(argv=None):
         CensusHomologyError,
         rom_correspondence.CorrespondenceError,
         rom_homology.HomologyError,
+        rom_sources.SourceModelError,
     ) as error:
         print(f"census_homology: {error}", file=sys.stderr)
         return 1

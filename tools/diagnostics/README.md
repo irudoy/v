@@ -127,9 +127,10 @@ the narrow documents under `defs/`, not in this tool contract.
 ## Candidate extraction
 
 `ExportDiagnosticRefs.java` produces a semantic-free inventory of 16-bit ROM
-references and instruction immediates. `extract_static_bindings.py` joins exact
-known service `0x22` DIDs to that inventory and records same-function RAM
-references as a review worklist:
+references and instruction immediates in the machine-local export directory.
+`extract_static_bindings.py` joins exact known service `0x22` DIDs to that
+inventory and records the RAM references of the same function from `xrefs.csv`
+of the ROM's L0 as a review worklist:
 
 ```bash
 uv run python tools/diagnostics/extract_static_bindings.py JK08A \

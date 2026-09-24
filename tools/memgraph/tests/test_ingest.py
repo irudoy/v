@@ -13,6 +13,7 @@ if "neo4j" not in sys.modules:
 
 import ingest  # noqa: E402
 import load_code  # noqa: E402
+from kb import l0 as kb_l0  # noqa: E402
 
 
 class ExportValidationTest(unittest.TestCase):
@@ -20,11 +21,11 @@ class ExportValidationTest(unittest.TestCase):
         return {
             "funcs.csv": [
                 {
-                    "addr": "00000010", "name": "first", "size": "2",
+                    "addr": "00000010", "size": "2",
                     "is_thunk": "false", "is_external": "false",
                 },
                 {
-                    "addr": "00000020", "name": "second", "size": "4",
+                    "addr": "00000020", "size": "4",
                     "is_thunk": "true", "is_external": "false",
                 },
             ],
@@ -33,6 +34,11 @@ class ExportValidationTest(unittest.TestCase):
                 {"func_addr": "00000010", "periph_addr": "ffff1000", "kind": "R"}
             ],
         }
+
+    def test_headers_are_the_l0_columns(self):
+        for name, header in ingest.EXPORT_HEADERS.items():
+            with self.subTest(name=name):
+                self.assertEqual(header, [column for column, _ in kb_l0.columns_of(name)])
 
     def test_valid_exports_return_function_inventory(self):
         addrs = ingest.validate_exports(self.valid_exports(), Path("/export"))

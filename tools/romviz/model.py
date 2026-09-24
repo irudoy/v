@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 
 from patches import rom_address_profiles
 from patches import rom_checksums
+from tools import rom_sources
 from tools.mapkit import definition_projections
 from tools.romviz import architecture as architecture_model
 
@@ -48,7 +49,6 @@ MANIFEST_FIELDS = frozenset(
         "annotation_source",
         "image_registry",
         "identity_registry",
-        "ghidra_export",
         "map_ledger",
         "axes",
         "interpolation",
@@ -414,26 +414,20 @@ def _function_objects(manifest, rom_size, warnings):
             "Reviewed function annotations are not declared for this ROM."
         )
 
-    graph_path = None
-    if "ghidra_export" in manifest:
-        graph_path = _repo_path(manifest["ghidra_export"]) / "funcs.csv"
+    try:
+        graph_path = rom_sources.l0_dir(manifest["rom"]) / "funcs.csv"
+        names = rom_sources.function_names(manifest["rom"])
+    except ValueError as error:
+        raise ModelError(str(error)) from error
     structural = {}
-    if graph_path and graph_path.exists():
-        for row in _read_csv(graph_path):
-            start = _parse_address(row["addr"], f"{graph_path}:{row['_line']}")
-            if start >= rom_size or row.get("is_external") == "true":
-                continue
-            size = int(row["size"])
-            if size <= 0:
-                continue
-            structural[start] = row
-    elif graph_path:
-        warnings.append(
-            f"Ghidra function export is unavailable at {_display_path(graph_path)}; "
-            "reviewed functions use point extents."
-        )
-    else:
-        warnings.append("Ghidra function structure is not declared for this ROM.")
+    for row in _read_csv(graph_path):
+        start = _parse_address(row["addr"], f"{graph_path}:{row['_line']}")
+        if start >= rom_size or row.get("is_external") == "true":
+            continue
+        size = int(row["size"])
+        if size <= 0:
+            continue
+        structural[start] = row
 
     objects = []
     for start in sorted(set(structural) | set(reviewed)):
@@ -443,10 +437,10 @@ def _function_objects(manifest, rom_size, warnings):
         end = min(rom_size, start + max(1, body_size))
         if start >= rom_size:
             continue
-        ghidra_name = graph["name"] if graph else f"FUN_{start:08x}"
+        function_name = rom_sources.function_name(names, f"{start:08x}")
         has_review = review is not None
         if has_review:
-            fallback = ghidra_name if not GENERIC_FUNCTION_RE.fullmatch(ghidra_name) else f"Function {_hex(start)}"
+            fallback = function_name if not GENERIC_FUNCTION_RE.fullmatch(function_name) else f"Function {_hex(start)}"
             label = _first_sentence(review["semantics"], fallback)
             description = review["semantics"]
             note = review["note"]
@@ -458,15 +452,12 @@ def _function_objects(manifest, rom_size, warnings):
                 f"{_display_path(graph_path)}:{graph['_line']}" if graph else "",
             )
         else:
-            label = ghidra_name
-            description = "Ghidra function structure without a reviewed semantic annotation."
+            label = function_name
+            description = "L0 function structure without a reviewed semantic annotation."
             note = ""
             confidence = "structural"
             role = ""
-            sources = (
-                f"{_display_path(graph_path)}:{graph['_line']}"
-                if graph_path else "",
-            )
+            sources = (f"{_display_path(graph_path)}:{graph['_line']}",)
         objects.append(_object(
             object_id=f"function:{start:08x}",
             layer="structure",
@@ -483,7 +474,7 @@ def _function_objects(manifest, rom_size, warnings):
             exact_extent=bool(graph),
             tags=("function", role, confidence, "reviewed" if has_review else "structure-only"),
             meta=_meta(
-                ghidra_name=ghidra_name,
+                function_name=function_name,
                 body_bytes=body_size if graph else "unknown",
                 thunk=graph.get("is_thunk") if graph else "",
             ),

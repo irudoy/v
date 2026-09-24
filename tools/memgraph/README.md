@@ -26,8 +26,8 @@ bind mount. Do not edit or replace this directory during normal ingestion.
 
 | Layer | Tracked inputs | Loader owner |
 |---|---|---|
-| Firmware structure | Ghidra `funcs.csv`, `calls.csv`, and `xrefs.csv` exports | `load_graph.py`, `load_xrefs.py` |
-| Map structure and measured values | Resolver censuses, ROM registry, interpolation registry, findings, and axis facts | `load_maps.py` |
+| Firmware structure | `funcs.csv`, `calls.csv`, and `xrefs.csv` of the L0 of the ROM's layout in `l0/<layout>/`, and the function names of `tools/ghidra/symbols/<layout>.csv` | `load_graph.py`, `load_xrefs.py` |
+| Map structure and measured values | Resolver censuses of the L0, ROM registry, interpolation registry, findings, and axis facts | `load_maps.py` |
 | Reviewed firmware claims | `defs/<source>.funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv`, and inheritance model | `load_code.py` |
 | Diagnostic bindings | `defs/<source>.diagnostic-bindings.csv` | `load_diagnostic_bindings.py` |
 | Global diagnostic corpus | `refs/diagnostics/` projections and source manifests | `ingest_diagnostics.py` |
@@ -35,7 +35,9 @@ bind mount. Do not edit or replace this directory during normal ingestion.
 | Reference A2L catalog | Pinned reference definitions | `load_a2l.py` |
 
 `tools/rom_sources.py` resolves the target ROM, canonical annotation source,
-exact image hashes, code-equality ranges, and default Ghidra export directory.
+exact image hashes, code-equality ranges, the layout whose L0 holds the ROM's
+code, and the curated function names of that layout. A function without a
+curated name is `FUN_<addr>` in the graph.
 
 ## Diagnostic corpus
 
@@ -70,8 +72,9 @@ load_graph.py
 
 Preflight validates headers, foreign keys, addresses, ROM identity, inherited
 code ranges, map geometry, diagnostic bindings, and claim dependencies before
-the first graph write. `--export-dir` overrides the registered local Ghidra
-export only for an explicitly selected export.
+the first graph write. Preflight first holds the L0 of the ROM's layout to its
+manifest, the Ghidra pin, and the image catalog. `--l0-dir` reads another
+directory in the L0 format, such as a staged export, without that check.
 
 The diagnostic corpus must exist before a ROM ingest that loads diagnostic
 bindings. `ingest_diagnostics.py` owns the corpus and clears every
@@ -80,8 +83,8 @@ bindings. `ingest_diagnostics.py` owns the corpus and clears every
 projections omit their static diagnostic context and
 `tools/mapkit/validate_map_switching.py` reports a difference from the tracked
 common definitions. JK03A receives canonical semantic annotations through
-`defs/rom-inheritance.toml` but retains its own ROM measurements and graph
-layer.
+`defs/rom-inheritance.toml` and reads the L0 of layout `7mfk`, but retains its
+own ROM measurements and graph layer.
 
 ## Provenance audit
 

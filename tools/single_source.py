@@ -186,14 +186,6 @@ def check_export_root():
                     f"{path} names ~{found}, {EXPORT_OWNER} exports under "
                     f"{expected}"
                 )
-    for path in _tracked(".toml"):
-        if not path.startswith(ATLAS_MANIFESTS):
-            continue
-        export = _toml(path).get("ghidra_export", "")
-        if not export.startswith(expected + "/"):
-            raise SourceError(
-                f"{path} reads its export from {export!r}, outside {expected}"
-            )
     return expected
 
 

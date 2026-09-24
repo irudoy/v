@@ -29,7 +29,8 @@ stock ROM + tracked source registries
 | `rom-images/roms.csv` | ROM label, exact file path, and SHA-256 identity |
 | `rom-images/README.md` and per-ROM provenance | Stock source, hardware identity, and applicability boundary |
 | `defs/rom-inheritance.toml` | Canonical annotation source, target ROM, exact hashes, and code-equality ranges |
-| `tools/ghidra/symbols.csv` | Curated function names |
+| `l0/<layout>/` | Normalized Ghidra structure, reference, token, and accessor-census exports of each layout with their manifest |
+| `tools/ghidra/symbols/<layout>.csv` | Curated function names of a layout |
 | `defs/<source>.interp.csv` | Interpolation entry, family, role, geometry, element type, and implicit-axis mechanics; a fused entry names itself as its kernel |
 | `defs/<source>-<target>.interp-correspondence.csv` | Reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
 | `defs/<source>.findings.csv` | Map role, semantics, scaling, confidence, evidence, and manually traced non-interpolation geometry |
@@ -49,15 +50,18 @@ measures values from that image using the recovered address, geometry, and
 storage type.
 
 `<source>` is the canonical annotation layer selected by
-`rom-inheritance.toml`. An exact-code target receives reviewed source claims but
-keeps its own Ghidra export, image measurements, graph nodes, and diagnostic
-scope. No copied XML, XDF, ledger, or presentation layer is created for an
+`rom-inheritance.toml`. An exact-code target receives reviewed source claims,
+reads the L0 of its family's layout, and keeps its own image measurements,
+graph nodes, and diagnostic scope. No copied XML, XDF, ledger, or presentation layer is created for an
 inherited target.
 
 ## Headless Ghidra exports
 
-Ghidra projects and export directories remain machine-local. Scripts under
-`tools/ghidra/` produce deterministic inputs for the loaders:
+Ghidra projects remain machine-local. Scripts under `tools/ghidra/` produce
+deterministic exports. `tools/ghidra/export-l0.sh` normalizes the structure,
+reference, token, and accessor-census exports of each layout into the tracked
+`l0/<layout>/`, which the loaders read; the other outputs stay in machine-local
+export directories as review inputs:
 
 | Output | Producer | Content |
 |---|---|---|

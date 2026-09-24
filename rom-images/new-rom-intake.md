@@ -44,6 +44,12 @@ declaration in `homology.toml` carry the same labels, and
 `../defs/rom-identities.toml` and `../patches/checksum-layouts.toml` name only
 registered images.
 
+A family declaration names its layouts: a family that inherits addresses has
+one layout of its canonical image, and every other family has one layout per
+member. A new layout needs its census plan in `../tools/kb/config.toml` and its
+L0 from `../tools/ghidra/export-l0.sh <layout>`, which `make check` then
+verifies. An exact-code member joins the layout of its family.
+
 Read identifiers out of the image rather than from the dump tool: the MCU
 marking `SH705822N` or `SH705927N`, the nine-character software base
 identifier, and the doubled `1<LABEL>00000` software version whose label field

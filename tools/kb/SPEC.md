@@ -695,7 +695,9 @@ exported from the Ghidra program of the layout's L0 image.
 | `accessors.<kernel>.csv` | the columns of `ResolveAccessors.java` | Lookup callsites with operands and verdicts, one file per kernel |
 
 - `funcs.csv` omits the Ghidra function name, because `RenameFuncs.java`
-  writes project names into programs. Names come from L1.
+  writes project names into programs. Names come from
+  `tools/ghidra/symbols/<layout>.csv` until their conversion into L1
+  ([Ownership by stage](#19-ownership-by-stage)).
 - `function_tokens.csv` carries `ins_addr`, so the instruction stream and
   function bodies need no listing.
 - `accessors.<kernel>.csv` covers every kernel of the layout's interpolation
@@ -1765,6 +1767,7 @@ the registry is a projection until stage 11 keeps it generated or removes it.
 | `rom-images/homology.toml` | Families and relationships; layouts from stage 2 | not converted | itself | |
 | `defs/rom-identities.toml`, `defs/rom-inheritance.toml` | Image identities and definition inheritance | not converted | themselves | |
 | Ghidra export directories | Code structure | 1 | `l0/<layout>/` | Local cache of decompilations, listings, and research exports |
+| `tools/ghidra/symbols/<layout>.csv` | Curated function names of `1nd` and `7mfk` | 5 for `7mfk`, 9 for `1nd` | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
 | `kb/names.csv` | Generated names of symbols in legacy registries | created in 2 | itself, shrinking with each conversion | Removed in 11 |
 | `patches/rom-address-profiles.toml` | Target symbols, hooks, DIDs, telemetry sources and their unavailability, runtime allocations and variants, and their evidence | 3 | Meanings and statuses; targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` | Projection |
 | `patches/*-runtime-correspondence.csv` | Correspondence of source and target symbols by feature domain | 3 | Symbols and statuses | Projection |
@@ -1806,12 +1809,13 @@ the registry is a projection until stage 11 keeps it generated or removes it.
   kind, and address are one symbol.
 - A meaning takes as its semantic name the registry id that names it: a key
   of `map_families`, `map_symbols`, `rolling_symbols`, or `can_symbols`, a
-  key of the symbol tables of `patches/runtime_targets.py`, or a native table
-  id. The source meaning of a telemetry field takes the field name without
-  the `_raw` suffix. When registries name one meaning differently, the native
-  table id wins over the symbol key and the symbol key over the field name;
-  `kb audit` lists the others, and the conversion records them as `former`
-  names.
+  key of the symbol tables of `patches/runtime_targets.py`, a native table
+  id, or a curated function name of `tools/ghidra/symbols/<layout>.csv`. The
+  source meaning of a telemetry field takes the field name without the `_raw`
+  suffix. When registries name one meaning differently, the native table id
+  wins over the symbol key, the symbol key over the curated function name,
+  and the curated function name over the field name; `kb audit` lists the
+  others, and the conversion records them as `former` names.
 - A `hook` meaning is one ROM word. It takes the canonical key that
   `MAP_HOOK_KEYS` or `VQ37_MAP_HOOK_KEYS` of `patches/runtime_targets.py`
   joins to the per-layout keys of the word, or else the key of the first

@@ -148,7 +148,7 @@ Immo-off may leave NATS DTCs and the security indicator active.
 
 ## 1ND0A NATS state analysis
 
-`../tools/ghidra/symbols.csv` names the 1ND0A NATS functions. They latch the
+`../tools/ghidra/symbols/1nd.csv` names the 1ND0A NATS functions. They latch the
 result of the BCM exchange into registered, Lock, and present bits and into
 DTCs P1610-P1615 through calibrated thresholds. No function compares a stored
 ID with a received one bytewise, and the Developer Immobilizer flag at `0x8668`

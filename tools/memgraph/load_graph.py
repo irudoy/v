@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-# Load a Ghidra call graph (funcs.csv + calls.csv from ExportGraph.java) into Memgraph and
+# Load a call graph (funcs.csv + calls.csv of the L0 of the ROM's layout) into Memgraph and
 # cluster subsystems with Louvain on this ROM's call-graph projection. Nodes are
 # :Func {rom,addr,name,size,is_thunk,is_external}; relationships are
-# (:Func)-[:CALLS]->(:Func). Repeated runs for the same ROM are idempotent because its
-# nodes are recreated.
+# (:Func)-[:CALLS]->(:Func). A function takes its curated name from
+# tools/ghidra/symbols/<layout>.csv and FUN_<addr> otherwise. Repeated runs for the same ROM
+# are idempotent because its nodes are recreated.
 #
 # Invocation: uv run python tools/memgraph/load_graph.py \
-#           <export_dir> <rom_label>
-# Defaults: export_dir = ~/tools/ghidra-projects/export-1ND0A, rom = 1ND0A.
+#           <l0_dir> <rom_label>
+# Defaults: l0_dir = the L0 of the ROM's layout, rom = 1ND0A.
 import csv
 import os
+from pathlib import Path
 import sys
 from neo4j import GraphDatabase
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import rom_sources  # noqa: E402
 
 BOLT = "bolt://localhost:7687"
 
@@ -22,11 +27,14 @@ def read_csv(path):
 
 
 def main():
-    default_dir = os.path.expanduser("~/tools/ghidra-projects/export-1ND0A")
-    outdir = sys.argv[1] if len(sys.argv) > 1 else default_dir
     rom = sys.argv[2] if len(sys.argv) > 2 else "1ND0A"
+    outdir = sys.argv[1] if len(sys.argv) > 1 else str(rom_sources.l0_dir(rom))
 
-    funcs = read_csv(os.path.join(outdir, "funcs.csv"))
+    names = rom_sources.function_names(rom)
+    funcs = [
+        {**row, "name": rom_sources.function_name(names, row["addr"])}
+        for row in read_csv(os.path.join(outdir, "funcs.csv"))
+    ]
     calls = read_csv(os.path.join(outdir, "calls.csv"))
     print(f"CSV: {len(funcs)} funcs, {len(calls)} calls; rom={rom}")
 

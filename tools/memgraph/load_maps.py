@@ -13,8 +13,8 @@
 #   defs/<source>.findings.csv - manual map layer: facts established by a person that the
 #                                census cannot provide (semantics, units, confidence, role);
 #   defs/<source>.axes.csv   - manual axis layer: axis semantics and units.
-# defs/rom-inheritance.toml resolves canonical <source>. An exact-code inheritor retains its
-# own export, image, and graph layer without copying these files. Units belong to the manual
+# defs/rom-inheritance.toml resolves canonical <source>. An exact-code inheritor reads the L0
+# of its family's layout and retains its own image and graph layer without copying these files. Units belong to the manual
 # layer rather than the census because a consumer trace establishes scaling, not a call
 # operand. The resolver sees an array pointer but not how engine arithmetic transforms its
 # value.
@@ -92,8 +92,8 @@
 # did not trace semantics. Only a trace can promote it, through the manual layer.
 #
 # Invocation: uv run python tools/memgraph/load_maps.py \
-#           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
-# Defaults: export_dir = ~/tools/ghidra-projects/export-JK08A-exact, rom = JK08A.
+#           <l0_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
+# Defaults: l0_dir = the L0 of the ROM's layout, rom = JK08A.
 # defs/rom-inheritance.toml resolves structural and manual-layer paths.
 import csv
 import glob
@@ -651,9 +651,8 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
 
 def main():
     rom = sys.argv[2] if len(sys.argv) > 2 else "JK08A"
-    default_dir = str(rom_sources.default_export_dir(rom))
-    outdir = sys.argv[1] if len(sys.argv) > 1 else default_dir
     try:
+        outdir = sys.argv[1] if len(sys.argv) > 1 else str(rom_sources.l0_dir(rom))
         source_model = rom_sources.resolve(rom)
         rom_sources.verify_image_binding(source_model)
     except ValueError as error:

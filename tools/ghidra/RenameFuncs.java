@@ -1,10 +1,11 @@
-// Apply curated function names from symbols.csv to the current Ghidra program.
-// Git file tools/ghidra/symbols.csv is the naming source of truth. Ghidra and
-// Memgraph consume the names for readable decompilation and Lab navigation.
-// A subsequent ExportGraph.java run reads them through getName() into funcs.csv.
+// Apply curated function names to the current Ghidra program.
+// tools/ghidra/symbols/<layout>.csv is the naming source of truth of one layout
+// of rom-images/homology.toml; apply it only to a program of that layout. The
+// names make decompilations readable; the Memgraph loaders and the ROM atlas
+// read the same file, because L0 exports carry no function names.
 //
 // Usage: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
-//           -scriptPath tools/ghidra -postScript RenameFuncs.java <symbols.csv>
+//           -scriptPath tools/ghidra -postScript RenameFuncs.java <symbols/<layout>.csv>
 // -noanalysis is valid because setName does not require auto-analysis, and the
 // program is still saved when headless commits the script transaction. The CSV
 // path is absolute. CSV columns are addr,name,note; addr is hexadecimal without
@@ -20,7 +21,7 @@ public class RenameFuncs extends GhidraScript {
     @Override
     public void run() throws Exception {
         if (getScriptArgs().length < 1) {
-            println("VQ_RENAME: missing <symbols.csv> argument");
+            println("VQ_RENAME: missing <symbols/<layout>.csv> argument");
             return;
         }
         String csv = getScriptArgs()[0];

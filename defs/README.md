@@ -75,8 +75,8 @@ JK00C correspondences compose reviewed JK08A-to-JK00D operands only through
 unique exact or normalized JK00D-to-JK00C function matches. The generator
 validates the resulting target geometry and stock bytes before emission.
 
-`tools/rom_correspondence.py` combines this registry with machine-local Ghidra
-function signatures, call ordinals, and resolver censuses. Its function and
+`tools/rom_correspondence.py` combines this registry with the function
+signatures, call ordinals, and resolver censuses of the L0 of two layouts. Its function and
 entity outputs are deterministic review candidates. They do not establish
 semantic inheritance by themselves; promoted target claims remain explicit
 tracked evidence.
@@ -119,8 +119,8 @@ target address.
 only as axes; 26 further axis operands are also read as maps and are listed as
 maps. The 458 axis operands exceed the 457 axes of the map layer by `0x016C46`,
 which is read only at call site `0x072794`, where no map base is recovered.
-`tools/census_homology.py` writes it from the two Ghidra exports and applies
-three methods in order. `aligned-reference` aligns a 1ND0A function with its
+`tools/census_homology.py` writes it from the L0 of layouts `1nd` and `1me3b`
+and applies three methods in order. `aligned-reference` aligns a 1ND0A function with its
 best 1ME3B function by instruction shape, at a similarity of at least 0.75, and
 pairs the census operands loaded by aligned instructions when every vote of the
 source operand names one target of equal geometry. `unique-exact-content` pairs
@@ -137,7 +137,7 @@ read separate copies, `0x00E17C` and `0x01027C`, of the hot-idle surface
 that recur in the census, and `no-content-match` for bytes absent from the
 1ND0A census. The ledger is a candidate-level address index and assigns no
 semantics. `make check` validates it against both stock images and the
-published registries without Ghidra exports.
+published registries and requires it to equal the ledger that L0 produces.
 
 `JK08A-JK78C.definition-addresses.csv` binds 27 source maps to JK78C storage
 and records eighteen source maps as unsupported. The unsupported entries cover

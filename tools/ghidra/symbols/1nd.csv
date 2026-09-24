@@ -1,0 +1,40 @@
+# Curated function names of layout 1nd, whose L0 image is 1ND0A.
+# RenameFuncs.java applies them to a Ghidra program of the layout; the Memgraph
+# loaders and the ROM atlas read them with tools/rom_sources.py.
+# Format: addr,name,note (addr is eight hexadecimal digits; note becomes the
+# function plate comment and holds no comma).
+addr,name,note
+0011363c,hcan1_init,HCAN1 controller init (MCR/BCR/mailbox)
+00113a3e,hcan0_init,HCAN0 controller init
+00113c7c,hcan1_rx_dispatch,HCAN1 RX dispatch: RXPR -> msg-table FFFEAFAB
+00113e6e,hcan0_rx_dispatch,HCAN0 RX dispatch
+000d41da,can1_comm_diag,CAN1 link diagnostics
+000d4596,can0_comm_diag,CAN0 link diagnostics
+000b741e,immo_dtc_status_engine,DTC status engine (group;bit) -> RAM status FFFED700; immo group 0x0d
+000b6988,immo_dtc_dispatcher,DTC monitor dispatcher; immo struct base FFFEB81E
+00116ad6,dtc_mil_prioritizer,DTC/MIL priority scan (331 rec x12); not the immo gate
+000b8c60,immo_cond_monitor_1,immo condition guard (base+0x34/37/38/39/3b) + attempt counters; twin 000b955c
+000b955c,immo_cond_monitor_2,twin of immo_cond_monitor_1 (second channel)
+00045f30,immo_status_aggregate,DTC aggregate: writes 0xFFFED704 bit0x10; clears when Lock 0xFFFEB852&2 is valid plus 0xFFFEB8C8&0x40; sets from DTC faults 0xFFFED4F2/F5/0xFFFED32D
+000302b6,inj_oneshot_pulse_driver,ATU ch8 one-shot; 6-cylinder loop -> DCNT8A-8F pulse width; enable 0xFFFEB7F3&0x40 plus override 0xFFFEB8FB&2 (both are NOT immo)
+0007d3e8,inj_pulse_scheduler,injection pulse-width scheduler; cylinder data 0xFFFE9210; override 0xFFFEB8FB&2 (NOT immo)
+000799d4,inj_oneshot_dispatch,dispatch -> inj_oneshot_pulse_driver; writes cylinder mask 0xFFFEB862
+0002975a,atu2_init,ATU-II full init (channels 0-11 plus ch8 one-shot DCNT/DSTR/OTR)
+00021218,canram_enable_commit,periodic copy 0xFFFEB7F4 -> 0xFFFEB7F3 (injection-enable byte); unconditional; NOT immo
+0012604c,consult_actuator_test,CONSULT active test; param==3 forces injection override 0xFFFEB8FB|2; reads immo DTC 0xFFFED704
+000bef34,immo_lock_task,root of the periodic immo task -> immo_lock_state_machine plus indirect PTR
+000bef44,immo_lock_state_machine,dispatcher: reset-clear 000bf8e0 -> setter 000bf0ac -> DTC monitors 000bf53a/000bf756; controls reset gate 0xFFFEB8F7&2
+000bf0ac,immo_lock_setter,SET Lock 0xFFFEB852|2 when *0xFFFE81AC>0x1f; also immo condition/DTC bits 0xFFFEB852-859 and immo-present 0xFFFEB8C8&0x40
+000bf8e0,immo_struct_reset,CLEAR Lock 0xFFFEB852&~2 plus condition bits +0x34..+0x3b and large DTC structure 0xFFFED16C; gated by 0xFFFEB8F7&2
+000bf53a,immo_dtc_fault_counters,immo/DTC fault counters saturating at 0xff
+000bf756,immo_dtc_table_scan,scan of the 331-record DTC table (stride 3) with threshold 0x28
+000ccf08,immo_registration,marriage/registration: latches registered bits 0xFFFEB852&0x01 and 0xFFFEB853&0x40 from source bits 0xFFFEA232/A233; attempt counter <0xb; writes ID slots into arrays from 0xFFFEC7FA (logged value 0xFFFE880C); calls immo_channel_evaluator
+000cd374,immo_channel_evaluator,immo channel evaluator (param 0/1): counts/levels versus calibrated thresholds -> source bits 0xFFFEA232&1 / 0xFFFEA233&2 (condition met) plus event codes 0xa8..0xab through indirect PTR_000cd830; input to immo_registration; NOT a bytewise cryptographic ID comparison
+0007cab0,fueltrim_correction,fuel-trim correction; sets 0xFFFEB852 bit 0x08 after a counter threshold; reads Lock as RMW rather than a gate
+00067cce,diag_status_eval,diagnostic status (misfire/rationality) -> 0xFFFE94xx bits; Lock is one input; does not touch actuators
+00068104,diag_periodic_task,periodic diagnostic task; reads Lock; callees write only RAM 0xFFFE82xx (no ATU)
+0008719c,immo_present_deriver,large periodic CAN-RAM destager 0xFFFEE2xx plus limit arbiter (clamps to 0x6400 = 100%); among hundreds of outputs are immo-present 0xFFFE930E/0xFFFE92E5; callee cluster 0x00088xxx contains destage/scale substeps over slices of buffer fffee2xx and is NOT an ID comparator
+00078450,immo_signal_conditioner,immo channel conditioner (param ch 0/1): source is indirect getter PTR_FUN=00022310/00022318; scale/offset/clamp from ROM calibrations 0x92d2/d4/d6 and 0x89a6/a7; output is 16-bit 0xFFFE880C[ch] plus quality/saturation bits 0xFFFE8808-8816; input to immo_channel_evaluator; NOT bytewise CAN ID reception
+000812fa,engine_immo_status_reporter,reads immo-present 0xFFFE930E among engine signals; writes status images 0xFFFE830E/0xFFFEA366 plus staged 0xFFFEB3A2/B440; feeds a status frame under generic CAN TX; zero hardware registers
+000c7bc4,immo_status_byte_stager,reads immo-present 0xFFFE930E; stages status bytes 0xFFFEB3A2-A4/0xFFFEB440/0xFFFEB294 for frame cluster 0x000c8xxx; zero hardware registers
+000d3ed0,hcan_mailbox_config,init-time mailbox-control configuration 0xFFFFD904 (=0x700); called from hcan1_init; NOT a runtime TX serializer (mailbox data at 0xFFFFD900+ is written through a base pointer)

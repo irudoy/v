@@ -51,8 +51,8 @@ help:
 		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
-		'  rom-correspondence Compare two Ghidra function-signature exports.' \
-		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence.' \
+		'  rom-correspondence Compare the function-signature exports of two layouts.' \
+		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence from L0.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'' \
@@ -67,8 +67,8 @@ help:
 		'  INPUT             Input ROM path for rom-verify and rom-build.' \
 		'  OUTPUT            Output ROM path for rom-build.' \
 		'  PROFILE           Optional local unified-builder profile.' \
-		'  CORRESPONDENCE_SOURCE_EXPORT  Source Ghidra export directory.' \
-		'  CORRESPONDENCE_TARGET_EXPORT  Target Ghidra export directory.' \
+		'  CORRESPONDENCE_SOURCE_EXPORT  Source export directory, such as l0/<layout>.' \
+		'  CORRESPONDENCE_TARGET_EXPORT  Target export directory, such as l0/<layout>.' \
 		'  CORRESPONDENCE_OUTPUT  Optional function-correspondence CSV path.' \
 		'  CORRESPONDENCE_ARGS  Optional additional correspondence arguments.' \
 		'  UV, PYTHON, PYTEST  Python entry points (default: uv, uv run python, uv run pytest).' \
@@ -152,11 +152,7 @@ rom-correspondence:
 		"$(CORRESPONDENCE_TARGET_EXPORT)" $(if $(strip $(CORRESPONDENCE_OUTPUT)),--output "$(CORRESPONDENCE_OUTPUT)",) $(CORRESPONDENCE_ARGS)
 
 census-homology:
-	@test -n "$(strip $(CORRESPONDENCE_SOURCE_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_SOURCE_EXPORT is required' >&2; exit 2; }
-	@test -n "$(strip $(CORRESPONDENCE_TARGET_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_TARGET_EXPORT is required' >&2; exit 2; }
-	$(PYTHON) tools/census_homology.py \
-		--source-export "$(CORRESPONDENCE_SOURCE_EXPORT)" \
-		--target-export "$(CORRESPONDENCE_TARGET_EXPORT)"
+	$(PYTHON) tools/census_homology.py$(if $(strip $(CORRESPONDENCE_SOURCE_EXPORT)), --source-export "$(CORRESPONDENCE_SOURCE_EXPORT)",)$(if $(strip $(CORRESPONDENCE_TARGET_EXPORT)), --target-export "$(CORRESPONDENCE_TARGET_EXPORT)",)
 
 rom-verify:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }

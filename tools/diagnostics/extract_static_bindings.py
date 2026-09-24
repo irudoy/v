@@ -4,8 +4,9 @@
 The extractor joins three exact artifacts:
 
 * service 0x22 DIDs and parameter claims from the diagnostic corpus;
-* ROM constants and instruction immediates from ExportDiagnosticRefs.java;
-* function-to-RAM references from ExportXrefs.java.
+* ROM constants and instruction immediates from ExportDiagnosticRefs.java in
+  the machine-local export directory of the ROM;
+* function-to-RAM references from xrefs.csv of the L0 of the ROM's layout.
 
 The output never feeds load_diagnostic_bindings.py directly. A DID literal can
 be unrelated data, and every RAM address in the same function is only a hint
@@ -258,7 +259,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument(
         "--export-dir",
         type=Path,
-        help="Ghidra export directory; default: canonical directory registered for the ROM",
+        help="machine-local export directory that holds diagnostic_refs.csv; "
+        "default: the research export directory of the ROM",
     )
     result.add_argument(
         "--output",
@@ -285,7 +287,8 @@ def main() -> int:
         rom_sources.verify_image_binding(model)
         definitions = diagnostic_dids()
         refs = read_csv(export_dir / "diagnostic_refs.csv", REF_FIELDS)
-        xrefs = read_csv(export_dir / "xrefs.csv", XREF_FIELDS)
+        rom_sources.verify_l0(args.rom)
+        xrefs = read_csv(rom_sources.l0_dir(args.rom) / "xrefs.csv", XREF_FIELDS)
         rows = build_candidates(
             definitions, refs, ram_by_function(xrefs)
         )

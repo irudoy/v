@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Single annotation source for exact-code ROMs without copying defs/<rom>.*."""
+"""Single annotation source for exact-code ROMs without copying defs/<rom>.*.
+
+The code structure of a ROM is the L0 of its layout in `l0/<layout>/`, and the
+curated function names of the layout are in `tools/ghidra/symbols/<layout>.csv`.
+"""
 
 from dataclasses import dataclass
 import csv
@@ -8,15 +12,25 @@ from pathlib import Path
 import re
 import tomllib
 
+from kb import l0 as kb_l0
+from kb import repo as kb_repo
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REGISTRY = ROOT / "defs" / "rom-inheritance.toml"
 IMAGE_REGISTRY = ROOT / "rom-images" / "roms.csv"
+L0_ROOT = Path("l0")
+SYMBOL_ROOT = Path("tools/ghidra/symbols")
+SYMBOL_HEADER = "addr,name,note"
+# Machine-local research exports: decompilations, listings, and the review
+# inputs that L0 does not carry, such as diagnostic_refs.csv.
 EXPORT_ROOT = Path("~/tools/ghidra-projects").expanduser()
 EXACT_EXPORT_NAMES = {
     "JK08A": "export-JK08A-exact",
 }
 ROM_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+ADDRESS_RE = re.compile(r"^[0-9a-f]{8}$")
+FUNCTION_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 KINDS = frozenset({"exact-code"})
 FIELDS = frozenset({
@@ -164,10 +178,88 @@ def resolve(rom, path=DEFAULT_REGISTRY):
 
 
 def default_export_dir(rom):
-    """Return the canonical Ghidra export directory for a ROM label."""
+    """Return the machine-local research export directory for a ROM label."""
     if not isinstance(rom, str) or not ROM_RE.fullmatch(rom):
         raise SourceModelError(f"invalid ROM label {rom!r}")
     return EXPORT_ROOT / EXACT_EXPORT_NAMES.get(rom, f"export-{rom}")
+
+
+def layout_of(rom, root=ROOT):
+    """Return the id of the layout whose L0 holds the code of a ROM.
+
+    A family that inherits addresses has one layout for all its members;
+    every other family has one layout per member.
+    """
+    if not isinstance(rom, str) or not ROM_RE.fullmatch(rom):
+        raise SourceModelError(f"invalid ROM label {rom!r}")
+    for layout in kb_repo.layouts(root).values():
+        if rom in layout.images:
+            return layout.id
+    raise SourceModelError(
+        f"ROM {rom} belongs to no layout of rom-images/homology.toml"
+    )
+
+
+def l0_dir(rom, root=ROOT):
+    """Return the tracked L0 directory of a ROM's layout."""
+    return root / L0_ROOT / layout_of(rom, root)
+
+
+def verify_l0(rom, root=ROOT):
+    """Hold the L0 of a ROM's layout to its manifest, the pins, and the catalog."""
+    failures = kb_l0.check_all(root, only={layout_of(rom, root)})
+    if failures:
+        raise SourceModelError(
+            "L0 check failed: " + "; ".join(str(failure) for failure in failures[:5])
+        )
+
+
+def function_names(rom, root=ROOT):
+    """Return {entry address: curated name} of the layout of a ROM.
+
+    Every row names a function entry of the layout's L0 once, and every name
+    is unique. A layout without a registry has no curated names.
+    """
+    layout = layout_of(rom, root)
+    path = root / SYMBOL_ROOT / f"{layout}.csv"
+    if not path.exists():
+        return {}
+    with (root / L0_ROOT / layout / "funcs.csv").open(newline="", encoding="utf-8") as source:
+        entries = {row["addr"] for row in csv.DictReader(source)}
+    names = {}
+    header = False
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        where = f"{path.relative_to(root)}:{number}"
+        if not line.strip() or line.startswith("#"):
+            continue
+        if not header:
+            if line != SYMBOL_HEADER:
+                raise SourceModelError(f"{where}: header must be {SYMBOL_HEADER}")
+            header = True
+            continue
+        fields = line.split(",")
+        if len(fields) != 3:
+            raise SourceModelError(f"{where}: expected addr,name,note without commas in note")
+        addr, name, _ = fields
+        if not ADDRESS_RE.fullmatch(addr):
+            raise SourceModelError(f"{where}: addr is not eight lowercase hexadecimal digits")
+        if not FUNCTION_NAME_RE.fullmatch(name):
+            raise SourceModelError(f"{where}: invalid function name {name!r}")
+        if addr not in entries:
+            raise SourceModelError(f"{where}: {addr} is not a function entry of l0/{layout}")
+        if addr in names:
+            raise SourceModelError(f"{where}: {addr} is named twice")
+        if name in names.values():
+            raise SourceModelError(f"{where}: {name} names two functions")
+        names[addr] = name
+    if not header:
+        raise SourceModelError(f"{path.relative_to(root)}: header {SYMBOL_HEADER} is missing")
+    return names
+
+
+def function_name(names, addr):
+    """Return the curated name of a function entry or its generated name."""
+    return names.get(addr, f"FUN_{addr}")
 
 
 def definition_paths(model):
