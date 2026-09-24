@@ -6,8 +6,11 @@
 // per row so an offline matcher can tolerate bounded insertions, deletions, and
 // literal relocation without treating approximate similarity as equality.
 //
+// Every row carries the instruction address, so the rows of one function list
+// its body, which can be non-contiguous, without a listing.
+//
 // Usage: -postScript ExportFunctionTokens.java <out_dir>
-// Output: function_tokens.csv (func_addr,ordinal,mnemonic,shape).
+// Output: function_tokens.csv (func_addr,ins_addr,ordinal,mnemonic,shape).
 //@category VQ
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.listing.Function;
@@ -49,7 +52,7 @@ public class ExportFunctionTokens extends GhidraScript {
         functions.sort(Comparator.comparing(Function::getEntryPoint));
 
         PrintWriter out = new PrintWriter(new FileWriter(output));
-        out.println("func_addr,ordinal,mnemonic,shape");
+        out.println("func_addr,ins_addr,ordinal,mnemonic,shape");
         int emittedFunctions = 0;
         int emittedInstructions = 0;
         for (Function function : functions) {
@@ -64,8 +67,9 @@ public class ExportFunctionTokens extends GhidraScript {
                 String mnemonic = instruction.getMnemonicString()
                         .toLowerCase(Locale.ROOT);
                 out.printf(
-                        "%s,%d,%s,%s%n",
+                        "%s,%s,%d,%s,%s%n",
                         function.getEntryPoint(),
+                        instruction.getAddress(),
                         ordinal++,
                         csv(mnemonic),
                         csv(normalize(instruction.toString())));

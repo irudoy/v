@@ -1,0 +1,253 @@
+layout = "1me3b"
+image = "1ME3B"
+image_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+program = "11ME3B-20260825-stock.bin"
+ghidra = "12.1.2"
+
+[census]
+interp = "defs/1ME3B.interp.csv"
+kernels = [
+    "00028ac0",
+    "00028c8c",
+    "00028e10",
+    "00028ff0",
+    "000291dc",
+    "000293d8",
+    "000295f4",
+    "000298b4",
+    "00029ba8",
+    "00029ec0",
+    "0002a0b4",
+    "0002a388",
+    "0002a6b4",
+    "0002a9a4",
+    "0002a9f4",
+    "0002aa48",
+    "0002aa98",
+    "0002aaec",
+    "0002ab40",
+    "0002ab98",
+    "0002abec",
+    "0002ac9c",
+    "0002ad6c",
+    "0002aeac",
+    "0002af88",
+    "0002b0d4",
+    "0002b1f0",
+    "0002b3b0",
+    "0002b5a4",
+    "0002b878",
+    "0002bba4",
+    "0002bbf8",
+    "0002bcd4",
+    "0002be20",
+]
+fused = [
+    "00028ac0",
+    "00028c8c",
+    "00028e10",
+    "00028ff0",
+    "000291dc",
+    "000293d8",
+    "000295f4",
+    "000298b4",
+    "00029ba8",
+    "00029ec0",
+    "0002a0b4",
+    "0002a388",
+    "0002a6b4",
+    "0002a9a4",
+    "0002a9f4",
+    "0002aa48",
+    "0002aa98",
+    "0002aaec",
+    "0002ab40",
+    "0002ab98",
+    "0002abec",
+    "0002ac9c",
+    "0002ad6c",
+    "0002aeac",
+    "0002af88",
+    "0002b0d4",
+    "0002b1f0",
+    "0002b3b0",
+    "0002b5a4",
+    "0002b878",
+    "0002bba4",
+    "0002bbf8",
+    "0002bcd4",
+    "0002be20",
+]
+copy_helpers = []
+
+[scripts]
+"ExportFunctionSignatures.java" = "aa0992582a77b13bcf505cf906b6196f1d81979aeb17b96b6d9d25736c4872f5"
+"ExportFunctionTokens.java" = "39516fb4b67103380285a17cd3f1787dec9730b30825793208d252f8b9c29180"
+"ExportGraph.java" = "2c450b1417b53e5401efb7aaa83de7e824a5e64f9972f47677305af4ea7055d9"
+"ExportXrefs.java" = "ae6b7be698e33f6172fc371b21fb86245d01ab887652a8471a35603fbf0c572c"
+"ProgramSha256.java" = "d9d345bc21e82ce5ba939be3787c7c2fd84e24bfa4959cb2b36da679b1f107bb"
+"ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
+
+[files."accessors.28ac0.csv"]
+sha256 = "ebac5e2ab01f9e932f774b95a76fbbdd6a6e032b5ec202ef24b108865f937df4"
+rows = 10
+
+[files."accessors.28c8c.csv"]
+sha256 = "af0f20c5680cf5abb4d0c3e4d8e15f245fcf3a08b0829ea04ab0291a4a5ebf28"
+rows = 2
+
+[files."accessors.28e10.csv"]
+sha256 = "c12ccecd8a8c21e11acc0c94e1a2677616feed76557425978f311a1f111d9429"
+rows = 24
+
+[files."accessors.28ff0.csv"]
+sha256 = "b595548cdc0b3a6a06fed2dedfe41281c069325e4f472166a14227938e762192"
+rows = 6
+
+[files."accessors.291dc.csv"]
+sha256 = "5f042443dbaffc5eadebcef61a8e261e5317c2ef5953d32a08207268a504030a"
+rows = 20
+
+[files."accessors.293d8.csv"]
+sha256 = "85a42ed42460a64e02f509fe238ba320fe87d9f0a9e2b557892ad793c906b2d6"
+rows = 9
+
+[files."accessors.295f4.csv"]
+sha256 = "2118a59d1252e8c2121f11b3cedce0229dd49d1dc75cc8a7dcc55b95fe87bbb3"
+rows = 1
+
+[files."accessors.298b4.csv"]
+sha256 = "1e45d2b6b2d95b3883c3785643bce21dba160e3ffc55d07792e38119fff216f5"
+rows = 44
+
+[files."accessors.29ba8.csv"]
+sha256 = "3bc825ffa407ed85fce8e83754022b29108353c89fc3070d248b7d651285fe60"
+rows = 14
+
+[files."accessors.29ec0.csv"]
+sha256 = "ac1108fdd47f6f1b830408b19374852799bf08bf3f2cdec00c927d4b9032f6d7"
+rows = 57
+
+[files."accessors.2a0b4.csv"]
+sha256 = "1256f26493cbceb5f9d60a225b594b2102acefe21f1c74c1eeb9974f0677cf03"
+rows = 56
+
+[files."accessors.2a388.csv"]
+sha256 = "9c923a4361d8700957778515715b3f374127938ec731a3628e16fa79f65f6dc1"
+rows = 13
+
+[files."accessors.2a6b4.csv"]
+sha256 = "e768a15013f658ba20abf7d224ba0d3c6b22f1ff8547b88482a71b52238e888b"
+rows = 3
+
+[files."accessors.2a9a4.csv"]
+sha256 = "e1fd391c8a117e824c676e3a2114b6e5a912071d971a8f9600b048ebbbc23615"
+rows = 7
+
+[files."accessors.2a9f4.csv"]
+sha256 = "57252f23b9fd606dab8d5e56bf4932ef8cf0be8e556f6e269a24c442ca879894"
+rows = 113
+
+[files."accessors.2aa48.csv"]
+sha256 = "ab93871668c8b9c068080a8cd3ac275a6eb4b8efdff60fbc5251c43e582cf7ba"
+rows = 86
+
+[files."accessors.2aa98.csv"]
+sha256 = "8747f4a1d38541bde7172e08e34e42cabd02d70a630639bb5afb573cbcd2cd56"
+rows = 10
+
+[files."accessors.2aaec.csv"]
+sha256 = "9e433b70af6385eb0f246ec6b724d212702ff7ba7233dda71f74b0ce0ba3e5da"
+rows = 4
+
+[files."accessors.2ab40.csv"]
+sha256 = "029a839921d063b9de4c18c0d3cc89f7b9dbcace568b40fdb71c58e0ce2f9574"
+rows = 20
+
+[files."accessors.2ab98.csv"]
+sha256 = "4d532545ee64afd23051e36d9a5770de53fc6de173b1409b5a7fa8d9f9e8e8c1"
+rows = 12
+
+[files."accessors.2abec.csv"]
+sha256 = "28e567a1a206870bea4016a69ef50368276bde443873d0c0d8b2a1eadba0c1d2"
+rows = 3
+
+[files."accessors.2ac9c.csv"]
+sha256 = "44bb894af74fb29f968d2ba35c1d2e69a9d115701b57f7396d4f3b188463edd5"
+rows = 93
+
+[files."accessors.2ad6c.csv"]
+sha256 = "836f782765741bf956b354ba444ff78cc37fd84b1b3167b57e4fbac2a6f6c98e"
+rows = 44
+
+[files."accessors.2aeac.csv"]
+sha256 = "5f568e4f1ec88fa33bcfd9208026558e8d5c6bd87f583fbdea5bce2cf6077936"
+rows = 100
+
+[files."accessors.2af88.csv"]
+sha256 = "6da02297f0e845454095f057dc3d6a790acb11df6ca8a4876695e4a8669656e6"
+rows = 123
+
+[files."accessors.2b0d4.csv"]
+sha256 = "db1e49735be4797577b9da663a09b9f9c737d2d6ff576ab420cc4460581f4923"
+rows = 85
+
+[files."accessors.2b1f0.csv"]
+sha256 = "cc86aa31af99247ff0a376c10ead630486c69f961fb89736232658136d5f97df"
+rows = 10
+
+[files."accessors.2b3b0.csv"]
+sha256 = "452c34ed0c4623245f60e63a78ce3b8a038b97f19d44a6d18d580a21c8a76790"
+rows = 19
+
+[files."accessors.2b5a4.csv"]
+sha256 = "d9dc6eb9a09e198f9863998421dfb79e72278af17a88341551b29b82d702a6a1"
+rows = 21
+
+[files."accessors.2b878.csv"]
+sha256 = "077ed20055571b34a7003d50254a5f698b75aa3c4e62c8341662e9484202e7ae"
+rows = 4
+
+[files."accessors.2bba4.csv"]
+sha256 = "44cfe9d536c1d7c84cf657b7287cec4e42cbbc2d7606e5321975cbef103569ab"
+rows = 2
+
+[files."accessors.2bbf8.csv"]
+sha256 = "01eb112b30d04538cc737ff887d015b33836bffb36d8391f3936e68aa95b1f7a"
+rows = 1
+
+[files."accessors.2bcd4.csv"]
+sha256 = "32ecca9b3f9b350c32d0502b098f751da7ef73f925636cfa96c586f21c665aed"
+rows = 38
+
+[files."accessors.2be20.csv"]
+sha256 = "3bed2f223b5fef1cdac0579fa9003eaa49d0615f4f660c0809ca60efebb24044"
+rows = 44
+
+[files."calls.csv"]
+sha256 = "10d5ef126a4092ee1739243253756ac59331de41434905d28d3807585833ee91"
+rows = 3695
+
+[files."funcs.csv"]
+sha256 = "7a4e334b0ebff136aa7c12131c7154662e7476b070b2f525421df15a3e7a2859"
+rows = 2320
+
+[files."function_references.csv"]
+sha256 = "f4eb5fc853c0943f8f4a2143b7202cee1735b1d4d0facdcdb4abb09d84cafff2"
+rows = 191012
+
+[files."function_signatures.csv"]
+sha256 = "3e511e531df920f4cabf48e60c77a33eb4901d7be6506571c52384e60f671d4d"
+rows = 2315
+
+[files."function_sites.csv"]
+sha256 = "8ed0d9f20da21f8f342e29d3433771c6ab991b21f7459f468b3b49d2cc1ab35d"
+rows = 5579
+
+[files."function_tokens.csv"]
+sha256 = "5c3bea11322661eca830af95cc5203c5fb52ac28474caf344a386e9cf31e3673"
+rows = 445342
+
+[files."xrefs.csv"]
+sha256 = "31973c9b42b6da2479d32080c2826a86d0243e4156c16ec0a9372b0d916a6885"
+rows = 55608

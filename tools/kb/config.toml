@@ -1,0 +1,40 @@
+[l0]
+scripts = [
+    "ExportFunctionSignatures.java",
+    "ExportFunctionTokens.java",
+    "ExportGraph.java",
+    "ExportXrefs.java",
+    "ProgramSha256.java",
+    "ResolveAccessors.java",
+]
+
+[l0.census.1me3b]
+interp = "defs/1ME3B.interp.csv"
+
+[l0.census.1nd]
+interp = "defs/1ND0A.interp.csv"
+
+[l0.census.7mfk]
+interp = "defs/JK08A.interp.csv"
+copy_helpers = ["00022558"]
+
+[l0.census.jk00c]
+interp = "defs/JK00D.interp.csv"
+copy_helpers = ["000225e4"]
+
+[l0.census.jk00d]
+interp = "defs/JK00D.interp.csv"
+copy_helpers = ["000225e4"]
+
+[l0.census.jk78c]
+interp = "defs/JK78C.interp.csv"
+
+# Memgraph instances of this repository that run at once, the main instance
+# included. The limit follows from the resident memory of a graph with the L0
+# of every layout and from its peak during a load, against the memory of the
+# container host beside the main graph and one load at a time in each instance.
+[instances]
+max_running = 3
+
+[budget]
+code = 4000

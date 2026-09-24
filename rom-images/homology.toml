@@ -20,6 +20,7 @@ mcu = "SH7058"
 flash_size = 0x100000
 software_ids = ["7MFKAVN86"]
 same_address_inheritance = true
+layouts = { 7mfk = "JK08A" }
 calibration_region = "0x008200:0x020000"
 exact_ranges = ["0x000000:0x008200", "0x020000:0x100000"]
 evidence = "All declared exact ranges and 2,312 confirmed JK08A executable function ranges are byte-identical. Differences are confined to calibration, identity, diagnostic, and checksum storage below 0x020000."
@@ -32,6 +33,7 @@ mcu = "SH7059"
 flash_size = 0x180000
 software_ids = ["8FZ35NEE6"]
 same_address_inheritance = true
+layouts = { 1nd = "1ND0A" }
 calibration_region = "0x008200:0x020000"
 exact_ranges = ["0x000000:0x008200", "0x020000:0x180000"]
 evidence = "The complete 1ND0A Ghidra function census and all bytes outside the lower calibration window are identical in 1ND3B. The two images differ at 5,251 byte positions from 0x008200 through 0x01bdfb."
@@ -44,6 +46,7 @@ mcu = "SH7059"
 flash_size = 0x180000
 software_ids = ["9FZ3V5DD1"]
 same_address_inheritance = false
+layouts = { 1me3b = "1ME3B" }
 evidence = "No other image in the collection reaches near-code similarity. Address-independent exact 64-byte code windows cover 18.96 percent symmetrically against the SH7059 1ND pair, and radiff2 6.1.6 reports Myers similarity 0.815 with edit distance 581,292. The same metric reads 0.790 for the declared divergent JK08A and JK00D pair and 0.979 for the near-code JK00C and JK00D pair, so 1ME3B sits in the divergent band. Programmed content reaches 0x139dc3 against 0x12c98f in 1ND, so the application is larger and independently laid out."
 
 [family.sh7058_8mfk]
@@ -54,6 +57,7 @@ mcu = "SH7058"
 flash_size = 0x100000
 software_ids = ["8MFKPCN14", "8MFK36N15"]
 same_address_inheritance = false
+layouts = { jk00c = "JK00C", jk00d = "JK00D" }
 evidence = "The images have 97.9 percent Myers edit similarity with distance 43,104 in radiff2 6.1.6. Address-independent exact 64-byte code windows confirm the common lineage, while insertions and relocations make direct address inheritance invalid."
 
 [family.sh7058_jk78c]
@@ -64,6 +68,7 @@ mcu = "SH7058"
 flash_size = 0x100000
 software_ids = ["7MFVH3NM1", "7MFV68NV"]
 same_address_inheritance = false
+layouts = { jk78c = "JK78C" }
 evidence = "No second image in the current collection has exact-code or near-code similarity. The image occupies almost the complete one-MiB flash and uses addresses distinct from the other SH7058 families."
 
 [[relationship]]

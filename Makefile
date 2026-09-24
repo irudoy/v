@@ -37,8 +37,8 @@ help:
 		'Targets:' \
 		'  help              Show this help.' \
 		'  setup             Synchronize the locked Python environment.' \
-		'  check             Validate versions, tracked sources, projections, and the firmware' \
-		'                    architecture model, and rebuild the ROM atlas from them.' \
+		'  check             Validate versions, tracked sources, L0 exports, projections, and the' \
+		'                    firmware architecture model, and rebuild the ROM atlas from them.' \
 		'  test-python       Run the complete Python test contract.' \
 		'  test-js           Run the pin-tracer test contract.' \
 		'  test              Run the Python and JavaScript test contracts.' \
@@ -88,6 +88,7 @@ check:
 	$(PYTHON) tools/mapkit/presentation_audit.py --check
 	$(PYTHON) tools/census_homology.py --check
 	$(PYTHON) tools/rom_homology.py --check
+	$(UV) run kb check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(PYTHON) tools/romviz/architecture.py check

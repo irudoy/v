@@ -4,13 +4,13 @@ The canonical reverse-engineering path is headless:
 
 ```text
 stock ROM + tracked annotations
-  -> Ghidra structure exports
+  -> Ghidra structure exports, normalized as L0 in ../l0/
   -> reproducible Memgraph query index
   -> reviewed definition and ledger projections
 ```
 
-Ghidra projects, third-party applications, and generated exports are
-machine-local. Loaders never promote graph structure to firmware semantics;
+Ghidra projects, third-party applications, and research exports are
+machine-local; the L0 exports of every layout are tracked in `../l0/`. Loaders never promote graph structure to firmware semantics;
 durable claims remain in tracked CSV, TOML, assembly, and specifications.
 
 ## Navigation
@@ -19,7 +19,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 |---|---|---|
 | Ghidra | Import ROMs, recover structure, export calls/xrefs, inspect addresses, and run p-code fixtures | [`ghidra/README.md`](ghidra/README.md) |
 | Memgraph | Validate tracked sources, ingest ROM and diagnostic layers, audit provenance, query relationships, and back up graph state | [`memgraph/README.md`](memgraph/README.md) |
-| Knowledge model | Specify the per-layout symbols, meanings, links, and evidence, the `kb` entry point, and the transition from the current registries | [`kb/SPEC.md`](kb/SPEC.md) |
+| Knowledge model | Specify the per-layout symbols, meanings, links, and evidence, the `kb` entry point, and the transition from the current registries | [`kb/SPEC.md`](kb/SPEC.md), [`kb/README.md`](kb/README.md) |
 | Map analysis | Inputs, graph schema, current analysis stages, confidence, provenance, and reproducibility | [`map-analysis-pipeline.md`](map-analysis-pipeline.md) |
 | Definitions | Project reviewed facts into RomRaider XML, TunerPro XDF, and the map ledger | [`mapkit/README.md`](mapkit/README.md) |
 | Diagnostics | Build, validate, ingest, and query factory and community diagnostic evidence | [`diagnostics/README.md`](diagnostics/README.md) |
@@ -39,6 +39,8 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `rom_sources.py` | Resolve ROM identities, canonical annotation inheritance, exact images, and export roots |
 | `diagnostic_context.py` | Render reviewed diagnostic bindings for definition and ledger projections |
 | `ghidra/*.java` | Deterministic GhidraScript extraction, inspection, and p-code fixtures |
+| `ghidra/export-l0.sh` | Export, normalize, and compare the L0 of one layout |
+| `kb/src/kb/` | The `kb` entry point: the `l0` check, literal pairing, `site:` reproduction, and `kb code` |
 | `memgraph/ingest.py` | Complete preflight and ordered ingestion for one ROM |
 | `memgraph/ingest_diagnostics.py` | Validate and ingest the global diagnostic corpus |
 | `mapkit/emit_def.py` | Emit the paired XML and XDF projections |

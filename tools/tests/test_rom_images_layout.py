@@ -172,6 +172,62 @@ class IdentityStringTest(unittest.TestCase):
             }
         }
 
+    def _layout_family(self, members, inherits, layouts):
+        return {
+            "members": list(members),
+            "canonical": members[0],
+            "same_address_inheritance": inherits,
+            "layouts": layouts,
+        }
+
+    def test_inheriting_family_has_one_layout_of_its_canonical_rom(self):
+        rom_homology.validate_layouts(
+            self._layout_family(["JK08A", "JK00A"], True, {"7mfk": "JK08A"}),
+            "family",
+            set(),
+        )
+        for layouts in ({"7mfk": "JK00A"}, {"7mfk": "JK08A", "jk00a": "JK00A"}):
+            with self.subTest(layouts=layouts):
+                with self.assertRaises(rom_homology.HomologyError):
+                    rom_homology.validate_layouts(
+                        self._layout_family(["JK08A", "JK00A"], True, layouts),
+                        "family",
+                        set(),
+                    )
+
+    def test_family_without_inheritance_needs_a_layout_per_member(self):
+        rom_homology.validate_layouts(
+            self._layout_family(
+                ["JK00C", "JK00D"], False, {"jk00c": "JK00C", "jk00d": "JK00D"}
+            ),
+            "family",
+            set(),
+        )
+        with self.assertRaises(rom_homology.HomologyError) as raised:
+            rom_homology.validate_layouts(
+                self._layout_family(["JK00C", "JK00D"], False, {"jk00c": "JK00C"}),
+                "family",
+                set(),
+            )
+        self.assertIn("its own layout", str(raised.exception))
+
+    def test_layout_ids_are_well_formed_and_unique_across_families(self):
+        for layout in ("J", "JK00C", "jk_00c", "toolonglayout"):
+            with self.subTest(layout=layout):
+                with self.assertRaises(rom_homology.HomologyError):
+                    rom_homology.validate_layouts(
+                        self._layout_family(["JK78C"], False, {layout: "JK78C"}),
+                        "family",
+                        set(),
+                    )
+        with self.assertRaises(rom_homology.HomologyError) as raised:
+            rom_homology.validate_layouts(
+                self._layout_family(["JK78C"], False, {"jk78c": "JK78C"}),
+                "family",
+                {"jk78c"},
+            )
+        self.assertIn("declared twice", str(raised.exception))
+
     def test_empty_software_ids_are_rejected(self):
         images = {"JK08A": build_image("JK08A", "1JK08A00000", first="7MFKAVN86")}
         with self.assertRaises(rom_homology.HomologyError) as raised:

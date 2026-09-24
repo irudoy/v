@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "tools" / "kb" / "SPEC.md"
 HOMOLOGY = ROOT / "rom-images" / "homology.toml"
 LAYOUT_HEADING = "## 3. Layouts and families"
+KINDS_HEADING = "## 6. Kinds"
 
 
 def layout_rows():
@@ -31,6 +32,18 @@ def layout_rows():
             }
         )
     return rows
+
+
+def kind_names():
+    """Return the kind names of the kind table that the specification publishes."""
+
+    text = SPEC.read_text(encoding="utf-8")
+    section = text.split(KINDS_HEADING, 1)[1].split("\n## ", 1)[0]
+    return [
+        line.strip().strip("|").split("|")[0].strip().strip("`")
+        for line in section.splitlines()
+        if line.startswith("| `")
+    ]
 
 
 class KbSpecLayoutTableTest(unittest.TestCase):
@@ -64,6 +77,22 @@ class KbSpecLayoutTableTest(unittest.TestCase):
                     self.assertEqual(row["l0_image"], family["canonical"])
                 else:
                     self.assertEqual(row["images"], [row["l0_image"]])
+
+    def test_rows_equal_the_layouts_the_families_declare(self):
+        declared = {
+            layout: (name, image)
+            for name, family in self.families.items()
+            for layout, image in family["layouts"].items()
+        }
+        published = {
+            row["layout"]: (row["family"], row["l0_image"]) for row in self.rows
+        }
+        self.assertEqual(published, declared)
+
+    def test_layout_ids_and_kind_names_are_disjoint(self):
+        kinds = kind_names()
+        self.assertIn("fn", kinds)
+        self.assertFalse(set(kinds) & {row["layout"] for row in self.rows})
 
     def test_layout_ids_are_unique_and_well_formed(self):
         ids = [row["layout"] for row in self.rows]

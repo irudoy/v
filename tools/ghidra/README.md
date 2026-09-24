@@ -25,7 +25,8 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 ```
 
 `-process` accepts the program name stored inside the Ghidra project, not a ROM
-filesystem path. Ghidra projects and export directories remain outside Git.
+filesystem path. Ghidra projects and local export directories remain outside
+Git; the normalized L0 exports of every layout live in `l0/`.
 
 ## On-demand decompilation and listings
 
@@ -65,7 +66,9 @@ ROM literal/reference data and direct SH7058/SH7059 RAM references from
 `ExportFunctionTokens.java` writes normalized
 instruction sequences for bounded structural-similarity review. Literal values
 and symbol addresses are folded, while register numbers remain part of the
-instruction shape. A typical read-only export is:
+instruction shape. Every row carries its instruction address, so the rows of
+one function list its body, which can be non-contiguous. A typical read-only
+export is:
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -87,6 +90,32 @@ those mutations persist successfully.
 
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
+
+## L0 exports
+
+`export-l0.sh` writes the L0 of one layout of `rom-images/homology.toml` into
+`l0/<layout>/`: the structure exports above without function names, the
+accessor census of every interpolation kernel of the layout, and
+`manifest.toml` with the image digest, the program name, the pinned Ghidra
+version, the census plan, the digest of every export script, and the digest
+and row count of every file. `tools/kb/SPEC.md` defines the files, the normal
+form, and the manifest; `uv run kb check` verifies them.
+
+```bash
+tools/ghidra/export-l0.sh jk00d --jobs 4
+tools/ghidra/export-l0.sh jk00d --check --jobs 4
+```
+
+The census runs one `ResolveAccessors.java` session per kernel, so a function
+that the resolver recovers in memory stays out of the census of other kernels.
+`[l0.census.<layout>]` in `tools/kb/config.toml` names the interpolation
+registry and the byte-copy helpers of each layout. `--jobs N` runs N headless
+sessions at once, each on its own copy of the project, because a Ghidra project
+admits one process at a time. `--check` exports into a temporary directory and
+compares every file byte for byte with `l0/<layout>/`. `--stage DIR` keeps the
+raw export, and `--from-stage DIR` normalizes a kept raw export without running
+Ghidra. The export refuses a program whose recorded SHA-256 differs from the
+registered image and a raw export that lacks a file.
 
 ## Script groups
 

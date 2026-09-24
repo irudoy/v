@@ -30,6 +30,9 @@ __pycache__/
 ghidra_projects/
 tools/memgraph/data/
 
+# Per-worktree state of the kb tool: caches, lock, and graph instance.
+.kb/
+
 # Local Memgraph backup destination and state.
 tools/memgraph/backup.local.toml
 tools/memgraph/backup.state.json

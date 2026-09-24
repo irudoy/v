@@ -154,8 +154,9 @@ tools/kb/
   lives in a legacy registry. Its columns are `layout,kind,address,name,former`,
   sorted by layout, kind, and address. A symbol leaves `names.csv` in the
   conversion commit of its registry; the file is removed in stage 11.
-- `.ignore` at the repository root lists `kb/` and `l0/`, so ripgrep-based
-  search skips them.
+- `.ignore` at the repository root lists `/kb/` and `/l0/`, anchored at the
+  root so that `tools/kb/` stays searchable, and ripgrep-based search skips
+  both trees.
 - `.gitignore` lists `.kb/`.
 
 ### 4.2 File format
@@ -695,8 +696,10 @@ exported from the Ghidra program of the layout's L0 image.
 
 - `funcs.csv` omits the Ghidra function name, because `RenameFuncs.java`
   writes project names into programs. Names come from L1.
-- `function_tokens.csv` gains `ins_addr`, so the instruction stream and
+- `function_tokens.csv` carries `ins_addr`, so the instruction stream and
   function bodies need no listing.
+- `accessors.<kernel>.csv` covers every kernel of the layout's interpolation
+  registry, as the census plan of the manifest lists them.
 
 ### 8.2 Normal form
 
@@ -716,6 +719,12 @@ image_sha256 = "<SHA-256 of the registered stock image>"
 program = "<program name inside the Ghidra project>"
 ghidra = "<Ghidra version>"
 
+[census]
+interp = "defs/JK00D.interp.csv"
+kernels = ["00027344", "00027548"]
+fused = []
+copy_helpers = ["000225e4"]
+
 [scripts]
 "ExportGraph.java" = "<SHA-256 of the script>"
 
@@ -726,6 +735,11 @@ rows = 0
 
 - `image_sha256` equals the catalog digest of the L0 image, and `ghidra`
   equals the pin in `tools/ghidra/headless-analyze.sh`.
+- `census` is the census plan: the interpolation registry of the layout,
+  every kernel it lists, the kernels whose wrapper is the kernel itself
+  (`fused`), and the block-copy helpers of `[l0.census.<layout>]` in
+  `tools/kb/config.toml`. A changed registry or configuration requires a new
+  export.
 - `scripts` lists every export script with its digest. A changed script
   requires a new export, and the `l0` check reports the layouts it affects.
 - `files` lists every file with its digest and row count.
@@ -736,10 +750,18 @@ rows = 0
   L0 image and verifies its SHA-256 as `tools/ghidra/decompile.sh` does, runs
   the export scripts headless, normalizes the CSV files, and writes
   `l0/<layout>/` with its manifest.
+- The census runs one headless session per kernel, so a function that the
+  resolver recovers in memory does not carry over into the census of another
+  kernel.
+- `--jobs <n>` runs the sessions in parallel, each worker on its own copy of
+  the Ghidra project, because a project admits one process at a time.
 - `tools/ghidra/export-l0.sh <layout> --check` exports into a temporary
   directory and compares the result byte for byte with the tracked files.
-- A layout joins with a new export of all its files; a partial export is
-  refused.
+- `--stage <dir>` keeps the raw session outputs, and `--from-stage <dir>`
+  builds `l0/<layout>/` from them without Ghidra.
+- A layout joins with a new export of all its files; a partial export, an
+  export of another program, or an image digest other than the catalog digest
+  is refused.
 
 ### 8.5 Derivations
 
@@ -751,11 +773,15 @@ The compiler derives, as `derived` elements:
 - Access width from the mnemonic suffix: `.b` is 8 bits, `.w` 16, and `.l`
   32.
 - Access mode, load or store, from the mnemonic and the operand order.
-- Literal pairing: an access through a register takes the nearest preceding
-  PC-relative pool load in the same function whose value is at most the
-  accessed address and within the displacement range of the access
-  instruction. The pair yields the accessed address, the literal, and the
-  base register.
+- Literal pairing: a register holds a pool literal at an instruction when
+  every path from the function entry reaches the instruction with that
+  literal, loaded by a PC-relative `mov.l` or `mov.w`, copied by `mov`,
+  `extu`, or `exts`, offset by `add #imm` or by a register of known value, or
+  moved into GBR by `ldc`. A delay slot executes on the path of its branch,
+  and a call clears r0 through r7 after its delay slot. An access through
+  such a register yields the accessed address, the literal, its pool address,
+  and the base register; an R0-indexed access whose index is unknown yields
+  the table base.
 - The function that contains an instruction address, and the table that
   contains a ROM address, from the `tbl` symbols and their dimensions.
 
@@ -1172,8 +1198,8 @@ security boundary: the gates validate every file whatever wrote it.
 - The git allow list covers `status`, `add`, `commit`, `diff`, `log`,
   `show --stat`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
   `mv`, and `rm`, so diffs stay reviewable.
-- `.ignore` excludes `kb/`, `l0/`, and guarded projections from ripgrep, so a
-  repository-wide `Grep` does not return their contents.
+- `.ignore` excludes the root trees `kb/` and `l0/` and guarded projections
+  from ripgrep, so a repository-wide `Grep` does not return their contents.
 - `KB_GUARD=off` in the environment disables the hook for maintenance.
 - Hooks apply to subagents. Agents without hook support follow the generated
   section of `AGENTS.md`, and the gates catch the rest.
@@ -2117,6 +2143,14 @@ evidence column by its role, the kind of the row, and the kind of the target:
 - A relation stated at both ends becomes one link at the end that the type
   table of [Links](#75-links) names. The other end's suffix becomes
   `reverse_relies`, and the evidence of both ends merges.
+- A `site:<a>` token reproduces from L0 by the first of these relations
+  between the site and its row: L0 records a reference at the site to the
+  row's subject, to an address within its table, or to an address the row
+  names; the site lies in the body of a function the row names; the image
+  holds the subject or a named address as a 32-bit value at the site; or the
+  site lies in the body of a function that L0 links to the subject by a
+  reference or by a census call. A row names the addresses of its structured
+  columns and evidence tokens, not those of its prose columns.
 
 ## 21. Transition
 
@@ -2152,8 +2186,8 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | Stage | Content | Exit |
 |---|---|---|
 | 0. Specification | This document | The specification is agreed |
-| 1. L0 in git | Normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts | Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0 |
-| 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; `homology.toml` gains layouts; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
+| 1. L0 in git | The layouts of `rom-images/homology.toml`; normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts, and the instance limit of `tools/kb/config.toml` set from the measurement | Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0 |
+| 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
 | 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb bind`, `kb absent`, and `kb unresolved`; the writer gate over L0 | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
 | 4. Features on L2 | Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix | Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green |
 | 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |

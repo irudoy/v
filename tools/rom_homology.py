@@ -23,6 +23,7 @@ IDENTITY_DOCUMENT = ROM_DIR / "README.md"
 IDENTITY_SECTION = "### Identity strings"
 DEFAULT_OUTPUT = ROM_DIR / "homology.csv"
 RANGE_RE = re.compile(r"0x([0-9a-fA-F]+):0x([0-9a-fA-F]+)")
+LAYOUT_RE = re.compile(r"[0-9a-z]{2,8}")
 
 # Every image carries the calibration string plus two fixed identity blocks,
 # each introduced by a literal marker and holding an eleven-byte software
@@ -207,6 +208,33 @@ def _parse_range(value: str, context: str) -> tuple[int, int]:
     return start, end
 
 
+def validate_layouts(row, context, seen):
+    """Hold the layouts of a family to its members and its inheritance.
+
+    A family that inherits addresses has one layout whose L0 image is the
+    canonical member; every other family has one layout per member.
+    """
+    layouts = row["layouts"]
+    if not isinstance(layouts, dict) or not layouts:
+        raise HomologyError(f"{context}: layouts must be a nonempty inline table")
+    for layout, image in layouts.items():
+        if not LAYOUT_RE.fullmatch(layout):
+            raise HomologyError(f"{context}: invalid layout id {layout!r}")
+        if layout in seen:
+            raise HomologyError(f"{context}: layout {layout} is declared twice")
+        seen.add(layout)
+        if image not in row["members"]:
+            raise HomologyError(f"{context}: layout {layout} image {image} is not a member")
+    images = list(layouts.values())
+    if row["same_address_inheritance"]:
+        if images != [row["canonical"]]:
+            raise HomologyError(
+                f"{context}: an inheriting family has one layout of its canonical ROM"
+            )
+    elif sorted(images) != sorted(row["members"]):
+        raise HomologyError(f"{context}: every member needs its own layout")
+
+
 def validate_families(images, families, path: Path = HOMOLOGY_REGISTRY):
     declared = []
     allowed_kinds = {"exact-code", "near-code", "distinct-code"}
@@ -218,9 +246,11 @@ def validate_families(images, families, path: Path = HOMOLOGY_REGISTRY):
         "flash_size",
         "software_ids",
         "same_address_inheritance",
+        "layouts",
         "evidence",
     }
     optional = {"calibration_region", "exact_ranges"}
+    layout_ids = set()
     for key, row in families.items():
         context = f"{path} [family.{key}]"
         if not isinstance(row, dict):
@@ -259,6 +289,7 @@ def validate_families(images, families, path: Path = HOMOLOGY_REGISTRY):
         if any(len(images[item].data) != row["flash_size"] for item in members):
             raise HomologyError(f"{context}: member size differs from flash_size")
         declared.extend(members)
+        validate_layouts(row, context, layout_ids)
 
         exact_ranges = row.get("exact_ranges", [])
         calibration_region = row.get("calibration_region")

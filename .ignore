@@ -1,0 +1,4 @@
+# ripgrep-based search skips the knowledge files and the L0 exports; `kb`
+# commands answer queries over them.
+/kb/
+/l0/

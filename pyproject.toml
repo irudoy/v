@@ -5,7 +5,7 @@ name = "vq-hr-ecu-tuning"
 version = "0.1.0"
 description = "Reverse-engineering and firmware verification tools for Nissan and Infiniti HR-series ECUs"
 requires-python = ">=3.11,<3.12"
-dependencies = []
+dependencies = ["kb"]
 
 [dependency-groups]
 dev = [
@@ -16,6 +16,12 @@ dev = [
 [tool.uv]
 package = false
 default-groups = ["dev"]
+
+[tool.uv.workspace]
+members = ["tools/kb"]
+
+[tool.uv.sources]
+kb = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -28,6 +34,7 @@ testpaths = [
     "tools/logs/tests",
     "tools/can_dashboard/tests",
     "tools/romviz/tests",
+    "tools/kb/tests",
 ]
 python_files = ["test_*.py"]
 addopts = ["--import-mode=importlib"]
