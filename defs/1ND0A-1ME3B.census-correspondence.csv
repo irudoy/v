@@ -732,7 +732,7 @@ map,00015a56,16x1:uint16,homolog,00015c02,aligned-reference,yes,
 map,00015a76,16x1:uint16,homolog,00015c22,aligned-reference,yes,
 map,00015a96,8x1:uint16,homolog,00015c42,aligned-reference,yes,
 map,00015ab0,16x1:uint16,homolog,00015c5c,aligned-reference,yes,
-axis,00015af4,16:uint16,unpaired,,,,no-content-match
+axis,00015af4,16:uint16,homolog,00015ca0,unique-exact-content,yes,
 map,00015b14,32x1:uint16,homolog,00015cc0,aligned-reference,yes,
 map,00015b54,32x1:uint16,homolog,00015d00,aligned-reference,yes,
 axis,00015b94,32:uint16,homolog,00015d40,aligned-reference,yes,
@@ -895,7 +895,7 @@ map,00016b26,16x1:uint16,homolog,00016a92,aligned-reference,yes,
 map,00016b46,16x1:uint16,homolog,00016ab2,aligned-reference,yes,
 map,00016b66,8x1:uint16,homolog,00016ad2,aligned-reference,yes,
 axis,00016b76,8:uint16,homolog,00016ae2,aligned-reference,yes,
-map,00016b86,16x1:uint16,unpaired,,,,no-content-match
+map,00016b86,16x1:uint16,homolog,00016b12,unique-exact-content,yes,
 map,00016ba6,16x1:uint16,homolog,00016b32,aligned-reference,yes,
 map,00016bc6,8x1:uint16:step8192,unpaired,,,,duplicate-content
 axis,00016bd6,8:uint16,homolog,00016b52,unique-exact-content,yes,

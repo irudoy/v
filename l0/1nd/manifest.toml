@@ -33,16 +33,16 @@ copy_helpers = []
 "ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
 
 [files."accessors.28b84.csv"]
-sha256 = "b255b1833f017a2062ab5fb5f154e0f45f9827b80d3d068d3648f5214c7c4c6c"
-rows = 436
+sha256 = "fd33d359a3cb2652bd298c29717a70906c17e0dcc6ec5c9938da8198d578490c"
+rows = 438
 
 [files."accessors.28d88.csv"]
-sha256 = "e1993d795118db995fe2c3452886415585e9ac8e69dda765c29bdb3c890f647f"
-rows = 265
+sha256 = "b24244ea54ca6ec2d4f1f04f94724d2019d28fe7915296f67a68c6408d4f50d1"
+rows = 267
 
 [files."accessors.28dc8.csv"]
-sha256 = "0680bf1126cf1a5ae976cb4ffbbfc0ffd1974b0eaf4ef2eb4372d58d6816428c"
-rows = 430
+sha256 = "43d19e15f428bb24b366d4a84ad7e37a34fe9d66489095a23f57f8772527e433"
+rows = 432
 
 [files."accessors.28ea0.csv"]
 sha256 = "9357753ffc826705ef7f742590562e018fdb0710fa14ad6dd29d320bce7385d9"
@@ -85,29 +85,29 @@ sha256 = "eb0f0bd01737e705311297cc74ff3fd9b819e7a24335b5c8c6da47efcc334d59"
 rows = 2
 
 [files."calls.csv"]
-sha256 = "3ce8dcaeb0fbcb66ae883b7c567b27ee9528ad1414bc84566236040f8274c548"
-rows = 3602
+sha256 = "c6c21d6d9e3e723369eed9ba84bbf6b9c11bb22870680e8af39177db92d6bea9"
+rows = 3604
 
 [files."funcs.csv"]
-sha256 = "03c1d9bb75a9fe34b661dfccbebe4e22fab322296da2e21aed28cca533570b97"
-rows = 2269
+sha256 = "e0fadfa50963b23a025837267c762fd5252401fdb4649a4405286585785ff6a1"
+rows = 2270
 
 [files."function_references.csv"]
-sha256 = "0e7bb1d3dd84946f9fbcc2a455d1d677df81c8496dce8a27d445dc07be7be07d"
-rows = 185079
+sha256 = "0c98ef4e465ee1605e7aa1cedacb0473dddee798dc29d732f66fe91821bad771"
+rows = 185376
 
 [files."function_signatures.csv"]
-sha256 = "29c00eca657b8d0517202137a8cbcca997c7772a6fae5acbdeebf8dc06e317fc"
-rows = 2264
+sha256 = "ca1ca68b24dfa8bb52372149c0e77e9d37a680f5d6a55951287454867ebfbb73"
+rows = 2265
 
 [files."function_sites.csv"]
-sha256 = "18ec3b873f92d231f0211137c52c3361d226e9a6d1e35961a249f34c65d8a0a5"
-rows = 5431
+sha256 = "f09979e4d84c8da910585819ebf6daff78076b29e802c5bade8dd4b31e9a0999"
+rows = 5435
 
 [files."function_tokens.csv"]
-sha256 = "8cd71276c3c4aa35cd2ab00961fffee7fd76af936b54049bf6a547d1f608f753"
-rows = 427144
+sha256 = "3c6c5b5d89ea29b8c6b53bb8db4424bf5a9cdb78dd87aa0314135be7f21b94bb"
+rows = 427678
 
 [files."xrefs.csv"]
-sha256 = "8cce95bf7d8320ae7589991f5f40eb57d0a6cd487aa76b221bdbc62e9d9ca72f"
-rows = 54194
+sha256 = "5eefee5334df29a3af9eaa512f8ebf06405b94e88438198ad36a25cf58bc4c63"
+rows = 54266

@@ -980,6 +980,7 @@ addr,size,is_thunk,is_external
 0006d746,84,false,false
 0006d79a,384,false,false
 0006d93c,10,false,false
+0006d948,1068,false,false
 0006ddd0,1128,false,false
 0006e58c,316,false,false
 0006e6fa,298,false,false
