@@ -208,6 +208,27 @@ class FindTest(unittest.TestCase):
         self.assertIn("ambiguous: 2 matches score within 10 percent of the first", lines)
 
 
+class AllocationStore:
+    """The `rolling_launch` allocations of `7mfk` as `allocations_at` reads them."""
+
+    def run(self, query, **params):
+        if "t.allocations" not in query or params["layout"] != "7mfk":
+            return []
+        return [{"feature": "rolling_launch", "allocations": {
+            "phase_abort_reason": {"address": "ffff5d40", "width": 2},
+            "rolling_launch_abort_reason": {"address": "ffff5d41", "width": 1}}}]
+
+
+class AllocationTest(unittest.TestCase):
+    def test_an_address_lies_in_every_allocation_that_spans_it(self):
+        store = AllocationStore()
+        self.assertEqual(read.allocations_at(store, "7mfk", 0xFFFF5D41),
+                         [("rolling_launch.phase_abort_reason", 0xFFFF5D40, 2),
+                          ("rolling_launch.rolling_launch_abort_reason", 0xFFFF5D41, 1)])
+        self.assertEqual(read.allocations_at(store, "7mfk", 0xFFFF5D42), [])
+        self.assertEqual(read.allocations_at(store, "jk00d", 0xFFFF5D40), [])
+
+
 class EvidenceTest(unittest.TestCase):
     def test_items_that_differ_in_at_share_a_line(self):
         items = [{"kind": "l0", "supports": "identity", "at": f"7mfk:{address:08x}"}

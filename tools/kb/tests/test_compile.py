@@ -1,9 +1,10 @@
 import csv
 import re
+import tomllib
 import unittest
 
 from kb import adapters, checks, compile, names, repo
-from kb.adapters import ledgers, native, signals
+from kb.adapters import ledgers, native, signals, telemetry
 from kb.model import Builder, SymbolKey
 
 
@@ -374,9 +375,11 @@ class SignalAdapterTest(unittest.TestCase):
                          {"title": "Engine speed", "coverage": "stock-can", "basis": "exact-code"})
         self.assertEqual(entity.refs["observes"], [SymbolKey("7mfk", "ram", 0xFFFF11F4)])
         self.assertEqual(m.meaning_of(entity.refs["observes"][0]).props["width"], 16)
-        margins = m.entities[("signal", "knock_margin")].refs["observes"]
-        self.assertEqual([(key.address, m.symbols[key].implicit) for key in margins],
-                         [(0xFFFF5E10 + 2 * index, False) for index in range(6)])
+        margins = m.entities[("signal", "knock_margin")]
+        self.assertEqual((margins.refs.get("observes"), margins.props["observes"]),
+                         (None, [f"can_telemetry.knock_margin_min_ch{index}"
+                                 for index in range(1, 7)]))
+        self.assertNotIn(SymbolKey("7mfk", "ram", 0xFFFF5E10), m.symbols)
 
     def test_the_catalog_constants_are_keys_of_can_telemetry(self):
         props = model().entities[("feature", "can_telemetry")].props
@@ -415,6 +418,147 @@ class SignalAdapterTest(unittest.TestCase):
         self.assertEqual([(issue.subject, issue.message) for issue in checks.schema(m)],
                          [("signal.short", "sources and widths differ in length"),
                           ("probe/signal", "priority 'urgent'")])
+
+
+def _telemetry(fields, contexts=()):
+    """A telemetry profile of JK08A with the given stream fields and contexts."""
+    return {"schema_version": 2, "rom": "JK08A", "mailbox": 26, "field": fields,
+            "context": list(contexts)}
+
+
+def _field(**keys):
+    item = {"name": "probe_raw", "page": 0, "offset": 1, "width": 2, "source": 0xFFFF11F4,
+            "profiles": ["tuning"], "kind": "ecu_ram", "signed": False, "scale": "raw / 4 V"}
+    item.update(keys)
+    return item
+
+
+def _declare_telemetry(document, owners):
+    """The builder after the declaration of the telemetry profile `document`,
+    with `owners` as the fields that signals list."""
+    b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+    b.stash["signal_fields"] = owners
+    b.stash["feature_ram"] = [(0xFFFF5E00, 0xFFFF5F00, "can_telemetry")]
+    regions = {"telemetry_state": [(0xFFFF5E00, 0xFFFF5E20, "can_telemetry")],
+               "rom_configuration": [(0x000D4E00, 0x000D4E10, "can_telemetry")],
+               "runtime_state": [(0xFFFF5D00, 0xFFFF5D3C, "map_switching")]}
+    telemetry.declare_profile(b, document, regions, "probe.toml")
+    return b
+
+
+class TelemetryAdapterTest(unittest.TestCase):
+    def test_a_scale_splits_into_arithmetic_unit_level_and_prose(self):
+        units = frozenset(repo.config()["vocab"]["unit"])
+        cases = {
+            "raw / 200 V": {"scale": "x/200", "unit": "V"},
+            "110 - raw degBTDC": {"scale": "110-x", "unit": "degBTDC"},
+            "candidate raw * 0.1 Nm signed request": {
+                "scale": "x*0.1", "unit": "Nm", "scale_level": "candidate",
+                "summary": "signed request"},
+            "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN": {"value": [
+                {"value": 0, "name": "idle"}, {"value": 1, "name": "active"},
+                {"value": 2, "name": "cooldown"}]},
+            "raw * 2 - 590 deg after intake TDC; raw * 2 degCA after the tooth": None,
+            "candidate raw * 0.002 A/F ADJ factor": None,
+            "raw * raw V": None,
+            "Q14 factor": None,
+        }
+        for text, keys in cases.items():
+            with self.subTest(scale=text):
+                self.assertEqual(telemetry.parse_scale(text, units), keys)
+
+    def test_an_ecu_ram_field_carries_its_source_meaning_and_serves_its_signal(self):
+        m = model()
+        field = m.entities[("field", "maf_b1_raw")]
+        self.assertEqual((field.refs["source"], field.refs["signal"]),
+                         ([SymbolKey("7mfk", "ram", 0xFFFF101C)], [("signal", "airflow_banks")]))
+        self.assertEqual({key: field.props[key] for key in ("origin", "width", "page", "offset")},
+                         {"origin": "ecu_ram", "width": 2, "page": 1, "offset": 1})
+        self.assertNotIn("scale", field.props)
+        meaning = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF101C))
+        self.assertEqual((meaning.key, meaning.props["scale"], meaning.props["unit"]),
+                         ("maf_b1/ram", "x/200", "V"))
+        context = m.entities[("field", "stft_b1_raw")].props
+        self.assertEqual((context["context"], context["position"]),
+                         ("short_fuel_trim_cvtc_duty", 0))
+
+    def test_the_unit_of_a_telemetry_scale_wins_over_the_ledger_units(self):
+        m = model()
+        throttle = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1075))
+        self.assertEqual((throttle.props["scale"], throttle.props["unit"]),
+                         ("x*100/255", "percent"))
+        timing = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF11D4))
+        self.assertEqual((timing.props.get("scale"), timing.props["unit"]), (None, "degBTDC"))
+
+    def test_an_unsplit_scale_stays_on_its_field_and_goes_to_the_audit(self):
+        m = model()
+        field = m.entities[("field", "injection_end_angle_raw")]
+        self.assertTrue(field.props["scale"].startswith("raw * 2 - 590 deg"))
+        unsplit = {issue.subject for issue in checks.audit(m)["unsplit"]}
+        self.assertLessEqual({"field.injection_end_angle_raw", "field.af_adjustment_b1_raw",
+                              "field.final_timing_raw"}, unsplit)
+        self.assertNotIn("field.maf_b1_raw", unsplit)
+
+    def test_another_field_names_an_allocation_of_the_feature_that_owns_its_source(self):
+        m = model()
+        cases = {"tick16": ("can_telemetry", "tick16", "ffff5e08", 2),
+                 "protocol_version": ("can_telemetry", "protocol_version", "000d4e02", 1),
+                 "knock_margin_min_ch1_raw": ("can_telemetry", "knock_margin_min_ch1",
+                                              "ffff5e10", 2),
+                 "active_map_index": ("map_switching", "active_map_index", "ffff5d00", 1),
+                 "rolling_launch_phase": ("rolling_launch", "rolling_launch_phase",
+                                          "ffff5d40", 1)}
+        for name, (feature, allocation, address, width) in cases.items():
+            with self.subTest(field=name):
+                field = m.entities[("field", name)]
+                self.assertEqual(field.props["source"], f"{feature}.{allocation}")
+                self.assertNotIn("source", field.refs)
+                self.assertEqual(m.targets[(feature, "7mfk")].props["allocations"][allocation],
+                                 {"address": address, "width": width})
+        self.assertEqual(m.entities[("field", "rolling_launch_phase")].props["scale"],
+                         "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN")
+
+    def test_the_wire_constants_are_keys_of_the_feature_and_the_addresses_of_its_target(self):
+        m = model()
+        document = tomllib.loads((repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8"))
+        feature = m.entities[("feature", "can_telemetry")].props
+        self.assertEqual({name: feature[name] for name in telemetry.WIRE_KEYS},
+                         {name: document[name] for name in telemetry.WIRE_KEYS})
+        self.assertEqual(feature["profiles"], document["profile"])
+        self.assertEqual([context["name"] for context in feature["contexts"]],
+                         [context["name"] for context in document["context"]])
+        target = m.targets[("can_telemetry", "7mfk")].props
+        self.assertEqual({name: int(target[name], 16) for name in telemetry.ADDRESS_KEYS},
+                         {name: document[name] for name in telemetry.ADDRESS_KEYS})
+        self.assertEqual(target["mailbox_index"], document["mailbox"])
+        fields = [item["name"] for item in document["field"]] + [
+            item["name"] for context in document["context"] for item in context["field"]]
+        self.assertEqual(sorted(slug for kind, slug in m.entities if kind == "field"),
+                         sorted(fields))
+
+    def test_a_source_outside_its_region_and_an_unlisted_ecu_ram_field_fail_the_schema(self):
+        b = _declare_telemetry(_telemetry([
+            _field(name="listed_raw"),
+            _field(name="unlisted_raw", offset=3),
+            _field(name="rom_raw", source=0x00001000),
+            _field(name="feature_raw", source=0xFFFF5E40),
+            _field(name="state", kind="telemetry_state", source=0xFFFF5E30),
+            _field(name="mode", kind="runtime_state", source=0xFFFF5D3B),
+            _field(name="map", kind="runtime_state", source=0xFFFF5D00, width=1),
+            _field(name="other", kind="host_state"),
+            {"name": "short", "width": 1}]),
+            {"listed_raw": "probe", "rom_raw": "probe", "feature_raw": "probe",
+             "absent_raw": "probe"})
+        self.assertEqual(sorted((issue.check, issue.subject) for issue in b.issues), [
+            ("references", "signal.probe"),
+            ("schema", "field.feature_raw"), ("schema", "field.mode"),
+            ("schema", "field.other"), ("schema", "field.rom_raw"),
+            ("schema", "field.short"), ("schema", "field.state"),
+            ("schema", "field.unlisted_raw")])
+        self.assertEqual(b.targets[("map_switching", "7mfk")].props["allocations"],
+                         {"map": {"address": "ffff5d00", "width": 1}})
+        self.assertEqual(sorted(slug for kind, slug in b.entities if kind == "field"),
+                         ["listed_raw", "map", "unlisted_raw"])
 
 
 class StageTwoChecksTest(unittest.TestCase):

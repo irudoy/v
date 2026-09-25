@@ -116,6 +116,9 @@ unique-same-contract-accessor = "interp-contract"
 [vocab]
 quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "speed",
             "temp", "time", "voltage"]
+# Engineering units that the scale of a telemetry field may state after its
+# arithmetic in `raw`.
+unit = ["cm2", "deg", "degBTDC", "degC", "degCA", "g/s", "ms", "Nm", "percent", "V"]
 
 [names]
 attempts = 1000

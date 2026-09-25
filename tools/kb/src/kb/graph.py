@@ -190,8 +190,10 @@ def _referenced(model, item):
     return item
 
 
-# Relationships of designed entities by the reference key that states them.
-ENTITY_LINKS = {"observes": "OBSERVES"}
+# Relationships of designed entities: the reference key that states each, and
+# the label of the node it reaches.
+ENTITY_LINKS = {"observes": ("OBSERVES", "Meaning"), "source": ("CARRIES", "Meaning"),
+                "signal": ("SERVES", "Entity")}
 
 
 def _family_of(model):
@@ -265,13 +267,16 @@ def claim_rows(model):
     entities, entity_links = [], defaultdict(list)
     for _, entity in sorted(model.entities.items()):
         entities.append(entity_node(entity))
-        for name, kind in ENTITY_LINKS.items():
-            reached = {model.meaning_of(key) for key in entity.refs.get(name, ())}
-            entity_links[kind].extend(
-                {"from": entity.key, "to": meaning.key,
-                 "props": {"producer": "claim", "src": _src(entity.sources)}}
-                for meaning in sorted((item for item in reached if item and item.name),
-                                      key=lambda item: item.key))
+        for name, (kind, label) in ENTITY_LINKS.items():
+            refs = entity.refs.get(name, ())
+            if label == "Meaning":
+                reached = {model.meaning_of(key) for key in refs}
+                keys = sorted(item.key for item in reached if item and item.name)
+            else:
+                keys = sorted(model.entities[ref].key for ref in refs if ref in model.entities)
+            entity_links[(kind, label)].extend(
+                {"from": entity.key, "to": key,
+                 "props": {"producer": "claim", "src": _src(entity.sources)}} for key in keys)
     targets = [{"from": f"{feature}/feature", "to": layout, "props": properties({
                    **_referenced(model, target.props), "status": target.status,
                    "producer": "claim", "src": _src(target.sources)})}
@@ -415,8 +420,8 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "citations": sum(_create_links(graph, "CITES", left, right, items)
                              for (left, right), items in rows["cites"].items()),
             "entities": _create_nodes(graph, "Entity", rows["entities"]),
-            "entity links": sum(_create_links(graph, kind, "Entity", "Meaning", items)
-                                for kind, items in rows["entity_links"].items()),
+            "entity links": sum(_create_links(graph, kind, "Entity", label, items)
+                                for (kind, label), items in rows["entity_links"].items()),
             "targets": _create_links(graph, "TARGETS", "Entity", "Layout", rows["targets"]),
         }
         summary["claims"] = (counts, time.monotonic() - started, {})

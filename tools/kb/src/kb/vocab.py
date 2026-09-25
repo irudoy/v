@@ -81,6 +81,9 @@ ENTITY_VOCABULARY = {
         "basis": ("exact-code", "exact-code+homologous-diagnostic", "measurement-requirement",
                   "passive-can", "patch-design"),
     },
+    "field": {
+        "origin": ("ecu_ram", "rom_configuration", "runtime_state", "telemetry_state"),
+    },
 }
 
 # The editor and registry spelling of an element type and its kb storage.

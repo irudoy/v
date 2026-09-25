@@ -194,15 +194,17 @@ CHECKS = {
 }
 
 
-AUDIT_SECTIONS = ("disagreements", "names", "untyped")
+AUDIT_SECTIONS = ("disagreements", "names", "untyped", "unsplit")
 
 
 def audit(model):
     """{section: issues}: disagreements of one fact between registries, other
-    registry names of a named meaning, and legacy evidence without the keys of
-    its kind, which the conversion of its registry types."""
+    registry names of a named meaning, legacy evidence without the keys of its
+    kind, which the conversion of its registry types, and the scales of
+    telemetry fields that the conversion cannot split into their meanings."""
     found = {section: [] for section in AUDIT_SECTIONS}
     found["disagreements"] = sorted(issue for issue in model.issues if issue.check == "audit")
+    found["unsplit"] = sorted(issue for issue in model.issues if issue.check == "unsplit")
     for meaning in model.meanings:
         path = _sources(meaning)
         others = defaultdict(set)

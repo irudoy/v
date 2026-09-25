@@ -27,14 +27,14 @@ FORWARD = {
     "INDEX": "indexed by", "AXIS": "has axis", "LOOKUP": "lookup of", "SELECTOR": "selected by",
     "THRESHOLD": "compares with", "BASE": "based at", "TARGET": "points at", "SOURCE": "returns",
     "MONITOR": "set by", "DEPENDS": "depends on", "CITES": "cites", "OBSERVES": "observes",
-    "TARGETS": "targets",
+    "CARRIES": "carries", "SERVES": "serves", "TARGETS": "targets",
 }
 BACKWARD = {
     "WRITER": "writes", "READER": "reads", "INPUT": "input of", "COPY": "copied to",
     "INDEX": "indexes", "AXIS": "axis of", "LOOKUP": "looked up into", "SELECTOR": "selects",
     "THRESHOLD": "threshold of", "BASE": "base of", "TARGET": "target of", "SOURCE": "source of",
     "MONITOR": "sets", "DEPENDS": "needed by", "CITES": "cited by", "OBSERVES": "observed by",
-    "TARGETS": "targeted by",
+    "CARRIES": "carried by", "SERVES": "served by", "TARGETS": "targeted by",
 }
 # The `to` end of a reader link depends on its owner; for every other type the
 # owner depends on `to`. A `depends` link takes its direction from its legacy
@@ -232,6 +232,8 @@ def symbol_links(graph, key):
         "UNION ALL MATCH (s:Kb:Symbol {key: $key})<-[r]-(o:Kb:Symbol) "
         "RETURN 'in' AS dir, type(r) AS type, r.verified AS verified, r.role AS role, o AS other "
         "UNION ALL MATCH (s:Kb:Symbol {key: $key})<-[:HAS]-(:Kb:Meaning)<-[r:CITES]-(o) "
+        "RETURN 'in' AS dir, type(r) AS type, null AS verified, null AS role, o AS other "
+        "UNION ALL MATCH (s:Kb:Symbol {key: $key})<-[:HAS]-(:Kb:Meaning)<-[r]-(o:Kb:Entity) "
         "RETURN 'in' AS dir, type(r) AS type, null AS verified, null AS role, o AS other",
         key=key)
     return rows
@@ -408,6 +410,21 @@ def containing_datum(graph, layout, address):
     return None
 
 
+def allocations_at(graph, layout, address):
+    """[(reference, start, width)] of the feature allocations on a layout that
+    hold an address."""
+    found = []
+    for row in graph.run(
+            "MATCH (f:Kb:Entity {kind: 'feature'})-[t:TARGETS]->(:Kb:Layout {key: $layout}) "
+            "WHERE t.allocations IS NOT NULL RETURN f.slug AS feature, "
+            "t.allocations AS allocations ORDER BY feature", layout=layout):
+        for name, entry in sorted(row["allocations"].items()):
+            start = int(entry["address"], 16)
+            if start <= address < start + entry["width"]:
+                found.append((f"{row['feature']}.{name}", start, entry["width"]))
+    return found
+
+
 def neighbours(graph, layout, address):
     rows = graph.run(
         "MATCH (s:Kb:Symbol {layout: $layout}) WHERE s.address < $address "
@@ -459,6 +476,13 @@ def at(graph, text, layout=None, root=repo.ROOT):
                                            "other": node_ref(row["other"])} for row in rows]})
     if not at_symbols:
         answer.section(None, IDENTITY, [f"{loc}  {space or 'outside the MCU'}  no symbol"])
+        allocated = allocations_at(graph, layout, address)
+        data["allocations"] = [{"ref": ref, "address": f"{start:08x}", "width": width}
+                               for ref, start, width in allocated]
+        answer.section(None, FACTS, [
+            f"  allocation {ref}  {width} byte{'s' * (width != 1)} at {start:08x}"
+            + (f" (offset {address - start})" if address != start else "")
+            for ref, start, width in allocated])
         answer.section(None, FACTS, _containing(graph, layout, address, space, root, data))
     l0 = []
     if space in ("ram", "io") or location_node(graph, layout, address):
@@ -634,11 +658,13 @@ def _show_entity(graph, ref):
     answer.section(None, FACTS, facts)
     rows = graph.run(
         "MATCH (:Kb:Entity {key: $key})-[r]->(o) WHERE o:Meaning OR o:Entity OR o:Layout "
-        "RETURN 'out' AS dir, type(r) AS type, properties(r) AS props, o AS other",
+        "RETURN 'out' AS dir, type(r) AS type, properties(r) AS props, o AS other "
+        "UNION ALL MATCH (:Kb:Entity {key: $key})<-[r]-(o:Kb:Entity) "
+        "RETURN 'in' AS dir, type(r) AS type, properties(r) AS props, o AS other",
         key=node["key"])
     answer.section("links", LINKS, link_lines(rows, lambda row: node_ref(row["other"])))
-    data["links"] = [{"type": row["type"].lower(), "other": node_ref(row["other"])}
-                     for row in rows]
+    data["links"] = [{"dir": row["dir"], "type": row["type"].lower(),
+                      "other": node_ref(row["other"])} for row in rows]
     answer.section("notes", DETAIL, [f"  {note}" for note in node.get("note") or ()])
     answer.data = data
     return answer

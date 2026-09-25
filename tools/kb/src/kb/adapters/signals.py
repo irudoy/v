@@ -5,7 +5,10 @@
   and `note` keep their names.
 - `sources` becomes `observes`, the meanings of the `7mfk` symbols at those
   addresses, and each of `widths` states the `width` of its symbol in bits,
-  so that a registry that states another width disagrees.
+  so that a registry that states another width disagrees. A source inside the
+  RAM that a feature allocates (`feature_ram` of the stash) is no meaning:
+  the signal observes the allocation of the feature target at that address
+  and width, as `<feature>.<allocation>`.
 - `dids` is derived: the DIDs whose `source` is an observed meaning. A stored
   set that differs goes to the audit. `current_fields` gives each field the
   signal it serves, which the telemetry fields read from `signal_fields` of
@@ -14,6 +17,7 @@
   the `can_telemetry` feature.
 """
 
+from collections import defaultdict
 from pathlib import Path
 import tomllib
 
@@ -82,15 +86,39 @@ def declare_signals(b, document, src):
     b.stash["signal_fields"] = owners
 
 
+def _allocations(b):
+    """{address: [(reference, width)]} of the allocations of the feature
+    targets on the canonical layout."""
+    found = defaultdict(list)
+    for (feature, layout), target in sorted(b.targets.items()):
+        if layout == CANONICAL:
+            for name, entry in sorted(target.props.get("allocations", {}).items()):
+                found[int(entry["address"], 16)].append((f"{feature}.{name}", entry["width"]))
+    return found
+
+
 def relate(b, root):
-    """Resolve the observed symbols; the DIDs come from `did_sources` of the
-    stash, which the DID table fills first."""
+    """Resolve the observed symbols and allocations; the DIDs come from
+    `did_sources` of the stash, which the DID table fills first."""
     src, pending = b.stash.get("signals", (SIGNALS.as_posix(), ()))
     returned = b.stash.get("did_sources", {})
+    allocations = _allocations(b)
+    feature_ram = b.stash.get("feature_ram", ())
     for slug, sources, dids in pending:
         subject = f"signal.{slug}"
-        observed = []
+        observed, allocated = [], []
         for address, width in sources:
+            owner = next((feature for start, end, feature in feature_ram
+                          if start <= address < end), None)
+            if owner is not None:
+                found = [ref for ref, size in allocations.get(address, ()) if size == width]
+                if not found:
+                    b.issue("references", src, subject, f"source {address:08x} lies in the "
+                            f"RAM of {owner} and names none of its allocations of {width} "
+                            f"bytes")
+                    continue
+                allocated.append(found[0])
+                continue
             key = b.resolve(CANONICAL, address, SOURCE_KINDS, src)
             if key is None:
                 b.issue("references", src, subject,
@@ -99,7 +127,8 @@ def relate(b, root):
             key = b.symbol(key.layout, key.kind, key.address, src)
             b.keys(key, {"width": 8 * width}, src)
             observed.append(key)
-        b.entity("signal", slug, src, refs={"observes": observed})
+        b.entity("signal", slug, src, props={"observes": allocated} if allocated else None,
+                 refs={"observes": observed} if observed else None)
         derived = set().union(*(returned.get(key, ()) for key in observed))
         if derived != dids:
             b.issue("audit", src, subject, f"dids {_dids(dids)} differ from the DIDs that "

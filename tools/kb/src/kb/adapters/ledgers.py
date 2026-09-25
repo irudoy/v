@@ -4,6 +4,10 @@ Every row is a symbol of layout `7mfk` whose meaning takes the row's keys.
 Terminal evidence tokens become evidence items of the symbol, and dependency
 tokens become links stored at the end that the link type names, or `trace`
 evidence. A token target without a row becomes an implicit symbol.
+
+The `units` of a `vars` row becomes `unit` unless the telemetry profile states
+the unit of the symbol's meaning, which the scale of its field does
+(`telemetry_units` of the stash).
 """
 
 import csv
@@ -19,6 +23,7 @@ PATHS = {
 DATUM = ("ram", "reg", "tbl", "axis", "const")
 LEGACY_KINDS = {"Func": ("fn",), "Reg": ("ram", "reg"), "Map": ("tbl",), "Axis": ("axis",)}
 CENSUS_OPERANDS = ("bt_r4", "bt_r5", "bt_r6", "df_r4", "df_r5", "df_r6", "df_r7")
+UNITS = f"{__name__}.units"
 
 
 def inputs(root):
@@ -92,6 +97,7 @@ def declare(b, root):
         record(key, row, ("evidence", "contract_evidence"), src)
 
     src = PATHS["vars"].as_posix()
+    units = b.stash.setdefault(UNITS, [])
     for row in rows(root, "vars"):
         address = _address(row["addr"])
         kind = b.data_kind(LAYOUT, address)
@@ -101,10 +107,10 @@ def declare(b, root):
         key = b.symbol(LAYOUT, kind, address, src)
         b.props(key, {
             "summary": row["semantics"],
-            "unit": row["units"],
             "level": _level(row["confidence"]),
             "note": row["note"],
         }, src)
+        units.append((key, row["units"], src))
         record(key, row, ("evidence",), src)
 
     src = PATHS["findings"].as_posix()
@@ -199,6 +205,10 @@ def declare(b, root):
 
 
 def relate(b, root):
+    scaled = b.stash.get("telemetry_units", ())
+    for key, unit, src in b.stash.get(UNITS, ()):
+        if key not in scaled:
+            b.props(key, {"unit": unit}, src)
     for entry in b.stash.get(__name__, ()):
         if entry[1] == "accessor":
             key, _, address, src = entry

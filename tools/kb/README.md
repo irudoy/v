@@ -17,7 +17,7 @@ uv run kb check --only l0            # one check
 uv run kb audit                      # disagreements between registries
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
-uv run kb at jk00d:ffff1034          # the symbol at an address, or what contains it, and its L0 facts
+uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocation or datum that holds it, and its L0 facts
 uv run kb show 7mfk:0000a4aa         # identity, keys, layouts, links, L0 accessors, notes, evidence
 uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
 uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
@@ -43,10 +43,12 @@ uv run kb bench                      # the acceptance questions of the current s
   query parameter, `--json` prints the records as JSON without a budget.
 - `kb instance up|down|status|prune` manages the graph instance of the working
   tree ([Graph](#graph)).
-- `kb audit` prints three sections: `disagreements`, where two registries
+- `kb audit` prints four sections: `disagreements`, where two registries
   state different values of one fact; `names`, the registry names of a meaning
-  that lose to a name of higher precedence; and `untyped`, legacy evidence
-  tokens that lack the keys of their evidence kind.
+  that lose to a name of higher precedence; `untyped`, legacy evidence tokens
+  that lack the keys of their evidence kind; and `unsplit`, the scales of
+  telemetry fields that the adapter cannot split into the keys of their
+  source meanings.
 - `kb code` resolves an address to the function whose L0 body holds it and
   calls `tools/ghidra/decompile.sh` for that function's layout image. The
   decompilations and listings stay in the local export directory as the cache
@@ -125,7 +127,8 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 | `interp` | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | `fn` symbols of kernels and wrappers with `[interp]` |
 | `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
-| `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings, the widths of those meanings, and the catalog keys of `can_telemetry` |
+| `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
+| `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`

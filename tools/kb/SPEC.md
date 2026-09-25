@@ -236,10 +236,13 @@ illustrative names wherever no registry carries one yet.
 An ambiguous input lists its candidates with kinds and layouts instead of
 choosing one.
 
-References stored in files take three forms: `<name>/<kind>` for a meaning
-or a designed entity, `<name>/<kind>/<layout>` for a symbol, and
-`<layout>:<address>` for a location, which evidence uses in `at`. `kb rename`,
-`kb merge`, and `kb move` rewrite every stored reference they affect.
+References stored in files take four forms: `<name>/<kind>` for a meaning
+or a designed entity, `<name>/<kind>/<layout>` for a symbol,
+`<layout>:<address>` for a location, which evidence uses in `at`, and
+`<feature>.<allocation>` for RAM or ROM that a feature allocates, which each
+target of the feature places ([Designed entities](#79-designed-entities)).
+`kb rename`, `kb merge`, and `kb move` rewrite every stored reference they
+affect.
 
 Prose may cite entities as `[[<reference>]]`. `kb check` resolves every such
 citation, and the same commands rewrite them. A bare address in prose is
@@ -610,7 +613,7 @@ the diagnostic bindings read these tables.
 | `endpoint` | `title`, `direction` (`input`, `output`, or `bidirectional`), `block`, `peripheral`, `summary`, `registers` (`reg` references), `functions` (`fn` references), `specs` |
 | `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, and `[[step]]` |
 | `signal` | `title`, `domain`, `priority`, `coverage`, `basis`, `observes`, `note` |
-| `field` | `signal`, `source`, `kind`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position` |
+| `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position` |
 | `feature` | `title`, `summary`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
 
 `specs` is an array of repository paths of narrow specifications.
@@ -641,22 +644,30 @@ Signals:
   `fixed`, `rotating`, `latched`, `stock-can`, `external`, or `absent`;
   `basis` is `exact-code`, `exact-code+homologous-diagnostic`,
   `measurement-requirement`, `passive-can`, or `patch-design`.
-- `observes` is an array of meaning references. The DIDs of a signal come
-  from the `did` meanings whose `source` is an observed meaning, and its
+- `observes` is an array of meaning references and allocation references:
+  an observed address inside the RAM that a feature allocates is the
+  allocation of that feature at the address and width. The DIDs of a signal
+  come from the `did` meanings whose `source` is an observed meaning, and its
   current fields from the fields whose `signal` names it; neither is stored.
 
 Fields:
 
-- `kind` is `ecu_ram`, `rom_configuration`, `runtime_state`, or
-  `telemetry_state`.
+- `origin` is `ecu_ram`, `rom_configuration`, `runtime_state`, or
+  `telemetry_state`: where the value of the field lives. The key is not
+  `kind`, which names the kind of every entity.
 - `signal` names the signal that the field serves. An `ecu_ram` field
-  requires it; a field of another kind may carry it.
+  requires it; a field of another origin may carry it.
 - The `source` of an `ecu_ram` field is a `ram` or `reg` meaning, and the
-  field takes its scale and unit from that meaning. The source of a
-  `rom_configuration` field is a `tbl` or `const` meaning, of a
-  `runtime_state` field an allocation of the `runtime` feature, and of a
-  `telemetry_state` field a state item of the `can_telemetry` feature. Only
-  fields whose kind is not `ecu_ram` carry `scale`.
+  field takes its scale and unit from that meaning. The source of a field of
+  another origin is an allocation, named after the field without the `_raw`
+  suffix, of the feature that owns its address: the configuration record of
+  `can_telemetry` for `rom_configuration`, the state record of
+  `can_telemetry` for `telemetry_state`, and the active RAM of
+  `map_switching` or `rolling_launch` for `runtime_state`. Fields whose
+  origin is not `ecu_ram` carry `scale`. An `ecu_ram` field carries `scale` only
+  when the conversion cannot split it ([Telemetry, signals, and
+  presentation](#205-telemetry-signals-and-presentation)), and the `fields`
+  check refuses such a field.
 - `width`, in bytes, and `signed` describe the field on the wire. The
   `fields` check requires them to fit the source meaning.
 - `profiles`, `page`, and `offset` place a stream field; `context` and
@@ -683,8 +694,12 @@ Features:
   of a word before a feature redirects it is the replacement of the last
   earlier feature that redirects the same word, or the stock value; it is
   derived, not stored.
-- RAM and ROM that a feature allocates are not meanings. The feature names
-  its allocations, and fields and hooks refer to them by allocation name.
+- RAM and ROM that a feature allocates are not meanings. Each target lists
+  them in `allocations`, a table of allocation names whose entries hold the
+  `address` and the `width` in bytes on the layout of the target, and fields
+  and signals refer to them as `<feature>.<allocation>`. Allocations of one
+  target may overlap, as a DID word and the bytes that telemetry fields read
+  from it do.
 - An address in a target key takes the form of a symbol address; sizes,
   deltas, masks, and indices stay numbers.
 
@@ -967,7 +982,7 @@ writes carries the label `:Kb` in addition to its own label.
 | `SERVES` | `Entity` (field) | `Entity` (signal) | | `claim` |
 | `CARRIES` | `Entity` (field) | `Meaning` | | `claim` |
 | `REQUIRES` | `Entity` (feature) | `Meaning`, `Entity` | | `claim` |
-| `TARGETS` | `Entity` (feature) | `Layout` | `status` | `claim` |
+| `TARGETS` | `Entity` (feature) | `Layout` | `status` and the keys of the target, `allocations` among them | `claim` |
 | `PROPOSES` | `Candidate` | any node | `score` | `candidate` |
 
 - A link declared on a meaning is a relationship between meanings. The
@@ -1061,7 +1076,7 @@ Options common to the read commands:
 |---|---|
 | `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
 | `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; for a designed entity its keys and relationships, and for a signal the DIDs that return an observed meaning |
-| `kb at <layout>:<address>` | The symbol at the address or the function or table that contains it, and the L0 facts at that address |
+| `kb at <layout>:<address>` | The symbol at the address, or else the feature allocations, function, or table that contain it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
 | `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
 | `kb path <a> <b>` | The shortest typed paths between two entities |
@@ -1073,7 +1088,7 @@ Options common to the read commands:
 | `kb log <ref>` | The history of the entity through renames and redirects |
 | `kb raw <ref>` | The canonical file of the entity |
 | `kb cypher <query>` | A read-only Cypher query over the working tree's instance after the fingerprint check |
-| `kb audit` | Disagreements of one fact between registries (stage 2) |
+| `kb audit` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind, and the telemetry scales that the conversion cannot split (stage 2) |
 | `kb bench [--all] [--only <id>]` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) |
 | `kb check [--changed]` | The gates of [Checks](#13-checks) |
 
@@ -1187,7 +1202,7 @@ until the stage that replaces them.
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
 | `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
 | `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
-| `fields` | Every field names a source of its kind, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol, or a status and an entry in the target's `unavailable` list | 4 |
+| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol, or a status and an entry in the target's `unavailable` list | 4 |
 | `projections` | Every registered projection equals its rendering, and every generated file is registered | 2 |
 | `guard` | `.claude/settings.json` runs `tools/kb/hook.py`; `.ignore` lists the guarded trees and projections; the path lists of the hook match `tools/kb/projections.toml` | 2 |
 
@@ -1493,7 +1508,7 @@ on each layout through evidence of that layout.
 ```toml
 signal = "normalized_load/signal"
 source = "normalized_bfs_snapshot/ram"
-kind = "ecu_ram"
+origin = "ecu_ram"
 width = 1
 signed = false
 ```
@@ -1941,7 +1956,7 @@ tests on the regenerated files.
 |---|---|
 | `addr` | `ram` symbol, or `reg` symbol for an address in the peripheral space of the MCU |
 | `semantics` | `summary`; proposed `title` |
-| `units` | `unit` |
+| `units` | `unit`, unless the scale of a telemetry field states the unit of the meaning |
 | `confidence` | `level` |
 | `evidence` | Links and evidence with `supports = "identity"` |
 | `note` | `note` |
@@ -2195,7 +2210,10 @@ The service 0x22 table of `7mfk`:
   `coverage`, and `note` keep their names; `evidence` becomes `basis`.
 - `sources` becomes `observes`, the meanings of the `7mfk` symbols at those
   addresses, and each of `widths` states the `width` of its symbol in bits;
-  a registry that states another width disagrees in the audit.
+  a registry that states another width disagrees in the audit. A source
+  inside the active RAM of a feature in `patches/jk08a-runtime-reservations.toml`
+  becomes the allocation of that feature at the address and width, and a
+  source that names no allocation fails the `references` check.
 - `dids` and `current_fields` are derived. The DIDs of a signal are those
   whose `source` is an observed meaning, and a stored set that differs goes
   to the audit for review before the conversion. `current_fields` gives each
@@ -2205,21 +2223,36 @@ The service 0x22 table of `7mfk`:
 
 `patches/can-telemetry-profile.toml`:
 
-- `[[field]]`: `name` is the slug; `page`, `offset`, `width`, `signed`,
-  `profiles`, and `kind` keep their names; `source` becomes a reference to
-  the meaning of the `7mfk` symbol at that address, or to the allocation or
-  state item of its kind; `signal` comes from the signal whose
-  `current_fields` lists the field.
+- `[[field]]`: `name` is the slug; `page`, `offset`, `width`, `signed`, and
+  `profiles` keep their names; `kind` becomes `origin`; `signal` comes from
+  the signal whose `current_fields` lists the field, and an `ecu_ram` field
+  that no signal lists fails the `schema` check.
+- The `source` of an `ecu_ram` field joins the `7mfk` symbol at that address
+  as a telemetry source of the address profiles does; an address outside the
+  RAM and the peripherals of the stock program fails the `schema` check. The
+  source of a field of another origin becomes the allocation of its feature:
+  the state record (`[ram]`) and the configuration record of
+  `patches/can-telemetry-layout.toml` belong to `can_telemetry`, and the
+  active RAM of `map_switching` and `rolling_launch` in
+  `patches/jk08a-runtime-reservations.toml` to those features. The
+  allocation takes the field name without the `_raw` suffix, the address,
+  and the width; an address outside the records of its origin fails the
+  `schema` check.
 - For an `ecu_ram` field the conversion parses `scale` into the source
-  meaning: the arithmetic in `raw` becomes `scale` in `x` with its `unit`, a
-  leading `candidate` sets `scale_level = "candidate"`, an enumeration
-  becomes `[[value]]` entries, a bit description becomes `[[bit]]` entries,
-  and the remaining text joins the summary. A meaning that already has a
-  scale must agree. Every string the parser cannot split is listed for
-  review.
+  meaning: the arithmetic in `raw` becomes `scale` in `x` with its `unit`,
+  which `[vocab] unit` of `tools/kb/config.toml` lists; a leading `candidate`
+  sets `scale_level = "candidate"`; an enumeration `enumeration: <n> <NAME>,
+  ...` becomes `[[value]]` entries; and the remaining text joins the summary.
+  The arithmetic holds `raw` once, and remaining text that holds arithmetic
+  in `raw` states a second scale. A string with a second scale, a unit
+  outside the vocabulary, or no arithmetic stays the `scale` of the field,
+  and the `unsplit` section of `kb audit` lists it for review. A meaning that
+  already has a scale must agree.
 - `[[context]]` becomes a context of `can_telemetry` with `name`, `page`, and
   `tag`, and each `[[context.field]]` a field with `context` and `position`.
-- The wire constants and `[[profile]]` become keys of `can_telemetry`.
+- The wire constants, `[[profile]]`, and the contexts become keys of
+  `can_telemetry`; `mailbox` becomes `mailbox_index`, and the table,
+  configuration, and state addresses become keys of its `7mfk` target.
 - The regenerated profile renders each `ecu_ram` scale from its meaning; the
   conversion commit lists every string that changes, and the consumers pass
   their tests on the regenerated file.

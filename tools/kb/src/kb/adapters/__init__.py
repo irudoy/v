@@ -7,9 +7,9 @@ against the symbols that every adapter declared.
 """
 
 from kb.adapters import (curated, definitions, dids, interp, ledgers, native, profiles,
-                         signals)
+                         signals, telemetry)
 
-ADAPTERS = (curated, ledgers, profiles, definitions, interp, native, dids, signals)
+ADAPTERS = (curated, ledgers, profiles, definitions, interp, native, dids, signals, telemetry)
 
 
 def inputs(root):
