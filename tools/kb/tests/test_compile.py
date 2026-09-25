@@ -171,6 +171,49 @@ class DefinitionAdapterTest(unittest.TestCase):
         self.assertEqual([issue for issue in m.issues if issue.check == "schema"], [])
 
 
+class InterpAdapterTest(unittest.TestCase):
+    def test_a_kernel_entry_inside_a_function_names_the_function_and_the_offset(self):
+        m = model()
+        interp = m.meaning_of(SymbolKey("7mfk", "fn", 0x000263F4)).props["interp"]
+        self.assertEqual({key: value for key, value in interp.items() if key != "kernel"},
+                         {"access": "implicit", "offset": 4, "cols": 16, "step": 4096})
+        kernel = m.meaning_of(interp["kernel"])
+        self.assertEqual(interp["kernel"], SymbolKey("7mfk", "fn", 0x00026A60))
+        self.assertEqual({layout: symbol.address for layout, symbol in kernel.symbols.items()},
+                         {"7mfk": 0x26A60, "jk00c": 0x27664, "jk00d": 0x27664, "1nd": 0x28EA4,
+                          "jk78c": 0x28888})
+        found = {item["key"] for item in kernel.symbols["jk00d"].evidence
+                 if item["kind"] == "interp-contract"}
+        self.assertEqual(found, {"00026a60", "00026a64", "00026a74", "00026a7c", "00026a80",
+                                 "00026a84", "00026a88"})
+
+    def test_a_fused_leaf_keeps_its_own_signature_as_an_override(self):
+        m = model()
+        meaning = m.meaning_of(SymbolKey("1me3b", "fn", 0x00029BA8))
+        self.assertEqual(meaning.key, "ignition_lookup/fn")
+        self.assertEqual(meaning.props["interp"]["kernel"], SymbolKey("7mfk", "fn", 0x00026944))
+        own = meaning.symbols["1me3b"].props["interp"]
+        self.assertEqual(own["kernel"], SymbolKey("1me3b", "fn", 0x00029BA8))
+        self.assertEqual({key: value for key, value in own.items() if key != "kernel"},
+                         {key: value for key, value in meaning.props["interp"].items()
+                          if key != "kernel"})
+        self.assertNotIn("interp", meaning.symbols["jk00d"].props)
+
+    def test_a_shared_registry_carries_to_a_layout_with_the_same_function_bytes(self):
+        m = model()
+        symbol = m.symbols[SymbolKey("jk00c", "fn", 0x00026FC0)]
+        self.assertIs(symbol.meaning, m.meaning_of(SymbolKey("jk00d", "fn", 0x00026FC0)))
+        self.assertEqual([(item["kind"], item["to"]) for item in symbol.evidence],
+                         [("byte-identical", SymbolKey("jk00d", "fn", 0x00026FC0))])
+
+    def test_an_unsupported_correspondence_is_an_unresolved_search(self):
+        meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x000261B8))
+        for layout in ("1nd", "jk78c"):
+            status = meaning.statuses[layout]
+            self.assertEqual((status.state, status.props["method"], status.props["count"]),
+                             ("unresolved", "interp-contract", 0))
+
+
 class StageTwoChecksTest(unittest.TestCase):
     def test_the_model_checks_pass(self):
         m = model()

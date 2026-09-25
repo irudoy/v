@@ -396,7 +396,7 @@ Keys by kind:
 | `fn` | `role` | `accessor`, `service`, `driver`, `monitor`, `wrapper`, `dispatch`, `init`, `handler`, `selector`, `consumer`, `kernel`, or `finisher` |
 | | `contract` | Inputs, outputs, and side effects in registers, RAM, and ROM |
 | | `contract_level` | Level of the contract claim |
-| | `[interp]` | Interpolation signature of a kernel or wrapper: `access` (`explicit` or `implicit`), `kernel` (a `fn` reference), `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` |
+| | `[interp]` | Interpolation signature of a kernel or wrapper: `access` (`explicit` or `implicit`), `kernel` (a `fn` reference to the function that holds the kernel entry), `offset` (the distance of the kernel entry from the entry of `kernel`, when the entry lies inside it), `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` |
 | `const` | `width`, `count`, `storage` | Element width in bits, element count, and element type |
 | `hook` | `width` | Width of the redirected word in bits |
 | `did` | `number` | DID number |
@@ -431,7 +431,7 @@ because both differ by layout.
 | `level` | Level of the claim that this symbol is the meaning on its layout; defaults to the meaning's `level` |
 | `former` | Former full references of the symbol |
 | `images` | Images of the layout that the symbol applies to, when not all |
-| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `unit`, `scale`, `to_raw`, and `scale_level` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
+| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `unit`, `scale`, `to_raw`, `scale_level`, and `[interp]` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
 | `note` | Prose about this layout |
 | `[[symbol.evidence]]` | Evidence of identity or homology |
 
@@ -1880,6 +1880,12 @@ the registry is a projection until stage 11 keeps it generated or removes it.
   strength, in the order of the adapters. A join that would give one meaning
   two symbols of one layout is refused, and `kb audit` lists it among the
   disagreements.
+- A registry that states a key of one symbol, as an interpolation registry
+  states `[interp]` of a wrapper on its layout, gives the meaning the value of
+  its home symbol, or else of the first layout that states it; a symbol whose
+  value differs keeps its own as an override. A reference compares by
+  meaning, so references to the symbols of one meaning on different layouts
+  are one value.
 - A key of the symbol tables takes the kind `tbl` for a map family, `hook`
   when a feature redirects the word at every address of the key, and
   otherwise the kind that another registry gives a symbol at one of its
@@ -2075,12 +2081,24 @@ commit.
 must equal the image catalog, and `addresses` is derived from the symbols.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
-meaning, with `family` as `access`, `kernel`, `width` and `height` as `cols`
+symbol, with `family` as `access`, `kernel`, `width` and `height` as `cols`
 and `rows`, `step`, `storagetype` as `storage`, and `axistype_x` and
-`axistype_y` as `x_storage` and `y_storage`. A row of
-`defs/*.interp-correspondence.csv` gives the target kernel and wrapper
-symbols with `interp-contract` evidence, and an `unsupported` row gives a
-status.
+`axistype_y` as `x_storage` and `y_storage`. `kernel` names the L0
+function whose body holds the kernel entry, and `offset` gives the entry's
+distance from that function's entry when the entry lies inside it, as in the
+shift chains of the implicit kernels. A leaf that is its own kernel, as the
+fused library of 1ME3B has, names itself, so its signature is an override
+where its meaning joins a wrapper of another library. A registry belongs to
+the layout of the image in its file name; another layout whose census plan
+names the registry takes a row where the L0 functions of its wrapper and
+kernel have the exact bytes of that layout's functions at the same entries,
+and its symbols join them with `byte-identical` evidence. A `mapped` row of
+`defs/*.interp-correspondence.csv` joins the target wrapper and the function
+of the target kernel to the `7mfk` symbols of the source entry with
+`interp-contract` evidence, whose `key` is the source wrapper or kernel
+entry and whose `value` is the row's evidence; an `unsupported` row gives
+the source wrapper the status `unresolved` on the target layout, with
+`method` `interp-contract` and `count` 0.
 
 `patches/runtime_targets.py`: `CANONICAL_MAP_SYMBOLS`,
 `CANONICAL_ROLLING_SYMBOLS`, and `CANONICAL_CAN_SYMBOLS` give the `7mfk`

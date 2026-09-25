@@ -79,6 +79,27 @@ class MeaningTest(unittest.TestCase):
         self.assertEqual((meaning.props["summary"], meaning.props["note"]), ("first", ["second"]))
         self.assertEqual([(issue.check, issue.path) for issue in b.issues], [("audit", "b.csv")])
 
+    def test_a_symbol_key_lifts_from_the_home_symbol_and_a_difference_stays_an_override(self):
+        b = builder()
+        wrapper = b.symbol("7mfk", "fn", 0x2642C, "a.csv")
+        kernel = b.symbol("7mfk", "fn", 0x26740, "a.csv")
+        homolog = b.symbol("jk00d", "fn", 0x27030, "b.csv")
+        b.join(kernel, b.symbol("jk00d", "fn", 0x27344, "b.csv"), "c.csv")
+        b.join(wrapper, homolog, "c.csv")
+        b.join(wrapper, b.symbol("1me3b", "fn", 0x2AA48, "d.csv"), "e.csv")
+        b.keys(SymbolKey("1me3b", "fn", 0x2AA48), {"interp": {
+            "kernel": SymbolKey("1me3b", "fn", 0x2AA48), "cols": 16}}, "d.csv")
+        b.keys(homolog, {"interp": {"kernel": SymbolKey("jk00d", "fn", 0x27344), "cols": 16}},
+               "b.csv")
+        b.keys(wrapper, {"interp": {"kernel": kernel, "cols": 16}}, "a.csv")
+        model = b.finish()
+        meaning = model.meaning_of(wrapper)
+        self.assertEqual(meaning.props["interp"], {"kernel": kernel, "cols": 16})
+        self.assertNotIn("interp", meaning.symbols["jk00d"].props)
+        self.assertEqual(meaning.symbols["1me3b"].props["interp"]["kernel"],
+                         SymbolKey("1me3b", "fn", 0x2AA48))
+        self.assertEqual(b.issues, [])
+
 
 class LinkTest(unittest.TestCase):
     def test_a_relation_stated_at_both_ends_is_one_link(self):

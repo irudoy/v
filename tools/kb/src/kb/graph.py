@@ -139,10 +139,11 @@ def _src(sources):
     return sorted(sources) or ["model"]
 
 
-def meaning_node(meaning):
+def meaning_node(model, meaning):
     """The Meaning node; `former` holds the names that other registries give the
-    meaning, which its conversion records as former names."""
-    props = {**meaning.props, **meaning.tables}
+    meaning, which its conversion records as former names, and a reference in a
+    key names the meaning of its symbol."""
+    props = {**_referenced(model, meaning.props), **meaning.tables}
     for reserved in ("key", "kind", "name", "former", "producer", "src"):
         props.pop(reserved, None)
     return properties({
@@ -152,11 +153,11 @@ def meaning_node(meaning):
         "producer": "claim", "src": _src(meaning.sources)})
 
 
-def symbol_node(symbol):
+def symbol_node(model, symbol):
     """The Symbol node; `name` is the name of its full reference, the semantic
     name of its meaning or its generated name, and a generated name that a
     semantic name supersedes joins `former`."""
-    props = dict(symbol.props)
+    props = _referenced(model, symbol.props)
     for reserved in ("key", "kind", "name", "layout", "address", "producer", "src"):
         props.pop(reserved, None)
     former = list(symbol.former)
@@ -178,8 +179,7 @@ def entity_node(entity):
 
 
 def _referenced(model, item):
-    """A value of a feature target with each symbol key replaced by the key of
-    its meaning."""
+    """A value with each symbol key replaced by the key of its meaning."""
     if isinstance(item, SymbolKey):
         meaning = model.meaning_of(item)
         return meaning.key if meaning is not None and meaning.name else item.key
@@ -206,9 +206,9 @@ def claim_rows(model):
     for meaning in model.meanings:
         if not meaning.name:
             continue
-        meanings.append(meaning_node(meaning))
+        meanings.append(meaning_node(model, meaning))
         for layout, symbol in sorted(meaning.symbols.items()):
-            symbols.append(symbol_node(symbol))
+            symbols.append(symbol_node(model, symbol))
             has.append({"from": meaning.key, "to": symbol.key.key})
             for item in symbol.evidence:
                 if isinstance(item.get("to"), SymbolKey):

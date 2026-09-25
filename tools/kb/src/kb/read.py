@@ -553,8 +553,8 @@ def show(graph, text, layout=None, root=repo.ROOT):
     data["links"] = [{"dir": row["dir"], "type": row["type"].lower(),
                       "other": node_ref(row["other"]), "verified": row.get("verified")}
                      for row in rows]
-    tables = [field(name, _table_text(name, meaning[name]))
-              for name in ("editor", "logparam", "diagnostic") if meaning.get(name)]
+    tables = [field(name, _table_text(name, keys[name]))
+              for name in ("interp", "editor", "logparam", "diagnostic") if keys.get(name)]
     answer.section("tables", DETAIL, tables)
     if ref.kind == "symbol":
         _l0_sections(graph, answer, ref.layout, ref.address, data, root)

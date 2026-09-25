@@ -213,6 +213,7 @@ class Builder:
         self.group_kind = {}
         self.names = []
         self.meaning_props = []
+        self.symbol_keys = []
         self.meaning_tables = []
         self.link_facts = []
         self.status_facts = []
@@ -306,6 +307,12 @@ class Builder:
         self._anchor(anchor)
         self.meaning_props.append((anchor, dict(props), str(src)))
 
+    def keys(self, key, props, src):
+        """Keys that a registry states for one symbol. The meaning takes each
+        key from its home symbol, or else from the first symbol that states it,
+        and a symbol whose value differs keeps it as an override."""
+        self.symbol_keys.append((key, dict(props), str(src)))
+
     def table(self, anchor, name, value, src):
         """A feature table of a meaning: editor, logparam, or diagnostic."""
         self._anchor(anchor)
@@ -353,7 +360,9 @@ class Builder:
         if not isinstance(anchor, SymbolKey):
             self.group_kind.setdefault(anchor, anchor[0])
 
-    def _merge(self, props, name, value, src, subject):
+    def _merge(self, props, name, value, src, subject, same=None):
+        """Merge one key; `same` compares a value that differs from the
+        current one, as references to the symbols of one meaning compare."""
         if value is None or value == "" or value == [] or value == ():
             return
         current = props.get(name)
@@ -372,7 +381,7 @@ class Builder:
             return
         if current is None:
             props[name] = value
-        elif current != value:
+        elif current != value and not (same and same(current, value)):
             self.issue("audit", src, subject, f"{name} = {value!r} disagrees with {current!r}")
 
     # Resolution ------------------------------------------------------------
@@ -462,13 +471,15 @@ class Builder:
         model = Model(self.layouts, self.symbols, self.entities, self.targets, self.issues)
         model.meanings = list(meanings.values())
         self._semantic_names(by_node, model)
+        same = lambda left, right: _meant(left, by_node) == _meant(right, by_node)
         for anchor, props, src in self.meaning_props:
             meaning = by_node.get(anchor)
             if meaning is None:
                 continue
             meaning.sources.add(src)
             for name, value in props.items():
-                self._merge(meaning.props, name, value, src, _subject(meaning))
+                self._merge(meaning.props, name, value, src, _subject(meaning), same)
+        self._lift(model, same)
         for anchor, name, value, src in self.meaning_tables:
             meaning = by_node.get(anchor)
             if meaning is not None:
@@ -497,6 +508,26 @@ class Builder:
         self._links(by_node, model)
         model.by_node = by_node
         return model
+
+    def _lift(self, model, same):
+        stated = defaultdict(dict)
+        for key, props, src in self.symbol_keys:
+            symbol = self.symbols[key]
+            if symbol.meaning is None:
+                continue
+            symbol.meaning.sources.add(src)
+            for name, value in props.items():
+                self._merge(stated[key], name, value, src, key.key, same)
+        for meaning in model.meanings:
+            found = [(layout, stated[symbol.key]) for layout, symbol in
+                     sorted(meaning.symbols.items(), key=lambda item: item[0] != meaning.home)
+                     if symbol.key in stated]
+            for name in sorted({name for _, keys in found for name in keys}):
+                values = [(layout, keys[name]) for layout, keys in found if name in keys]
+                current = meaning.props.setdefault(name, values[0][1])
+                for layout, value in values:
+                    if not same(current, value):
+                        meaning.symbols[layout].props[name] = value
 
     def _semantic_names(self, by_node, model):
         candidates = defaultdict(set)
@@ -564,6 +595,18 @@ class Builder:
 
 def _listed(value):
     return value if isinstance(value, list) else [value]
+
+
+def _meant(item, by_node):
+    """A value with each symbol key replaced by its meaning, so that references
+    to the symbols of one meaning on different layouts compare equal."""
+    if isinstance(item, SymbolKey):
+        return by_node.get(item, item)
+    if isinstance(item, dict):
+        return {key: _meant(entry, by_node) for key, entry in item.items()}
+    if isinstance(item, (list, tuple)):
+        return [_meant(entry, by_node) for entry in item]
+    return item
 
 
 def _node(node):
