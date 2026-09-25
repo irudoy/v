@@ -1180,10 +1180,10 @@ The guard keeps agents on `kb` for knowledge that has an owner file under
 security boundary: the gates validate every file whatever wrote it.
 
 - The tracked `.claude/settings.json` registers a PreToolUse hook for `Read`,
-  `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, `Bash`, and the
-  tools of the Memgraph MCP server. The hook runs `tools/kb/hook.py`, which
-  uses only the Python standard library and reads its path lists from
-  `tools/kb/config.toml` and `tools/kb/projections.toml`.
+  `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, and `Bash`.
+  The hook runs `tools/kb/hook.py`, which uses only the Python standard
+  library and reads its path lists from `tools/kb/config.toml` and
+  `tools/kb/projections.toml`.
 - The hook denies with `permissionDecision = "deny"` and a reason that names
   the command to use:
 
@@ -1195,13 +1195,16 @@ security boundary: the gates validate every file whatever wrote it.
 | `Read` of a guarded projection | Deny | `kb show`, `kb where`, or `kb find` |
 | `Grep` or `Glob` whose path lies in a guarded tree or file | Deny | `kb find` |
 | `Bash` whose command names a guarded path, unless it is `uv run kb` or a git command from the allow list | Deny | The matching `kb` command |
-| A Memgraph MCP tool | Deny | `kb cypher` |
 
 - The git allow list covers `status`, `add`, `commit`, `diff`, `log`,
   `show --stat`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
   `mv`, and `rm`, so diffs stay reviewable.
 - `.ignore` excludes the root trees `kb/` and `l0/` and guarded projections
   from ripgrep, so a repository-wide `Grep` does not return their contents.
+- The Memgraph MCP server and Memgraph Lab stay open for exploring the main
+  instance. They read the graph without the fingerprint check, so a gate, a
+  generator, or an evidence item never rests on their answers; `kb cypher`
+  answers the same queries over the working tree's instance.
 - `KB_GUARD=off` in the environment disables the hook for maintenance.
 - Hooks apply to subagents. Agents without hook support follow the generated
   section of `AGENTS.md`, and the gates catch the rest.
