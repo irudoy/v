@@ -38,3 +38,27 @@ max_running = 3
 
 [budget]
 code = 4000
+
+# Address spaces of each MCU from its hardware manual: on-chip flash, on-chip
+# RAM, and the on-chip peripheral registers with the HCAN mailboxes.
+[mcu.SH7058]
+rom = ["00000000", "00100000"]
+ram = ["ffff0000", "ffffc000"]
+io = ["ffffc000", "100000000"]
+
+[mcu.SH7059]
+rom = ["00000000", "00180000"]
+ram = ["fffe8000", "ffffc000"]
+io = ["ffffc000", "100000000"]
+
+# Legacy evidence tokens `spec:<id>` whose id starts with one of these
+# prefixes cite a vehicle or MCU manual of the source packs.
+[tokens]
+manual = ["esm-", "sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
+
+[vocab]
+quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "speed",
+            "temp", "time", "voltage"]
+
+[names]
+attempts = 1000

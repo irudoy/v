@@ -8,6 +8,7 @@ SPEC = ROOT / "tools" / "kb" / "SPEC.md"
 HOMOLOGY = ROOT / "rom-images" / "homology.toml"
 LAYOUT_HEADING = "## 3. Layouts and families"
 KINDS_HEADING = "## 6. Kinds"
+TOKENS_HEADING = "### 20.7 Evidence tokens"
 
 
 def layout_rows():
@@ -44,6 +45,31 @@ def kind_names():
         for line in section.splitlines()
         if line.startswith("| `")
     ]
+
+
+def resolution_orders():
+    """Return {role: kinds} of the target resolution table of section 20.7."""
+
+    text = SPEC.read_text(encoding="utf-8")
+    section = text.split(TOKENS_HEADING, 1)[1].split("\n## ", 1)[0]
+    table = section.split("| Role | Resolution order |", 1)[1].split("\n\n", 1)[0]
+    orders = {}
+    for line in table.splitlines():
+        if not line.startswith("| `"):
+            continue
+        roles, kinds = (cell.strip() for cell in line.strip().strip("|").split("|"))
+        for role in roles.split(","):
+            orders[role.strip().strip("`")] = tuple(
+                kind.strip().strip("`") for kind in kinds.split(",")
+            )
+    return orders
+
+
+class KbSpecTokenTableTest(unittest.TestCase):
+    def test_the_resolution_orders_are_those_the_adapters_run(self):
+        from kb import tokens
+
+        self.assertEqual(resolution_orders(), tokens.TARGET_KINDS)
 
 
 class KbSpecLayoutTableTest(unittest.TestCase):

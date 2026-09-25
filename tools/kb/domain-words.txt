@@ -1,0 +1,33 @@
+# Words that a generated symbol name must not contain (tools/kb/SPEC.md,
+# section 5.4). A generated name is a placeholder that says nothing about its
+# symbol, so it avoids the vocabulary of engines, vehicles, ECU hardware, and
+# firmware structure. The words of semantic names, signal labels, and editor
+# table names join this list when the compiler draws a name.
+
+# Engine and combustion
+air bank boost burn cam camshaft charge combustion compression crank cylinder
+detonation engine exhaust fire flame fuel gas idle ignition injection injector
+intake knock lean misfire motor octane oil piston plug rev rich spark stroke
+throttle timing torque turbo valve vapor vapour
+
+# Sensors, actuators, and quantities
+alternator amp angle battery coolant current degree flow fluid heat heater
+humidity lamp level light load lambda meter oxygen pedal position power
+pressure pulse pump rate ratio sensor speed switch temperature thermostat volt
+voltage volume water
+
+# Vehicle
+brake clutch cruise drive gear launch limiter shift steering traction
+transmission wheel
+
+# Firmware and data
+address array axis base bit block buffer byte cache call clock code config
+constant counter data default delay dispatch driver error event field filter
+flag frame function handler hook index interrupt key latch limit lookup map
+mask memory mode offset page pointer port queue record register reset routine
+scale schedule service signal slot stack state status step table target task
+tick timer trace value word
+
+# Diagnostics and communication
+alarm bus can diagnostic fault frame mailbox message monitor protocol request
+response warning

@@ -7,13 +7,24 @@ stage by stage; this document describes the commands and modules that exist.
 ## Commands
 
 ```bash
+uv run kb sync                       # compile the registries; draw names of new symbols
 uv run kb check                      # every active check; exit 1 on a failure
 uv run kb check --only l0            # one check
+uv run kb audit                      # disagreements between registries
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
 ```
 
-- `kb check` runs the `l0` check, which `make check` includes.
+- `kb check` runs the active checks, which `make check` includes: `l0`, and
+  the model checks `schema`, `names`, `references`, `symbols`, and `links`
+  over the compiled registries.
+- `kb sync` compiles the registries into the model and appends a generated
+  name to `kb/names.csv` for every symbol that has neither a semantic name nor
+  a row. The `names` check fails until `kb sync` has named every such symbol.
+- `kb audit` prints three sections: `disagreements`, where two registries
+  state different values of one fact; `names`, the registry names of a meaning
+  that lose to a name of higher precedence; and `untyped`, legacy evidence
+  tokens that lack the keys of their evidence kind.
 - `kb code` resolves an address to the function whose L0 body holds it and
   calls `tools/ghidra/decompile.sh` for that function's layout image. The
   decompilations and listings stay in the local export directory as the cache
@@ -39,11 +50,37 @@ A file whose digest the check has verified in normal form is recorded in
 `.kb/cache/l0-normal.json`, so a repeated check hashes the files and skips
 the parse.
 
+## Model
+
+The compiler reads every legacy registry through its adapter in
+`kb.adapters`, in two passes: each adapter declares its symbols, names, keys,
+and statuses, and then relates them, so that a link target resolves against
+the symbols of every registry. Symbols of one registry key join one meaning;
+the meaning takes the semantic name of the highest precedence that a registry
+gives it, and otherwise the generated name of its symbol on its home layout.
+
+| Adapter | Registry | Symbols |
+|---|---|---|
+| `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
+| `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
+
+Evidence tokens map by the table of section 20.7 of the specification: a
+dependency token becomes a link stored at the end its type names or `trace`
+evidence, and a token target without a registry row becomes an implicit
+symbol of the kind its role and address admit.
+
 ## Modules
 
 | Module | Role |
 |---|---|
 | `kb.repo` | Repository paths, the image catalog, the layouts, and the configuration |
+| `kb.vocab` | Kinds, levels, link types, evidence kinds, and the other vocabularies |
+| `kb.tokens` | Legacy evidence tokens and their evidence items |
+| `kb.model` | Symbols, meanings, links, and the builder that joins them |
+| `kb.adapters` | Adapters of the legacy registries |
+| `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
+| `kb.compile` | The compiler from the tracked inputs to the model |
+| `kb.checks` | The model checks and the audit |
 | `kb.l0` | L0 export, normal form, manifest, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |
 | `kb.derive` | Function bodies and literal pairing over L0 and the layout image |
@@ -66,8 +103,12 @@ the JK08A ledgers that stage 1 of the specification states.
 
 ## Configuration
 
-`config.toml` lists the L0 export scripts, the census plan of each layout, and
-the output budgets of the commands. `.kb/` holds the per-worktree state and is
+`config.toml` lists the L0 export scripts, the census plan of each layout, the
+output budgets of the commands, the address spaces of each MCU, the manual
+prefixes of legacy `spec:` tokens, the axis quantities, and the attempt limit
+of generated names. `domain-words.txt` lists the words a generated name must
+not contain, beside the words of semantic names, signal labels, and editor
+table names. `.kb/` holds the per-worktree state and is
 ignored by git.
 
 ## Tests

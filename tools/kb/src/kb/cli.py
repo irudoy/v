@@ -8,11 +8,19 @@ import re
 import subprocess
 import sys
 
-from kb import l0, repo
+from kb import checks, compile, l0, names, repo
 from kb.repo import KbError
 
+
+def _model_check(name):
+    def run(root):
+        return [f"{issue.path}: {issue.subject}: {issue.message}"
+                for issue in checks.CHECKS[name](compile.cached(root))]
+    return run
+
+
 # Checks active at the current transition stage, in execution order.
-CHECKS = {"l0": l0.check_all}
+CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS}}
 LOCATION_RE = re.compile(r"(?:(?P<layout>[0-9a-z]{2,8}):)?(?:0x)?(?P<address>[0-9a-fA-F]{1,8})")
 
 
@@ -117,6 +125,28 @@ def command_check(args, root=repo.ROOT):
     return 1 if failed else 0
 
 
+def command_sync(args, root=repo.ROOT):
+    model = compile.build(root)
+    added = names.enroll(model, model.names, root)
+    if added:
+        names.write(model.names + added, root)
+        print(f"{names.PATH}: {len(added)} generated names")
+    print(f"model: {len(model.meanings)} meanings, {len(model.symbols)} symbols, "
+          f"{len(model.links)} links")
+    return 0
+
+
+def command_audit(args, root=repo.ROOT):
+    found = checks.audit(compile.cached(root))
+    for section, issues in found.items():
+        if args.section and section not in args.section:
+            continue
+        for issue in issues:
+            print(f"{section}: {issue.path}: {issue.subject}: {issue.message}")
+    print("audit: " + ", ".join(f"{len(issues)} {section}" for section, issues in found.items()))
+    return 0
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="kb", description="Knowledge model and entry point (tools/kb/SPEC.md)."
@@ -128,6 +158,15 @@ def build_parser():
                        help="run the checks whose inputs changed (every active check)")
     check.add_argument("--only", action="append", help="run one check; repeatable")
     check.set_defaults(handler=command_check)
+
+    sync = commands.add_parser("sync", help="compile the inputs and load the graph")
+    sync.add_argument("--full", action="store_true", help="reload every element")
+    sync.set_defaults(handler=command_sync)
+
+    audit = commands.add_parser("audit", help="disagreements between registries")
+    audit.add_argument("--section", action="append", choices=checks.AUDIT_SECTIONS,
+                       help="print one section; repeatable")
+    audit.set_defaults(handler=command_audit)
 
     code = commands.add_parser("code", help="decompilation or listing of a function")
     code.add_argument("ref", help="<layout>:<address>")

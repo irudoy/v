@@ -152,8 +152,12 @@ tools/kb/
 
 - `kb/names.csv` holds the generated names of symbols whose knowledge still
   lives in a legacy registry. Its columns are `layout,kind,address,name,former`,
-  sorted by layout, kind, and address. A symbol leaves `names.csv` in the
-  conversion commit of its registry; the file is removed in stage 11.
+  sorted by layout, kind, and address; `former` lists former names separated
+  by spaces. `kb sync` draws the names of symbols that enter from a legacy
+  registry without a semantic name and appends their rows. A row stays when
+  the meaning of its symbol takes a semantic name, and its name then resolves
+  as a former name. A symbol leaves `names.csv` in the conversion commit of
+  its registry; the file is removed in stage 11.
 - `.ignore` at the repository root lists `/kb/` and `/l0/`, anchored at the
   root so that `tools/kb/` stays searchable, and ripgrep-based search skips
   both trees.
@@ -273,7 +277,8 @@ for another layout, translates an address whose meaning has a symbol there.
   `tools/kb/config.toml`.
 - A symbol receives a generated name when it enters the store without a
   semantic name: a new symbol of an unnamed meaning, or a symbol of a legacy
-  registry enrolled in stage 2.
+  registry that `kb sync` enrolls from stage 2. The `names` check fails while
+  such a symbol lacks its name.
 
 ### 5.5 Renames, merges, and moves
 
@@ -487,6 +492,7 @@ A link is stored at one end and read in both directions.
 | `relies` | The property of `to` that the owning claim rests on |
 | `supports` | The claim of the owning meaning that `relies` bounds: `identity` (the default), `scale`, or `contract` |
 | `reverse_relies` | The property of the owning meaning that the claim of `to` rests on, for a relation that the legacy registries state at both ends |
+| `reverse_supports` | The claim of `to` that `reverse_relies` bounds, with the values of `supports` |
 | `role` | The legacy token role; required on `depends` |
 | `note` | Prose |
 | `[[link.evidence]]` | Evidence of the relation |
@@ -1135,6 +1141,11 @@ until the stage that replaces them.
 A write command runs the `schema`, `references`, `names`, `symbols`, and
 `canonical` checks on its result and the other active checks on the entities
 it touches ([Write commands](#123-write-commands)).
+
+An evidence item that an adapter maps from a legacy token keeps the token in
+`legacy`. The `schema` check does not require the keys of its kind; `kb audit`
+lists every such item that lacks them until the conversion of its registry
+types it.
 
 ## 14. Projections
 
@@ -2131,17 +2142,38 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | `from_map:<a>` | `fn` | `tbl`, `axis` | `reader` link stored at the table |
 | `selector:<a>` | any | datum | `selector` link |
 | `threshold:<a>` | any | datum | `threshold` link |
-| `base:<a>+<offset>` | datum | `ram` | `base` link with `offset` |
+| `base:<a>+<offset>` | `ram` | `ram` | `base` link with `offset` |
 | `homolog:<a>`, `match:<a>`, and every other combination | any | any | `depends` link with the token role |
 | `trace:<a>` | any | `fn` | `trace` evidence |
 | `rom_const:<a>=<value>` | any | ROM | `rom-bytes` evidence |
 | `site:<a>` | any | code | `l0` evidence, removed once L0 reproduces the relation it supports |
 | `spec:<equation>` | any | | `arithmetic` evidence |
-| `spec:esm-*`, `spec:sh2-hw-*`, `spec:sh2-hardware-manual`, `spec:SH7058S-HW-*` | any | | `manual` evidence with the id as `key` |
+| `spec:<id>` whose id starts with a prefix of `[tokens] manual` in `tools/kb/config.toml`: `esm-`, `sh7058-hw-`, `sh7058-hardware-manual`, and `SH7058S-HW-` | any | | `manual` evidence with the id as `key` |
+| `spec:hardware-results:<key>` | any | | `hardware` evidence with the record key |
 | `spec:<id>` otherwise | any | | `spec` evidence with the id as `key` |
 | `registry:<text>` | any | | `registry` evidence, with a path in `path` and other text in `value` |
 | `wave:<n>`, `arg:<text>` | any | | Removed: review process history, which git keeps |
 
+- The target of a dependency token resolves, in the order of its role, to
+  the first kind of which a registry places a symbol at the address:
+
+| Role | Resolution order |
+|---|---|
+| `consumer` | `fn`, `ram`, `reg` |
+| `writes` | `ram`, `reg`, `fn` |
+| `indexed_by` | `ram`, `reg`, `axis`, `fn`, `tbl`, `const` |
+| `selector` | `ram`, `reg`, `fn`, `tbl`, `const` |
+| `threshold` | `ram`, `reg`, `tbl` |
+| `from_map`, `match` | `tbl`, `axis` |
+| `homolog`, `trace` | `fn` |
+| `base` | `ram`, `reg` |
+
+- An address where no registry places a symbol of those kinds becomes an
+  implicit symbol: `fn` at a function entry of L0, `ram` or `reg` by the
+  address space of the MCU, and at another ROM address `tbl` inside the
+  calibration region of the family and `const` outside it, or else the first
+  ROM kind of the order. An implicit symbol receives a generated name like
+  every other symbol without a semantic name.
 - The suffixes `@structural`, `@confidence`, `@contract_conf`, and
   `@scale_conf` become `relies` = `structure`, `level`, `contract`, and
   `scale`.
@@ -2149,7 +2181,8 @@ evidence column by its role, the kind of the row, and the kind of the target:
   `contract_evidence` gives `contract`, and `scale_evidence` gives `scale`.
 - A relation stated at both ends becomes one link at the end that the type
   table of [Links](#75-links) names. The other end's suffix becomes
-  `reverse_relies`, and the evidence of both ends merges.
+  `reverse_relies`, the claim of its column `reverse_supports`, and the
+  evidence of both ends merges.
 - A `site:<a>` token reproduces from L0 by the first of these relations
   between the site and its row: L0 records a reference at the site to the
   row's subject, to an address within its table, or to an address the row

@@ -55,7 +55,7 @@ class LocationTest(unittest.TestCase):
 class CheckCommandTest(unittest.TestCase):
     def test_unknown_checks_are_a_usage_error(self):
         with contextlib.redirect_stderr(io.StringIO()) as err:
-            self.assertEqual(cli.main(["check", "--only", "links"]), 2)
+            self.assertEqual(cli.main(["check", "--only", "homology"]), 2)
         self.assertIn("unknown or inactive checks", err.getvalue())
 
 

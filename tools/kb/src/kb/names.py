@@ -1,0 +1,212 @@
+"""Names of symbols and meanings (tools/kb/SPEC.md, section 5).
+
+`kb/names.csv` holds the generated name of every symbol of an unnamed meaning
+whose knowledge lives in a legacy registry. A row is a permanent reservation:
+when the meaning of its symbol takes a semantic name, the generated name stays
+reserved and resolves to the symbol as a former name.
+"""
+
+import csv
+import io
+from dataclasses import dataclass
+from pathlib import Path
+import random
+import re
+import tomllib
+
+import coolname
+from rapidfuzz import process
+from rapidfuzz.distance import DamerauLevenshtein
+
+from kb import repo, vocab
+
+PATH = Path("kb/names.csv")
+DOMAIN = Path("tools/kb/domain-words.txt")
+HEADER = ("layout", "kind", "address", "name", "former")
+# Registries whose labels and editor names join the domain dictionary.
+SIGNALS = Path("defs/JK08A.tuning-signals.toml")
+OVERRIDES = Path("defs/JK08A.overrides.toml")
+NATIVE = Path("defs/vq37-native-tables.toml")
+WORD = re.compile(r"[a-z]+")
+HEX_WORD = re.compile(r"[a-f]+")
+
+
+@dataclass(frozen=True, order=True)
+class Row:
+    layout: str
+    kind: str
+    address: int
+    name: str
+    former: tuple = ()
+
+    @property
+    def key(self):
+        return (self.layout, self.kind, self.address)
+
+
+def inputs():
+    return [PATH.as_posix(), DOMAIN.as_posix(), SIGNALS.as_posix(), OVERRIDES.as_posix(),
+            NATIVE.as_posix()]
+
+
+def read(root=repo.ROOT):
+    path = root / PATH
+    if not path.exists():
+        return []
+    with path.open(newline="", encoding="utf-8") as source:
+        reader = csv.DictReader(source)
+        if tuple(reader.fieldnames or ()) != HEADER:
+            raise repo.KbError(f"{PATH}: header must be {','.join(HEADER)}")
+        return [Row(row["layout"], row["kind"], int(row["address"], 16), row["name"],
+                    tuple(row["former"].split()))
+                for row in reader]
+
+
+def render(rows):
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow(HEADER)
+    for row in sorted(rows):
+        writer.writerow((row.layout, row.kind, f"{row.address:08x}", row.name,
+                         " ".join(row.former)))
+    return out.getvalue()
+
+
+def write(rows, root=repo.ROOT):
+    path = root / PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(".csv.tmp")
+    temporary.write_text(render(rows), encoding="utf-8")
+    temporary.replace(path)
+
+
+def words(text):
+    return set(WORD.findall(text.lower()))
+
+
+def domain_dictionary(model, root=repo.ROOT):
+    """Words that a generated name must not contain: the domain word list and
+    the words of semantic names, signal labels, and editor table names."""
+    found = set()
+    for line in (root / DOMAIN).read_text(encoding="utf-8").splitlines():
+        line = line.split("#", 1)[0].strip()
+        if line:
+            found |= words(line)
+    for meaning in model.meanings:
+        if meaning.semantic:
+            found |= words(meaning.name)
+    for entity in model.entities.values():
+        found |= words(entity.slug)
+    signals = tomllib.loads((root / SIGNALS).read_text(encoding="utf-8"))
+    for signal in signals.get("signal", ()):
+        found |= words(signal.get("label", ""))
+    overrides = tomllib.loads((root / OVERRIDES).read_text(encoding="utf-8"))
+    for table in ("table", "axis"):
+        for entry in overrides.get(table, {}).values():
+            found |= words(entry.get("name", ""))
+    native = tomllib.loads((root / NATIVE).read_text(encoding="utf-8"))
+    for target in native.get("target", {}).values():
+        for table in ("table", "axis"):
+            for entry in target.get(table, ()):
+                found |= words(entry.get("name", ""))
+    return found
+
+
+class Taken:
+    """Current and former names with a nearest-neighbour query under the
+    Damerau-Levenshtein distance."""
+
+    def __init__(self, names):
+        self.names = set(names)
+        self._list = sorted(self.names)
+
+    def add(self, name):
+        if name not in self.names:
+            self.names.add(name)
+            self._list.append(name)
+
+    def near(self, name, distance=2):
+        if name in self.names:
+            return name
+        found = process.extractOne(name, self._list, scorer=DamerauLevenshtein.distance,
+                                   score_cutoff=distance)
+        return found[0] if found else None
+
+
+def rejection(candidate, taken, domain):
+    """Why a candidate fails the rules of section 5.4, or None."""
+    if not vocab.GENERATED_NAME.fullmatch(candidate):
+        return "grammar"
+    for word in candidate.split("-"):
+        if HEX_WORD.fullmatch(word):
+            return f"hexadecimal word {word}"
+        if word in domain:
+            return f"domain word {word}"
+    near = taken.near(candidate)
+    if near is not None:
+        return f"within distance 2 of {near}"
+    return None
+
+
+def draw(taken, domain, attempts, rand=None):
+    """A generated name that passes every rule; it joins `taken`."""
+    rand = rand or random.SystemRandom()
+    coolname.replace_random(rand)
+    for _ in range(attempts):
+        candidate = coolname.generate_slug(2)
+        if rejection(candidate, taken, domain) is None:
+            taken.add(candidate)
+            return candidate
+    raise repo.KbError(f"no generated name passed the rules in {attempts} attempts")
+
+
+def assign(model, rows):
+    """Give every symbol and meaning its name: the semantic name of the meaning,
+    or the generated name of the symbol from `rows`."""
+    by_key = {row.key: row for row in rows}
+    for symbol in model.symbols.values():
+        row = by_key.get((symbol.layout, symbol.kind, symbol.address))
+        symbol.generated = row.name if row else None
+        symbol.former = row.former if row else ()
+    for meaning in model.meanings:
+        if not meaning.semantic:
+            home = meaning.home_symbol
+            meaning.name = home.generated if home else None
+        for symbol in meaning.symbols.values():
+            symbol.name = meaning.name if meaning.semantic else symbol.generated
+
+
+def missing(model, rows):
+    """Symbols of unnamed meanings that have no generated name."""
+    known = {row.key for row in rows}
+    return sorted(symbol.key for symbol in model.symbols.values()
+                  if symbol.meaning is not None and not symbol.meaning.semantic
+                  and (symbol.layout, symbol.kind, symbol.address) not in known)
+
+
+def enroll(model, rows, root=repo.ROOT, rand=None):
+    """Draw generated names for the symbols that lack one; returns the new rows."""
+    needed = missing(model, rows)
+    if not needed:
+        return []
+    attempts = repo.config(root).get("names", {}).get("attempts", 1000)
+    domain = domain_dictionary(model, root)
+    taken = Taken(reserved(model, rows))
+    added = [Row(key.layout, key.kind, key.address, draw(taken, domain, attempts, rand))
+             for key in needed]
+    assign(model, rows + added)
+    return added
+
+
+def reserved(model, rows):
+    """Every current and former name of any kind."""
+    found = {row.name for row in rows}
+    for row in rows:
+        found.update(row.former)
+    for meaning in model.meanings:
+        if meaning.semantic:
+            found.add(meaning.name)
+            found.update(name for name, _, _ in meaning.other_names)
+    for entity in model.entities.values():
+        found.add(entity.slug)
+    return found
