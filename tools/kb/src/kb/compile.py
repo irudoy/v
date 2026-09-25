@@ -14,6 +14,10 @@ from kb.model import Builder
 
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
+# Modules of the command line, the read commands, the checks, and the
+# instances. They do not change the graph, so they are no compiler inputs.
+NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "instance.py", "lock.py",
+                          "read.py", "refs.py", "spec.py"})
 
 
 def spaces(config):
@@ -51,7 +55,7 @@ def inputs(root=repo.ROOT):
     found.update(names.inputs())
     found.update((repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix(), repo.CONFIG.as_posix()))
     found.update(path.relative_to(root).as_posix()
-                 for path in (root / PACKAGE).rglob("*.py"))
+                 for path in (root / PACKAGE).rglob("*.py") if path.name not in NOT_COMPILER)
     return sorted(found)
 
 

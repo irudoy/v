@@ -45,9 +45,19 @@ idle_days = 7
 [lock]
 timeout = 300
 
+# Default output budgets of the read commands in tokens (UTF-8 bytes / 3).
 [budget]
+at = 600
+brief = 2000
 code = 4000
 cypher = 2000
+find = 800
+impact = 1500
+log = 800
+path = 1500
+raw = 3000
+show = 1500
+where = 400
 
 # Address spaces of each MCU from its hardware manual: on-chip flash, on-chip
 # RAM, and the on-chip peripheral registers with the HCAN mailboxes.

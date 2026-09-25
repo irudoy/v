@@ -30,6 +30,7 @@ def test_the_tree_matches_its_sources(facts):
     single_source.check_product_identity()
     assert single_source.check_conversions() > 0
     single_source.check_stock_hashes()
+    assert single_source.check_kb_questions() == 12
     assert single_source.check_rom_registries() == len(
         single_source.registered_labels()
     )
@@ -117,6 +118,18 @@ def test_a_scale_string_declares_its_conversion(scale, conversion):
             "defs/JK08A.can.md",
             "`../rom-images/roms.csv`",
             "`ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`",
+        ),
+        (
+            single_source.check_kb_questions,
+            "tools/kb/SPEC.md",
+            "| `kb impact 7mfk:0000a4aa` | 1500 | 2 |",
+            "| `kb impact 7mfk:0000a4aa` | 1200 | 2 |",
+        ),
+        (
+            single_source.check_kb_questions,
+            "tools/kb/bench.toml",
+            'command = "kb find knock threshold"\nbudget = 800\nstage = 2',
+            'command = "kb find knock threshold"\nbudget = 800\nstage = 3',
         ),
         (
             single_source.check_rom_registries,

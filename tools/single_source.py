@@ -4,7 +4,8 @@
 A value that several files need has one owning file. The Memgraph compose file
 publishes the Bolt port, `tools/rom_sources.py` the Ghidra export root, the
 telemetry profile the data CAN ID and every field conversion, the dashboard
-package its product identity, and the ROM registries the label sets. A copy
+package its product identity, `tools/kb/bench.toml` the acceptance questions
+of the kb specification, and the ROM registries the label sets. A copy
 that a standalone script, a command default, or a document keeps is compared
 here with its owner, and every ROM list and count a document publishes is
 compared with the registry, profile, or image that determines it.
@@ -52,6 +53,9 @@ MAP_LAYOUT = "patches/map-switching-layout.toml"
 ATLAS_MANIFESTS = "tools/romviz/roms/"
 INTAKE_GUIDE = "rom-images/new-rom-intake.md"
 CORRESPONDENCE = {"1ME3B": "patches/1me3b-runtime-correspondence.csv"}
+KB_SPEC = "tools/kb/SPEC.md"
+KB_BENCH = "tools/kb/bench.toml"
+KB_QUESTIONS = "## 18. Acceptance questions"
 DID_TABLE_EVIDENCE = "Aligned diagnostic pointer tables of 1ND0A and 1ME3B"
 
 # Primary references are transcriptions of external documents.
@@ -229,6 +233,37 @@ def check_product_identity():
                     f"{path} spells the product identity {value!r}; "
                     f"{PRODUCT_OWNER} is its one record"
                 )
+
+
+def published_questions():
+    """The acceptance questions of the kb specification as (id, question,
+    command, budget, stage) rows."""
+    section = _text(KB_SPEC).split("\n" + KB_QUESTIONS + "\n", 1)[1].split("\n## ", 1)[0]
+    rows = []
+    for line in section.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if not line.startswith("| ") or not cells[0].isdigit():
+            continue
+        number, question, command, budget, stage = cells
+        rows.append((int(number), question, command.strip("`"), int(budget), int(stage)))
+    return rows
+
+
+def check_kb_questions():
+    """Require the question table of the kb specification to equal the
+    questions, budgets, and stages that `tools/kb/bench.toml` owns."""
+    owned = [
+        (item["id"], item["question"], item["command"], item["budget"], item["stage"])
+        for item in _toml(KB_BENCH)["question"]
+    ]
+    published = published_questions()
+    if published != owned:
+        differing = sorted(set(published) ^ set(owned))
+        raise SourceError(
+            f"{KB_SPEC} publishes acceptance questions that differ from {KB_BENCH}: "
+            f"{differing}"
+        )
+    return len(owned)
 
 
 def declared_conversion(scale):
@@ -879,6 +914,7 @@ def main(argv=None):
         check_product_identity()
         conversions = check_conversions()
         check_stock_hashes()
+        questions = check_kb_questions()
         images = check_rom_registries()
         facts = published_facts()
         check_published(facts)
@@ -894,8 +930,8 @@ def main(argv=None):
         return 1
     print(
         f"single source: {endpoints} Bolt endpoints, {can_ids} CAN ID copies, "
-        f"{conversions} host conversions, {images} registered images, and "
-        f"{len(facts)} published facts match their sources"
+        f"{conversions} host conversions, {questions} kb questions, {images} "
+        f"registered images, and {len(facts)} published facts match their sources"
     )
     return 0
 

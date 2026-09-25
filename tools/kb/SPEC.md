@@ -522,6 +522,11 @@ A link is stored at one end and read in both directions.
   the link holds on another layout of the same family.
 - A link that does not hold on a claimed layout is unverified there. `kb
   show` marks it, and from stage 8 the `links` check fails on it.
+- A link states a dependency of its owner on `to`, except that the function
+  of a `reader` depends on the datum, and a `depends` link reads by its role:
+  with `consumer` or `writes`, `to` depends on the owner; `homolog` and
+  `match` state no dependency. `kb impact` and `kb path` follow dependencies
+  from what a change starts at to what it reaches.
 
 ### 7.6 Evidence
 
@@ -816,6 +821,9 @@ every `kb` command runs it first when the graph is stale.
 - `tools/kb/config.toml` and `tools/kb/projections.toml`.
 - Until a registry converts, the registry itself, read by its adapter
   ([Migration map](#20-migration-map)).
+- The modules of the compiler under `tools/kb/src/kb/`. The modules of the
+  command line, the read commands, the checks, and the instances do not change
+  the graph and are no inputs.
 
 ### 9.2 Phases
 
@@ -878,7 +886,8 @@ before the first query. `kb` syncs on a mismatch; a gate or a tool raises
   changes.
 - The L0 part of a layout, its `Function`, `Location`, `CALL`, and `ACCESS`
   elements with the derived literal pairs, reloads when the digest of its L0
-  files, its images, and the compiler modules that build its rows changes.
+  files, its images, the address spaces of its MCU, and the compiler modules
+  that build its rows changes.
   `Layout.loaded` holds that digest after a complete load of the part.
 - The claim part, every `claim` element and the `derived` elements that
   follow from claims, reloads as a whole when the fingerprint changes; it
@@ -915,8 +924,8 @@ writes carries the label `:Kb` in addition to its own label.
 | `Family` | Family id | `kind`, `mcu` | `claim` |
 | `Layout` | Layout id | `family`, `l0` (manifest digest), `loaded` (digest of the loaded L0 part) | `claim` |
 | `Image` | Image id | `sha256` | `claim` |
-| `Meaning` | `<name>/<kind>` | `kind`, `name`, `title`, `level`, `effective`, `home`, `role`, and the kind keys | `claim` |
-| `Symbol` | `<layout>-<address>/<kind>` | `name`, `layout`, `address`, `level`, `effective`, overrides | `claim` |
+| `Meaning` | `<name>/<kind>` | `kind`, `name`, `former`, `title`, `level`, `effective`, `home`, `role`, and the kind keys | `claim` |
+| `Symbol` | `<layout>-<address>/<kind>` | `name`, `generated`, `former`, `layout`, `address`, `level`, `effective`, overrides | `claim` |
 | `Entity` | `<slug>/<kind>` | `kind`, `title`, and the keys of the kind | `claim` |
 | `Step` | `<chain slug>#<order>` | `effect`, `sign`, `note` | `claim` |
 | `Function` | `<layout>:<address>` | `size`, `thunk`, `external`, signature hashes | `l0` |
@@ -924,7 +933,10 @@ writes carries the label `:Kb` in addition to its own label.
 | `Candidate` | `<algorithm>:<run>:<id>` | `algorithm`, `params`, `score` | `candidate` |
 
 - The `Symbol` key does not contain the name, so a rename changes a property
-  and no key.
+  and no key. `name` of a symbol is the name of its full reference: its
+  meaning's name, or its generated name while the meaning has none.
+  `generated` is the generated name of `kb/names.csv`, and `former` lists the
+  former names that still resolve ([References](#52-references)).
 - Evidence items are a list property `evidence` of maps on the node or
   relationship they support. An item with `to` also yields a `CITES`
   relationship, so impact queries follow evidence dependencies.
@@ -940,7 +952,7 @@ writes carries the label `:Kb` in addition to its own label.
 | `CALL` | `Function` | `Function` | `sites` | `l0` |
 | `ACCESS` | `Function` | `Location` | `modes`, `sites` | `l0`, `derived` for paired literals |
 | `WRITER`, `READER`, `INPUT`, `COPY`, `INDEX`, `AXIS`, `LOOKUP`, `SELECTOR`, `THRESHOLD`, `BASE`, `TARGET`, `SOURCE`, `MONITOR`, `DEPENDS` | `Meaning` | `Meaning` | the link keys | `claim` |
-| the same types | `Symbol` | `Symbol` | `layout`, `verified` | `derived` |
+| the same types | `Symbol` | `Symbol` | `layout`, `verified`, and the link's `role`, `slot`, and `offset` | `derived` |
 | `CITES` | `Meaning`, `Symbol` | `Meaning`, `Symbol`, `Entity` | `kind`, `supports`, `relies` | `claim` |
 | `ANALOG` | `Meaning` | `Meaning` | `note` | `claim` |
 | `BLOCK` | `Meaning` | `Entity` (block) | | `claim` |
@@ -1038,6 +1050,8 @@ Options common to the read commands:
 | `--full` | No budget |
 | `--json` | Structured output for programs, without a budget |
 | `--no-sync` | Fail instead of syncing a stale graph |
+| `--expand <ref>` | `kb impact` and `kb path`: expand a hub; repeatable |
+| `--limit <n>` | `kb path`: paths to print; `kb find`: results to print |
 
 ### 12.2 Read commands
 
@@ -1058,6 +1072,7 @@ Options common to the read commands:
 | `kb raw <ref>` | The canonical file of the entity |
 | `kb cypher <query>` | A read-only Cypher query over the working tree's instance after the fingerprint check |
 | `kb audit` | Disagreements of one fact between registries (stage 2) |
+| `kb bench [--all] [--only <id>]` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) |
 | `kb check [--changed]` | The gates of [Checks](#13-checks) |
 
 ### 12.3 Write commands
@@ -1107,6 +1122,19 @@ only through batches, so the parent reviews one diff.
 - A node whose degree exceeds the 99th percentile of its kind is a hub. `kb
   impact` and `kb path` do not expand hubs; they print the hub with its degree
   and the option that expands it.
+- `kb impact` closes transitively over the dependencies between data: the
+  links whose both ends are data. A function reference starts at the data and
+  DTCs it writes. The functions that read the reference or a datum of the
+  closure, the functions that depend on a function reference, and the claims
+  that cite the reference follow without expansion, because a function that
+  reads a datum need not compute each of its outputs from it. Chains, fields,
+  and features join the closure in their stages.
+- `kb path` searches the dependencies between data and those through the
+  functions that read, write, and call: from the first reference to the
+  second, then from the second to the first, then in any direction. Of paths
+  of one length, those with more links between data come first. When a path
+  through hubs is shorter, the answer states its length and the `--expand`
+  options of its hubs.
 - `kb find` prefilters by trigrams, ranks exact, prefix, and substring matches
   in that tier order, and orders each tier by the squared coverage of the
   query words weighted by inverse document frequency. When the second result

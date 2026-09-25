@@ -1,15 +1,19 @@
 """The `kb` command line: `uv run kb <command>`."""
 
 import argparse
+from contextlib import redirect_stdout
 import csv
+import io
 import json
-import math
+import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import sys
 
-from kb import checks, compile, graph, instance, l0, repo
+from kb import answer, checks, compile, graph, instance, l0, read, repo
+from kb.answer import fit
 from kb.repo import KbError
 
 
@@ -23,31 +27,6 @@ def _model_check(name):
 # Checks active at the current transition stage, in execution order.
 CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS}}
 LOCATION_RE = re.compile(r"(?:(?P<layout>[0-9a-z]{2,8}):)?(?:0x)?(?P<address>[0-9a-fA-F]{1,8})")
-
-
-def tokens(text):
-    """Output tokens as the specification counts them: UTF-8 bytes / 3."""
-    return math.ceil(len(text.encode("utf-8")) / 3)
-
-
-def fit(text, budget, narrower):
-    """Cut text to its budget; the first line of a cut answer reads TRUNCATED."""
-    if budget is None or tokens(text) <= budget:
-        return text
-    lines = text.splitlines(keepends=True)
-    kept, used = [], 0
-    limit = budget * 3 - 200
-    for line in lines:
-        size = len(line.encode("utf-8"))
-        if used + size > limit:
-            break
-        kept.append(line)
-        used += size
-    header = (
-        f"TRUNCATED: {len(kept)} of {len(lines)} lines shown; "
-        f"{narrower} or --full shows the rest\n"
-    )
-    return header + "".join(kept)
 
 
 def budget_of(args, command, root=repo.ROOT):
@@ -72,17 +51,14 @@ def parse_location(text, layout_option=None, root=repo.ROOT):
 
 def containing_function(layout, address, root=repo.ROOT):
     """The L0 function entry at or containing an instruction address."""
-    base = root / repo.L0 / layout.id
     wanted = f"{address:08x}"
-    with (base / "funcs.csv").open(newline="", encoding="utf-8") as source:
+    with (root / repo.L0 / layout.id / "funcs.csv").open(newline="", encoding="utf-8") as source:
         if any(row["addr"] == wanted for row in csv.DictReader(source)):
             return wanted
-    with (base / "function_tokens.csv").open(newline="", encoding="utf-8") as source:
-        owners = sorted({row["func_addr"] for row in csv.DictReader(source)
-                         if row["ins_addr"] == wanted})
+    owners = sorted({entry for entry, _, _ in read.instructions_at(layout.id, address, root)})
     if not owners:
         raise KbError(f"{layout.id}:{wanted} is not an instruction of an L0 function", code=5)
-    return owners[0]
+    return f"{owners[0]:08x}"
 
 
 def command_code(args, root=repo.ROOT):
@@ -207,6 +183,99 @@ def command_cypher(args, root=repo.ROOT):
     return 0
 
 
+def _json_default(item):
+    if isinstance(item, (set, frozenset, tuple)):
+        return sorted(item)
+    return str(item)
+
+
+def _answer(args, command, build, root=repo.ROOT):
+    """Print the answer of a read command within its budget, or its data."""
+    with graph.fresh(root, args.no_sync, log=_stderr) as session:
+        found = build(session)
+    if args.json:
+        print(json.dumps(found.data, default=_json_default, indent=1, sort_keys=True))
+    else:
+        sys.stdout.write(found.text(budget_of(args, command, root)))
+    return 0
+
+
+def command_at(args, root=repo.ROOT):
+    return _answer(args, "at", lambda g: read.at(g, args.ref, args.layout, root), root)
+
+
+def command_show(args, root=repo.ROOT):
+    return _answer(args, "show", lambda g: read.show(g, args.ref, args.layout, root), root)
+
+
+def command_where(args, root=repo.ROOT):
+    return _answer(args, "where", lambda g: read.where(g, args.ref, root), root)
+
+
+def command_impact(args, root=repo.ROOT):
+    return _answer(args, "impact",
+                   lambda g: read.impact(g, args.ref, args.layout, args.expand, root), root)
+
+
+def command_path(args, root=repo.ROOT):
+    return _answer(args, "path", lambda g: read.path(
+        g, args.first, args.second, args.layout, args.expand, args.limit, root), root)
+
+
+def command_find(args, root=repo.ROOT):
+    return _answer(args, "find", lambda g: read.find(g, args.words, args.limit, root), root)
+
+
+def command_brief(args, root=repo.ROOT):
+    return _answer(args, "brief", lambda g: read.brief(g, root), root)
+
+
+def command_log(args, root=repo.ROOT):
+    return _answer(args, "log", lambda g: read.log(g, args.ref, root), root)
+
+
+def command_raw(args, root=repo.ROOT):
+    return _answer(args, "raw", lambda g: read.raw(g, args.ref, root), root)
+
+
+def baseline_tokens(steps, root=repo.ROOT):
+    """Tokens of the output of a question's baseline steps."""
+    total = 0
+    for step in steps:
+        result = subprocess.run(step["run"], cwd=root, capture_output=True)
+        if result.returncode not in (0, 1):
+            raise KbError(f"baseline {shlex.join(step['run'])} failed: "
+                          f"{result.stderr.decode(errors='replace').strip()}")
+        if step.get("read"):
+            for line in result.stdout.decode().splitlines():
+                if line.strip():
+                    total += answer.tokens((root / line.strip()).read_text(encoding="utf-8"))
+        else:
+            total += answer.tokens(result.stdout.decode(errors="replace"))
+    return total
+
+
+def command_bench(args, root=repo.ROOT):
+    config = read.bench(root)
+    failed = 0
+    for question in config["question"]:
+        if question["stage"] > config["stage"] and not args.all:
+            continue
+        if args.only and question["id"] not in args.only:
+            continue
+        out = io.StringIO()
+        with redirect_stdout(out):
+            code = main(shlex.split(question["command"])[1:] + ["--full"])
+        used = answer.tokens(out.getvalue())
+        base = baseline_tokens(question["baseline"], root)
+        passed = code == 0 and used <= question["budget"] and used < base
+        failed += not passed
+        print(f"{question['id']:>2}  {'PASS' if passed else 'FAIL'}  {used:>5} tokens, budget "
+              f"{question['budget']:>5}, baseline {base:>6}  {question['command']}"
+              + ("" if code == 0 else f"  exit {code}"))
+    return 1 if failed else 0
+
+
 def command_audit(args, root=repo.ROOT):
     found = checks.audit(compile.cached(root))
     for section, issues in found.items():
@@ -254,6 +323,51 @@ def build_parser():
                        help="print one section; repeatable")
     audit.set_defaults(handler=command_audit)
 
+    def reader(name, help_text, *positional, layout=True):
+        command = commands.add_parser(name, help=help_text)
+        for argument, argument_help in positional:
+            command.add_argument(argument, help=argument_help)
+        if layout:
+            command.add_argument("--layout", help="restrict the answer to one layout")
+        command.add_argument("--budget", type=int, help="output budget in tokens")
+        command.add_argument("--full", action="store_true", help="no budget")
+        command.add_argument("--json", action="store_true", help="structured output, no budget")
+        command.add_argument("--no-sync", action="store_true",
+                             help="fail instead of syncing a stale graph")
+        return command
+
+    reference = ("ref", "a reference (tools/kb/SPEC.md, section 5.2)")
+    reader("at", "the symbol at an address and the L0 facts there", reference) \
+        .set_defaults(handler=command_at)
+    reader("show", "an entity with its symbols, links, and evidence", reference) \
+        .set_defaults(handler=command_show)
+    reader("where", "the symbol or status of a meaning on every layout", reference,
+           layout=False).set_defaults(handler=command_where)
+    impact = reader("impact", "every entity that depends on a reference", reference)
+    impact.add_argument("--expand", action="append", help="expand a hub; repeatable")
+    impact.set_defaults(handler=command_impact)
+    route = reader("path", "the shortest typed paths between two entities",
+                   ("first", "a reference"), ("second", "a reference"))
+    route.add_argument("--expand", action="append", help="expand a hub; repeatable")
+    route.add_argument("--limit", type=int, default=3, help="paths to list (default 3)")
+    route.set_defaults(handler=command_path)
+    search = reader("find", "entities ranked by name, former name, title, and summary",
+                    layout=False)
+    search.add_argument("words", nargs="+")
+    search.add_argument("--limit", type=int, default=15, help="results to list (default 15)")
+    search.set_defaults(handler=command_find)
+    reader("brief", "the state of the knowledge base", layout=False) \
+        .set_defaults(handler=command_brief)
+    reader("log", "the history of an entity through renames and redirects", reference,
+           layout=False).set_defaults(handler=command_log)
+    reader("raw", "the registry records of an entity", reference, layout=False) \
+        .set_defaults(handler=command_raw)
+
+    bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
+    bench.add_argument("--all", action="store_true", help="include questions of later stages")
+    bench.add_argument("--only", type=int, action="append", help="one question id; repeatable")
+    bench.set_defaults(handler=command_bench)
+
     code = commands.add_parser("code", help="decompilation or listing of a function")
     code.add_argument("ref", help="<layout>:<address>")
     code.add_argument("--layout")
@@ -273,6 +387,10 @@ def main(argv=None):
     except KbError as error:
         print(f"error: {error}", file=sys.stderr)
         return error.code
+    except BrokenPipeError:
+        # A reader such as `head` closed the output; the rest of it is discarded.
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        return 0
 
 
 if __name__ == "__main__":

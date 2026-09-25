@@ -5,7 +5,8 @@ node the compiler writes carries the label `Kb`, and the loader deletes and
 replaces only `Kb` elements, so the graph of the legacy loaders stays intact.
 
 - The L0 part of a layout, its functions, calls, locations, and accesses,
-  reloads when the digest of its L0 files, its image, or the compiler changes.
+  reloads when its L0 files, its images, the address spaces of its MCU, or the
+  modules that build its rows change.
 - The claim part, the meanings and symbols with their links, statuses, and
   citations, reloads as a whole when the fingerprint changes.
 - `AT` joins symbols to the L0 nodes at their addresses, and the loader
@@ -13,15 +14,15 @@ replaces only `Kb` elements, so the graph of the legacy loaders stays intact.
 - `:Meta` is deleted first and written last, so a graph without it is stale.
 """
 
-from collections import Counter, defaultdict
-import csv
+from collections import defaultdict
 from datetime import datetime, timezone
 import re
 import time
 
 import kb
-from kb import compile, derive, fingerprint, instance, lock, names, repo
+from kb import compile, fingerprint, instance, l0graph, lock, names, repo
 from kb.model import SymbolKey
+from kb.values import properties
 
 BATCH = 5000
 LABELS = ("Meta", "Family", "Layout", "Image", "Meaning", "Symbol", "Entity", "Step",
@@ -36,16 +37,11 @@ INDEXES = (
     ("Location", ("layout",)),
 )
 CLAIM_LABELS = ("Meaning", "Symbol", "Entity", "Step")
-CALL_REFERENCES = ("unconditional_call", "computed_call")
-POINTER_REFERENCES = ("data", "param")
 STORE_MODES = ("store", "update", "write", "read_write")
 LOAD_MODES = ("load", "update", "read", "read_write", "literal", "data", "param")
 L0_VERIFIED = {"WRITER": STORE_MODES, "READER": LOAD_MODES}
-WIDTH = {"b": 1, "w": 2, "l": 4}
-SUFFIX = re.compile(r"\.([bwl])$")
-DERIVED_SRC = "literal-pairs"
 # Modules whose change reloads the L0 part of every layout.
-L0_CODE = ("compile.py", "derive.py", "graph.py", "sh2.py")
+L0_CODE = ("derive.py", "l0graph.py", "sh2.py", "values.py")
 # Clauses and commands that change a graph; `kb cypher` refuses them.
 WRITES = re.compile(
     r"(?<![.$:\w])(CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|FOREACH|LOAD\s+\w+|"
@@ -105,137 +101,6 @@ class Graph:
         self.close()
 
 
-# Values ------------------------------------------------------------------------
-
-def value(item):
-    """A property value that Memgraph stores: symbol keys become their key strings,
-    sets become sorted lists, and empty values vanish."""
-    if isinstance(item, SymbolKey):
-        return item.key
-    if isinstance(item, dict):
-        return {str(key): value(entry) for key, entry in item.items()
-                if entry is not None and entry != [] and entry != ()}
-    if isinstance(item, (set, frozenset)):
-        return sorted(value(entry) for entry in item)
-    if isinstance(item, (list, tuple)):
-        return [value(entry) for entry in item]
-    return item
-
-
-def properties(mapping):
-    return {key: stored for key, stored in value(mapping).items() if stored != {}}
-
-
-# L0 ----------------------------------------------------------------------------
-
-def _read(path):
-    with path.open(newline="", encoding="utf-8") as source:
-        yield from csv.DictReader(source)
-
-
-def space_of(spaces, address):
-    for name in ("rom", "ram", "io"):
-        start, end = spaces[name]
-        if start <= address < end:
-            return name
-    return None
-
-
-def width_of(mnemonic):
-    match = SUFFIX.search(mnemonic)
-    return WIDTH[match.group(1)] if match else None
-
-
-def l0_rows(layout, spaces, root=repo.ROOT):
-    """Nodes and relationships of one layout's L0 and its literal pairs.
-
-    - `Function` from funcs.csv with the hashes of function_signatures.csv.
-    - `CALL` from calls.csv, with the call sites of function_references.csv.
-    - `ACCESS` with producer `l0` from function_references.csv: every reference
-      to RAM or a register with its reference type as mode, every data or
-      parameter reference to ROM, and every pool literal that names RAM or a
-      register, with mode `literal` and the pool address.
-    - `ACCESS` with producer `derived` from the literal pairs of kb.derive.
-    - `Location` at every accessed address inside the spaces of the MCU.
-    """
-    base = root / repo.L0 / layout.id
-    src = {name: (repo.L0 / layout.id / name).as_posix()
-           for name in ("funcs.csv", "calls.csv", "function_references.csv")}
-    key = lambda address: f"{layout.id}:{address:08x}"
-    signatures = {row["addr"]: row for row in _read(base / "function_signatures.csv")}
-    functions = []
-    for row in _read(base / "funcs.csv"):
-        address = int(row["addr"], 16)
-        signature = signatures.get(row["addr"], {})
-        functions.append(properties({
-            "key": key(address), "layout": layout.id, "address": address,
-            "size": int(row["size"]), "thunk": row["is_thunk"] == "true",
-            "external": row["is_external"] == "true",
-            "instructions": int(signature["instructions"]) if signature else None,
-            "exact_sha256": signature.get("exact_sha256"),
-            "mnemonic_sha256": signature.get("mnemonic_sha256"),
-            "shape_sha256": signature.get("shape_sha256"),
-            "producer": "l0", "src": src["funcs.csv"],
-        }))
-    call_sites = defaultdict(set)
-    direct = defaultdict(list)
-    outside = Counter()
-    for row in _read(base / "function_references.csv"):
-        func, site = int(row["func_addr"], 16), int(row["ins_addr"], 16)
-        target, kind = int(row["ref_addr"], 16), row["ref_type"]
-        if kind in CALL_REFERENCES:
-            call_sites[(func, target)].add(site)
-            continue
-        space = space_of(spaces, target)
-        if space in ("ram", "io"):
-            direct[(func, target)].append(
-                {"site": site, "mode": kind, "width": width_of(row["mnemonic"])})
-        elif space == "rom" and kind in POINTER_REFERENCES:
-            direct[(func, target)].append({"site": site, "mode": kind})
-        if kind == "read" and row["width"] == "4" and row["value_hex"]:
-            literal = int(row["value_hex"], 16)
-            if space_of(spaces, literal) in ("ram", "io"):
-                direct[(func, literal)].append({"site": site, "mode": "literal",
-                                                "pool": target})
-    calls = []
-    for row in _read(base / "calls.csv"):
-        caller, callee = int(row["src"], 16), int(row["dst"], 16)
-        calls.append({"from": key(caller), "to": key(callee), "props": properties({
-            "sites": sorted(call_sites.get((caller, callee), ())),
-            "producer": "l0", "src": src["calls.csv"]})})
-    derived = defaultdict(list)
-    for pair in derive.literal_pairs(layout.id, root):
-        if space_of(spaces, pair.address) is None:
-            outside["derived"] += 1
-            continue
-        site = {"site": pair.ins, "mode": pair.mode, "width": pair.size,
-                "literal": pair.literal, "pool": pair.pool, "base": pair.base}
-        if pair.indexed:
-            site["indexed"] = True
-        derived[(pair.func, pair.address)].append(site)
-    locations = {}
-    accesses = []
-    for producer, found, origin in (("l0", direct, src["function_references.csv"]),
-                                    ("derived", derived, DERIVED_SRC)):
-        for (func, address), sites in sorted(found.items()):
-            if address not in locations or producer == "l0" and \
-                    locations[address]["producer"] != "l0":
-                locations[address] = {
-                    "key": key(address), "layout": layout.id, "address": address,
-                    "space": space_of(spaces, address), "producer": producer, "src": origin}
-            sites = sorted((properties(site) for site in sites), key=lambda s: (s["site"], s["mode"]))
-            accesses.append({"from": key(func), "to": key(address), "props": {
-                "modes": sorted({site["mode"] for site in sites}), "sites": sites,
-                "producer": producer, "src": origin}})
-    return {
-        "functions": functions,
-        "calls": calls,
-        "locations": [locations[address] for address in sorted(locations)],
-        "accesses": accesses,
-        "outside": dict(outside),
-    }
-
-
 # Claims --------------------------------------------------------------------------
 
 def _families(root):
@@ -275,23 +140,32 @@ def _src(sources):
 
 
 def meaning_node(meaning):
+    """The Meaning node; `former` holds the names that other registries give the
+    meaning, which its conversion records as former names."""
     props = {**meaning.props, **meaning.tables}
-    for reserved in ("key", "kind", "name", "producer", "src"):
+    for reserved in ("key", "kind", "name", "former", "producer", "src"):
         props.pop(reserved, None)
     return properties({
         **props, "key": meaning.key, "kind": meaning.kind, "name": meaning.name,
         "semantic": meaning.semantic, "tier": meaning.tier, "home": meaning.home,
+        "former": sorted({name for name, _, _ in meaning.other_names}),
         "producer": "claim", "src": _src(meaning.sources)})
 
 
 def symbol_node(symbol):
+    """The Symbol node; `name` is the name of its full reference, the semantic
+    name of its meaning or its generated name, and a generated name that a
+    semantic name supersedes joins `former`."""
     props = dict(symbol.props)
     for reserved in ("key", "kind", "name", "layout", "address", "producer", "src"):
         props.pop(reserved, None)
+    former = list(symbol.former)
+    if symbol.generated and symbol.generated != symbol.name:
+        former.append(symbol.generated)
     return properties({
         **props, "key": symbol.key.key, "kind": symbol.kind, "layout": symbol.layout,
-        "address": symbol.address, "name": symbol.generated, "implicit": symbol.implicit,
-        "former": list(symbol.former), "evidence": symbol.evidence,
+        "address": symbol.address, "name": symbol.name, "generated": symbol.generated,
+        "implicit": symbol.implicit, "former": former, "evidence": symbol.evidence,
         "producer": "claim", "src": _src(symbol.sources)})
 
 
@@ -356,9 +230,11 @@ def claim_rows(model):
             symbol_links[kind].append({
                 "from": link.owner.symbols[layout].key.key,
                 "to": link.to.symbols[layout].key.key,
-                "props": {"layout": layout,
-                          "verified": kind not in L0_VERIFIED and bool(siblings),
-                          "producer": "derived", "src": "links"}})
+                "props": properties({
+                    "layout": layout, "role": link.roles, "slot": link.slot,
+                    "offset": link.offset,
+                    "verified": kind not in L0_VERIFIED and bool(siblings),
+                    "producer": "derived", "src": "links"})})
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
             "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites)}
 
@@ -424,12 +300,14 @@ def _create_links(graph, kind, left, right, rows):
         "SET r = coalesce(row.props, {}) RETURN count(r) AS count", rows)
 
 
-def l0_part(fp, layout, images):
-    """The digest of one layout's L0 part: its L0 files, its images, and the
-    modules that build its rows."""
+def l0_part(fp, layout, images, spaces):
+    """The digest of one layout's L0 part: its L0 files, its images, the address
+    spaces of its MCU, and the modules that build its rows."""
     prefix = f"{repo.L0.as_posix()}/{layout}/"
     code = {f"{compile.PACKAGE}/{name}" for name in L0_CODE}
-    return fp.part(lambda path: path.startswith(prefix) or path in images or path in code)
+    files = fp.part(lambda path: path.startswith(prefix) or path in images or path in code)
+    bounds = ",".join(f"{name}={start:x}:{end:x}" for name, (start, end) in sorted(spaces.items()))
+    return fingerprint.digest([("files", files), ("spaces", bounds)])
 
 
 def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
@@ -461,13 +339,13 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
     for layout in model.layouts.values():
         images = {catalog[image].path.relative_to(root).as_posix() for image in layout.images
                   if image in catalog}
-        digest = l0_part(fp, layout.id, images)
+        digest = l0_part(fp, layout.id, images, model.spaces[layout.mcu])
         if not full and loaded.get(layout.id) == digest:
             continue
         started = time.monotonic()
         graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = null", key=layout.id)
         graph.drain(f"MATCH (n:Kb) WHERE (n:Function OR n:Location) AND n.layout = '{layout.id}'")
-        rows = l0_rows(layout, model.spaces[layout.mcu], root)
+        rows = l0graph.l0_rows(layout, model.spaces[layout.mcu], root)
         counts = {
             "functions": _create_nodes(graph, "Function", rows["functions"]),
             "locations": _create_nodes(graph, "Location", rows["locations"]),

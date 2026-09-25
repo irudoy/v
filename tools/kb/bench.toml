@@ -1,0 +1,130 @@
+# Acceptance questions of the knowledge model (tools/kb/SPEC.md, section 18).
+#
+# `stage` is the current transition stage, and a question is active from its
+# `stage`. `kb bench` answers every active question with --full and requires
+# the answer to fit the question's budget and to stay below its baseline: the
+# output of the search and file reads that answer the question over the
+# registries. A baseline step runs `run` from the repository root and counts
+# its output, or with `read = true` counts the files whose paths it prints.
+# Tokens are UTF-8 bytes divided by three, rounded up.
+stage = 2
+
+[[question]]
+id = 1
+question = "What is at an address of another layout"
+command = "kb at jk00d:ffff1034"
+budget = 600
+stage = 2
+baseline = [
+    { run = ["rg", "-n", "-i", "--no-ignore", "ffff1034", "defs", "patches", "tools/ghidra/symbols", "l0/jk00d"] },
+]
+
+[[question]]
+id = 2
+question = "Where a meaning is on every layout"
+command = "kb where normalized_bfs_snapshot"
+budget = 400
+stage = 3
+baseline = [
+    { run = ["rg", "-n", "-i", "-e", "normalized_bfs_snapshot", "-e", "ffff102c", "patches", "defs"] },
+]
+
+[[question]]
+id = 3
+question = "What depends on a table"
+command = "kb impact 7mfk:0000a4aa"
+budget = 1500
+stage = 2
+baseline = [
+    { run = ["rg", "-n", "-i", "0000a4aa", "defs", "patches"] },
+]
+
+[[question]]
+id = 4
+question = "How coolant temperature reaches the intake-cam target"
+command = "kb path 7mfk:ffff1079 7mfk:ffff2326"
+budget = 1500
+stage = 2
+baseline = [
+    { run = ["rg", "-n", "-i", "-e", "ffff1079", "-e", "ffff2326", "defs/JK08A.vars.csv", "defs/JK08A.funcs.csv", "defs/JK08A.findings.csv", "defs/JK08A.architecture.toml"] },
+]
+
+[[question]]
+id = 5
+question = "Which telemetry sources lack a symbol on a layout"
+command = "kb gaps --feature can_telemetry --layout 1nd"
+budget = 1000
+stage = 3
+baseline = [
+    { run = ["rg", "-n", "-i", "-e", "telemetry_unavailable", "-e", "can_symbols", "patches/rom-address-profiles.toml"] },
+]
+
+[[question]]
+id = 6
+question = "Candidates for a producer on another family"
+command = "kb suggest 7mfk:0003b75c --layout jk78c"
+budget = 1500
+stage = 9
+baseline = [
+    { run = ["rg", "-n", "-i", "0003b75c", "defs", "patches"] },
+]
+
+[[question]]
+id = 7
+question = "Find entities by words"
+command = "kb find knock threshold"
+budget = 800
+stage = 2
+baseline = [
+    { run = ["rg", "-n", "-i", "knock[^,]*threshold|threshold[^,]*knock", "defs", "patches", "tools/ghidra/symbols"] },
+]
+
+[[question]]
+id = 8
+question = "The code of a function"
+command = "kb code jk78c:000564a4"
+budget = 4000
+stage = 2
+baseline = [
+    { run = ["tools/ghidra/decompile.sh", "-r", "JK78C", "-l", "000564a4"], read = true },
+]
+
+[[question]]
+id = 9
+question = "The history of a symbol through its corrections"
+command = "kb log apc_output"
+budget = 800
+stage = 3
+baseline = [
+    { run = ["git", "log", "--oneline", "-S", "apc_output", "--", "patches", "defs"] },
+]
+
+[[question]]
+id = 10
+question = "The state of the knowledge base"
+command = "kb brief"
+budget = 2000
+stage = 2
+baseline = [
+    { run = ["cat", "AGENTS.md", "tools/kb/README.md"] },
+]
+
+[[question]]
+id = 11
+question = "Why telemetry fields are unavailable on a layout"
+command = "kb gaps --feature can_telemetry --layout 1me3b"
+budget = 1000
+stage = 3
+baseline = [
+    { run = ["rg", "-n", "-i", "-e", "telemetry_unavailable", "-e", "can_symbols", "patches/rom-address-profiles.toml"] },
+]
+
+[[question]]
+id = 12
+question = "The block and chain steps of a function"
+command = "kb show 7mfk:0003deec"
+budget = 1200
+stage = 6
+baseline = [
+    { run = ["rg", "-n", "-i", "0003deec", "defs"] },
+]

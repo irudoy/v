@@ -2,7 +2,7 @@ from functools import lru_cache
 import os
 import unittest
 
-from kb import compile, fingerprint, graph, repo
+from kb import compile, fingerprint, graph, l0graph, repo
 from kb.model import SymbolKey
 
 
@@ -14,7 +14,7 @@ def model():
 def l0(layout_id):
     m = model()
     layout = m.layouts[layout_id]
-    return graph.l0_rows(layout, m.spaces[layout.mcu])
+    return l0graph.l0_rows(layout, m.spaces[layout.mcu])
 
 
 def accesses(rows, func, location):

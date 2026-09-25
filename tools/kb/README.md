@@ -17,6 +17,16 @@ uv run kb check --only l0            # one check
 uv run kb audit                      # disagreements between registries
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
+uv run kb at jk00d:ffff1034          # the symbol at an address, or what contains it, and its L0 facts
+uv run kb show 7mfk:0000a4aa         # identity, keys, layouts, links, L0 accessors, notes, evidence
+uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
+uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
+uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
+uv run kb find knock threshold       # entities ranked by name, former name, title, and summary
+uv run kb brief                      # graph state, layouts, stage, owners, gaps, and the questions
+uv run kb log <ref>                  # renames and generated names of an entity
+uv run kb raw <ref>                  # the registry rows that state an entity
+uv run kb bench                      # the acceptance questions of the current stage
 ```
 
 - `kb check` runs the active checks, which `make check` includes: `l0`, and
@@ -44,8 +54,42 @@ uv run kb code 7mfk:00026740 -l      # decompilation and listing
   `config.toml` starts with a `TRUNCATED:` line; `--budget` and `--full`
   change the budget.
 - Exit codes follow the specification: 1 for failed checks, 2 for usage
-  errors, 5 for an unknown layout or address, 6 for a failed Ghidra run or an
-  unavailable or stale graph, and 7 for a lock timeout.
+  errors, 4 for an ambiguous reference, 5 for an unknown layout, address, or
+  entity, 6 for a failed Ghidra run or an unavailable or stale graph, and 7
+  for a lock timeout.
+
+## Read commands
+
+The read commands resolve references against the graph of the working tree
+after the fingerprint check and sync a stale graph first unless `--no-sync`
+is given. A reference is a full reference `<name>/<kind>/<layout>-<address>`,
+`<layout>:<address>`, `<name>/<kind>/<layout>` or `<name>/<layout>`,
+`<name>/<kind>` or `<name>`, a former name, or a bare address with
+`--layout`, in that order of precedence. A stale full reference or a former
+name resolves with a note that names the current reference.
+
+- Output states full references, one fact per line; an element that is not a
+  claim carries its producer, `[l0]` or `[derived]`. `--json` prints the
+  structured answer without a budget.
+- An answer longer than its budget in `config.toml` loses its lowest-priority
+  sections first, evidence before details, links, facts, and identity, and
+  starts with a `TRUNCATED:` line that names the option or narrower command
+  that shows the rest. `--budget` and `--full` change the budget.
+- `kb impact` closes transitively over the links between data and lists the
+  functions that read the reference or a datum of the closure without
+  expanding them; a function reference starts at the data it writes.
+  `kb path` searches dataflow through data and through the functions that
+  read, write, and call, then the reverse direction, then any direction.
+  Both leave nodes above the 99th degree percentile of their kind unexpanded
+  and name the `--expand` option; `kb path` states a shorter path through
+  hubs when one exists.
+- `kb bench` answers every question of `bench.toml` that the current stage
+  activates, with `--full`, and passes a question when its answer exits with
+  0, fits its budget, and stays below its baseline: the output of the `rg`
+  and file reads that answer the question over the registries. `--all` also
+  runs the questions of later stages, and `--only <id>` runs one.
+  `tools/single_source.py` compares the questions, budgets, and stages of
+  `bench.toml` with the table of section 18 of the specification.
 
 ## L0
 
@@ -90,7 +134,7 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 
 | Part | Elements | Reloads when |
 |---|---|---|
-| L0 of a layout | `Function`, `Location`, `CALL`, and `ACCESS` with producer `l0` or `derived` | the digest of its L0 files, its images, or the modules `compile`, `derive`, `graph`, and `sh2` changes |
+| L0 of a layout | `Function`, `Location`, `CALL`, and `ACCESS` with producer `l0` or `derived` | the digest of its L0 files, its images, the address spaces of its MCU, or the modules `derive`, `l0graph`, `sh2`, and `values` changes |
 | Claims | `Family`, `Layout`, `Image`, `Meaning`, `Symbol`, `HAS`, the link types between meanings and between symbols, `STATUS`, and `CITES` | the fingerprint changes |
 | Joins | `AT` from symbols to the L0 nodes at their addresses, and `verified` on the `WRITER` and `READER` links of symbols | either part reloads |
 
@@ -105,8 +149,10 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   the symbol's location, and a reader link by any access. A block copy loads
   only the destination address, so its writer stays unverified until
   `indirect` evidence explains it.
-- The fingerprint covers every input: the model inputs, `l0/`, and the images
-  of the catalog. `.kb/cache/hashes.json` keeps the git blob hash of each file
+- The fingerprint covers every input: the model inputs, the compiler
+  modules, `l0/`, and the images of the catalog. The modules of the command
+  line, the read commands, the checks, and the instances, which
+  `compile.NOT_COMPILER` lists, are no inputs. `.kb/cache/hashes.json` keeps the git blob hash of each file
   by size and modification time. `:Meta` is deleted first and written last.
 - The main working tree uses the compose service of
   [`../memgraph/`](../memgraph/README.md). `kb instance up` in a linked
@@ -131,7 +177,13 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 | `kb.fingerprint` | Input paths, git blob hashes, and the fingerprint |
 | `kb.lock` | `.kb/lock` |
 | `kb.instance` | Graph instances by working tree |
-| `kb.graph` | Graph rows, loading, `:Meta`, and read-only queries |
+| `kb.graph` | Claim rows, loading, `:Meta`, and read-only queries |
+| `kb.l0graph` | Graph rows of the L0 part of a layout |
+| `kb.values` | Property values the graph stores |
+| `kb.refs` | References of the read commands and their resolution |
+| `kb.answer` | Answers, sections, token counts, and budgets |
+| `kb.read` | The read commands |
+| `kb.spec` | The stages, owners, and acceptance questions of the specification |
 | `kb.l0` | L0 export, normal form, manifest, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |
 | `kb.derive` | Function bodies and literal pairing over L0 and the layout image |
@@ -154,6 +206,8 @@ the JK08A ledgers that stage 1 of the specification states.
 
 ## Configuration
 
+`bench.toml` holds the acceptance questions with their commands, budgets,
+stages, and baselines, and the current stage.
 `config.toml` lists the L0 export scripts, the census plan of each layout, the
 instance limits and ports, the lock timeout, the output budgets of the
 commands, the address spaces of each MCU, the manual prefixes of legacy

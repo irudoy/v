@@ -6,25 +6,6 @@ from kb import cli, repo
 from kb.repo import KbError
 
 
-class OutputBudgetTest(unittest.TestCase):
-    def test_tokens_count_utf8_bytes_by_three(self):
-        self.assertEqual(cli.tokens("abc"), 1)
-        self.assertEqual(cli.tokens("abcd"), 2)
-        self.assertEqual(cli.tokens("ж"), 1)
-
-    def test_an_answer_within_budget_is_unchanged(self):
-        self.assertEqual(cli.fit("line\n", 10, "narrow"), "line\n")
-        self.assertEqual(cli.fit("x" * 900, None, "narrow"), "x" * 900)
-
-    def test_a_cut_answer_starts_with_truncated_and_names_the_narrower_call(self):
-        text = "".join(f"line {number:04d}\n" for number in range(400))
-        out = cli.fit(text, 200, "kb code 7mfk:00026740 --budget 400")
-        first = out.splitlines()[0]
-        self.assertTrue(first.startswith("TRUNCATED: "))
-        self.assertIn("kb code 7mfk:00026740 --budget 400", first)
-        self.assertLessEqual(cli.tokens(out), 200)
-
-
 class LocationTest(unittest.TestCase):
     def test_layout_prefix_or_option(self):
         layout, address = cli.parse_location("7mfk:0x26740")
