@@ -18,7 +18,7 @@ uv run kb audit                      # disagreements between registries
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
 uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocation or datum that holds it, and its L0 facts
-uv run kb show 7mfk:0000a4aa         # identity, keys, block and chain steps, layouts, links, L0 accessors, notes, evidence
+uv run kb show 7mfk:0000a4aa         # identity, keys, block and chain steps, feature roles, layouts, links, L0 accessors, notes, evidence
 uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
 uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
 uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
@@ -46,7 +46,8 @@ uv run kb bench                      # the acceptance questions of the current s
 - `kb audit` prints four sections: `disagreements`, where two registries
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
-  that lack the keys of their evidence kind; and `unsplit`, the scales of
+  that lack the keys of their evidence kind, under the registry that states
+  each; and `unsplit`, the scales of
   telemetry fields that the adapter cannot split into the keys of their
   source meanings.
 - `kb code` resolves an address to the function whose L0 body holds it and
@@ -122,7 +123,7 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 |---|---|---|
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
-| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets |
+| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets with the roles that a symbol of another meaning fills on a layout |
 | `definitions` | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | `tbl` and `axis` symbols of the definition projections; the `definitions` target |
 | `interp` | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | `fn` symbols of kernels and wrappers with `[interp]` |
 | `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |

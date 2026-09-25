@@ -200,26 +200,20 @@ AUDIT_SECTIONS = ("disagreements", "names", "untyped", "unsplit")
 def audit(model):
     """{section: issues}: disagreements of one fact between registries, other
     registry names of a named meaning, legacy evidence without the keys of its
-    kind, which the conversion of its registry types, and the scales of
-    telemetry fields that the conversion cannot split into their meanings."""
-    found = {section: [] for section in AUDIT_SECTIONS}
-    found["disagreements"] = sorted(issue for issue in model.issues if issue.check == "audit")
-    found["unsplit"] = sorted(issue for issue in model.issues if issue.check == "unsplit")
+    kind under the registry that states it, which the conversion of its
+    registry types, and the scales of telemetry fields that the conversion
+    cannot split into their meanings."""
+    found = {section: set() for section in AUDIT_SECTIONS}
+    for issue in model.issues:
+        if issue.check in ("untyped", "unsplit"):
+            found[issue.check].add(issue)
+        elif issue.check == "audit":
+            found["disagreements"].add(issue)
     for meaning in model.meanings:
-        path = _sources(meaning)
         others = defaultdict(set)
         for name, tier, src in meaning.other_names:
             others[(name, tier)].add(src)
-        for (name, tier), srcs in sorted(others.items()):
-            found["names"].append(Issue("audit", ";".join(sorted(srcs)), meaning.key,
-                                        f"the {tier} name {name} names the same meaning"))
-        for symbol in meaning.symbols.values():
-            for item in symbol.evidence:
-                required, _ = vocab.EVIDENCE_KINDS.get(item.get("kind"), ((), None))
-                absent = [key for key in required if key not in item]
-                if absent and "legacy" in item:
-                    found["untyped"].append(Issue(
-                        "audit", path, symbol.key.key,
-                        f"token {item['legacy']} gives {item['kind']} evidence without "
-                        f"{', '.join(absent)}"))
+        for (name, tier), srcs in others.items():
+            found["names"].add(Issue("audit", ";".join(sorted(srcs)), meaning.key,
+                                     f"the {tier} name {name} names the same meaning"))
     return {section: sorted(issues) for section, issues in found.items()}

@@ -703,6 +703,13 @@ Features:
   and signals refer to them as `<feature>.<allocation>`. Allocations of one
   target may overlap, as a DID word and the bytes that telemetry fields read
   from it do.
+- A feature key that names a meaning may take on a layout a symbol of another
+  meaning, which fills the role of the key there. The target of that layout
+  lists such keys in `roles`, a table of key names whose entries hold the
+  `symbol` and a `note`; the symbol keeps its own meaning, and the key names
+  no symbol on that layout. The VQ37VHR rolling launch drives the final
+  six-cylinder inhibit mask, a meaning of its own, in the role that the fuel
+  inhibit state byte fills on the dual-CVTC layouts.
 - An address in a target key takes the form of a symbol address; sizes,
   deltas, masks, and indices stay numbers.
 
@@ -1078,7 +1085,7 @@ Options common to the read commands:
 | Command | Answers |
 |---|---|
 | `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
-| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning |
+| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning |
 | `kb at <layout>:<address>` | The symbol at the address, or else the feature allocations, function, or table that contain it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
 | `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
@@ -1091,7 +1098,7 @@ Options common to the read commands:
 | `kb log <ref>` | The history of the entity through renames and redirects |
 | `kb raw <ref>` | The canonical file of the entity |
 | `kb cypher <query>` | A read-only Cypher query over the working tree's instance after the fingerprint check |
-| `kb audit` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind, and the telemetry scales that the conversion cannot split (stage 2) |
+| `kb audit` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2) |
 | `kb bench [--all] [--only <id>]` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) |
 | `kb check [--changed]` | The gates of [Checks](#13-checks) |
 
@@ -1215,8 +1222,8 @@ it touches ([Write commands](#123-write-commands)).
 
 An evidence item that an adapter maps from a legacy token keeps the token in
 `legacy`. The `schema` check does not require the keys of its kind; `kb audit`
-lists every such item that lacks them until the conversion of its registry
-types it.
+lists every such item that lacks them, under each registry that states it,
+until the conversion of that registry types it.
 
 ## 14. Projections
 
@@ -2063,6 +2070,15 @@ symbols. The layouts stay the owners of the patch design.
 | `variant` | A key of the feature target |
 | `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; the status of an `unsupported` `map` or `map_native` row gives way to a symbol that another row places in the meaning on the layout. For an allocation or a capability: the `note` of the target key |
 | `evidence` | The `note` of the typed evidence item |
+
+A `target-specific` symbol row whose target a `mapped` row of another key of
+the same file places fills a role ([Designed entities](#79-designed-entities)):
+the key enters `roles` of the target of its feature on the layout with the
+symbol at the target and the evidence as `note`, and neither the row nor the
+address profile entry of the key on that layout joins the meaning of the key.
+The address of that entry must equal the target of the row; a different
+address goes to the audit. The source of the row still gives the `7mfk`
+symbol of the key.
 
 The conversion types the evidence of every `mapped` and `target-specific`
 symbol row from L0 with the matchers of the `homology` check: literal pools,

@@ -269,9 +269,21 @@ class Builder:
         for item in evidence or ():
             if item not in symbol.evidence:
                 symbol.evidence.append(item)
+            self._untyped(key, item, src)
         if group is not None:
             self.group(group, key, src, strength)
         return key
+
+    def _untyped(self, key, item, src):
+        """An evidence item mapped from a legacy token without the keys of its
+        kind goes to the `untyped` section of the audit under its registry."""
+        if "legacy" not in item:
+            return
+        required, _ = vocab.EVIDENCE_KINDS.get(item.get("kind"), ((), None))
+        absent = [name for name in required if name not in item]
+        if absent:
+            self.issue("untyped", src, key.key, f"token {item['legacy']} gives {item['kind']} "
+                       f"evidence without {', '.join(absent)}")
 
     def at(self, layout, address):
         return self._at.get((layout, address), set())

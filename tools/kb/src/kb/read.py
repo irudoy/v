@@ -598,6 +598,8 @@ def show(graph, text, layout=None, root=repo.ROOT):
         facts.append(field("block", "  stage ".join(filter(None, data["block"].values()))))
     data["steps"] = steps_through(graph, meaning["key"])
     facts.extend(field("step", step_text(row, chain=True)) for row in data["steps"])
+    data["roles"] = roles_of(graph, meaning)
+    facts.extend(field("role", role_text(row)) for row in data["roles"])
     if keys.get("summary"):
         facts.append(field('summary', keys['summary']))
     answer.section(None, FACTS, facts)
@@ -675,6 +677,34 @@ def step_text(row, chain=False):
     if row["note"]:
         parts.append(row["note"])
     return "  ".join(parts)
+
+
+def roles_of(graph, meaning):
+    """[{feature, key, symbol, layouts}] of the feature roles that a symbol of
+    the meaning fills, and of the roles of its name that another meaning fills
+    on a layout."""
+    own = {meaning["key"], *(row["key"] for row in graph.run(
+        "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s.key AS key",
+        key=meaning["key"]))}
+    found = defaultdict(list)
+    for row in graph.run(
+            "MATCH (f:Kb:Entity {kind: 'feature'})-[t:TARGETS]->(l:Kb:Layout) "
+            "WHERE t.roles IS NOT NULL RETURN f.slug AS feature, l.key AS layout, "
+            "t.roles AS roles ORDER BY feature, layout"):
+        for key, role in sorted(row["roles"].items()):
+            fills = role["symbol"] in own
+            if fills or key == meaning.get("name"):
+                found[(row["feature"], key, None if fills else role["symbol"])].append(
+                    row["layout"])
+    return [{"feature": feature, "key": key, "symbol": symbol, "layouts": layouts}
+            for (feature, key, symbol), layouts in sorted(
+                found.items(), key=lambda item: (item[0][0], item[0][1], item[0][2] or ""))]
+
+
+def role_text(row):
+    """A role that the meaning fills, or that `symbol` fills for it."""
+    where = f"{row['feature']}.{row['key']} on {', '.join(row['layouts'])}"
+    return f"fills {where}" if row["symbol"] is None else f"{where} is {row['symbol']}"
 
 
 def _show_entity(graph, ref):

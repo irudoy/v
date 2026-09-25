@@ -257,6 +257,32 @@ class StepTest(unittest.TestCase):
                          "via rpm_12_5_producer/fn  floor(0xA2C2 / ffff22bc)")
 
 
+class RoleStore:
+    """The `fuel_inhibit` roles of `rolling_launch` as `roles_of` reads them."""
+
+    def run(self, query, **params):
+        if "[:HAS]" in query:
+            return [{"key": f"{layout}-{address:08x}/ram"} for layout, address in
+                    (("1nd", 0xFFFE92E4), ("7mfk", 0xFFFF22E0))
+                    if params["key"] == "fuel_inhibit_mask/ram"]
+        role = {"symbol": "fuel_inhibit_mask/ram", "note": "the final mask"}
+        return [{"feature": "rolling_launch", "layout": layout,
+                 "roles": {"fuel_inhibit": role}} for layout in ("1me3b", "1nd", "jk78c")]
+
+
+class RoleTest(unittest.TestCase):
+    def test_a_role_reads_from_the_meaning_that_fills_it_and_from_its_name(self):
+        store = RoleStore()
+        mask = read.roles_of(store, {"key": "fuel_inhibit_mask/ram", "name": "fuel_inhibit_mask"})
+        state = read.roles_of(store, {"key": "fuel_inhibit/ram", "name": "fuel_inhibit"})
+        self.assertEqual([read.role_text(row) for row in mask],
+                         ["fills rolling_launch.fuel_inhibit on 1me3b, 1nd, jk78c"])
+        self.assertEqual([read.role_text(row) for row in state],
+                         ["rolling_launch.fuel_inhibit on 1me3b, 1nd, jk78c is "
+                          "fuel_inhibit_mask/ram"])
+        self.assertEqual(read.roles_of(store, {"key": "rpm/ram", "name": "rpm"}), [])
+
+
 class EvidenceTest(unittest.TestCase):
     def test_items_that_differ_in_at_share_a_line(self):
         items = [{"kind": "l0", "supports": "identity", "at": f"7mfk:{address:08x}"}

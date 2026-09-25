@@ -190,7 +190,7 @@ coverage = "fixed"
 current_fields = ["apc_command_raw"]
 sources = [0xFFFF2022]
 widths = [1]
-dids = [0x1107]
+dids = [0x1107, 0x1108, 0x1109, 0x110A, 0x113C]
 evidence = "exact-code"
 note = "The diagnostic command normally equals 110 minus the final timing coordinate, with mode-dependent offsets and clamps. J1979 PID 0x0E in FUN 00035856 reports ROM8[0x83D5] = 110 minus the byte as the timing advance in every mode, so 110 - raw is the delivered command in degrees BTDC."
 
@@ -320,7 +320,7 @@ coverage = "rotating"
 current_fields = ["coolant_raw", "iat_raw", "fuel_temperature_did_source_raw", "oil_temperature_did_source_raw"]
 sources = [0xFFFF1079, 0xFFFF2837, 0xFFFF1074, 0xFFFF2876]
 widths = [1, 1, 1, 1]
-dids = [0x1101, 0x1106, 0x1104, 0x111F]
+dids = [0x1101, 0x1106, 0x1104, 0x1111, 0x111F]
 evidence = "exact-code+homologous-diagnostic"
 note = "All four source bytes are streamed once per four scheduler passes; coolant and intake-air raw-minus-50 conversions have the strongest support."
 

@@ -16,6 +16,10 @@
 - A row of `patches/<layout>-runtime-correspondence.csv` joins its target
   symbol to the meaning of its source symbol, and an `unsupported` row gives a
   status.
+- A `target-specific` row whose target a `mapped` row of another key of the
+  same file places binds a role of its feature: the key and the symbol enter
+  `roles` of the feature target of the layout, and neither the row nor the
+  profile entry of the key on that layout joins a meaning.
 """
 
 import ast
@@ -75,6 +79,8 @@ OTHER_KEYS = ("capabilities", "rolling_diagnostics", "telemetry_sources",
               "telemetry_unavailable", "evidence")
 EVIDENCE = {"free_rom": RUNTIME, "free_ram": RUNTIME, "maps": "map_switching",
             "rolling": "rolling_launch", "can": "can_telemetry", "telemetry": "can_telemetry"}
+TABLE_FEATURE = {"map_families": "map_switching", "map_symbols": "map_switching",
+                 "rolling_symbols": "rolling_launch", "can_symbols": "can_telemetry"}
 DOMAIN_FEATURE = {"map": "map_switching", "map_native": "map_switching",
                   "map_symbol": "map_switching", "map_hook": "map_switching",
                   "rolling_symbol": "rolling_launch", "rolling_hook": "rolling_launch",
@@ -182,6 +188,7 @@ class Profiles:
             if unknown:
                 b.issue("schema", src, f"profile.{rom}", f"unknown keys {', '.join(unknown)}")
             self.profiles[layout] = (rom, profile)
+        self.roles = self._roles()
         self.canonical_map_keys = {hook["key"] for hook in
                                    self.layouts_doc["map_switching"].get("hook", ())}
         self.hooks = self._hooks()
@@ -190,6 +197,24 @@ class Profiles:
             self.words[(hook.layout, hook.address)].append(hook)
         for hooks in self.words.values():
             hooks.sort(key=lambda hook: FEATURES.index(hook.feature))
+
+    def _roles(self):
+        """{(layout, key): (target, row)} of the `target-specific` rows whose
+        target a `mapped` row of another key of the same file places: there
+        the key fills a role of its feature with the symbol of another
+        meaning, as the VQ37 rolling launch drives the final inhibit mask."""
+        found = {}
+        for layout, (path, rows) in self.rows.items():
+            placed = defaultdict(set)
+            for row in rows:
+                if row["status"] == "mapped" and row["target"]:
+                    placed[_hex(row["target"])].add(row["key"])
+            for row in rows:
+                target = _hex(row["target"])
+                if (row["domain"] in SYMBOL_DOMAINS and row["status"] == "target-specific"
+                        and placed.get(target, set()) - {row["key"]}):
+                    found[(layout, row["key"])] = (target, row)
+        return found
 
     def hook_keys(self, profile):
         """{per-layout key: canonical key} of the map hooks of a profile."""
@@ -362,7 +387,16 @@ def _declare_keys(b, facts, targets):
             continue
         group = (kind, "key", name)
         for layout, address, table, src in rows:
-            found[(layout, name)] = b.symbol(layout, kind, address, src, group=group)
+            role = facts.roles.get((layout, name))
+            if role is None:
+                found[(layout, name)] = b.symbol(layout, kind, address, src, group=group)
+                continue
+            if address != role[0]:
+                b.issue("audit", src, f"{name}@{layout}",
+                        f"address {address:08x} disagrees with the role row {role[0]:08x}")
+            found[(layout, name)] = key = b.symbol(layout, kind, address, src)
+            targets[(TABLE_FEATURE[table], layout)].setdefault("roles", {}).setdefault(
+                name, {})["symbol"] = key
         # A key of the canonical layout names a meaning that several keys join.
         canonical = any(layout == CANONICAL for layout, _, _, _ in rows)
         b.name(group, name, "symbol_key", rows[0][3], rank=0 if canonical else 1)
@@ -485,6 +519,12 @@ def _declare_rows(b, facts, keys, targets, notes):
             kind = known.kind if known else _row_kind(b, domain, layout, source, target)
             if kind is None:
                 b.issue("symbols", where, subject, "no kind for the row's addresses")
+                continue
+            if facts.roles.get((layout, row["key"]), (None, None))[1] is row:
+                role = entry.setdefault("roles", {}).setdefault(row["key"], {})
+                role.update({"symbol": b.symbol(layout, kind, target, path), "note": text})
+                if source is not None:
+                    b.symbol(CANONICAL, kind, source, path, group=(kind, "key", row["key"]))
                 continue
             if domain == "telemetry":
                 group, strength = (kind, "field", row["key"]), "field"

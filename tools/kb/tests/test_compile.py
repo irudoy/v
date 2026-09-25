@@ -94,13 +94,49 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(link.to.key, "knock_function/fn")
 
     def test_a_join_that_would_hold_two_symbols_of_a_layout_is_refused(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        mask, state = (b.symbol("7mfk", "ram", address, "probe.csv")
+                       for address in (0xFFFF22E0, 0xFFFF2497))
+        target = b.symbol("1nd", "ram", 0xFFFE92E4, "probe.csv")
+        b.join(mask, target, "probe.csv:2", "homology")
+        b.join(state, target, "probe.csv:3", "role")
+        m = b.finish()
+        self.assertEqual([(issue.path, issue.subject) for issue in b.issues],
+                         [("probe.csv:3", "1nd-fffe92e4/ram")])
+        self.assertEqual(m.meaning_of(target).symbols["7mfk"].address, 0xFFFF22E0)
+        self.assertNotIn("1nd", m.meaning_of(state).symbols)
+
+    def test_a_target_specific_row_onto_a_mapped_symbol_binds_a_role(self):
         m = model()
-        refused = {(issue.subject, issue.path.split(":")[0]) for issue in m.issues
-                   if issue.check == "audit" and "refused join" in issue.message}
-        self.assertIn(("1nd-fffe92e4/ram", "patches/1nd-runtime-correspondence.csv"), refused)
-        mask = m.meaning_of(SymbolKey("1nd", "ram", 0xFFFE92E4))
-        self.assertEqual(mask.symbols["7mfk"].address, 0xFFFF22E0)
-        self.assertNotIn("1nd", m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF2497)).symbols)
+        role = m.targets[("rolling_launch", "1nd")].props["roles"]["fuel_inhibit"]
+        self.assertEqual(role["symbol"], SymbolKey("1nd", "ram", 0xFFFE92E4))
+        self.assertIn("final six-cylinder inhibit mask", role["note"])
+        self.assertEqual(m.meaning_of(role["symbol"]).key, "fuel_inhibit_mask/ram")
+        state = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF2497))
+        self.assertEqual((state.key, sorted(state.symbols)),
+                         ("fuel_inhibit/ram", ["7mfk", "jk00c", "jk00d"]))
+        config = m.targets[("map_switching", "jk78c")].props["roles"]
+        self.assertEqual(config["ignition_coordinator_config_byte"]["symbol"],
+                         SymbolKey("jk78c", "tbl", 0x8965))
+        # Where no mapped row places its address, the key joins its own meaning.
+        byte = m.meaning_of(SymbolKey("1me3b", "tbl", 0x8A7D))
+        self.assertEqual((byte.key, sorted(byte.symbols)),
+                         ("ignition_coordinator_config_byte/tbl", ["1me3b"]))
+        self.assertFalse([issue for issue in m.issues if "refused join" in issue.message])
+
+    def test_untyped_legacy_evidence_goes_to_the_audit_under_its_registry(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        item = {"kind": "rom-bytes", "supports": "identity", "value": 1,
+                "legacy": "rom_const:1"}
+        for src in ("one.csv", "two.csv"):
+            b.symbol("7mfk", "tbl", 0x9000, src, evidence=[item, {**item, "at": 0x9000}])
+        found = checks.audit(b.finish())["untyped"]
+        self.assertEqual([(issue.path, issue.subject, issue.message) for issue in found],
+                         [(src, "7mfk-00009000/tbl",
+                           "token rom_const:1 gives rom-bytes evidence without at")
+                          for src in ("one.csv", "two.csv")])
+        self.assertEqual({issue.path.count(";") for issue in checks.audit(model())["untyped"]},
+                         {0})
 
     def test_an_unsupported_map_row_gives_way_to_a_target_specific_surface(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "tbl", 0x00009A1A))
@@ -388,12 +424,20 @@ class SignalAdapterTest(unittest.TestCase):
                          {"telemetry_profile": "tuning", "full_rate_hz": 97.65625,
                           "rotating_divisor": 5})
 
+    def test_the_stored_dids_of_every_signal_equal_the_derived_ones(self):
+        self.assertEqual([issue.subject for issue in model().issues
+                          if issue.path == signals.SIGNALS.as_posix()], [])
+
     def test_stored_dids_that_differ_from_the_derived_ones_go_to_the_audit(self):
-        found = {issue.subject: issue.message for issue in model().issues
-                 if issue.path == signals.SIGNALS.as_posix()}
-        self.assertEqual(sorted(found), ["signal.apc_ignition_command", "signal.temperatures"])
-        self.assertTrue(found["signal.temperatures"].endswith(
-            "observed meaning: 1101, 1104, 1106, 1111, 111f"))
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        signals.declare_signals(b, _probe([_signal(dids=[0x1101]),
+                                           _signal(id="exact", dids=[0x1106, 0x1101])]),
+                                "probe.toml")
+        b.stash["did_sources"] = {SymbolKey("7mfk", "ram", 0xFFFF11F4): {0x1101, 0x1106}}
+        signals.relate(b, repo.ROOT)
+        self.assertEqual([(issue.check, issue.subject, issue.message) for issue in b.issues],
+                         [("audit", "signal.probe", "dids 1101 differ from the DIDs that "
+                           "return an observed meaning: 1101, 1106")])
 
     def test_the_fields_of_a_signal_serve_it(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
