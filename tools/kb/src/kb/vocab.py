@@ -31,7 +31,7 @@ LINK_TYPES = {
     "threshold": (DATUM + ("fn",), ("tbl", "ram")),
     "base": (("ram",), ("ram",)),
     "target": (("hook",), ("fn", "tbl", "const")),
-    "source": (("did",), ("ram", "reg", "const")),
+    "source": (("did",), ("ram", "reg", "tbl", "const")),
     "monitor": (("dtc",), ("fn",)),
     "depends": (ANY, ANY),
 }
@@ -72,6 +72,16 @@ TBL_ACCESS = ("explicit", "implicit-2d", "direct-scalar", "direct-row-major",
 STORAGE = ("uint8", "int8", "uint16", "int16", "uint32", "int32", "float32")
 STATUS_STATES = ("absent", "unresolved")
 TARGET_STATUSES = ("supported", "planned", "unsupported")
+
+# Vocabularies of the keys of designed entities (section 7.9).
+ENTITY_VOCABULARY = {
+    "signal": {
+        "priority": ("core", "high", "medium", "research"),
+        "coverage": ("fixed", "rotating", "latched", "stock-can", "external", "absent"),
+        "basis": ("exact-code", "exact-code+homologous-diagnostic", "measurement-requirement",
+                  "passive-can", "patch-design"),
+    },
+}
 
 # The editor and registry spelling of an element type and its kb storage.
 STORAGE_ALIASES = {"float": "float32"}

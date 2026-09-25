@@ -96,6 +96,11 @@ def schema(model):
                     issues.append(Issue("schema", path, subject, f"link {key} {link.props[key]!r}"))
             if link.type == "depends" and not link.roles:
                 issues.append(Issue("schema", path, subject, "a depends link without role"))
+    for (kind, _), entity in sorted(model.entities.items()):
+        path = ";".join(sorted(entity.sources))
+        for key, allowed in vocab.ENTITY_VOCABULARY.get(kind, {}).items():
+            if entity.props.get(key) not in (None, *allowed):
+                issues.append(Issue("schema", path, entity.key, f"{key} {entity.props[key]!r}"))
     return issues
 
 

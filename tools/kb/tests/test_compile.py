@@ -3,7 +3,7 @@ import re
 import unittest
 
 from kb import adapters, checks, compile, names, repo
-from kb.adapters import ledgers, native
+from kb.adapters import ledgers, native, signals
 from kb.model import Builder, SymbolKey
 
 
@@ -306,6 +306,115 @@ class NativeAdapterTest(unittest.TestCase):
         self.assertEqual(meaning.symbols["1nd"].props["images"], ["1ND0A"])
         self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
                          [("audit", "target.1ND3B")])
+
+
+def _sources(meaning):
+    """{offset: (kind, address)} of the source links of a DID meaning on `7mfk`."""
+    return {link.offset: (link.to.kind, link.to.symbols["7mfk"].address)
+            for link in meaning.links if link.type == "source"}
+
+
+class DidTableTest(unittest.TestCase):
+    def test_a_did_is_its_table_slot_and_returns_its_source(self):
+        meaning = model().meaning_of(SymbolKey("7mfk", "did", 0x000228A0))
+        self.assertEqual((meaning.props["number"], meaning.props["width"],
+                          meaning.props["level"]), (0x1201, 2, "code"))
+        self.assertEqual(meaning.symbols["7mfk"].evidence, [{
+            "kind": "did-table", "supports": "identity", "at": "7mfk:000228a0",
+            "value": "ffff11f4"}])
+        self.assertEqual(_sources(meaning), {None: ("ram", 0xFFFF11F4)})
+
+    def test_an_assembled_response_orders_its_bytes_by_offset(self):
+        meaning = model().meaning_of(SymbolKey("7mfk", "did", 0x00022A48))
+        self.assertEqual(meaning.props["number"], 0x130D)
+        self.assertEqual(_sources(meaning), {0: ("ram", 0xFFFF2A83), 1: ("ram", 0xFFFF2A81)})
+
+    def test_a_rom_source_is_a_table_inside_the_calibration_region(self):
+        m = model()
+        self.assertEqual(_sources(m.meaning_of(SymbolKey("7mfk", "did", 0x000227C8))),
+                         {None: ("tbl", 0x00008AD1)})
+        self.assertEqual(_sources(m.meaning_of(SymbolKey("7mfk", "did", 0x00022BB4))),
+                         {None: ("const", 0x00022BAE)})
+
+    def test_a_dynamic_did_has_no_source(self):
+        meaning = model().meaning_of(SymbolKey("7mfk", "did", 0x000228C8))
+        self.assertEqual((meaning.props["number"], _sources(meaning)), (0x120B, {}))
+        self.assertIn("dedicated branch", meaning.props["note"][0])
+
+    def test_every_image_of_the_layout_carries_the_table(self):
+        m = model()
+        self.assertEqual([issue for issue in m.issues if issue.path.endswith("sid22_inventory.py")],
+                         [])
+        numbers = [meaning.props["number"] for meaning in m.meanings if meaning.kind == "did"
+                   and "7mfk" in meaning.symbols and meaning.symbols["7mfk"].evidence]
+        self.assertEqual(len(numbers), 276)
+        rolling = m.meaning_of(SymbolKey("7mfk", "did", 0x000228E0))
+        self.assertEqual((rolling.props["number"], len(rolling.symbols)), (0x1211, 6))
+
+
+def _probe(items):
+    """A signal catalog of JK08A with the given signals."""
+    return {"schema_version": 1, "rom": "JK08A", "telemetry_profile": "tuning",
+            "full_rate_hz": 97.65625, "rotating_divisor": 5, "signal": items}
+
+
+def _signal(**keys):
+    item = {"id": "probe", "domain": "engine", "label": "Probe", "priority": "core",
+            "coverage": "fixed", "current_fields": [], "sources": [0xFFFF11F4], "widths": [2],
+            "dids": [], "evidence": "exact-code", "note": "Probe."}
+    item.update(keys)
+    return item
+
+
+class SignalAdapterTest(unittest.TestCase):
+    def test_a_signal_observes_the_meanings_of_its_sources(self):
+        m = model()
+        entity = m.entities[("signal", "engine_speed")]
+        self.assertEqual({key: entity.props[key] for key in ("title", "coverage", "basis")},
+                         {"title": "Engine speed", "coverage": "stock-can", "basis": "exact-code"})
+        self.assertEqual(entity.refs["observes"], [SymbolKey("7mfk", "ram", 0xFFFF11F4)])
+        self.assertEqual(m.meaning_of(entity.refs["observes"][0]).props["width"], 16)
+        margins = m.entities[("signal", "knock_margin")].refs["observes"]
+        self.assertEqual([(key.address, m.symbols[key].implicit) for key in margins],
+                         [(0xFFFF5E10 + 2 * index, False) for index in range(6)])
+
+    def test_the_catalog_constants_are_keys_of_can_telemetry(self):
+        props = model().entities[("feature", "can_telemetry")].props
+        self.assertEqual({key: props[key] for key in signals.FEATURE_KEYS},
+                         {"telemetry_profile": "tuning", "full_rate_hz": 97.65625,
+                          "rotating_divisor": 5})
+
+    def test_stored_dids_that_differ_from_the_derived_ones_go_to_the_audit(self):
+        found = {issue.subject: issue.message for issue in model().issues
+                 if issue.path == signals.SIGNALS.as_posix()}
+        self.assertEqual(sorted(found), ["signal.apc_ignition_command", "signal.temperatures"])
+        self.assertTrue(found["signal.temperatures"].endswith(
+            "observed meaning: 1101, 1104, 1106, 1111, 111f"))
+
+    def test_the_fields_of_a_signal_serve_it(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        signals.declare(b, repo.ROOT)
+        self.assertEqual(b.stash["signal_fields"]["knock_count_latched"], "knock_event_latches")
+
+    def test_a_width_that_another_registry_states_differently_disagrees(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        signals.declare_signals(b, _probe([_signal(), _signal(id="other", widths=[1])]),
+                                "probe.toml")
+        signals.relate(b, repo.ROOT)
+        b.finish()
+        self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
+                         [("audit", "7mfk-ffff11f4/ram")])
+
+    def test_signal_keys_outside_their_vocabularies_fail_the_schema(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        signals.declare_signals(b, _probe([_signal(priority="urgent"),
+                                           _signal(id="short", widths=[])]), "probe.toml")
+        signals.relate(b, repo.ROOT)
+        m = b.finish()
+        m.config = repo.config()
+        self.assertEqual([(issue.subject, issue.message) for issue in checks.schema(m)],
+                         [("signal.short", "sources and widths differ in length"),
+                          ("probe/signal", "priority 'urgent'")])
 
 
 class StageTwoChecksTest(unittest.TestCase):

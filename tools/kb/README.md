@@ -124,6 +124,8 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 | `definitions` | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | `tbl` and `axis` symbols of the definition projections; the `definitions` target |
 | `interp` | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | `fn` symbols of kernels and wrappers with `[interp]` |
 | `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |
+| `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
+| `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings, the widths of those meanings, and the catalog keys of `can_telemetry` |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`

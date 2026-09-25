@@ -26,13 +26,15 @@ FORWARD = {
     "WRITER": "written by", "READER": "read by", "INPUT": "computed from", "COPY": "copy of",
     "INDEX": "indexed by", "AXIS": "has axis", "LOOKUP": "lookup of", "SELECTOR": "selected by",
     "THRESHOLD": "compares with", "BASE": "based at", "TARGET": "points at", "SOURCE": "returns",
-    "MONITOR": "set by", "DEPENDS": "depends on", "CITES": "cites",
+    "MONITOR": "set by", "DEPENDS": "depends on", "CITES": "cites", "OBSERVES": "observes",
+    "TARGETS": "targets",
 }
 BACKWARD = {
     "WRITER": "writes", "READER": "reads", "INPUT": "input of", "COPY": "copied to",
     "INDEX": "indexes", "AXIS": "axis of", "LOOKUP": "looked up into", "SELECTOR": "selects",
     "THRESHOLD": "threshold of", "BASE": "base of", "TARGET": "target of", "SOURCE": "source of",
-    "MONITOR": "sets", "DEPENDS": "needed by", "CITES": "cited by",
+    "MONITOR": "sets", "DEPENDS": "needed by", "CITES": "cited by", "OBSERVES": "observed by",
+    "TARGETS": "targeted by",
 }
 # The `to` end of a reader link depends on its owner; for every other type the
 # owner depends on `to`. A `depends` link takes its direction from its legacy
@@ -100,8 +102,12 @@ def shape(node):
         parts.append(f"{node['cols']}x{node.get('rows') or 1}")
     elif kind == "axis" and node.get("points"):
         parts.append(f"{node['points']} points")
+    elif kind == "did" and node.get("number") is not None:
+        parts.append(f"DID {node['number']:04x}")
+        if node.get("width"):
+            parts.append(f"{node['width']}-byte response")
     for key in SHAPE_KEYS.get(kind, ()):
-        if key in ("width", "signed", "cols", "rows", "points") or key not in node:
+        if key in ("width", "signed", "cols", "rows", "points", "number") or key not in node:
             continue
         if key == "unit" and kind in ("ram", "reg"):
             continue
@@ -236,6 +242,8 @@ def meaning_links(graph, key):
         "MATCH (m:Kb:Meaning {key: $key})-[r]->(o:Kb:Meaning) "
         "RETURN 'out' AS dir, type(r) AS type, properties(r) AS props, o AS other "
         "UNION ALL MATCH (m:Kb:Meaning {key: $key})<-[r]-(o:Kb:Meaning) "
+        "RETURN 'in' AS dir, type(r) AS type, properties(r) AS props, o AS other "
+        "UNION ALL MATCH (m:Kb:Meaning {key: $key})<-[r]-(o:Kb:Entity) "
         "RETURN 'in' AS dir, type(r) AS type, properties(r) AS props, o AS other", key=key)
     return rows
 
@@ -532,10 +540,7 @@ def show(graph, text, layout=None, root=repo.ROOT):
     if ref.kind == "location":
         return _show_location(graph, ref, root)
     if ref.kind == "entity":
-        answer = Answer(f"kb raw {ref.text}")
-        answer.section(None, IDENTITY, [f"{ref.text}  {ref.node.get('title', '')}"])
-        answer.data = {"entity": ref.node}
-        return answer
+        return _show_entity(graph, ref)
     meaning = ref.meaning if ref.kind == "symbol" else ref.node
     answer = Answer(f"kb show {ref.text} --layout <layout>" if ref.kind == "meaning"
                     else f"kb raw {ref.text}")
@@ -601,6 +606,40 @@ def show(graph, text, layout=None, root=repo.ROOT):
         evidence.extend(f"  {symbol['layout']:<6} {line}"
                         for line in evidence_lines(symbol.get("evidence") or (), names))
     answer.section("evidence", EVIDENCE, evidence)
+    answer.data = data
+    return answer
+
+
+ENTITY_OWN = ("key", "kind", "slug", "title", "summary", "note", "producer", "src")
+
+
+def _show_entity(graph, ref):
+    """A designed entity: its keys, its relationships, and for a signal the
+    DIDs that return an observed meaning."""
+    node = ref.node
+    answer = Answer(f"kb raw {ref.text}")
+    answer.section(None, IDENTITY, [f"{ref.text}  {node.get('title', '')}"])
+    facts = [field(key, node[key]) for key in sorted(node)
+             if key not in ENTITY_OWN and node[key] not in (None, "", [])]
+    data = {"entity": node, "links": []}
+    if node.get("kind") == "signal":
+        numbers = [row["number"] for row in graph.run(
+            "MATCH (:Kb:Entity {key: $key})-[:OBSERVES]->(:Kb:Meaning)<-[:SOURCE]-"
+            "(d:Kb:Meaning {kind: 'did'}) RETURN DISTINCT d.number AS number ORDER BY number",
+            key=node["key"])]
+        facts.append(field("dids", ", ".join(f"{number:04x}" for number in numbers) or "none"))
+        data["dids"] = numbers
+    if node.get("summary"):
+        facts.append(field("summary", node["summary"]))
+    answer.section(None, FACTS, facts)
+    rows = graph.run(
+        "MATCH (:Kb:Entity {key: $key})-[r]->(o) WHERE o:Meaning OR o:Entity OR o:Layout "
+        "RETURN 'out' AS dir, type(r) AS type, properties(r) AS props, o AS other",
+        key=node["key"])
+    answer.section("links", LINKS, link_lines(rows, lambda row: node_ref(row["other"])))
+    data["links"] = [{"type": row["type"].lower(), "other": node_ref(row["other"])}
+                     for row in rows]
+    answer.section("notes", DETAIL, [f"  {note}" for note in node.get("note") or ()])
     answer.data = data
     return answer
 

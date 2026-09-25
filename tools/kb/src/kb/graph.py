@@ -190,14 +190,19 @@ def _referenced(model, item):
     return item
 
 
+# Relationships of designed entities by the reference key that states them.
+ENTITY_LINKS = {"observes": "OBSERVES"}
+
+
 def _family_of(model):
     return {layout.id: layout.family for layout in model.layouts.values()}
 
 
 def claim_rows(model):
     """Meaning, Symbol, and Entity nodes, HAS, the links between meanings and
-    their materialization between symbols, statuses, citations, and the
-    targets of features."""
+    their materialization between symbols, statuses, citations, the
+    relationships of designed entities to meanings, and the targets of
+    features."""
     family = _family_of(model)
     meanings, symbols, has = [], [], []
     links = defaultdict(list)
@@ -257,14 +262,23 @@ def claim_rows(model):
                     "offset": link.offset,
                     "verified": kind not in L0_VERIFIED and bool(siblings),
                     "producer": "derived", "src": "links"})})
-    entities = [entity_node(entity) for _, entity in sorted(model.entities.items())]
+    entities, entity_links = [], defaultdict(list)
+    for _, entity in sorted(model.entities.items()):
+        entities.append(entity_node(entity))
+        for name, kind in ENTITY_LINKS.items():
+            reached = {model.meaning_of(key) for key in entity.refs.get(name, ())}
+            entity_links[kind].extend(
+                {"from": entity.key, "to": meaning.key,
+                 "props": {"producer": "claim", "src": _src(entity.sources)}}
+                for meaning in sorted((item for item in reached if item and item.name),
+                                      key=lambda item: item.key))
     targets = [{"from": f"{feature}/feature", "to": layout, "props": properties({
                    **_referenced(model, target.props), "status": target.status,
                    "producer": "claim", "src": _src(target.sources)})}
                for (feature, layout), target in sorted(model.targets.items())]
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
             "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites),
-            "entities": entities, "targets": targets}
+            "entities": entities, "entity_links": dict(entity_links), "targets": targets}
 
 
 def at_rows(model):
@@ -401,6 +415,8 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "citations": sum(_create_links(graph, "CITES", left, right, items)
                              for (left, right), items in rows["cites"].items()),
             "entities": _create_nodes(graph, "Entity", rows["entities"]),
+            "entity links": sum(_create_links(graph, kind, "Entity", "Meaning", items)
+                                for kind, items in rows["entity_links"].items()),
             "targets": _create_links(graph, "TARGETS", "Entity", "Layout", rows["targets"]),
         }
         summary["claims"] = (counts, time.monotonic() - started, {})

@@ -486,7 +486,7 @@ A link is stored at one end and read in both directions.
 | `type` | Link type |
 | `to` | Reference to a meaning or a designed entity |
 | `slot` | `x` or `y` for `index` and `axis`; `bit0` to `bit31` for a `selector` or `threshold` whose `to` is a bit field |
-| `offset` | Offset for `base` and `target` |
+| `offset` | Offset for `base` and `target`; for `source`, the position in the response of the byte that `to` supplies, when a DID assembles its response from single bytes |
 | `via` | Array of `fn` references that carry the relation |
 | `layouts` | Array of layout ids that restricts materialization |
 | `relies` | The property of `to` that the owning claim rests on |
@@ -510,7 +510,7 @@ A link is stored at one end and read in both directions.
 | `threshold` | datum or `fn` | `tbl`, `ram` | The datum or function compares with `to` | Evidence |
 | `base` | `ram` | `ram` | The datum is addressed at `offset` from `to` | `indirect` evidence |
 | `target` | `hook` | `fn`, `tbl`, `const` | The stock word points at `to`, plus `offset` | Image bytes of every image of the layout |
-| `source` | `did` | `ram`, `reg`, `const` | The DID returns `to` | Image bytes: the DID table entry |
+| `source` | `did` | `ram`, `reg`, `tbl`, `const` | The DID returns `to` | Image bytes: the DID table entry |
 | `monitor` | `dtc` | `fn` | `to` sets the DTC | Evidence |
 | `depends` | any | any | An untyped dependency with its legacy `role` | Evidence |
 
@@ -1060,7 +1060,7 @@ Options common to the read commands:
 | Command | Answers |
 |---|---|
 | `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
-| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations |
+| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; for a designed entity its keys and relationships, and for a signal the DIDs that return an observed meaning |
 | `kb at <layout>:<address>` | The symbol at the address or the function or table that contains it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
 | `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
@@ -1842,6 +1842,7 @@ the registry is a projection until stage 11 keeps it generated or removes it.
 | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | Relocated definition settings and table addresses | 3 | Target of `definitions`; `tbl` and `axis` symbols | Projection |
 | `defs/*.interp.csv`, `defs/*.interp-correspondence.csv` | Interpolation kernels and wrappers | 3 | `fn` meanings with `[interp]` | Projection |
 | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | Native tables and the fuel-cut mechanism of the VQ37VHR layouts | 3 | Meanings with symbols on `jk78c`, `1nd`, and `1me3b` | Projection |
+| `tools/diagnostics/sid22_inventory.py` | The decoder of the JK08A service 0x22 tables | not converted | itself; the `did` symbols of `7mfk` and their `source` links derive from it and the image bytes | |
 | `defs/JK08A.tuning-signals.toml` | Observation needs | 4 | `kb/signal/` | Projection |
 | `patches/can-telemetry-profile.toml` | Fields, contexts, and wire constants | 4 | `kb/field/`; `can_telemetry` | Projection |
 | `defs/JK08A.overrides.toml` | Editor presentation, logger parameters, checksums, and switches | 4 | `[editor]` and `[logparam]` tables; `definitions`, `map_switching`, and `rolling_launch` | Projection |
@@ -2171,16 +2172,36 @@ status `note`.
 
 Stage 4.
 
+The service 0x22 table of `7mfk`:
+
+- `tools/diagnostics/sid22_inventory.py` decodes the DID tables of the
+  JK08A image and fixes the digests of its publisher and tables; every other
+  image of the layout must decode to the same table, and a DID that differs
+  goes to the audit.
+- Each DID of the table gives the `did` symbol at its table slot, joined by
+  its number, with `number`, `width` (the response length in bytes), level
+  `code`, and `did-table` evidence whose `value` holds the pointer words of
+  the slot. The DID that the publisher builds in a dedicated branch keeps the
+  sentinel slot, no source, and a note.
+- Each byte source gives a `source` link to the datum at its address: `ram`
+  or `reg` by the address space, `tbl` inside the calibration region, and
+  `const` elsewhere in ROM. A DID that assembles its response from single
+  bytes gives each link the position of its byte in the response as
+  `offset`.
+
 `defs/JK08A.tuning-signals.toml`:
 
 - `id` is the slug; `label` becomes `title`; `domain`, `priority`,
   `coverage`, and `note` keep their names; `evidence` becomes `basis`.
 - `sources` becomes `observes`, the meanings of the `7mfk` symbols at those
-  addresses, and `widths` must equal their `width`.
-- `dids` and `current_fields` are derived, and the conversion requires the
-  derived sets to equal the stored ones.
+  addresses, and each of `widths` states the `width` of its symbol in bits;
+  a registry that states another width disagrees in the audit.
+- `dids` and `current_fields` are derived. The DIDs of a signal are those
+  whose `source` is an observed meaning, and a stored set that differs goes
+  to the audit for review before the conversion. `current_fields` gives each
+  telemetry field its `signal`.
 - `telemetry_profile`, `rotating_divisor`, and `full_rate_hz` become keys of
-  `can_telemetry`.
+  the `can_telemetry` feature.
 
 `patches/can-telemetry-profile.toml`:
 
