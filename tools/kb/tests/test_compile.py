@@ -111,9 +111,64 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(rolling.status, "supported")
         self.assertIn("displaced_periodic_task", rolling.props["hooks"])
         self.assertTrue(rolling.props["allocations"])
+        self.assertEqual(rolling.props["allocations"]["flags"]["address"], "ffff6042")
         runtime = m.targets[("runtime", "1nd")]
         self.assertEqual(runtime.props["rom_delta"], 0x60000)
+        self.assertEqual(runtime.props["free_ram_start"], "ffff0c00")
         self.assertIn(("feature", "map_switching"), m.entities)
+
+
+class DefinitionAdapterTest(unittest.TestCase):
+    def test_a_table_and_axis_operand_gives_a_symbol_of_each_kind(self):
+        m = model()
+        for kind in ("tbl", "axis"):
+            meaning = m.meaning_of(SymbolKey("7mfk", kind, 0x0000E98E))
+            self.assertIs(meaning, m.meaning_of(SymbolKey("jk00d", kind, 0x000104A2)))
+            self.assertIs(meaning, m.meaning_of(SymbolKey("jk00c", kind, 0x00010492)))
+        self.assertIsNot(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000E98E)),
+                         m.meaning_of(SymbolKey("7mfk", "axis", 0x0000E98E)))
+
+    def test_function_kinds_type_the_homology_evidence(self):
+        m = model()
+        symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x000104A2)]
+        found = {(item["kind"], item["value"]) for item in symbol.evidence
+                 if item.get("supports") == "homology"}
+        self.assertEqual(found, {("byte-identical", "exact-bytes"),
+                                 ("function-match", "normalized-shape")})
+        self.assertTrue(all(item["to"] == SymbolKey("7mfk", "tbl", 0x0000E98E)
+                            for item in symbol.evidence if item.get("supports") == "homology"))
+
+    def test_a_reviewed_target_is_an_anchor_of_the_source_meaning(self):
+        m = model()
+        meaning = m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000B43A))
+        self.assertEqual(meaning.name, "intake_cvtc_target")
+        self.assertEqual(meaning.symbols["jk00d"].address, 0x0000B7CE)
+        self.assertIn({"kind": "l0", "supports": "identity"},
+                      [{key: item[key] for key in ("kind", "supports")}
+                       for item in meaning.symbols["jk00d"].evidence])
+
+    def test_an_unsupported_row_states_its_reason(self):
+        m = model()
+        self.assertEqual(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000AB4A)).statuses["1nd"].state,
+                         "absent")
+        self.assertEqual(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000A9AA)).statuses["1nd"].state,
+                         "unresolved")
+        inert = m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000991A))
+        self.assertEqual(inert.symbols["1nd"].address, 0x00009880)
+        omitted = m.targets[("definitions", "1nd")].props["omitted"]
+        self.assertIn(SymbolKey("1nd", "tbl", 0x00009880), [item["symbol"] for item in omitted])
+
+    def test_projections_give_the_image_entries_of_the_definitions_target(self):
+        m = model()
+        target = m.targets[("definitions", "1nd")]
+        self.assertEqual(target.status, "supported")
+        self.assertEqual(sorted(target.props["images"]), ["1ND0A", "1ND3B"])
+        self.assertEqual(target.props["images"]["1ND3B"]["switch"],
+                         {"developer_immobilizer": "00008668",
+                          "can_telemetry_startup": "00134e03"})
+        self.assertEqual([item["variant"] for item in target.props["variants"]],
+                         ["default", "default"])
+        self.assertEqual([issue for issue in m.issues if issue.check == "schema"], [])
 
 
 class StageTwoChecksTest(unittest.TestCase):

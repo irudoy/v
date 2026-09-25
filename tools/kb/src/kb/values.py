@@ -20,3 +20,17 @@ def value(item):
 
 def properties(mapping):
     return {key: stored for key, stored in value(mapping).items() if stored != {}}
+
+
+def hexed(item):
+    """An address, or the addresses of a list or a table, as eight lowercase
+    hexadecimal digits, the form of a symbol address."""
+    if isinstance(item, bool):
+        return item
+    if isinstance(item, int):
+        return f"{item:08x}"
+    if isinstance(item, dict):
+        return {key: hexed(entry) for key, entry in item.items()}
+    if isinstance(item, (list, tuple)):
+        return [hexed(entry) for entry in item]
+    return item

@@ -685,6 +685,8 @@ Features:
   derived, not stored.
 - RAM and ROM that a feature allocates are not meanings. The feature names
   its allocations, and fields and hooks refer to them by allocation name.
+- An address in a target key takes the form of a symbol address; sizes,
+  deltas, masks, and indices stay numbers.
 
 ## 8. L0
 
@@ -2045,27 +2047,32 @@ commit.
 
 `defs/JK08A-*.definition-addresses.csv`:
 
-- `entity` gives the kind, `Map` for `tbl` and `Axis` for `axis`; `source`
-  and `target` give the symbols; `variant` is a key of the `definitions`
-  target; `sites` is derived from L0; `evidence` becomes the `note` of the
-  typed evidence.
+- `entity` is the operand role of the interpolation call and gives the kind,
+  `Map` for `tbl` and `Axis` for `axis`: an address that is both a table and
+  an axis operand has a row of each entity and gives a symbol of each kind.
+  `source` and `target` give the symbols; `variant` gives an entry of
+  `variants` of the `definitions` target; `sites` is derived from L0;
+  `evidence` becomes the `note` of the typed evidence.
 - `homologous-exact-chain` and `homologous-call` rows give homology evidence
-  of the kinds that `function_kinds` names, through a table in
-  `tools/kb/config.toml`: `exact-bytes` and `exact-storage` give
-  `byte-identical`, the shape, sequence, and reference hashes give
-  `function-match`, the call-order, call-signature, and operand kinds give
-  `call-ordinal`, and `target-literal` gives `literal-pool`. A value without
-  an entry fails the conversion.
+  of the kinds that `function_kinds` names, through `[function_kinds]` of
+  `tools/kb/config.toml`: exact bytes, exact storage, and ordered exact
+  storage anchors give `byte-identical`; the shape, sequence, and reference
+  hashes and mutual-best accessor pairs give `function-match`; call orders,
+  call signatures, operands, branch orders, and the homologous consumers
+  that preserve an operand give `call-ordinal`; target literals and
+  instruction-aligned loads give `literal-pool`; shared contracts give
+  `interp-contract`. A value without an entry fails the conversion.
 - `reviewed-target` rows give an anchor symbol with `l0` evidence.
 - `unsupported` rows give a status by their reason: `no-homolog` gives
   `unresolved`; `removed-subsystem`, `removed-dispatch-slot`, and
   `changed-geometry` give `absent`; `stock-inert-path` gives the symbol of
-  the homologous surface that the evidence names, which the `definitions`
-  target leaves out.
+  the homologous surface that the evidence names, which `omitted` of the
+  `definitions` target lists.
 
-`defs/definition-projections.toml`: every key of `[projection.<ROM>]` and
-`[projection.<ROM>.switch]` becomes a key of the `definitions` target of the
-image's layout; `addresses` is derived from the symbols.
+`defs/definition-projections.toml`: the keys of `[projection.<ROM>]` and
+`[projection.<ROM>.switch]` become the entry of the image in `images` of the
+`definitions` target of its layout, with `comment` as `note`; the two digests
+must equal the image catalog, and `addresses` is derived from the symbols.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
 meaning, with `family` as `access`, `kernel`, `width` and `height` as `cols`

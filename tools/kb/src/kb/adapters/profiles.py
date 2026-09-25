@@ -26,6 +26,8 @@ from pathlib import Path
 import re
 import tomllib
 
+from kb.values import hexed
+
 PROFILES = Path("patches/rom-address-profiles.toml")
 RUNTIME_TARGETS = Path("patches/runtime_targets.py")
 FEATURE_LAYOUTS = {
@@ -61,6 +63,13 @@ RUNTIME_KEYS = ("rom_size", "rom_delta", "ram_delta", "free_rom_start", "free_ro
                 "telemetry_completion_variant", "telemetry_zero_source",
                 "ignition_unreferenced_routine")
 MAP_KEYS = ("ascd_enabled_mask", "extra_cvtc_storage", "ignition_state_storage")
+# Target keys whose values are addresses, or tables and lists of addresses; the
+# other keys hold sizes, deltas, masks, indices, and names.
+ADDRESS_KEYS = frozenset({"free_rom_start", "free_rom_end", "injected_rom_start",
+                          "injected_rom_end", "free_ram_start", "free_ram_end",
+                          "injected_ram_start", "injected_ram_end", "telemetry_zero_source",
+                          "ignition_unreferenced_routine", "extra_cvtc_storage",
+                          "ignition_state_storage"})
 DERIVED = ("family", "layout_source", "inherits")
 OTHER_KEYS = ("capabilities", "rolling_diagnostics", "telemetry_sources",
               "telemetry_unavailable", "evidence")
@@ -132,6 +141,10 @@ def correspondence(root):
 
 def _hex(text):
     return int(text, 16) if text else None
+
+
+def _value(key, value):
+    return hexed(value) if key in ADDRESS_KEYS else value
 
 
 def _state(text):
@@ -312,7 +325,7 @@ def _declare_hooks(b, facts, targets):
             key = b.symbol(layout, "hook", address, hook.src, group=group)
             b.props(key, {"width": HOOK_WIDTH}, hook.src)
             targets[(hook.feature, layout)].setdefault("hooks", {})[hook.key] = {
-                "hook": key, "replacement": hook.replacement}
+                "hook": key, "replacement": hexed(hook.replacement)}
         # The canonical key of the first feature names the word, or else its
         # own key unless that is the canonical key of another word.
         name = first.canonical or first.key
@@ -334,7 +347,7 @@ def _declare_dids(b, facts, targets):
         key = b.symbol(layout, "did", pointer, src, group=group)
         b.props(group, {"number": did}, src)
         allocations = targets[("rolling_launch", layout)].setdefault("allocations", {})
-        allocations[name] = {"address": target, "width": width, "did": key}
+        allocations[name] = {"address": hexed(target), "width": width, "did": key}
 
 
 def _declare_keys(b, facts, targets):
@@ -400,10 +413,10 @@ def _declare_profiles(b, facts, targets, notes):
     pending = []
     for layout, (rom, profile) in sorted(facts.profiles.items()):
         runtime = targets[(RUNTIME, layout)]
-        runtime.update({key: profile[key] for key in RUNTIME_KEYS if key in profile})
+        runtime.update({key: _value(key, profile[key]) for key in RUNTIME_KEYS if key in profile})
         for key in MAP_KEYS:
             if key in profile:
-                targets[("map_switching", layout)][key] = profile[key]
+                targets[("map_switching", layout)][key] = _value(key, profile[key])
         for feature, supported in profile.get("capabilities", {}).items():
             targets[(feature, layout)]["status"] = "supported" if supported else "unsupported"
         unavailable = profile.get("telemetry_unavailable", [])
@@ -451,7 +464,7 @@ def _declare_rows(b, facts, keys, targets, notes):
             if row["variant"]:
                 entry.setdefault("variants", []).append(
                     {"domain": domain, "key": row["key"], "variant": row["variant"],
-                     "address": target})
+                     "address": hexed(target)})
             if domain == "allocation":
                 stated = profile.get(row["key"])
                 if stated is not None and stated != target:
