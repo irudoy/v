@@ -54,25 +54,33 @@ def _evidence_issues(items, path, subject, check_required):
                 yield Issue("schema", path, subject, f"{kind} evidence lacks {', '.join(absent)}")
 
 
+def _key_issues(props, kind, path, subject, quantities):
+    """Levels and vocabulary values of the keys of a meaning or of the
+    overrides of a symbol."""
+    for key in LEVEL_KEYS:
+        if props.get(key) not in (None, *vocab.LEVELS):
+            yield Issue("schema", path, subject, f"{key} {props[key]!r}")
+    for key, allowed in VOCABULARY.items():
+        if props.get(key) not in (None, *allowed):
+            yield Issue("schema", path, subject, f"{key} {props[key]!r}")
+    if kind == "axis" and props.get("quantity") not in (None, *quantities):
+        yield Issue("schema", path, subject, f"quantity {props['quantity']!r} outside [vocab] "
+                    "quantity of tools/kb/config.toml")
+
+
 def schema(model):
     issues = [issue for issue in model.issues if issue.check == "schema"]
     quantities = tuple(model.config.get("vocab", {}).get("quantity", ()))
     for meaning in model.meanings:
         path, subject, props = _sources(meaning), _subject(meaning), meaning.props
-        for key in LEVEL_KEYS:
-            if props.get(key) not in (None, *vocab.LEVELS):
-                issues.append(Issue("schema", path, subject, f"{key} {props[key]!r}"))
+        issues.extend(_key_issues(props, meaning.kind, path, subject, quantities))
         role = props.get("role")
         roles = {"fn": vocab.FN_ROLES, "tbl": vocab.TBL_ROLES}.get(meaning.kind)
         if role is not None and (roles is None or role not in roles):
             issues.append(Issue("schema", path, subject, f"role {role!r} of a {meaning.kind}"))
-        for key, allowed in VOCABULARY.items():
-            if props.get(key) not in (None, *allowed):
-                issues.append(Issue("schema", path, subject, f"{key} {props[key]!r}"))
-        if meaning.kind == "axis" and props.get("quantity") not in (None, *quantities):
-            issues.append(Issue("schema", path, subject, f"quantity {props['quantity']!r} "
-                                "outside [vocab] quantity of tools/kb/config.toml"))
         for symbol in meaning.symbols.values():
+            issues.extend(_key_issues(symbol.props, meaning.kind, path, symbol.key.key,
+                                      quantities))
             issues.extend(_evidence_issues(symbol.evidence, path, symbol.key.key, True))
         for binding in meaning.tables.get("diagnostic", ()):
             if binding.get("level") not in (None, *vocab.LEVELS):

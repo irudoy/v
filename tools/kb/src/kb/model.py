@@ -504,7 +504,7 @@ class Builder:
                            f"status {state} on {layout} disagrees with {status.state}")
             else:
                 status.sources.add(src)
-                status.evidence.extend(evidence)
+                status.evidence.extend(item for item in evidence if item not in status.evidence)
         self._links(by_node, model)
         model.by_node = by_node
         return model

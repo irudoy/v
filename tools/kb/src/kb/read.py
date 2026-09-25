@@ -53,6 +53,11 @@ SHAPE_KEYS = {
 }
 FACT_KEYS = ("unit", "scale", "to_raw", "scale_level", "access", "contract", "contract_level",
              "disabled", "index", "attribute")
+# Keys that a symbol states for its own layout: the images it applies to and
+# the overrides of the keys of its meaning.
+SYMBOL_KEYS = ("images", "width", "signed", "storage", "cols", "rows", "points", "count",
+               "quantity", "unit", "scale", "to_raw", "scale_level", "index", "attribute",
+               "interp", "editor", "bit")
 STORAGE_BYTES = {"uint8": 1, "int8": 1, "uint16": 2, "int16": 2, "uint32": 4, "int32": 4,
                  "float32": 4}
 HUB_PERCENTILE = 99
@@ -102,6 +107,28 @@ def shape(node):
             continue
         parts.append(str(node[key]))
     return " ".join(parts)
+
+
+def bits_text(bits):
+    return ", ".join(f"{item.get('bit')} {item.get('name')}" for item in bits)
+
+
+def symbol_keys_text(symbol):
+    """The keys that a symbol states for its layout; a table prints its name."""
+    parts = []
+    for key in SYMBOL_KEYS:
+        value = symbol.get(key)
+        if value in (None, "", [], {}):
+            continue
+        if key == "bit":
+            parts.append(f"bits {bits_text(value)}")
+        elif key == "images":
+            parts.append(f"images {', '.join(value)}")
+        elif isinstance(value, (dict, list)):
+            parts.append(key)
+        else:
+            parts.append(f"{key} {value}")
+    return ", ".join(parts)
 
 
 def identity_line(symbol, meaning):
@@ -521,11 +548,15 @@ def show(graph, text, layout=None, root=repo.ROOT):
         head.append(field('meaning', meaning_line(meaning)))
     else:
         head.append(meaning_line(meaning))
+        if shape(meaning):
+            head.append(field('shape', shape(meaning)))
     keys = merged(ref.node if ref.kind == "symbol" else None, meaning)
     if keys.get("title"):
         head.append(field('title', keys['title']))
     answer.section(None, IDENTITY, head)
     facts = [field(key, keys[key]) for key in FACT_KEYS if keys.get(key) not in (None, "")]
+    if keys.get("bit"):
+        facts.append(field('bits', bits_text(keys['bit'])))
     if keys.get("former"):
         facts.append(field('former', ', '.join(keys['former'])))
     if keys.get("summary"):
@@ -540,8 +571,9 @@ def show(graph, text, layout=None, root=repo.ROOT):
     layouts = []
     for row in members:
         symbol = row["s"]
-        layouts.append(f"  {symbol['layout']:<6} {symbol_ref(symbol)}  "
-                       f"{symbol.get('level') or keys.get('level') or ''}".rstrip())
+        parts = [symbol_ref(symbol), symbol.get("level") or keys.get("level") or "",
+                 symbol_keys_text(symbol)]
+        layouts.append(f"  {symbol['layout']:<6} " + "  ".join(filter(None, parts)))
         data["symbols"].append(symbol)
     for row in statuses:
         layouts.append(f"  {row['layout']:<6} {_status_text(row['props'])}")

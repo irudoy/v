@@ -431,7 +431,7 @@ because both differ by layout.
 | `level` | Level of the claim that this symbol is the meaning on its layout; defaults to the meaning's `level` |
 | `former` | Former full references of the symbol |
 | `images` | Images of the layout that the symbol applies to, when not all |
-| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `unit`, `scale`, `to_raw`, `scale_level`, and `[interp]` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
+| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `quantity`, `unit`, `scale`, `to_raw`, `scale_level`, `[interp]`, `[editor]`, and `[[bit]]` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
 | `note` | Prose about this layout |
 | `[[symbol.evidence]]` | Evidence of identity or homology |
 
@@ -1060,7 +1060,7 @@ Options common to the read commands:
 | Command | Answers |
 |---|---|
 | `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
-| `kb show <ref>` | The entity: identity, symbols per layout, statuses, links in both directions grouped by type, evidence, analogs, and citations |
+| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations |
 | `kb at <layout>:<address>` | The symbol at the address or the function or table that contains it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
 | `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
@@ -2115,44 +2115,57 @@ target replaces.
 Stage 3. `defs/vq37-native-tables.toml`, per `[[target.<ROM>.table]]` and
 `[[target.<ROM>.axis]]` entry. Entries of the images of one layout join into
 one symbol, and an entry that only some images of the layout carry gives the
-symbol `images`.
+symbol `images`. One id joins the symbols of every target with the strength
+of a native table id. The meaning takes `home` and `summary` from the first
+target in file order that carries the id; the keys of the geometry, the
+scale, the level, and `[editor]` are keys of the symbol that the meaning
+lifts by section 20.1.
 
 | Key | Target |
 |---|---|
 | `id` | Semantic name of the meaning |
 | `address` | Symbol on the layout of `<ROM>` |
-| `width`, `height`, `length`, `storagetype`, `kind` | `cols`, `rows`, `points`, `storage`, and the kind |
+| `width`, `height`, `length`, `storagetype`, and the axis `kind` | `cols`, `rows`, `points`, `storage`, and `quantity` |
 | `mask` | `mask` of `[editor]` |
 | `values_sha256` | Not stored: the image digest fixes the bytes |
-| `pointer_bindings` | `l0` evidence at each site and a `reader` link to each accessor |
+| `pointer_bindings` | Evidence at each site and a `reader` link to each accessor with that evidence: `l0` evidence, or `indirect` evidence with mode `base` and the offset as `value` for a binding whose accessor displaces the literal by `offset` |
 | `axis_x`, `axis_y` | `axis` links |
 | `name`, `category`, `order`, `format`, `fine`, `coarse`, `static_axis`, `static_axis_name` | `[editor]` |
 | `units`, `scale_expr`, `to_byte`, `scale_conf` | `unit`, `scale`, `to_raw`, `scale_level` |
 | `confidence` | `level` |
-| `semantics` | `summary` |
+| `semantics` | `summary`; the text of another target that differs becomes a `note` of its symbol |
 | `note` | `note` of the symbol |
 
-`stock_sha256` of a target is the catalog digest and is not stored.
+A text that the images of one layout state differently enters the note of
+the symbol once per image, after the image name. `stock_sha256` of a target
+must equal the catalog digest and is not stored.
 `[target.<ROM>.absent]` gives an `absent` status of the meaning each key
-names, with evidence typed from its text.
+names, with `l0` evidence at each function entry of the layout that its text
+names as `FUN_<address>`, or else `registry` evidence, and the text as the
+status `note`.
 
 `defs/vq37-native-fuel-cut.toml`, per target:
 
 - `function_address` and `coordinator_address` become `fn` symbols;
   `state_address` with `state_armed_mask` and `state_active_mask` becomes a
-  `ram` symbol with named bits; `selector_address`, `rpm_address`, and
-  `delay_address` become `ram` symbols; `curves_address`, `caps_address`,
-  `axis_address`, and `delay_calibration_address` become `tbl` and `axis`
-  symbols.
+  `ram` symbol with the bits `armed` and `active`, which differ by layout;
+  `selector_address`, `rpm_address`, and `delay_address` become `ram`
+  symbols; `curves_address`, `caps_address`, `axis_address`, and
+  `delay_calibration_address` become `tbl` and `axis` symbols. Each key joins
+  its symbols across targets as a registry key.
 - `axis_values`, `caps_values`, `curve_values`, and
   `delay_calibration_value` are image bytes and become `rom-bytes` evidence
   where a claim rests on them.
-- `predicate_call_site`, `predicate_instruction_ordinal`,
-  `coordinator_predicate_ordinal`, and `coordinator_pointer_site` become
-  `call-ordinal` and `l0` evidence; `pointer_bindings` and
-  `ram_pointer_bindings` become `l0` evidence with `reader` links.
-- `function_size` and `function_sha256` come from L0, `stock_sha256` is the
-  catalog digest, and `evidence` becomes evidence items.
+- `predicate_call_site` gives the function `l0` evidence with
+  `predicate_instruction_ordinal` as `value` and `evidence` as `note`, and
+  `coordinator_pointer_site` gives the coordinator `l0` evidence at the
+  scheduler word. `coordinator_predicate_ordinal` is 3 on `jk78c` and 1 on
+  `1nd` and `1me3b`, so the call grounds no `call-ordinal` homology.
+- `pointer_bindings` and `ram_pointer_bindings` give the symbol at each
+  target `l0` evidence at the site and a `reader` link to the function with
+  that evidence.
+- `function_size` and `function_sha256` must equal L0, and `stock_sha256`
+  must equal the catalog digest; neither is stored.
 
 ### 20.5 Telemetry, signals, and presentation
 

@@ -1,9 +1,10 @@
 import csv
+import re
 import unittest
 
-from kb import checks, compile, names, repo
-from kb.adapters import ledgers
-from kb.model import SymbolKey
+from kb import adapters, checks, compile, names, repo
+from kb.adapters import ledgers, native
+from kb.model import Builder, SymbolKey
 
 
 def model():
@@ -214,7 +215,106 @@ class InterpAdapterTest(unittest.TestCase):
                              ("unresolved", "interp-contract", 0))
 
 
+def _readers(meaning, layout):
+    """{accessor address: evidence} of the reader links of a meaning on a layout."""
+    return {link.to.symbols[layout].address: link.evidence for link in meaning.links
+            if link.type == "reader" and layout in link.to.symbols and layout in link.stated}
+
+
+class NativeAdapterTest(unittest.TestCase):
+    def test_a_native_id_joins_its_targets_and_names_the_meaning(self):
+        meaning = model().meaning_of(SymbolKey("jk78c", "tbl", 0x00009FBA))
+        self.assertEqual((meaning.key, meaning.tier, meaning.home),
+                         ("fuel_compensation_alternate/tbl", "native", "jk78c"))
+        self.assertEqual({layout: symbol.address for layout, symbol in meaning.symbols.items()},
+                         {"jk78c": 0x9FBA, "1nd": 0xA2C0, "1me3b": 0xA1F4})
+        self.assertIn("fuel_compensation_main_alternate",
+                      {name for name, _, _ in meaning.other_names})
+        self.assertEqual((meaning.props["cols"], meaning.props["rows"], meaning.props["storage"]),
+                         (16, 16, "uint8"))
+        self.assertEqual(meaning.props["editor"]["order"], 21)
+
+    def test_a_layout_that_differs_keeps_its_keys_as_overrides(self):
+        meaning = model().meaning_of(SymbolKey("jk78c", "axis", 0x000160CA))
+        self.assertEqual((meaning.key, meaning.props["quantity"], meaning.props["unit"]),
+                         ("vvel_duration_hot_intake_idle_axis_x/axis", "rpm", "RPM"))
+        own = meaning.symbols["1nd"].props
+        self.assertEqual((own["quantity"], own["unit"], own["scale"], own["editor"]["name"]),
+                         ("temp", "degC", "x-50", "Coolant Temperature [degC]"))
+        self.assertNotIn("quantity", meaning.symbols["jk78c"].props)
+
+    def test_a_pointer_binding_gives_evidence_and_a_reader_link(self):
+        m = model()
+        axis = m.meaning_of(SymbolKey("jk78c", "axis", 0x000160CA))
+        displaced = {"kind": "indirect", "supports": "identity", "at": "jk78c:00056678",
+                     "mode": "base", "value": 0xD0}
+        self.assertEqual(axis.symbols["jk78c"].evidence, [displaced])
+        self.assertIn(displaced, _readers(axis, "jk78c")[0x000564A4])
+        table = m.meaning_of(SymbolKey("jk78c", "tbl", 0x00009FBA))
+        self.assertEqual([item["at"] for item in table.symbols["jk78c"].evidence],
+                         ["jk78c:0002febc", "jk78c:00040f70"])
+        self.assertEqual(sorted(_readers(table, "jk78c")), [0x0002F596, 0x00040958])
+        axes = {link.slot: link.to.key for link in table.links if link.type == "axis"}
+        self.assertEqual(sorted(axes), ["x", "y"])
+
+    def test_text_that_the_images_of_a_layout_state_differently_names_its_image(self):
+        meaning = model().meaning_of(SymbolKey("1nd", "tbl", 0x0000E6C8))
+        self.assertEqual((meaning.key, meaning.home),
+                         ("vvel_duration_mode_14/tbl", "1nd"))
+        self.assertTrue(meaning.props["summary"].startswith("Mode 14 duration surface"))
+        notes = meaning.symbols["1nd"].props["note"]
+        self.assertEqual(sorted({note.split(": ", 1)[0] for note in notes}), ["1ND0A", "1ND3B"])
+
+    def test_an_absent_entry_gives_l0_evidence_at_the_function_its_text_names(self):
+        meaning = model().meaning_of(SymbolKey("1nd", "tbl", 0x0000E6C8))
+        found = {layout: (status.state, [item["at"] for item in status.evidence])
+                 for layout, status in meaning.statuses.items()}
+        self.assertEqual(found, {"jk78c": ("absent", ["jk78c:000564a4"]),
+                                 "1me3b": ("absent", ["1me3b:00062fac"])})
+
+    def test_the_fuel_cut_state_names_its_bits_on_each_layout(self):
+        meaning = model().meaning_of(SymbolKey("jk78c", "ram", 0xFFFF23F5))
+        bits = lambda value: [(item["bit"], item["name"]) for item in value]
+        self.assertEqual((meaning.home, bits(meaning.props["bit"])),
+                         ("1me3b", [(2, "armed"), (3, "active")]))
+        self.assertNotIn("bit", meaning.symbols["1me3b"].props)
+        self.assertEqual(bits(meaning.symbols["jk78c"].props["bit"]), [(3, "armed"), (4, "active")])
+        self.assertEqual(bits(meaning.symbols["1nd"].props["bit"]), [(4, "armed"), (5, "active")])
+
+    def test_fuel_cut_keys_join_their_targets_and_bindings_read_the_function(self):
+        m = model()
+        axis = m.meaning_of(SymbolKey("jk78c", "axis", 0x00016A64))
+        self.assertEqual({layout: symbol.address for layout, symbol in axis.symbols.items()},
+                         {"jk78c": 0x16A64, "1nd": 0x17072, "1me3b": 0x17106})
+        function = m.meaning_of(SymbolKey("jk78c", "fn", 0x0006AEB8))
+        call = function.symbols["jk78c"].evidence[-1]
+        self.assertEqual((call["kind"], call["at"], call["value"]), ("l0", "jk78c:0006a9e8", 28))
+        base = m.meaning_of(SymbolKey("jk78c", "ram", 0xFFFF1084))
+        self.assertEqual(list(_readers(base, "jk78c")), [0x0006AEB8])
+        self.assertEqual(base.symbols["jk78c"].evidence,
+                         [{"kind": "l0", "supports": "identity", "at": "jk78c:0006b044"}])
+
+    def test_an_entry_that_some_images_of_a_layout_carry_gives_the_symbol_images(self):
+        catalog = repo.images()
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        entry = {"id": "probe_surface", "address": 0xA000, "width": 2, "height": 1,
+                 "storagetype": "uint8"}
+        native.declare_tables(b, {"schema_version": 3, "target": {
+            "1ND0A": {"stock_sha256": catalog["1ND0A"].sha256, "table": [entry]},
+            "1ND3B": {"stock_sha256": "0" * 64}}}, "probe.toml", catalog)
+        meaning = b.finish().meaning_of(SymbolKey("1nd", "tbl", 0xA000))
+        self.assertEqual(meaning.symbols["1nd"].props["images"], ["1ND0A"])
+        self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
+                         [("audit", "target.1ND3B")])
+
+
 class StageTwoChecksTest(unittest.TestCase):
+    def test_the_readme_lists_every_adapter_in_compiler_order(self):
+        text = (repo.ROOT / "tools/kb/README.md").read_text(encoding="utf-8")
+        listed = re.findall(r"^\| `([a-z]+)` \| `(?:tools|defs|patches)/", text, re.M)
+        self.assertEqual(listed, [adapter.__name__.rsplit(".", 1)[1]
+                                  for adapter in adapters.ADAPTERS])
+
     def test_the_model_checks_pass(self):
         m = model()
         for name, check in checks.CHECKS.items():

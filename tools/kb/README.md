@@ -120,6 +120,10 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 |---|---|---|
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
+| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets |
+| `definitions` | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | `tbl` and `axis` symbols of the definition projections; the `definitions` target |
+| `interp` | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | `fn` symbols of kernels and wrappers with `[interp]` |
+| `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`

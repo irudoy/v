@@ -75,13 +75,6 @@ def _owners(root, layout, addresses):
     return found
 
 
-def _signatures(root, layout):
-    """{function entry: SHA-256 of its exact bytes} from the L0 of a layout."""
-    path = root / repo.L0 / layout / "function_signatures.csv"
-    with path.open(newline="", encoding="utf-8") as source:
-        return {int(row["addr"], 16): row["exact_sha256"] for row in csv.DictReader(source)}
-
-
 class Entries:
     """The L0 function that holds each kernel entry of a layout, read from L0
     on the first question."""
@@ -167,7 +160,8 @@ def _declare_registry(b, path, layout, rows, entries):
 def _declare_copies(b, root, path, own, layout, rows, entries):
     """The symbols of a registry on another layout whose L0 functions carry the
     same exact bytes at the same entries."""
-    ours, theirs = _signatures(root, own), _signatures(root, layout)
+    ours = {entry: digest for entry, (_, digest) in repo.signatures(own, root).items()}
+    theirs = {entry: digest for entry, (_, digest) in repo.signatures(layout, root).items()}
     functions = set()
     for row in rows:
         functions.add(int(row["wrapper"], 16))

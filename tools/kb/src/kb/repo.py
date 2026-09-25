@@ -75,6 +75,14 @@ def config(root=ROOT):
     return tomllib.loads((root / CONFIG).read_text(encoding="utf-8"))
 
 
+def signatures(layout_id, root=ROOT):
+    """{function entry: (size, SHA-256 of its exact bytes)} from the L0 of a layout."""
+    path = root / L0 / layout_id / "function_signatures.csv"
+    with path.open(newline="", encoding="utf-8") as source:
+        return {int(row["addr"], 16): (int(row["size"]), row["exact_sha256"])
+                for row in csv.DictReader(source)}
+
+
 def ghidra_version(root=ROOT):
     """The Ghidra release that the headless wrapper pins."""
     found = re.findall(
