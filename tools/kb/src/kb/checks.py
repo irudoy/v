@@ -192,8 +192,11 @@ def audit(model):
     found["disagreements"] = sorted(issue for issue in model.issues if issue.check == "audit")
     for meaning in model.meanings:
         path = _sources(meaning)
+        others = defaultdict(set)
         for name, tier, src in meaning.other_names:
-            found["names"].append(Issue("audit", src, meaning.key,
+            others[(name, tier)].add(src)
+        for (name, tier), srcs in sorted(others.items()):
+            found["names"].append(Issue("audit", ";".join(sorted(srcs)), meaning.key,
                                         f"the {tier} name {name} names the same meaning"))
         for symbol in meaning.symbols.values():
             for item in symbol.evidence:

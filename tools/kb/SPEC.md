@@ -1854,7 +1854,7 @@ the registry is a projection until stage 11 keeps it generated or removes it.
 | `defs/1ND0A-1ME3B.census-correspondence.csv` | Census output | generated | Input of `kb family new` and `kb suggest` from stage 9 | Generated research output |
 | `defs/<ROM>.xml`, `defs/<ROM>.xdf`, RomRaider plugin files, the host decoder | Editor and logger definitions | generated | Their generators, which read `kb` from the stages of their inputs | Projections with `read = "open"` |
 | `patches/hardware-results.toml` | Hardware records | not converted | itself; `hardware` evidence cites it | |
-| `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml`, `patches/checksum-layouts.toml`, `patches/runtime-target-payloads.toml` | Patch design | not converted | themselves | |
+| `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml`, `patches/checksum-layouts.toml`, `patches/runtime-target-payloads.toml` | Patch design; the `7mfk` hook words, map families, and DID slots that the adapters read from stage 2 | not converted | themselves | |
 | Source packs under `refs/` | External corpora | not converted | themselves; `manual` and `diagnostic` evidence cites them | |
 | Narrow specifications under `defs/` | Mechanisms in prose | not converted | themselves; `specs` keys and `spec` evidence cite them | |
 
@@ -1867,25 +1867,38 @@ the registry is a projection until stage 11 keeps it generated or removes it.
   stage writes the same model to `kb/` and turns the registry into a
   projection.
 - Adapters join symbols into meanings by registry key: one key of the symbol
-  tables of the address profiles and `patches/runtime_targets.py` across
-  layouts, one native table id across targets, one field source across
-  layouts, and one ledger address on `7mfk`. A correspondence row joins its
-  target symbol to the meaning of its source symbol. Entries at one layout,
-  kind, and address are one symbol.
+  tables of the address profiles, the correspondence files, and
+  `patches/runtime_targets.py` across layouts, one native table id across
+  targets, one field source across layouts, and one ledger address on
+  `7mfk`. A correspondence row joins its target symbol to the meaning of its
+  source symbol. Entries at one layout, kind, and address are one symbol.
+- Joins apply in the order of their strength: correspondence rows with
+  homology evidence (`mapped`), native table ids, field sources, registry
+  keys, and correspondence rows that bind a target-specific role; within one
+  strength, in the order of the adapters. A join that would give one meaning
+  two symbols of one layout is refused, and `kb audit` lists it among the
+  disagreements.
+- A key of the symbol tables takes the kind `tbl` for a map family, `hook`
+  when a feature redirects the word at every address of the key, and
+  otherwise the kind that another registry gives a symbol at one of its
+  addresses, or else the kind that its addresses admit.
 - A meaning takes as its semantic name the registry id that names it: a key
   of `map_families`, `map_symbols`, `rolling_symbols`, or `can_symbols`, a
   key of the symbol tables of `patches/runtime_targets.py`, a native table
   id, or a curated function name of `tools/ghidra/symbols/<layout>.csv`. The
   source meaning of a telemetry field takes the field name without the `_raw`
   suffix. When registries name one meaning differently, the native table id
-  wins over the symbol key, the symbol key over the curated function name,
-  and the curated function name over the field name; `kb audit` lists the
-  others, and the conversion records them as `former` names.
+  wins over the hook key, the hook key over the symbol key, the symbol key
+  over the curated function name, and the curated function name over the
+  field name. Among symbol keys, a key with an entry on `7mfk` wins over a
+  key without one, and then the key that sorts first. `kb audit` lists the
+  other names, and the conversion records them as `former` names.
 - A `hook` meaning is one ROM word. It takes the canonical key that
   `MAP_HOOK_KEYS` or `VQ37_MAP_HOOK_KEYS` of `patches/runtime_targets.py`
   joins to the per-layout keys of the word, or else the key of the first
-  feature in build order that redirects the word. Each feature target keeps
-  its own per-layout key for every hook it redirects.
+  feature in build order that redirects the word; a per-layout key that
+  equals the canonical key of another word gives no name. Each feature
+  target keeps its own per-layout key for every hook it redirects.
 - Architecture ids name designed entities, with hyphens replaced by
   underscores. Every other symbol receives a generated name in
   `kb/names.csv`.
@@ -1994,7 +2007,7 @@ Stage 3. `patches/rom-address-profiles.toml`, per image profile:
 | `can_symbols` keys `feedback_config_record_value`, `mailbox_record_stock`, and `occupied_mailbox_record_stock` | `rom-bytes` evidence of the symbol at the matching address key |
 | `can_symbols` keys `mailbox_index`, `mailbox_mask`, and `feedback_payload_offset` | Keys of the `can_telemetry` target |
 | `telemetry_sources.<field>` | Symbol of the source meaning of the field |
-| `telemetry_unavailable` | The `unavailable` list of the `can_telemetry` target, and a status of the source meaning of each listed field, `unresolved` or `absent` by the evidence of the profile |
+| `telemetry_unavailable` | The `unavailable` list of the `can_telemetry` target, and a status of the source meaning of each listed field: `unresolved` when the evidence of the field's correspondence row, or else the telemetry evidence of the profile, states that a search found no counterpart (`no homolog`, `not traced`, `no match`), and `absent` otherwise |
 | `map_hooks.<key>` = address, stock, replacement | The `hook` symbol at the address with a `target` link to the meaning at the stock value, and `<key>` with the replacement in the `map_switching` target |
 | `rolling_hooks.<key>`, `can_hooks.<key>` = address, stock, base, replacement | The same in the `rolling_launch` and `can_telemetry` targets; `base` is derived ([Designed entities](#79-designed-entities)), and the conversion checks it |
 | `rolling_diagnostics.<key>` = DID, pointer address, target, width | The `did` symbol at the pointer address with `number`, and the allocation `<key>` of `rolling_launch` at the target address with `width` |
@@ -2003,6 +2016,14 @@ Stage 3. `patches/rom-address-profiles.toml`, per image profile:
 
 The conversion adds typed evidence to the symbols and statuses whose
 locations the evidence text states and lists the text it cannot type.
+
+The canonical feature layouts give the `7mfk` side of the same tables: the
+`[[hook]]` entries of `patches/map-switching-layout.toml`,
+`patches/rolling-launch-layout.toml`, and `patches/can-telemetry-layout.toml`
+the `hook` symbols with their canonical keys and replacements, the
+`[[family]]` entries of the map layout the `tbl` symbols of the map
+families, and the `[[diagnostic]]` entries of the rolling layout the `did`
+symbols. The layouts stay the owners of the patch design.
 
 `patches/*-runtime-correspondence.csv`:
 
@@ -2013,7 +2034,7 @@ locations the evidence text states and lists the text it cannot type.
 | `target` | The symbol or allocation on the target layout |
 | `stock` | The `target` link of a hook, which the `image-bytes` check verifies |
 | `variant` | A key of the feature target |
-| `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status. For an allocation or a capability: the `note` of the target key |
+| `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; the status of an `unsupported` `map` or `map_native` row gives way to a symbol that another row places in the meaning on the layout. For an allocation or a capability: the `note` of the target key |
 | `evidence` | The `note` of the typed evidence item |
 
 The conversion types the evidence of every `mapped` and `target-specific`
@@ -2058,9 +2079,11 @@ status.
 `CANONICAL_ROLLING_SYMBOLS`, and `CANONICAL_CAN_SYMBOLS` give the `7mfk`
 symbols of the meanings their keys name, with the value keys converted as in
 the address profiles. `MAP_HOOK_KEYS` and `VQ37_MAP_HOOK_KEYS` give the
-per-layout hook keys of the feature targets. `IGNITION_STATE_TEMPLATE` gives
-the `7mfk` table symbols and the pointer-table allocations of
-`map_switching`.
+per-layout hook keys of the feature targets and join them to the canonical
+keys. `IGNITION_STATE_TEMPLATE` gives the `1nd` table symbols of the four
+state-code families; its pointer tables are addresses of the adapter template
+before relocation, which the `ignition_state_storage` allocation of each
+target replaces.
 
 ### 20.4 VQ37VHR native registries
 

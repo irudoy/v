@@ -32,10 +32,41 @@ class MeaningTest(unittest.TestCase):
 
     def test_one_meaning_holds_one_symbol_per_layout(self):
         b = builder()
-        b.symbol("7mfk", "ram", 0xFFFF102C, "a.csv", group=("ram", "key", "x"))
-        b.symbol("7mfk", "ram", 0xFFFF1030, "a.csv", group=("ram", "key", "x"))
-        b.finish()
-        self.assertEqual([issue.check for issue in b.issues], ["symbols"])
+        first = b.symbol("7mfk", "ram", 0xFFFF102C, "a.csv", group=("ram", "key", "x"))
+        second = b.symbol("7mfk", "ram", 0xFFFF1030, "a.csv", group=("ram", "key", "x"))
+        model = b.finish()
+        self.assertEqual([issue.check for issue in b.issues], ["audit"])
+        self.assertIn("refused join", b.issues[0].message)
+        self.assertIsNot(model.meaning_of(first), model.meaning_of(second))
+
+    def test_a_stronger_join_wins_over_a_registry_key(self):
+        b = builder()
+        source = b.symbol("7mfk", "ram", 0xFFFF22E0, "a.csv", group=("ram", "key", "mask"))
+        role = b.symbol("7mfk", "ram", 0xFFFF2497, "a.csv", group=("ram", "key", "cut"))
+        target = b.symbol("jk00d", "ram", 0xFFFF235C, "b.csv", group=("ram", "key", "cut"))
+        b.join(source, target, "c.csv")
+        model = b.finish()
+        self.assertIs(model.meaning_of(source), model.meaning_of(target))
+        self.assertIsNot(model.meaning_of(role), model.meaning_of(target))
+        self.assertEqual([issue.path for issue in b.issues], ["b.csv"])
+
+    def test_a_yielding_status_gives_way_to_a_symbol(self):
+        b = builder()
+        key = b.symbol("7mfk", "tbl", 0x9A1A, "a.csv", group=("tbl", "key", "surface"))
+        b.symbol("1nd", "tbl", 0x9980, "b.csv", group=("tbl", "key", "surface"))
+        b.status(key, "1nd", "absent", "c.csv", yields=True)
+        b.status(key, "jk78c", "absent", "c.csv", yields=True)
+        meaning = b.finish().meaning_of(key)
+        self.assertEqual(sorted(meaning.statuses), ["jk78c"])
+        self.assertEqual(b.issues, [])
+
+    def test_a_better_rank_names_the_meaning_within_a_tier(self):
+        b = builder()
+        key = b.symbol("7mfk", "fn", 0x26740, "a.csv")
+        b.name(key, "startup_state_clear", "hook", "b.toml", rank=1)
+        b.name(key, "startup_initializer", "hook", "a.toml", rank=0)
+        meaning = b.finish().meaning_of(key)
+        self.assertEqual(meaning.name, "startup_initializer")
 
     def test_disagreeing_facts_go_to_the_audit_and_prose_accumulates(self):
         b = builder()

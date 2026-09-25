@@ -169,13 +169,35 @@ def symbol_node(symbol):
         "producer": "claim", "src": _src(symbol.sources)})
 
 
+def entity_node(entity):
+    props = dict(entity.props)
+    for reserved in ("key", "kind", "slug", "producer", "src"):
+        props.pop(reserved, None)
+    return properties({**props, "key": entity.key, "kind": entity.kind, "slug": entity.slug,
+                       "producer": "claim", "src": _src(entity.sources)})
+
+
+def _referenced(model, item):
+    """A value of a feature target with each symbol key replaced by the key of
+    its meaning."""
+    if isinstance(item, SymbolKey):
+        meaning = model.meaning_of(item)
+        return meaning.key if meaning is not None and meaning.name else item.key
+    if isinstance(item, dict):
+        return {key: _referenced(model, entry) for key, entry in item.items()}
+    if isinstance(item, (list, tuple)):
+        return [_referenced(model, entry) for entry in item]
+    return item
+
+
 def _family_of(model):
     return {layout.id: layout.family for layout in model.layouts.values()}
 
 
 def claim_rows(model):
-    """Meaning and Symbol nodes, HAS, the links between meanings and their
-    materialization between symbols, statuses, and citations."""
+    """Meaning, Symbol, and Entity nodes, HAS, the links between meanings and
+    their materialization between symbols, statuses, citations, and the
+    targets of features."""
     family = _family_of(model)
     meanings, symbols, has = [], [], []
     links = defaultdict(list)
@@ -235,8 +257,14 @@ def claim_rows(model):
                     "offset": link.offset,
                     "verified": kind not in L0_VERIFIED and bool(siblings),
                     "producer": "derived", "src": "links"})})
+    entities = [entity_node(entity) for _, entity in sorted(model.entities.items())]
+    targets = [{"from": f"{feature}/feature", "to": layout, "props": properties({
+                   **_referenced(model, target.props), "status": target.status,
+                   "producer": "claim", "src": _src(target.sources)})}
+               for (feature, layout), target in sorted(model.targets.items())]
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
-            "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites)}
+            "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites),
+            "entities": entities, "targets": targets}
 
 
 def at_rows(model):
@@ -372,6 +400,8 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "statuses": _create_links(graph, "STATUS", "Meaning", "Layout", rows["statuses"]),
             "citations": sum(_create_links(graph, "CITES", left, right, items)
                              for (left, right), items in rows["cites"].items()),
+            "entities": _create_nodes(graph, "Entity", rows["entities"]),
+            "targets": _create_links(graph, "TARGETS", "Entity", "Layout", rows["targets"]),
         }
         summary["claims"] = (counts, time.monotonic() - started, {})
         changed = True

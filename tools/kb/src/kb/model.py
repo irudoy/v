@@ -9,7 +9,9 @@ meanings, and returns the `Model`.
 
 A group key is a tuple whose first element is the kind of its meaning. Every
 symbol that an adapter places in a group joins the group's meaning: a key of a
-symbol table, a native table id, a field source, or a hook key.
+symbol table, a native table id, a field source, or a hook key. Joins apply in
+the order of their strength, and a join that would give one meaning two
+symbols of one layout is refused and goes to the audit.
 """
 
 from collections import defaultdict
@@ -20,6 +22,11 @@ from kb import vocab
 # Name tiers in precedence order (tools/kb/SPEC.md, section 20.1).
 TIERS = ("native", "hook", "symbol_key", "curated", "field")
 TIER_RANK = {tier: rank for rank, tier in enumerate(TIERS)}
+# Join strengths, strongest first: correspondence rows with homology evidence,
+# native table ids, field sources, registry keys, and correspondence rows that
+# bind a target-specific role.
+STRENGTHS = ("homology", "native", "field", "key", "role")
+STRENGTH_RANK = {strength: rank for rank, strength in enumerate(STRENGTHS)}
 # Prose keys accumulate across registries; every other key states one fact.
 PROSE = ("title", "summary", "note")
 
@@ -201,7 +208,8 @@ class Builder:
         self.config = config or {}
         self.stash = {}
         self.symbols = {}
-        self.union = Union()
+        self.nodes = {}
+        self.edges = []
         self.group_kind = {}
         self.names = []
         self.meaning_props = []
@@ -245,12 +253,12 @@ class Builder:
     # Facts -----------------------------------------------------------------
 
     def symbol(self, layout, kind, address, src, group=None, props=None, evidence=None,
-               implicit=False):
+               implicit=False, strength="key"):
         key = SymbolKey(layout, kind, address)
         symbol = self.symbols.get(key)
         if symbol is None:
             symbol = self.symbols[key] = Symbol(key)
-            self.union.add(key)
+            self.nodes.setdefault(key)
             self._at[(layout, address)].add(key)
         if not implicit:
             symbol.implicit = False
@@ -261,31 +269,37 @@ class Builder:
             if item not in symbol.evidence:
                 symbol.evidence.append(item)
         if group is not None:
-            self.group(group, key)
+            self.group(group, key, src, strength)
         return key
 
     def at(self, layout, address):
         return self._at.get((layout, address), set())
 
-    def group(self, group, key):
+    def group(self, group, key, src=None, strength="key"):
+        src = str(src) if src is not None else ";".join(sorted(self.symbols[key].sources))
         if group[0] != key.kind:
-            self.issue("schema", ";".join(sorted(self.symbols[key].sources)), key.key,
+            self.issue("schema", src, key.key,
                        f"a {key.kind} symbol cannot join the {group[0]} group {group[1:]}")
             return
-        self.group_kind[group] = group[0]
-        self.union.join(group, key)
+        self._anchor(group)
+        self._edge(group, key, src, strength)
 
-    def join(self, left, right, src):
+    def join(self, left, right, src, strength="homology"):
         """Join two symbols of one meaning, as a correspondence row does."""
         if left.kind != right.kind:
             self.issue("schema", src, right.key,
                        f"joins a {right.kind} symbol to the {left.kind} symbol {left.key}")
             return
-        self.union.join(left, right)
+        self._edge(left, right, str(src), strength)
 
-    def name(self, anchor, name, tier, src):
+    def _edge(self, left, right, src, strength):
+        self.edges.append((STRENGTH_RANK[strength], len(self.edges), left, right, src))
+
+    def name(self, anchor, name, tier, src, rank=0):
+        """A semantic name of the meaning of an anchor. Names of a better tier
+        win, within a tier a lower `rank`, and then the name that sorts first."""
         self._anchor(anchor)
-        self.names.append((anchor, name, tier, str(src)))
+        self.names.append((anchor, name, tier, str(src), rank))
 
     def props(self, anchor, props, src):
         """Keys of the meaning of an anchor, a symbol key or a group key."""
@@ -301,10 +315,12 @@ class Builder:
         self.link_facts.append(LinkFact(owner, type_, to, dict(props or {}),
                                         list(evidence or ()), str(src), stated))
 
-    def status(self, anchor, layout, state, src, props=None, evidence=None):
+    def status(self, anchor, layout, state, src, props=None, evidence=None, yields=False):
+        """A status of the meaning of an anchor on a layout. A status that
+        `yields` gives way to a symbol of the meaning on that layout."""
         self._anchor(anchor)
         self.status_facts.append((anchor, layout, state, dict(props or {}),
-                                  list(evidence or ()), str(src)))
+                                  list(evidence or ()), str(src), yields))
 
     def entity(self, kind, slug, src, props=None, refs=None):
         key = (kind, slug)
@@ -333,7 +349,7 @@ class Builder:
         return target
 
     def _anchor(self, anchor):
-        self.union.add(anchor)
+        self.nodes.setdefault(anchor)
         if not isinstance(anchor, SymbolKey):
             self.group_kind.setdefault(anchor, anchor[0])
 
@@ -384,10 +400,40 @@ class Builder:
 
     # Meanings --------------------------------------------------------------
 
-    def finish(self):
+    def _components(self):
+        """Apply the joins by strength; refuse a join that would give one
+        meaning two symbols of one layout."""
+        union = Union()
+        held = {}
+        for node in self.nodes:
+            union.add(node)
+            held[node] = {node.layout: node} if isinstance(node, SymbolKey) else {}
+        seen = set()
+        for _, _, left, right, src in sorted(self.edges, key=lambda edge: edge[:2]):
+            if (left, right) in seen:
+                continue
+            seen.add((left, right))
+            a, b = union.find(left), union.find(right)
+            if a == b:
+                continue
+            clash = sorted(layout for layout in held[a].keys() & held[b].keys()
+                           if held[a][layout] != held[b][layout])
+            if clash:
+                layout = clash[0]
+                self.issue("audit", src, _node(right),
+                           f"refused join with {_node(left)}: one meaning would hold "
+                           f"{held[a][layout].key} and {held[b][layout].key}")
+                continue
+            merged = held.pop(a) | held.pop(b)
+            union.join(a, b)
+            held[union.find(a)] = merged
         components = defaultdict(set)
-        for node in list(self.union.parent):
-            components[self.union.find(node)].add(node)
+        for node in self.nodes:
+            components[union.find(node)].add(node)
+        return components
+
+    def finish(self):
+        components = self._components()
         meanings = {}
         for root, nodes in components.items():
             symbols = sorted(node for node in nodes if isinstance(node, SymbolKey))
@@ -428,11 +474,13 @@ class Builder:
             if meaning is not None:
                 meaning.tables.setdefault(name, []).append(value)
                 meaning.sources.add(src)
-        for anchor, layout, state, props, evidence, src in self.status_facts:
+        for anchor, layout, state, props, evidence, src, yields in self.status_facts:
             meaning = by_node.get(anchor)
             if meaning is None:
                 continue
             if layout in meaning.symbols:
+                if yields:
+                    continue
                 self.issue("symbols", src, _subject(meaning),
                            f"status {state} on {layout}, where the meaning has "
                            f"{meaning.symbols[layout].key.key}")
@@ -452,20 +500,20 @@ class Builder:
 
     def _semantic_names(self, by_node, model):
         candidates = defaultdict(set)
-        for anchor, name, tier, src in self.names:
+        for anchor, name, tier, src, rank in self.names:
             meaning = by_node.get(anchor)
             if meaning is not None:
-                candidates[id(meaning)].add((TIER_RANK[tier], name, tier, src))
+                candidates[id(meaning)].add((TIER_RANK[tier], rank, name, tier, src))
         for meaning in model.meanings:
             found = sorted(candidates.get(id(meaning), ()))
             if not found:
                 continue
-            _, name, tier, _ = found[0]
+            _, _, name, tier, _ = found[0]
             meaning.name = name
             meaning.semantic = True
             meaning.tier = tier
             meaning.other_names = sorted({(other, other_tier, src)
-                                          for _, other, other_tier, src in found
+                                          for _, _, other, other_tier, src in found
                                           if other != name})
 
     def _links(self, by_node, model):
@@ -516,6 +564,13 @@ class Builder:
 
 def _listed(value):
     return value if isinstance(value, list) else [value]
+
+
+def _node(node):
+    """A symbol key or a group key as the audit prints it."""
+    if isinstance(node, SymbolKey):
+        return node.key
+    return f"{' '.join(str(part) for part in node[1:])}/{node[0]}"
 
 
 def _subject(meaning):
