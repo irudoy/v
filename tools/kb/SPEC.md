@@ -601,7 +601,8 @@ describe, so a rename or a move carries them:
 | `[[diagnostic]]` | any meaning | Diagnostic binding: `id`, `kind`, `label`, `key`, `claim` (an inline table of `label` and `id`), `applicability`, `scope` (image or layout ids), `priority`, `level`, `note`, and `[[diagnostic.evidence]]` |
 
 `editor.name` is the name the editors show; it is not the name of the
-meaning. The generators of the editor definitions, the RomRaider files, and
+meaning. `editor.static_axis_operand` is a reference to the `ram` or `reg`
+meaning whose value the static axis labels. The generators of the editor definitions, the RomRaider files, and
 the diagnostic bindings read these tables.
 
 ### 7.9 Designed entities
@@ -686,8 +687,10 @@ Features:
   ROM and RAM relocation, and the build variants. `can_telemetry` holds the
   wire constants, profiles, and contexts, and each of its targets lists in
   `unavailable` the fields whose source meaning has a status on the layout.
-  `definitions` holds the image header metadata, checksums, and switches of
-  the editor definitions.
+  `definitions` holds `default_emit` and the switches of the editor
+  definitions, and each of its targets holds in `images` the header metadata,
+  checksums, switch addresses, and exposed features of each image with a
+  definition.
 - `map_switching`, `rolling_launch`, and `can_telemetry` hold their layout
   keys and, under their own hook keys, the `hook` meanings they redirect with
   the replacement of each. The build applies them in that order, so the value
@@ -1860,7 +1863,7 @@ the registry is a projection until stage 11 keeps it generated or removes it.
 | `tools/diagnostics/sid22_inventory.py` | The decoder of the JK08A service 0x22 tables | not converted | itself; the `did` symbols of `7mfk` and their `source` links derive from it and the image bytes | |
 | `defs/JK08A.tuning-signals.toml` | Observation needs | 4 | `kb/signal/` | Projection |
 | `patches/can-telemetry-profile.toml` | Fields, contexts, and wire constants | 4 | `kb/field/`; `can_telemetry` | Projection |
-| `defs/JK08A.overrides.toml` | Editor presentation, logger parameters, checksums, and switches | 4 | `[editor]` and `[logparam]` tables; `definitions`, `map_switching`, and `rolling_launch` | Projection |
+| `defs/JK08A.overrides.toml` | Editor presentation, logger parameters, checksums, and switches | 4 | `[editor]` and `[logparam]` tables; `definitions` | Projection |
 | Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata | Copies checked by `tools/single_source.py` | 4 | Generated from fields and meanings | Projection; the copy checks leave `single_source.py` |
 | `defs/JK08A.funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` | Code knowledge of `7mfk` | 5 | `kb/fn/`, `kb/ram/`, `kb/reg/`, `kb/tbl/`, `kb/axis/` | Projection |
 | `defs/JK08A.dtc.csv` | DTC descriptors of `7mfk` | 5 | `kb/dtc/` | Projection; the `dtc.csv` files of other images follow the `dtc` symbols of their layouts in stage 9 |
@@ -2261,13 +2264,21 @@ The service 0x22 table of `7mfk`:
 
 - `[table.<address>]` and `[axis.<address>]` become `[editor]` of the
   meaning at that address, and `[logparam.<address>]` becomes `[logparam]`
-  with `units` as `unit`.
+  with `units` as `unit`. An address without a meaning of its kind fails the
+  `references` check.
 - `[[masked_view]]` becomes `[[editor.view]]` of the meaning at `source`,
   with `units`, `expression`, and `to_byte` as `unit`, `scale`, and
   `to_raw`.
-- `[rom]`, `[[checksum]]`, `[[switch]]`, and `[presentation]` become keys of
-  `definitions`; `[map_switching]` and `[rolling_launch]` become keys of
-  those features.
+- `[presentation]` becomes `default_emit` of `definitions`, and each
+  `[[switch]]` without its storage address an entry of its `switches`, under
+  the slug that `SWITCH_NAMES` of `tools/mapkit/definition_projections.py`
+  gives its name.
+- The JK08A entry in `images` of the `7mfk` target of `definitions` takes
+  the keys of a projection entry: `[rom]` becomes `rom` with its comment as
+  `note`, `[[checksum]]` becomes `checksums` with each `comment` as `note`,
+  the storage address of each switch goes under `switch`, and `enabled` of
+  `[map_switching]` and `[rolling_launch]` becomes `map_switching` and
+  `rolling_launch`: the definitions of the image expose those features.
 - Comments are dropped, and the conversion lists each one for review against
   the summary of its meaning.
 

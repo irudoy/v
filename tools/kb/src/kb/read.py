@@ -643,7 +643,7 @@ def _show_entity(graph, ref):
     node = ref.node
     answer = Answer(f"kb raw {ref.text}")
     answer.section(None, IDENTITY, [f"{ref.text}  {node.get('title', '')}"])
-    facts = [field(key, node[key]) for key in sorted(node)
+    facts = [field(key, compact(node[key])) for key in sorted(node)
              if key not in ENTITY_OWN and node[key] not in (None, "", [])]
     data = {"entity": node, "links": []}
     if node.get("kind") == "signal":
@@ -686,7 +686,18 @@ def _table_text(name, value):
         return "; ".join(f"{item.get('id')} {item.get('label', '')}".strip() for item in items)
     if isinstance(value, list):
         value = value[0] if value else {}
-    return ", ".join(f"{key} {entry}" for key, entry in sorted(value.items()))
+    return ", ".join(f"{key} {compact(entry)}" for key, entry in sorted(value.items()))
+
+
+def compact(value):
+    """A nested value in one line: a table of tables and a list of tables by
+    the names of their entries; `kb raw` prints them whole."""
+    if isinstance(value, dict) and value and all(isinstance(entry, dict)
+                                                 for entry in value.values()):
+        return ", ".join(sorted(value))
+    if isinstance(value, list) and value and all(isinstance(entry, dict) for entry in value):
+        return "; ".join(str(entry.get("name") or entry.get("id") or "?") for entry in value)
+    return value
 
 
 def _l0_sections(graph, answer, layout, address, data, root):

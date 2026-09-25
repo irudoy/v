@@ -86,6 +86,13 @@ ENTITY_VOCABULARY = {
     },
 }
 
+# Keys of the feature tables of meanings (section 7.8).
+EDITOR_KEYS = ("name", "category", "order", "emit", "format", "fine", "coarse", "mask",
+               "static_axis", "static_axis_name", "static_axis_operand", "static_axis_x",
+               "static_axis_x_name", "static_axis_y", "static_axis_y_name")
+VIEW_KEYS = ("name", "category", "mask", "unit", "scale", "to_raw", "format", "fine", "coarse")
+LOGPARAM_KEYS = ("id", "unit", "scale", "static_axis_name")
+
 # The editor and registry spelling of an element type and its kb storage.
 STORAGE_ALIASES = {"float": "float32"}
 

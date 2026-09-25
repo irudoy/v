@@ -129,6 +129,7 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
 | `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
+| `overrides` | `defs/JK08A.overrides.toml`, `tools/mapkit/definition_projections.py` | `[editor]` of `7mfk` tables and axes with their masked views, `[logparam]` of `7mfk` RAM; the presentation keys and switches of `definitions` and the JK08A entry of its `7mfk` target |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`

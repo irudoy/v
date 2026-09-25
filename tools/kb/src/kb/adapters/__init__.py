@@ -6,10 +6,11 @@ statuses of its registry, and `relate` states the links, which resolve
 against the symbols that every adapter declared.
 """
 
-from kb.adapters import (curated, definitions, dids, interp, ledgers, native, profiles,
-                         signals, telemetry)
+from kb.adapters import (curated, definitions, dids, interp, ledgers, native, overrides,
+                         profiles, signals, telemetry)
 
-ADAPTERS = (curated, ledgers, profiles, definitions, interp, native, dids, signals, telemetry)
+ADAPTERS = (curated, ledgers, profiles, definitions, interp, native, dids, signals, telemetry,
+            overrides)
 
 
 def inputs(root):

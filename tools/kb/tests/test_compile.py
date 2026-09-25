@@ -4,7 +4,7 @@ import tomllib
 import unittest
 
 from kb import adapters, checks, compile, names, repo
-from kb.adapters import ledgers, native, signals, telemetry
+from kb.adapters import definitions, ledgers, native, overrides, signals, telemetry
 from kb.model import Builder, SymbolKey
 
 
@@ -559,6 +559,77 @@ class TelemetryAdapterTest(unittest.TestCase):
                          {"map": {"address": "ffff5d00", "width": 1}})
         self.assertEqual(sorted(slug for kind, slug in b.entities if kind == "field"),
                          ["listed_raw", "map", "unlisted_raw"])
+
+
+def _overrides():
+    return tomllib.loads((repo.ROOT / overrides.OVERRIDES).read_text(encoding="utf-8"))
+
+
+class OverridesAdapterTest(unittest.TestCase):
+    def test_a_table_takes_its_editor_and_the_masked_views_of_its_source(self):
+        document = _overrides()
+        editor = model().meaning_of(SymbolKey("7mfk", "tbl", 0x0000991A)).props["editor"]
+        views = [{overrides.VIEW_NAMES.get(key, key): value for key, value in item.items()
+                  if key != "source"}
+                 for item in document["masked_view"] if item["source"] == "0000991a"]
+        self.assertEqual(editor, {**document["table"]["0000991a"], "view": views})
+        self.assertEqual([(view["unit"], view["scale"], view["to_raw"]) for view in views],
+                         [("Enable flag (0: Off | 1: On)", "x", "x")])
+
+    def test_a_static_axis_operand_names_the_meaning_it_labels(self):
+        m = model()
+        editor = m.meaning_of(SymbolKey("7mfk", "tbl", 0x000126E4)).props["editor"]
+        self.assertEqual(editor["static_axis_operand"], SymbolKey("7mfk", "ram", 0xFFFF106F))
+        axis = m.meaning_of(SymbolKey("7mfk", "axis", 0x00011BFB)).props["editor"]
+        self.assertEqual(axis, _overrides()["axis"]["00011bfb"])
+
+    def test_a_logger_parameter_takes_units_as_unit(self):
+        meaning = model().meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1980))
+        self.assertEqual(meaning.props["logparam"],
+                         {"id": "X_VQ_QH0_Flow_Potential", "unit": "QH0 Flow Potential [%]",
+                          "scale": "x*0.00152588"})
+
+    def test_the_jk08a_entry_carries_the_keys_of_a_projection_entry(self):
+        m = model()
+        entry = m.targets[("definitions", "7mfk")].props["images"]["JK08A"]
+        self.assertEqual((entry["rom"]["xmlid"], entry["map_switching"], entry["rolling_launch"]),
+                         ("JK08A", True, True))
+        self.assertEqual(entry["switch"], {"developer_immobilizer": "00008725",
+                                           "can_telemetry_startup": "000d4e03"})
+        self.assertEqual([(item["type"], item["start"], item["end"], item.get("skiploc"))
+                          for item in entry["checksums"]],
+                         [("alt", "0002040c", "0002259c", None),
+                          ("alt2", "00008200", "00100000", "00020000")])
+        self.assertTrue(entry["note"].startswith("Analysis and method"))
+        self.assertLessEqual(set(entry) - {"rom", "checksums", "note"},
+                             set(definitions.IMAGE_KEYS) | {"switch"})
+        feature = m.entities[("feature", "definitions")].props
+        self.assertEqual(feature["default_emit"], True)
+        self.assertEqual(sorted(feature["switches"]),
+                         sorted(overrides.switch_names(repo.ROOT).values()))
+        self.assertNotIn("storageaddress", feature["switches"]["developer_immobilizer"])
+
+    def test_an_address_without_a_symbol_and_an_unknown_key_fail_their_checks(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+        b.symbol("7mfk", "tbl", 0x00009000, "probe")
+        document = {
+            "table": {"00009000": {"name": "Probe", "shade": 1}, "00009100": {"name": "Gap"}},
+            "masked_view": [{"source": "00009000", "name": "View", "units": "flag",
+                             "colour": 1}],
+            "logparam": {"ffff0000": {"id": "X_Probe", "units": "u"}},
+            "switch": [{"name": "Unknown Switch", "storageaddress": "0x9000"}],
+            "palette": {}}
+        overrides.declare_overrides(b, document, overrides.switch_names(repo.ROOT), "probe.toml")
+        overrides.relate(b, repo.ROOT)
+        self.assertEqual(sorted((issue.check, issue.subject, issue.message) for issue in b.issues),
+                         [("references", "logparam.ffff0000",
+                           "no ram or reg symbol of 7mfk at ffff0000"),
+                          ("references", "table.00009100", "no tbl symbol of 7mfk at 00009100"),
+                          ("schema", "masked_view.View", "unknown key colour"),
+                          ("schema", "palette", "unknown key"),
+                          ("schema", "switch.Unknown Switch",
+                           f"no slug of SWITCH_NAMES in {overrides.PROJECTIONS}"),
+                          ("schema", "table.00009000", "unknown key shade")])
 
 
 class StageTwoChecksTest(unittest.TestCase):
