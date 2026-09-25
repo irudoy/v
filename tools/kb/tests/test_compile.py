@@ -4,7 +4,8 @@ import tomllib
 import unittest
 
 from kb import adapters, checks, compile, names, repo
-from kb.adapters import definitions, ledgers, native, overrides, signals, telemetry
+from kb.adapters import (architecture, definitions, ledgers, native, overrides, signals,
+                         telemetry)
 from kb.model import Builder, SymbolKey
 
 
@@ -630,6 +631,85 @@ class OverridesAdapterTest(unittest.TestCase):
                           ("schema", "switch.Unknown Switch",
                            f"no slug of SWITCH_NAMES in {overrides.PROJECTIONS}"),
                           ("schema", "table.00009000", "unknown key shade")])
+
+
+def _architecture():
+    return tomllib.loads((repo.ROOT / architecture.ARCHITECTURE).read_text(encoding="utf-8"))
+
+
+class ArchitectureAdapterTest(unittest.TestCase):
+    def test_stages_blocks_and_endpoints_carry_their_keys_and_references(self):
+        m = model()
+        stage = m.entities[("stage", "estimation")]
+        self.assertEqual({key: stage.props[key] for key in ("title", "lane", "order")},
+                         {"title": "Engine state", "lane": "flow", "order": 2})
+        block = m.entities[("block", "engine_speed")]
+        self.assertEqual((block.refs["stage"], block.props["home"]),
+                         ([("stage", "estimation")], "7mfk"))
+        endpoint = m.entities[("endpoint", "crank_sensor")]
+        self.assertEqual(endpoint.refs, {"block": [("block", "crank_cam")],
+                                         "registers": [SymbolKey("7mfk", "reg", 0xFFFFF434)],
+                                         "functions": [SymbolKey("7mfk", "fn", 0x00029588)]})
+
+    def test_the_lists_of_a_block_become_the_block_key_of_their_meanings(self):
+        m = model()
+        for item in _architecture()["block"]:
+            name = f"{architecture.slug(item['id'])}/block"
+            for field, kinds in architecture.BLOCK_LISTS.items():
+                for text in item.get(field, ()):
+                    meaning = next(m.meaning_of(SymbolKey("7mfk", kind, int(text, 16)))
+                                   for kind in kinds
+                                   if SymbolKey("7mfk", kind, int(text, 16)) in m.symbols)
+                    self.assertEqual(meaning.props["block"], name, text)
+
+    def test_a_chain_keeps_its_steps_in_order_with_their_references(self):
+        m = model()
+        chain = m.entities[("chain", "engine_speed")]
+        source = next(item for item in _architecture()["chain"] if item["id"] == "engine-speed")
+        self.assertEqual(len(chain.steps), len(source["step"]))
+        self.assertEqual(chain.refs["output"], [SymbolKey("7mfk", "ram", 0xFFFF1196)])
+        step = chain.steps[3]
+        self.assertEqual({key: step[key] for key in ("from", "to", "effect", "sign", "via")},
+                         {"from": SymbolKey("7mfk", "ram", 0xFFFF22BC),
+                          "to": SymbolKey("7mfk", "ram", 0xFFFF114A), "effect": "converts",
+                          "sign": "negative", "via": [SymbolKey("7mfk", "fn", 0x0003DEEC)]})
+        self.assertTrue(step["note"].startswith("ffff114a = floor(0xA2C2/ffff22bc)"))
+
+    def test_a_prefix_selects_the_kind_and_a_reference_without_a_symbol_fails(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {"7mfk": {0x00030000}},
+                    {"7mfk": (0x8200, 0x20000)}, repo.config())
+        for kind, address in (("tbl", 0x9000), ("axis", 0x9000), ("fn", 0x30000)):
+            b.symbol("7mfk", kind, address, "probe")
+        stage = {"id": "s", "name": "S", "lane": "flow", "summary": "Stage."}
+        block = {"id": "b-one", "name": "B", "stage": "s", "summary": "Block.",
+                 "functions": ["00030000", "00031000"]}
+        steps = [{"from": "00009000", "to": "ffff0010", "effect": "looks-up", "sign": "none",
+                  "via": ["00030000"], "note": "x"},
+                 {"from": "map:00009000", "to": "ffff0010", "effect": "guesses", "sign": "none",
+                  "via": ["00009000"]}]
+        chain = {"id": "c", "name": "C", "summary": "Chain.", "quantity": "Q",
+                 "output": "axis:00009000", "step": steps}
+        architecture.relate_architecture(b, {
+            "schema_version": 1, "rom": "JK08A", "stage": [stage],
+            "block": [block, {**block, "id": "b-two", "stage": "gone"}],
+            "chain": [chain]}, "probe.toml")
+        entity = b.entities[("chain", "c")]
+        self.assertEqual((entity.refs["output"], entity.steps[0]["from"], entity.steps[0]["to"]),
+                         ([SymbolKey("7mfk", "axis", 0x9000)], SymbolKey("7mfk", "tbl", 0x9000),
+                          SymbolKey("7mfk", "ram", 0xFFFF0010)))
+        self.assertEqual(len(entity.steps), 1)
+        b.finish()
+        self.assertEqual(sorted((issue.check, issue.subject, issue.message) for issue in b.issues),
+                         [("audit", "7mfk-00030000/fn",
+                           "block = 'b_two/block' disagrees with 'b_one/block'"),
+                          ("references", "block.b-one.functions",
+                           "no fn symbol of 7mfk at 00031000"),
+                          ("references", "block.b-two", "stage 'gone' is no stage"),
+                          ("references", "block.b-two.functions",
+                           "no fn symbol of 7mfk at 00031000"),
+                          ("references", "chain.c.step.2.via",
+                           "00009000 admits no fn symbol of 7mfk"),
+                          ("schema", "chain.c.step.2", "effect 'guesses'")])
 
 
 class StageTwoChecksTest(unittest.TestCase):

@@ -947,7 +947,7 @@ writes carries the label `:Kb` in addition to its own label.
 | `Meaning` | `<name>/<kind>` | `kind`, `name`, `former`, `title`, `level`, `effective`, `home`, `role`, and the kind keys | `claim` |
 | `Symbol` | `<layout>-<address>/<kind>` | `name`, `generated`, `former`, `layout`, `address`, `level`, `effective`, overrides | `claim` |
 | `Entity` | `<slug>/<kind>` | `kind`, `title`, and the keys of the kind | `claim` |
-| `Step` | `<chain slug>#<order>` | `effect`, `sign`, `note` | `claim` |
+| `Step` | `<chain slug>#<order>` | `effect`, `sign`, `note`, `specs` | `claim` |
 | `Function` | `<layout>:<address>` | `size`, `thunk`, `external`, signature hashes | `l0` |
 | `Location` | `<layout>:<address>` | `space` (`ram`, `rom`, or `io`) | `l0` |
 | `Candidate` | `<algorithm>:<run>:<id>` | `algorithm`, `params`, `score` | `candidate` |
@@ -975,7 +975,7 @@ writes carries the label `:Kb` in addition to its own label.
 | the same types | `Symbol` | `Symbol` | `layout`, `verified`, and the link's `role`, `slot`, and `offset` | `derived` |
 | `CITES` | `Meaning`, `Symbol` | `Meaning`, `Symbol`, `Entity` | `kind`, `supports`, `relies` | `claim` |
 | `ANALOG` | `Meaning` | `Meaning` | `note` | `claim` |
-| `BLOCK` | `Meaning` | `Entity` (block) | | `claim` |
+| `BLOCK` | `Meaning`, `Entity` (endpoint) | `Entity` (block) | | `claim` |
 | `STAGE` | `Entity` (block) | `Entity` (stage) | | `claim` |
 | `REGISTER`, `FUNCTION` | `Entity` (endpoint) | `Meaning` | | `claim` |
 | `STEP` | `Entity` (chain) | `Step` | `order` | `claim` |
@@ -1078,7 +1078,7 @@ Options common to the read commands:
 | Command | Answers |
 |---|---|
 | `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
-| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; for a designed entity its keys and relationships, and for a signal the DIDs that return an observed meaning |
+| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning |
 | `kb at <layout>:<address>` | The symbol at the address, or else the feature allocations, function, or table that contain it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
 | `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
@@ -1086,7 +1086,7 @@ Options common to the read commands:
 | `kb gaps [--feature <f>] [--layout <l>] [--catalog]` | Required meanings without a symbol, grouped by status |
 | `kb suggest <ref> --layout <l>` | Candidate symbols of a meaning on a layout, one line per channel with the evidence kind it would record |
 | `kb suggest --blocks --layout <l>` | Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms)) |
-| `kb find <text>` | Entities ranked by name, former name, title, and summary |
+| `kb find <text>` | Meanings and designed entities ranked by name or slug, former name, title, and summary |
 | `kb code <ref> [--layout <l>]` | Decompilation or listing of a function symbol through `tools/ghidra/decompile.sh` and its cache |
 | `kb log <ref>` | The history of the entity through renames and redirects |
 | `kb raw <ref>` | The canonical file of the entity |
@@ -2287,18 +2287,31 @@ The service 0x22 table of `7mfk`:
 Stage 6. `defs/JK08A.architecture.toml`:
 
 - `[[stage]]`: `id` is the slug, `name` becomes `title`, `lane` and `summary`
-  keep their names, and the array position becomes `order`.
+  keep their names, and the array position from 1 becomes `order`.
 - `[[block]]`: `id` is the slug with underscores, `name` becomes `title`;
-  `stage`, `summary`, `specs`, and `generic` keep their names; `functions`
-  becomes the `block` key of each `fn` meaning, and `signals` the `block` key
-  of each `ram` meaning.
-- `[[endpoint]]`: `name` becomes `title`; `registers` and `functions` become
-  references; the other keys keep their names.
-- `[[chain]]` and `[[chain.step]]`: `name` becomes `title`; addresses become
-  references; the conversion keeps the arithmetic of each note and lists the
-  conditions for review as links of the destination meaning
+  `stage`, `summary`, `specs`, and `generic` keep their names, and `home` is
+  `7mfk`; `functions` becomes the `block` key of each `fn` meaning, `signals`
+  the `block` key of each `ram` or `reg` meaning, and `maps` the `block` key
+  of each `tbl` or `axis` meaning.
+- `[[endpoint]]`: `id` is the slug with underscores, `name` becomes `title`;
+  `block`, `registers`, and `functions` become references; the other keys
+  keep their names.
+- `[[chain]]` and `[[chain.step]]`: `id` is the slug with underscores, `name`
+  becomes `title`, and `home` is `7mfk`; addresses become references; the
+  conversion keeps the arithmetic of each note and lists the conditions for
+  review as links of the destination meaning
   ([A JK08A chain step](#172-a-jk08a-chain-step)).
-- `[sources]` is dropped: the compiler knows its inputs.
+- An address may carry a prefix: `function`, `map`, `axis`, `signal`, and
+  `register` name the `fn`, `tbl`, `axis`, `ram`, and `reg` symbol at the
+  address. Without a prefix, an entry of a block or endpoint list names a
+  symbol of the kinds of its list, and a chain address names the symbol of
+  the first of `fn`, `tbl`, `axis`, `ram`, `reg`, and `const` at the address,
+  or else an implicit symbol of the kind that the address admits; `via`
+  names functions. A prefixed address or a list entry without its symbol
+  fails the `references` check.
+- `rom` names the image of `7mfk` whose addresses the registry states;
+  `summary` describes the architecture view and stays with its generator;
+  `[sources]` is dropped: the compiler knows its inputs.
 
 ### 20.7 Evidence tokens
 

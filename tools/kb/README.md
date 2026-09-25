@@ -18,11 +18,11 @@ uv run kb audit                      # disagreements between registries
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
 uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocation or datum that holds it, and its L0 facts
-uv run kb show 7mfk:0000a4aa         # identity, keys, layouts, links, L0 accessors, notes, evidence
+uv run kb show 7mfk:0000a4aa         # identity, keys, block and chain steps, layouts, links, L0 accessors, notes, evidence
 uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
 uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
 uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
-uv run kb find knock threshold       # entities ranked by name, former name, title, and summary
+uv run kb find knock threshold       # meanings and designed entities ranked by name, former name, title, and summary
 uv run kb brief                      # graph state, layouts, stage, owners, gaps, and the questions
 uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
@@ -130,6 +130,7 @@ gives it, and otherwise the generated name of its symbol on its home layout.
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
 | `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
 | `overrides` | `defs/JK08A.overrides.toml`, `tools/mapkit/definition_projections.py` | `[editor]` of `7mfk` tables and axes with their masked views, `[logparam]` of `7mfk` RAM; the presentation keys and switches of `definitions` and the JK08A entry of its `7mfk` target |
+| `architecture` | `defs/JK08A.architecture.toml` | `stage`, `block`, `endpoint`, and `chain` entities with the chain steps; the `block` key of the `7mfk` functions and signals of each block |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`

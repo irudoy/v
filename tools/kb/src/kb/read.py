@@ -27,14 +27,17 @@ FORWARD = {
     "INDEX": "indexed by", "AXIS": "has axis", "LOOKUP": "lookup of", "SELECTOR": "selected by",
     "THRESHOLD": "compares with", "BASE": "based at", "TARGET": "points at", "SOURCE": "returns",
     "MONITOR": "set by", "DEPENDS": "depends on", "CITES": "cites", "OBSERVES": "observes",
-    "CARRIES": "carries", "SERVES": "serves", "TARGETS": "targets",
+    "CARRIES": "carries", "SERVES": "serves", "TARGETS": "targets", "BLOCK": "in block",
+    "STAGE": "in stage", "REGISTER": "registers", "FUNCTION": "functions", "OUTPUT": "computes",
 }
 BACKWARD = {
     "WRITER": "writes", "READER": "reads", "INPUT": "input of", "COPY": "copied to",
     "INDEX": "indexes", "AXIS": "axis of", "LOOKUP": "looked up into", "SELECTOR": "selects",
     "THRESHOLD": "threshold of", "BASE": "base of", "TARGET": "target of", "SOURCE": "source of",
     "MONITOR": "sets", "DEPENDS": "needed by", "CITES": "cited by", "OBSERVES": "observed by",
-    "CARRIES": "carried by", "SERVES": "served by", "TARGETS": "targeted by",
+    "CARRIES": "carried by", "SERVES": "served by", "TARGETS": "targeted by", "BLOCK": "holds",
+    "STAGE": "holds", "REGISTER": "register of", "FUNCTION": "function of",
+    "OUTPUT": "output of",
 }
 # The `to` end of a reader link depends on its owner; for every other type the
 # owner depends on `to`. A `depends` link takes its direction from its legacy
@@ -588,6 +591,13 @@ def show(graph, text, layout=None, root=repo.ROOT):
         facts.append(field('bits', bits_text(keys['bit'])))
     if keys.get("former"):
         facts.append(field('former', ', '.join(keys['former'])))
+    if keys.get("block"):
+        stage = graph.run("MATCH (:Kb:Entity {key: $key})-[:STAGE]->(s:Kb:Entity) "
+                          "RETURN s.key AS stage", key=keys["block"])
+        data["block"] = {"block": keys["block"], "stage": stage[0]["stage"] if stage else None}
+        facts.append(field("block", "  stage ".join(filter(None, data["block"].values()))))
+    data["steps"] = steps_through(graph, meaning["key"])
+    facts.extend(field("step", step_text(row, chain=True)) for row in data["steps"])
     if keys.get("summary"):
         facts.append(field('summary', keys['summary']))
     answer.section(None, FACTS, facts)
@@ -635,6 +645,36 @@ def show(graph, text, layout=None, root=repo.ROOT):
 
 
 ENTITY_OWN = ("key", "kind", "slug", "title", "summary", "note", "producer", "src")
+STEP_ROWS = ("MATCH (s)-[:FROM]->(f:Kb:Meaning) MATCH (s)-[:TO]->(t:Kb:Meaning) "
+             "OPTIONAL MATCH (s)-[:THROUGH]->(v:Kb:Meaning) "
+             "WITH c, st, s, f, t, collect(v.key) AS via "
+             "RETURN c.key AS chain, st.order AS order, f.key AS from, t.key AS to, "
+             "s.effect AS effect, s.sign AS sign, s.note AS note, via "
+             "ORDER BY chain, order")
+
+
+def steps_through(graph, key):
+    """The chain steps whose from, to, or via is a meaning, in chain order."""
+    return graph.run(
+        "MATCH (c:Kb:Entity)-[st:STEP]->(s:Kb:Step)-[:FROM|TO|THROUGH]->(:Kb:Meaning {key: $key}) "
+        "WITH DISTINCT c, st, s " + STEP_ROWS, key=key)
+
+
+def chain_steps(graph, key):
+    return graph.run("MATCH (c:Kb:Entity {key: $key})-[st:STEP]->(s:Kb:Step) " + STEP_ROWS,
+                     key=key)
+
+
+def step_text(row, chain=False):
+    """One step: its chain and order when read from a meaning, its ends, its
+    effect and sign, the functions it runs through, and its note."""
+    parts = [f"{row['chain']} #{row['order']}" if chain else f"#{row['order']}",
+             f"{row['from']} -> {row['to']}", f"{row['effect']} {row['sign']}"]
+    if row["via"] and not chain:
+        parts.append(f"via {', '.join(row['via'])}")
+    if row["note"]:
+        parts.append(row["note"])
+    return "  ".join(parts)
 
 
 def _show_entity(graph, ref):
@@ -659,12 +699,15 @@ def _show_entity(graph, ref):
     rows = graph.run(
         "MATCH (:Kb:Entity {key: $key})-[r]->(o) WHERE o:Meaning OR o:Entity OR o:Layout "
         "RETURN 'out' AS dir, type(r) AS type, properties(r) AS props, o AS other "
-        "UNION ALL MATCH (:Kb:Entity {key: $key})<-[r]-(o:Kb:Entity) "
+        "UNION ALL MATCH (:Kb:Entity {key: $key})<-[r]-(o) WHERE o:Meaning OR o:Entity "
         "RETURN 'in' AS dir, type(r) AS type, properties(r) AS props, o AS other",
         key=node["key"])
     answer.section("links", LINKS, link_lines(rows, lambda row: node_ref(row["other"])))
     data["links"] = [{"dir": row["dir"], "type": row["type"].lower(),
                       "other": node_ref(row["other"])} for row in rows]
+    if node.get("kind") == "chain":
+        data["steps"] = chain_steps(graph, node["key"])
+        answer.section("steps", FACTS, [f"  {step_text(row)}" for row in data["steps"]])
     answer.section("notes", DETAIL, [f"  {note}" for note in node.get("note") or ()])
     answer.data = data
     return answer
@@ -697,6 +740,8 @@ def compact(value):
         return ", ".join(sorted(value))
     if isinstance(value, list) and value and all(isinstance(entry, dict) for entry in value):
         return "; ".join(str(entry.get("name") or entry.get("id") or "?") for entry in value)
+    if isinstance(value, list):
+        return ", ".join(str(entry) for entry in value)
     return value
 
 
@@ -1153,7 +1198,10 @@ def find(graph, words, limit=15, root=repo.ROOT):
         "MATCH (m:Kb:Meaning) OPTIONAL MATCH (m)-[:HAS]->(s:Kb:Symbol) "
         "WITH m, collect(s) AS symbols "
         "RETURN m.key AS key, m.name AS name, m.kind AS kind, m.home AS home, m.title AS title, "
-        "m.summary AS summary, m.former AS former, symbols")
+        "m.summary AS summary, m.former AS former, symbols, false AS designed "
+        "UNION ALL MATCH (e:Kb:Entity) "
+        "RETURN e.key AS key, e.slug AS name, e.kind AS kind, null AS home, e.title AS title, "
+        "e.summary AS summary, [] AS former, [] AS symbols, true AS designed")
     docs = []
     for row in rows:
         fields = [row["name"] or "", " ".join(row["former"] or ()), row["title"] or "",
@@ -1211,8 +1259,8 @@ def find(graph, words, limit=15, root=repo.ROOT):
         row = doc["row"]
         ref = symbol_ref(doc["home"]) if doc["home"] else key
         lines.append(f"  {ref}  {headline(row, 72)}")
-        data.append({"ref": ref, "meaning": key, "tier": ("exact", "prefix", "substring",
-                                                          "words")[tier],
+        data.append({"ref": ref, "entity" if row["designed"] else "meaning": key,
+                     "tier": ("exact", "prefix", "substring", "words")[tier],
                      "score": round(score, 4), "field": ("name", "former", "title",
                                                          "summary")[field]})
     answer.section(None, FACTS, lines)

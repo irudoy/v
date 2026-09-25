@@ -184,7 +184,12 @@ class FindStore:
 def meaning(name, kind, title=None, summary=None, former=()):
     return {"key": f"{name}/{kind}", "name": name, "kind": kind, "home": "7mfk",
             "title": title, "summary": summary, "former": list(former),
-            "symbols": [sym(name, kind, 0x1000 + len(name))]}
+            "symbols": [sym(name, kind, 0x1000 + len(name))], "designed": False}
+
+
+def designed(slug, kind, title=None, summary=None):
+    return {"key": f"{slug}/{kind}", "name": slug, "kind": kind, "home": None, "title": title,
+            "summary": summary, "former": [], "symbols": [], "designed": True}
 
 
 class FindTest(unittest.TestCase):
@@ -201,6 +206,16 @@ class FindTest(unittest.TestCase):
                           "base_knock_threshold_map/tbl", "slice_map/tbl"])
         self.assertEqual([item["tier"] for item in found["results"]],
                          ["exact", "prefix", "substring", "words"])
+
+    def test_designed_entities_rank_with_the_meanings(self):
+        rows = [meaning("knock_threshold", "ram"),
+                designed("knock", "block", title="Knock detection"),
+                designed("knock_margin", "signal", title="Minimum knock threshold margin")]
+        found = read.find(FindStore(rows), ["knock", "threshold"]).data
+        self.assertEqual([(item.get("meaning"), item.get("entity"))
+                          for item in found["results"]],
+                         [("knock_threshold/ram", None), (None, "knock_margin/signal"),
+                          (None, "knock/block")])
 
     def test_close_scores_mark_the_query_ambiguous(self):
         rows = [meaning("idle_speed_target", "ram"), meaning("idle_speed_limit", "ram")]
@@ -227,6 +242,19 @@ class AllocationTest(unittest.TestCase):
                           ("rolling_launch.rolling_launch_abort_reason", 0xFFFF5D41, 1)])
         self.assertEqual(read.allocations_at(store, "7mfk", 0xFFFF5D42), [])
         self.assertEqual(read.allocations_at(store, "jk00d", 0xFFFF5D40), [])
+
+
+class StepTest(unittest.TestCase):
+    def test_a_step_reads_with_its_chain_from_a_meaning_and_with_via_in_its_chain(self):
+        row = {"chain": "engine_speed/chain", "order": 4, "from": "tooth_time/ram",
+               "to": "rpm_12_5/ram", "effect": "converts", "sign": "negative",
+               "via": ["rpm_12_5_producer/fn"], "note": "floor(0xA2C2 / ffff22bc)"}
+        self.assertEqual(read.step_text(row, chain=True),
+                         "engine_speed/chain #4  tooth_time/ram -> rpm_12_5/ram  "
+                         "converts negative  floor(0xA2C2 / ffff22bc)")
+        self.assertEqual(read.step_text(row),
+                         "#4  tooth_time/ram -> rpm_12_5/ram  converts negative  "
+                         "via rpm_12_5_producer/fn  floor(0xA2C2 / ffff22bc)")
 
 
 class EvidenceTest(unittest.TestCase):

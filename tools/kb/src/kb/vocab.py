@@ -84,7 +84,14 @@ ENTITY_VOCABULARY = {
     "field": {
         "origin": ("ecu_ram", "rom_configuration", "runtime_state", "telemetry_state"),
     },
+    "stage": {"lane": ("flow", "support")},
+    "endpoint": {"direction": ("input", "output", "bidirectional")},
 }
+STEP_EFFECTS = ("scales", "looks-up", "indexes", "converts", "adds", "multiplies", "selects",
+                "compares", "subtracts", "copies", "gates", "limits", "stores", "filters",
+                "feeds", "integrates", "schedules", "receives", "overrides", "masks", "drives",
+                "detects", "transmits", "learns")
+STEP_SIGNS = ("positive", "negative", "none")
 
 # Keys of the feature tables of meanings (section 7.8).
 EDITOR_KEYS = ("name", "category", "order", "emit", "format", "fine", "coarse", "mask",

@@ -193,7 +193,11 @@ def _referenced(model, item):
 # Relationships of designed entities: the reference key that states each, and
 # the label of the node it reaches.
 ENTITY_LINKS = {"observes": ("OBSERVES", "Meaning"), "source": ("CARRIES", "Meaning"),
-                "signal": ("SERVES", "Entity")}
+                "signal": ("SERVES", "Entity"), "stage": ("STAGE", "Entity"),
+                "block": ("BLOCK", "Entity"), "registers": ("REGISTER", "Meaning"),
+                "functions": ("FUNCTION", "Meaning"), "output": ("OUTPUT", "Meaning")}
+# The relationships of a chain step to the meanings of its keys.
+STEP_LINKS = (("from", "FROM"), ("to", "TO"), ("via", "THROUGH"))
 
 
 def _family_of(model):
@@ -201,19 +205,25 @@ def _family_of(model):
 
 
 def claim_rows(model):
-    """Meaning, Symbol, and Entity nodes, HAS, the links between meanings and
-    their materialization between symbols, statuses, citations, the
-    relationships of designed entities to meanings, and the targets of
-    features."""
+    """Meaning, Symbol, Entity, and Step nodes, HAS, the links between meanings
+    and their materialization between symbols, statuses, citations, the
+    relationships of designed entities, of chain steps, and of blocks to their
+    meanings, and the targets of features."""
     family = _family_of(model)
     meanings, symbols, has = [], [], []
     links = defaultdict(list)
     symbol_links = defaultdict(list)
     statuses, cites = [], defaultdict(list)
+    entity_links = defaultdict(list)
     for meaning in model.meanings:
         if not meaning.name:
             continue
         meanings.append(meaning_node(model, meaning))
+        block = meaning.props.get("block")
+        if block:
+            entity_links[("BLOCK", "Meaning", "Entity")].append(
+                {"from": meaning.key, "to": block,
+                 "props": {"producer": "claim", "src": _src(meaning.sources)}})
         for layout, symbol in sorted(meaning.symbols.items()):
             symbols.append(symbol_node(model, symbol))
             has.append({"from": meaning.key, "to": symbol.key.key})
@@ -264,26 +274,48 @@ def claim_rows(model):
                     "offset": link.offset,
                     "verified": kind not in L0_VERIFIED and bool(siblings),
                     "producer": "derived", "src": "links"})})
-    entities, entity_links = [], defaultdict(list)
+    entities, steps = [], []
     for _, entity in sorted(model.entities.items()):
         entities.append(entity_node(entity))
+        claim = {"producer": "claim", "src": _src(entity.sources)}
         for name, (kind, label) in ENTITY_LINKS.items():
             refs = entity.refs.get(name, ())
             if label == "Meaning":
-                reached = {model.meaning_of(key) for key in refs}
-                keys = sorted(item.key for item in reached if item and item.name)
+                keys = sorted(_named_keys(model, refs))
             else:
                 keys = sorted(model.entities[ref].key for ref in refs if ref in model.entities)
-            entity_links[(kind, label)].extend(
-                {"from": entity.key, "to": key,
-                 "props": {"producer": "claim", "src": _src(entity.sources)}} for key in keys)
+            entity_links[(kind, "Entity", label)].extend(
+                {"from": entity.key, "to": key, "props": claim} for key in keys)
+        for order, step in enumerate(entity.steps, start=1):
+            key = f"{entity.slug}#{order}"
+            steps.append(properties({
+                "key": key, "effect": step["effect"], "sign": step["sign"],
+                "note": step.get("note"), "specs": step.get("specs"), **claim}))
+            entity_links[("STEP", "Entity", "Step")].append(
+                {"from": entity.key, "to": key, "props": {"order": order, **claim}})
+            for name, kind in STEP_LINKS:
+                refs = step[name] if isinstance(step[name], list) else [step[name]]
+                entity_links[(kind, "Step", "Meaning")].extend(
+                    {"from": key, "to": meaning, "props": claim}
+                    for meaning in _named_keys(model, refs))
     targets = [{"from": f"{feature}/feature", "to": layout, "props": properties({
                    **_referenced(model, target.props), "status": target.status,
                    "producer": "claim", "src": _src(target.sources)})}
                for (feature, layout), target in sorted(model.targets.items())]
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
             "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites),
-            "entities": entities, "entity_links": dict(entity_links), "targets": targets}
+            "entities": entities, "steps": steps, "entity_links": dict(entity_links),
+            "targets": targets}
+
+
+def _named_keys(model, refs):
+    """The keys of the named meanings of symbol keys, in their order, once each."""
+    found = []
+    for ref in refs:
+        meaning = model.meaning_of(ref)
+        if meaning is not None and meaning.name and meaning.key not in found:
+            found.append(meaning.key)
+    return found
 
 
 def at_rows(model):
@@ -420,8 +452,9 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "citations": sum(_create_links(graph, "CITES", left, right, items)
                              for (left, right), items in rows["cites"].items()),
             "entities": _create_nodes(graph, "Entity", rows["entities"]),
-            "entity links": sum(_create_links(graph, kind, "Entity", label, items)
-                                for (kind, label), items in rows["entity_links"].items()),
+            "steps": _create_nodes(graph, "Step", rows["steps"]),
+            "entity links": sum(_create_links(graph, kind, left, right, items)
+                                for (kind, left, right), items in rows["entity_links"].items()),
             "targets": _create_links(graph, "TARGETS", "Entity", "Layout", rows["targets"]),
         }
         summary["claims"] = (counts, time.monotonic() - started, {})
