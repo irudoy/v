@@ -1183,8 +1183,10 @@ only through batches, so the parent reviews one diff.
 
 ### 12.6 MCP
 
-`kb mcp` exposes one tool per read command and `kb_apply` for writes, with the
-same arguments, budgets, and exit semantics as errors. The local `.mcp.json`
+`kb mcp` exposes one tool `kb_<command>` per read command and `kb_apply` for
+writes, with the same arguments, budgets, and exit semantics as errors;
+`kb_apply` joins with the write commands of stage 3. The transport is
+newline-delimited JSON-RPC on standard input and output. The local `.mcp.json`
 registers it; `tools/kb/README.md` gives the entry.
 
 ## 13. Checks

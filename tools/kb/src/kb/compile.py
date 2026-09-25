@@ -17,7 +17,7 @@ PACKAGE = "tools/kb/src/kb"
 # Modules of the command line, the read commands, the checks, and the
 # instances. They do not change the graph, so they are no compiler inputs.
 NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "instance.py", "lock.py",
-                          "read.py", "refs.py", "spec.py"})
+                          "mcp.py", "read.py", "refs.py", "spec.py"})
 
 
 def spaces(config):

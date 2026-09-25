@@ -27,6 +27,7 @@ uv run kb brief                      # graph state, layouts, stage, owners, gaps
 uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
 uv run kb bench                      # the acceptance questions of the current stage
+uv run kb mcp                        # the read commands as MCP tools on stdio
 ```
 
 - `kb check` runs the active checks, which `make check` includes: `l0`, and
@@ -56,6 +57,18 @@ uv run kb bench                      # the acceptance questions of the current s
   of `kb code`; `-f` reruns Ghidra. An answer longer than its budget in
   `config.toml` starts with a `TRUNCATED:` line; `--budget` and `--full`
   change the budget.
+- `kb mcp` serves each read command as the MCP tool `kb_<command>` over
+  newline-delimited JSON-RPC on standard input and output. A tool takes the
+  arguments of its command under their option names (`no_sync` for
+  `--no-sync`) and returns the output of the command with the same budget; a
+  nonzero exit code gives an error result that starts with `exit <code>`.
+  Child processes write to the standard error. The local `.mcp.json` of a
+  working tree registers the server:
+
+  ```json
+  "kb": {"type": "stdio", "command": "uv", "args": ["run", "kb", "mcp"]}
+  ```
+
 - Exit codes follow the specification: 1 for failed checks, 2 for usage
   errors, 4 for an ambiguous reference, 5 for an unknown layout, address, or
   entity, 6 for a failed Ghidra run or an unavailable or stale graph, and 7

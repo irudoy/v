@@ -287,6 +287,12 @@ def command_audit(args, root=repo.ROOT):
     return 0
 
 
+def command_mcp(args, root=repo.ROOT):
+    from kb import mcp
+
+    return mcp.serve_stdio()
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="kb", description="Knowledge model and entry point (tools/kb/SPEC.md)."
@@ -376,6 +382,9 @@ def build_parser():
     code.add_argument("--budget", type=int)
     code.add_argument("--full", action="store_true")
     code.set_defaults(handler=command_code)
+
+    serve = commands.add_parser("mcp", help="serve the read commands over MCP on stdio")
+    serve.set_defaults(handler=command_mcp)
     return parser
 
 
