@@ -52,6 +52,13 @@ class LocationTest(unittest.TestCase):
         self.assertEqual(outside.exception.code, 5)
 
 
+class CypherCommandTest(unittest.TestCase):
+    def test_a_writing_query_is_a_usage_error_before_any_connection(self):
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(cli.main(["cypher", "MATCH (n) DETACH DELETE n"]), 2)
+        self.assertIn("read-only", err.getvalue())
+
+
 class CheckCommandTest(unittest.TestCase):
     def test_unknown_checks_are_a_usage_error(self):
         with contextlib.redirect_stderr(io.StringIO()) as err:

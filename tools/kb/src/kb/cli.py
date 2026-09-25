@@ -2,13 +2,14 @@
 
 import argparse
 import csv
+import json
 import math
 from pathlib import Path
 import re
 import subprocess
 import sys
 
-from kb import checks, compile, l0, names, repo
+from kb import checks, compile, graph, instance, l0, repo
 from kb.repo import KbError
 
 
@@ -126,13 +127,83 @@ def command_check(args, root=repo.ROOT):
 
 
 def command_sync(args, root=repo.ROOT):
-    model = compile.build(root)
-    added = names.enroll(model, model.names, root)
-    if added:
-        names.write(model.names + added, root)
-        print(f"{names.PATH}: {len(added)} generated names")
+    model, _ = graph.sync(root, full=args.full)
     print(f"model: {len(model.meanings)} meanings, {len(model.symbols)} symbols, "
           f"{len(model.links)} links")
+    return 0
+
+
+def command_instance(args, root=repo.ROOT):
+    if args.action == "status":
+        print("\n".join(instance.status(root)))
+    else:
+        getattr(instance, args.action)(root)
+    return 0
+
+
+def _stderr(text):
+    print(text, file=sys.stderr)
+
+
+def render(item):
+    """A value of a query result in one line: nodes and relationships by key."""
+    from neo4j.graph import Node, Path as GraphPath, Relationship
+
+    if isinstance(item, Node):
+        labels = ":".join(sorted(item.labels - {"Kb"}))
+        return f"({labels} {item.get('key', item.element_id)})"
+    if isinstance(item, Relationship):
+        return f"[{item.type} {render(item.start_node)} -> {render(item.end_node)}]"
+    if isinstance(item, GraphPath):
+        return " ".join([render(item.start_node)] + [
+            f"-[{rel.type}]- {render(rel.end_node)}" for rel in item.relationships])
+    if isinstance(item, (list, dict)):
+        return json.dumps(item, default=str, separators=(",", ":"), sort_keys=True)
+    return str(item)
+
+
+def _plain(item):
+    from neo4j.graph import Node, Path as GraphPath, Relationship
+
+    if isinstance(item, Node):
+        return {"labels": sorted(item.labels - {"Kb"}), **dict(item)}
+    if isinstance(item, Relationship):
+        return {"type": item.type, "from": item.start_node.get("key"),
+                "to": item.end_node.get("key"), **dict(item)}
+    if isinstance(item, GraphPath):
+        return [_plain(node) for node in item.nodes]
+    if isinstance(item, list):
+        return [_plain(entry) for entry in item]
+    if isinstance(item, dict):
+        return {key: _plain(entry) for key, entry in item.items()}
+    return item
+
+
+def command_cypher(args, root=repo.ROOT):
+    params = {}
+    for pair in args.param or ():
+        name, sep, text = pair.partition("=")
+        if not sep or not name:
+            raise KbError(f"--param {pair!r} is not <name>=<json value>", code=2)
+        try:
+            params[name] = json.loads(text)
+        except ValueError:
+            params[name] = text
+    reason = graph.refusal(args.query)
+    if reason:
+        raise KbError(reason, code=2)
+    with graph.fresh(root, args.no_sync, log=_stderr) as session:
+        keys, records = graph.read_query(session, args.query, params)
+    if args.json:
+        print(json.dumps([{key: _plain(record[key]) for key in keys} for record in records],
+                         default=str, indent=1))
+        return 0
+    lines = ["\t".join(keys)]
+    lines.extend("\t".join(render(record[key]) for key in keys) for record in records)
+    lines.append(f"{len(records)} rows")
+    text = "\n".join(lines) + "\n"
+    sys.stdout.write(fit(text, budget_of(args, "cypher", root),
+                         "a narrower query, LIMIT, --budget <tokens>,"))
     return 0
 
 
@@ -162,6 +233,21 @@ def build_parser():
     sync = commands.add_parser("sync", help="compile the inputs and load the graph")
     sync.add_argument("--full", action="store_true", help="reload every element")
     sync.set_defaults(handler=command_sync)
+
+    manage = commands.add_parser("instance", help="the graph instance of the working tree")
+    manage.add_argument("action", choices=("up", "down", "status", "prune"))
+    manage.set_defaults(handler=command_instance)
+
+    cypher = commands.add_parser("cypher", help="a read-only Cypher query")
+    cypher.add_argument("query")
+    cypher.add_argument("--param", action="append",
+                        help="<name>=<value>, the value as JSON or text; repeatable")
+    cypher.add_argument("--json", action="store_true", help="structured output, no budget")
+    cypher.add_argument("--budget", type=int)
+    cypher.add_argument("--full", action="store_true")
+    cypher.add_argument("--no-sync", action="store_true",
+                        help="fail instead of syncing a stale graph")
+    cypher.set_defaults(handler=command_cypher)
 
     audit = commands.add_parser("audit", help="disagreements between registries")
     audit.add_argument("--section", action="append", choices=checks.AUDIT_SECTIONS,

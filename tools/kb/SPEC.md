@@ -874,11 +874,17 @@ before the first query. `kb` syncs on a mismatch; a gate or a tool raises
 ### 9.5 Incremental sync
 
 - `.kb/cache/hashes.json` maps each input path to its size, modification time,
-  and content hash; a hash is recomputed only when size or modification time
+  and git blob hash; a hash is recomputed only when size or modification time
   changes.
-- Elements are replaced by `src`: a changed entity file replaces the elements
-  it produced, and a changed L0 manifest reloads that layout's L0.
-- `derived` elements are recomputed for the layouts that a change touches.
+- The L0 part of a layout, its `Function`, `Location`, `CALL`, and `ACCESS`
+  elements with the derived literal pairs, reloads when the digest of its L0
+  files, its images, and the compiler modules that build its rows changes.
+  `Layout.loaded` holds that digest after a complete load of the part.
+- The claim part, every `claim` element and the `derived` elements that
+  follow from claims, reloads as a whole when the fingerprint changes; it
+  loads in seconds.
+- `AT` and the verification of symbol links are recomputed after every
+  reload.
 - `kb sync --full` clears the compiler's elements and loads everything.
 
 ### 9.6 Lock
@@ -907,7 +913,7 @@ writes carries the label `:Kb` in addition to its own label.
 |---|---|---|---|
 | `Meta` | `meta` | `fingerprint`, `commit`, `dirty`, `compiler`, `schema`, `worktree`, `loaded_at` | `derived` |
 | `Family` | Family id | `kind`, `mcu` | `claim` |
-| `Layout` | Layout id | `family`, `l0` (manifest digest) | `claim` |
+| `Layout` | Layout id | `family`, `l0` (manifest digest), `loaded` (digest of the loaded L0 part) | `claim` |
 | `Image` | Image id | `sha256` | `claim` |
 | `Meaning` | `<name>/<kind>` | `kind`, `name`, `title`, `level`, `effective`, `home`, `role`, and the kind keys | `claim` |
 | `Symbol` | `<layout>-<address>/<kind>` | `name`, `layout`, `address`, `level`, `effective`, overrides | `claim` |
@@ -931,8 +937,8 @@ writes carries the label `:Kb` in addition to its own label.
 | `HAS` | `Meaning` | `Symbol` | | `claim` |
 | `AT` | `Symbol` | `Function`, `Location` | | `derived` |
 | `STATUS` | `Meaning` | `Layout` | `state`, `method`, `target`, `count`, `l0`, `stale` | `claim`; `derived` for `unknown` |
-| `CALL` | `Function` | `Function` | `site` | `l0` |
-| `ACCESS` | `Function` | `Location` | `site`, `mode`, `width`, `literal`, `base` | `l0`, `derived` for paired literals |
+| `CALL` | `Function` | `Function` | `sites` | `l0` |
+| `ACCESS` | `Function` | `Location` | `modes`, `sites` | `l0`, `derived` for paired literals |
 | `WRITER`, `READER`, `INPUT`, `COPY`, `INDEX`, `AXIS`, `LOOKUP`, `SELECTOR`, `THRESHOLD`, `BASE`, `TARGET`, `SOURCE`, `MONITOR`, `DEPENDS` | `Meaning` | `Meaning` | the link keys | `claim` |
 | the same types | `Symbol` | `Symbol` | `layout`, `verified` | `derived` |
 | `CITES` | `Meaning`, `Symbol` | `Meaning`, `Symbol`, `Entity` | `kind`, `supports`, `relies` | `claim` |
@@ -953,12 +959,27 @@ writes carries the label `:Kb` in addition to its own label.
 - A link declared on a meaning is a relationship between meanings. The
   compiler also materializes it between the symbols of every claimed layout,
   with `verified` stating whether it holds there ([Links](#75-links)).
+- One `CALL` joins a caller and a callee, and one `ACCESS` of each producer
+  joins a function and a location, so path queries see one edge per pair.
+  `sites` of a `CALL` lists the call instructions. `sites` of an `ACCESS`
+  holds one map per instruction with `site`, `mode`, `width`, and for a pool
+  literal `pool`, and for a paired literal also `literal`, `base`, and
+  `indexed`; `modes` lists the distinct modes.
+- `ACCESS` with producer `l0` records every reference of an instruction to RAM
+  or a register, with the reference type of L0 as mode, every data or
+  parameter reference to ROM, and every pool literal that names RAM or a
+  register, with mode `literal`. `ACCESS` with producer `derived` records the
+  literal pairs of [Derivations](#85-derivations), with modes `load`, `store`,
+  and `update`.
 
 ### 10.3 Constraints and indexes
 
-- Every label has a uniqueness constraint on `key`.
+- Every label has a uniqueness constraint on `key`. Memgraph builds no index
+  for a constraint, so every label also has an index on `key`, and `:Kb` has
+  a label index.
 - Indexes: `Symbol(layout, address)`, `Symbol(name)`, `Meaning(name)`,
-  `Location(layout, address)`, and `Function(layout, address)`.
+  `Location(layout, address)`, `Location(layout)`, `Function(layout, address)`,
+  and `Function(layout)`.
 - `schema` in `:Meta` is the schema version of the compiler. A reader built
   for another schema version treats the graph as stale.
 
@@ -984,7 +1005,9 @@ its own server.
   `tools/kb/config.toml`.
 - `.kb/instance.toml` records the container name, the port, the image, and the
   time of last use. `kb` resolves its connection from this file, so no bolt
-  address of a linked working tree appears in tracked text.
+  address of a linked working tree appears in tracked text. The environment
+  variable `KB_BOLT` overrides the connection for tests against a scratch
+  server.
 - `kb instance up|down|status|prune` manages the container of the current
   working tree. `prune` stops containers idle longer than the idle limit in
   `tools/kb/config.toml` and removes the containers of working trees that no

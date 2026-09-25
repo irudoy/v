@@ -35,9 +35,19 @@ interp = "defs/JK78C.interp.csv"
 # container host beside the main graph and one load at a time in each instance.
 [instances]
 max_running = 3
+# Loopback host ports of the linked working trees' instances, start inclusive
+# and end exclusive, and the idle time after which `kb instance prune` stops
+# an instance.
+ports = [17687, 17787]
+idle_days = 7
+
+# Seconds a sync or a write waits for `.kb/lock` before it exits with code 7.
+[lock]
+timeout = 300
 
 [budget]
 code = 4000
+cypher = 2000
 
 # Address spaces of each MCU from its hardware manual: on-chip flash, on-chip
 # RAM, and the on-chip peripheral registers with the HCAN mailboxes.

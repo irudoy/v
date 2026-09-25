@@ -1,0 +1,595 @@
+"""The graph of the model (tools/kb/SPEC.md, sections 9 and 10).
+
+`sync` compiles the inputs and loads the instance of the working tree. Every
+node the compiler writes carries the label `Kb`, and the loader deletes and
+replaces only `Kb` elements, so the graph of the legacy loaders stays intact.
+
+- The L0 part of a layout, its functions, calls, locations, and accesses,
+  reloads when the digest of its L0 files, its image, or the compiler changes.
+- The claim part, the meanings and symbols with their links, statuses, and
+  citations, reloads as a whole when the fingerprint changes.
+- `AT` joins symbols to the L0 nodes at their addresses, and the loader
+  verifies the writer and reader links of symbols against the accesses.
+- `:Meta` is deleted first and written last, so a graph without it is stale.
+"""
+
+from collections import Counter, defaultdict
+import csv
+from datetime import datetime, timezone
+import re
+import time
+
+import kb
+from kb import compile, derive, fingerprint, instance, lock, names, repo
+from kb.model import SymbolKey
+
+BATCH = 5000
+LABELS = ("Meta", "Family", "Layout", "Image", "Meaning", "Symbol", "Entity", "Step",
+          "Function", "Location", "Candidate")
+INDEXES = (
+    ("Symbol", ("layout", "address")),
+    ("Symbol", ("name",)),
+    ("Meaning", ("name",)),
+    ("Location", ("layout", "address")),
+    ("Function", ("layout", "address")),
+    ("Function", ("layout",)),
+    ("Location", ("layout",)),
+)
+CLAIM_LABELS = ("Meaning", "Symbol", "Entity", "Step")
+CALL_REFERENCES = ("unconditional_call", "computed_call")
+POINTER_REFERENCES = ("data", "param")
+STORE_MODES = ("store", "update", "write", "read_write")
+LOAD_MODES = ("load", "update", "read", "read_write", "literal", "data", "param")
+L0_VERIFIED = {"WRITER": STORE_MODES, "READER": LOAD_MODES}
+WIDTH = {"b": 1, "w": 2, "l": 4}
+SUFFIX = re.compile(r"\.([bwl])$")
+DERIVED_SRC = "literal-pairs"
+# Modules whose change reloads the L0 part of every layout.
+L0_CODE = ("compile.py", "derive.py", "graph.py", "sh2.py")
+# Clauses and commands that change a graph; `kb cypher` refuses them.
+WRITES = re.compile(
+    r"(?<![.$:\w])(CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|FOREACH|LOAD\s+\w+|"
+    r"FREE\s+MEMORY|STORAGE\s+MODE|ANALYZE\s+GRAPH|(?:UN)?LOCK\s+DATA|GRANT|REVOKE|DENY|"
+    r"BEGIN|COMMIT|ROLLBACK)\b(?!\s*:)",
+    re.IGNORECASE)
+LITERALS = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|`[^`]*`|//[^\n]*|/\*.*?\*/",
+                      re.DOTALL)
+PROCEDURE = re.compile(r"\bCALL\s+([A-Za-z_][\w.]*)", re.IGNORECASE)
+
+
+class Graph:
+    """A session factory over the working tree's instance."""
+
+    def __init__(self, root=repo.ROOT):
+        from neo4j import GraphDatabase
+        from neo4j.exceptions import ServiceUnavailable
+
+        self.uri = instance.uri(root)
+        self.driver = GraphDatabase.driver(self.uri, auth=("", ""))
+        try:
+            self.driver.verify_connectivity()
+        except (ServiceUnavailable, OSError) as error:
+            self.driver.close()
+            raise repo.KbError(f"no graph answers at {self.uri} ({error}); "
+                               "start it with `uv run kb instance up`", code=6) from None
+
+    def run(self, query, **params):
+        with self.driver.session() as session:
+            return [record.data() for record in session.run(query, params)]
+
+    def rows(self, query, rows, **params):
+        """Run a query over `$rows` in batches; return the summed `count`."""
+        total = 0
+        for start in range(0, len(rows), BATCH):
+            found = self.run(query, rows=rows[start:start + BATCH], **params)
+            total += sum(record.get("count", 0) for record in found)
+        return total
+
+    def drain(self, match):
+        """DETACH DELETE the nodes of a MATCH clause in batches."""
+        total = 0
+        while True:
+            [record] = self.run(f"{match} WITH n LIMIT {BATCH} DETACH DELETE n "
+                                "RETURN count(*) AS count")
+            total += record["count"]
+            if record["count"] < BATCH:
+                return total
+
+    def close(self):
+        self.driver.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+
+
+# Values ------------------------------------------------------------------------
+
+def value(item):
+    """A property value that Memgraph stores: symbol keys become their key strings,
+    sets become sorted lists, and empty values vanish."""
+    if isinstance(item, SymbolKey):
+        return item.key
+    if isinstance(item, dict):
+        return {str(key): value(entry) for key, entry in item.items()
+                if entry is not None and entry != [] and entry != ()}
+    if isinstance(item, (set, frozenset)):
+        return sorted(value(entry) for entry in item)
+    if isinstance(item, (list, tuple)):
+        return [value(entry) for entry in item]
+    return item
+
+
+def properties(mapping):
+    return {key: stored for key, stored in value(mapping).items() if stored != {}}
+
+
+# L0 ----------------------------------------------------------------------------
+
+def _read(path):
+    with path.open(newline="", encoding="utf-8") as source:
+        yield from csv.DictReader(source)
+
+
+def space_of(spaces, address):
+    for name in ("rom", "ram", "io"):
+        start, end = spaces[name]
+        if start <= address < end:
+            return name
+    return None
+
+
+def width_of(mnemonic):
+    match = SUFFIX.search(mnemonic)
+    return WIDTH[match.group(1)] if match else None
+
+
+def l0_rows(layout, spaces, root=repo.ROOT):
+    """Nodes and relationships of one layout's L0 and its literal pairs.
+
+    - `Function` from funcs.csv with the hashes of function_signatures.csv.
+    - `CALL` from calls.csv, with the call sites of function_references.csv.
+    - `ACCESS` with producer `l0` from function_references.csv: every reference
+      to RAM or a register with its reference type as mode, every data or
+      parameter reference to ROM, and every pool literal that names RAM or a
+      register, with mode `literal` and the pool address.
+    - `ACCESS` with producer `derived` from the literal pairs of kb.derive.
+    - `Location` at every accessed address inside the spaces of the MCU.
+    """
+    base = root / repo.L0 / layout.id
+    src = {name: (repo.L0 / layout.id / name).as_posix()
+           for name in ("funcs.csv", "calls.csv", "function_references.csv")}
+    key = lambda address: f"{layout.id}:{address:08x}"
+    signatures = {row["addr"]: row for row in _read(base / "function_signatures.csv")}
+    functions = []
+    for row in _read(base / "funcs.csv"):
+        address = int(row["addr"], 16)
+        signature = signatures.get(row["addr"], {})
+        functions.append(properties({
+            "key": key(address), "layout": layout.id, "address": address,
+            "size": int(row["size"]), "thunk": row["is_thunk"] == "true",
+            "external": row["is_external"] == "true",
+            "instructions": int(signature["instructions"]) if signature else None,
+            "exact_sha256": signature.get("exact_sha256"),
+            "mnemonic_sha256": signature.get("mnemonic_sha256"),
+            "shape_sha256": signature.get("shape_sha256"),
+            "producer": "l0", "src": src["funcs.csv"],
+        }))
+    call_sites = defaultdict(set)
+    direct = defaultdict(list)
+    outside = Counter()
+    for row in _read(base / "function_references.csv"):
+        func, site = int(row["func_addr"], 16), int(row["ins_addr"], 16)
+        target, kind = int(row["ref_addr"], 16), row["ref_type"]
+        if kind in CALL_REFERENCES:
+            call_sites[(func, target)].add(site)
+            continue
+        space = space_of(spaces, target)
+        if space in ("ram", "io"):
+            direct[(func, target)].append(
+                {"site": site, "mode": kind, "width": width_of(row["mnemonic"])})
+        elif space == "rom" and kind in POINTER_REFERENCES:
+            direct[(func, target)].append({"site": site, "mode": kind})
+        if kind == "read" and row["width"] == "4" and row["value_hex"]:
+            literal = int(row["value_hex"], 16)
+            if space_of(spaces, literal) in ("ram", "io"):
+                direct[(func, literal)].append({"site": site, "mode": "literal",
+                                                "pool": target})
+    calls = []
+    for row in _read(base / "calls.csv"):
+        caller, callee = int(row["src"], 16), int(row["dst"], 16)
+        calls.append({"from": key(caller), "to": key(callee), "props": properties({
+            "sites": sorted(call_sites.get((caller, callee), ())),
+            "producer": "l0", "src": src["calls.csv"]})})
+    derived = defaultdict(list)
+    for pair in derive.literal_pairs(layout.id, root):
+        if space_of(spaces, pair.address) is None:
+            outside["derived"] += 1
+            continue
+        site = {"site": pair.ins, "mode": pair.mode, "width": pair.size,
+                "literal": pair.literal, "pool": pair.pool, "base": pair.base}
+        if pair.indexed:
+            site["indexed"] = True
+        derived[(pair.func, pair.address)].append(site)
+    locations = {}
+    accesses = []
+    for producer, found, origin in (("l0", direct, src["function_references.csv"]),
+                                    ("derived", derived, DERIVED_SRC)):
+        for (func, address), sites in sorted(found.items()):
+            if address not in locations or producer == "l0" and \
+                    locations[address]["producer"] != "l0":
+                locations[address] = {
+                    "key": key(address), "layout": layout.id, "address": address,
+                    "space": space_of(spaces, address), "producer": producer, "src": origin}
+            sites = sorted((properties(site) for site in sites), key=lambda s: (s["site"], s["mode"]))
+            accesses.append({"from": key(func), "to": key(address), "props": {
+                "modes": sorted({site["mode"] for site in sites}), "sites": sites,
+                "producer": producer, "src": origin}})
+    return {
+        "functions": functions,
+        "calls": calls,
+        "locations": [locations[address] for address in sorted(locations)],
+        "accesses": accesses,
+        "outside": dict(outside),
+    }
+
+
+# Claims --------------------------------------------------------------------------
+
+def _families(root):
+    import tomllib
+
+    document = tomllib.loads((root / repo.HOMOLOGY).read_text(encoding="utf-8"))
+    return document["family"]
+
+
+def structure_rows(model, root=repo.ROOT):
+    """Family, Layout, and Image nodes with their IN relationships."""
+    families = _families(root)
+    catalog = repo.images(root)
+    homology = repo.HOMOLOGY.as_posix()
+    nodes = {"Family": [], "Layout": [], "Image": []}
+    links = []
+    for family in sorted({layout.family for layout in model.layouts.values()}):
+        row = families[family]
+        nodes["Family"].append({"key": family, "kind": row["kind"], "mcu": row["mcu"],
+                                "producer": "claim", "src": homology})
+    for layout in model.layouts.values():
+        manifest = root / repo.L0 / layout.id / "manifest.toml"
+        nodes["Layout"].append({"key": layout.id, "family": layout.family,
+                                "l0": repo.sha256_file(manifest), "producer": "claim",
+                                "src": homology})
+        links.append(("Layout", layout.id, "Family", layout.family))
+        for image in layout.images:
+            links.append(("Image", image, "Layout", layout.id))
+    for image in sorted(catalog.values(), key=lambda item: item.rom):
+        nodes["Image"].append({"key": image.rom, "sha256": image.sha256, "producer": "claim",
+                               "src": repo.CATALOG.as_posix()})
+    return nodes, links
+
+
+def _src(sources):
+    return sorted(sources) or ["model"]
+
+
+def meaning_node(meaning):
+    props = {**meaning.props, **meaning.tables}
+    for reserved in ("key", "kind", "name", "producer", "src"):
+        props.pop(reserved, None)
+    return properties({
+        **props, "key": meaning.key, "kind": meaning.kind, "name": meaning.name,
+        "semantic": meaning.semantic, "tier": meaning.tier, "home": meaning.home,
+        "producer": "claim", "src": _src(meaning.sources)})
+
+
+def symbol_node(symbol):
+    props = dict(symbol.props)
+    for reserved in ("key", "kind", "name", "layout", "address", "producer", "src"):
+        props.pop(reserved, None)
+    return properties({
+        **props, "key": symbol.key.key, "kind": symbol.kind, "layout": symbol.layout,
+        "address": symbol.address, "name": symbol.generated, "implicit": symbol.implicit,
+        "former": list(symbol.former), "evidence": symbol.evidence,
+        "producer": "claim", "src": _src(symbol.sources)})
+
+
+def _family_of(model):
+    return {layout.id: layout.family for layout in model.layouts.values()}
+
+
+def claim_rows(model):
+    """Meaning and Symbol nodes, HAS, the links between meanings and their
+    materialization between symbols, statuses, and citations."""
+    family = _family_of(model)
+    meanings, symbols, has = [], [], []
+    links = defaultdict(list)
+    symbol_links = defaultdict(list)
+    statuses, cites = [], defaultdict(list)
+    for meaning in model.meanings:
+        if not meaning.name:
+            continue
+        meanings.append(meaning_node(meaning))
+        for layout, symbol in sorted(meaning.symbols.items()):
+            symbols.append(symbol_node(symbol))
+            has.append({"from": meaning.key, "to": symbol.key.key})
+            for item in symbol.evidence:
+                if isinstance(item.get("to"), SymbolKey):
+                    cites[("Symbol", "Symbol")].append({
+                        "from": symbol.key.key, "to": item["to"].key,
+                        "props": properties({"kind": item["kind"], "supports": item.get("supports"),
+                                             "relies": item.get("relies"), "producer": "claim",
+                                             "src": _src(symbol.sources)})})
+        for binding in meaning.tables.get("diagnostic", ()):
+            for item in binding.get("evidence", ()):
+                if isinstance(item.get("to"), SymbolKey):
+                    cites[("Meaning", "Symbol")].append({
+                        "from": meaning.key, "to": item["to"].key,
+                        "props": properties({"kind": item["kind"], "supports": item.get("supports"),
+                                             "relies": item.get("relies"),
+                                             "binding": binding.get("id"),
+                                             "producer": "claim", "src": _src(meaning.sources)})})
+        for layout, status in sorted(meaning.statuses.items()):
+            statuses.append({"from": meaning.key, "to": layout, "props": properties({
+                **status.props, "state": status.state, "evidence": status.evidence,
+                "producer": "claim", "src": _src(status.sources)})})
+        claimed = set(meaning.symbols) | set(meaning.statuses)
+        families = {family[layout] for layout in meaning.symbols}
+        for layout in sorted(model.layouts):
+            if layout not in claimed and family[layout] in families:
+                statuses.append({"from": meaning.key, "to": layout, "props": {
+                    "state": "unknown", "producer": "derived", "src": "required-meanings"}})
+    for link in model.links:
+        if not (link.owner.name and link.to.name):
+            continue
+        kind = link.type.upper()
+        links[kind].append({"from": link.owner.key, "to": link.to.key, "props": properties({
+            **link.props, "slot": link.slot, "offset": link.offset, "role": link.roles,
+            "evidence": link.evidence, "stated": link.stated,
+            "producer": "claim", "src": _src(link.sources)})})
+        allowed = link.props.get("layouts")
+        for layout in sorted(set(link.owner.symbols) & set(link.to.symbols)):
+            if allowed and layout not in allowed:
+                continue
+            siblings = {other for other in link.stated if family[other] == family[layout]}
+            symbol_links[kind].append({
+                "from": link.owner.symbols[layout].key.key,
+                "to": link.to.symbols[layout].key.key,
+                "props": {"layout": layout,
+                          "verified": kind not in L0_VERIFIED and bool(siblings),
+                          "producer": "derived", "src": "links"}})
+    return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
+            "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites)}
+
+
+def at_rows(model):
+    rows = {"Function": [], "Location": []}
+    for key in model.symbols:
+        symbol = model.symbols[key]
+        if symbol.meaning is None or not symbol.meaning.name:
+            continue
+        label = "Function" if key.kind == "fn" else "Location"
+        rows[label].append({"from": key.key, "to": key.location})
+    return rows
+
+
+# Loading ---------------------------------------------------------------------------
+
+def ensure_schema(graph):
+    constraints = {(row["label"], tuple(_listed(row["properties"])))
+                   for row in graph.run("SHOW CONSTRAINT INFO")}
+    indexes = {(row["label"], tuple(_listed(row["property"])))
+               for row in graph.run("SHOW INDEX INFO") if row.get("label")}
+    if "Kb" not in {row["label"] for row in graph.run("SHOW INDEX INFO")
+                    if row.get("property") in (None, [])}:
+        graph.run("CREATE INDEX ON :Kb")
+    for label in LABELS:
+        if (label, ("key",)) not in constraints:
+            graph.run(f"CREATE CONSTRAINT ON (n:{label}) ASSERT n.key IS UNIQUE")
+        if (label, ("key",)) not in indexes:
+            graph.run(f"CREATE INDEX ON :{label}(key)")
+    for label, props in INDEXES:
+        if (label, props) not in indexes:
+            graph.run(f"CREATE INDEX ON :{label}({', '.join(props)})")
+
+
+def _listed(item):
+    if item is None:
+        return []
+    return item if isinstance(item, list) else [item]
+
+
+def meta(graph):
+    found = graph.run("MATCH (m:Kb:Meta {key: 'meta'}) RETURN m")
+    return dict(found[0]["m"]) if found else None
+
+
+def stale(current, fp):
+    return (current is None or current.get("fingerprint") != fp.value
+            or current.get("schema") != compile.SCHEMA)
+
+
+def _create_nodes(graph, label, rows):
+    return graph.rows(f"UNWIND $rows AS row CREATE (n:Kb:{label}) SET n = row "
+                      "RETURN count(n) AS count", rows)
+
+
+def _create_links(graph, kind, left, right, rows):
+    if not re.fullmatch(r"[A-Z_]+", kind):
+        raise repo.KbError(f"relationship type {kind!r}")
+    return graph.rows(
+        f"UNWIND $rows AS row MATCH (a:{left} {{key: row.from}}) "
+        f"MATCH (b:{right} {{key: row.to}}) CREATE (a)-[r:{kind}]->(b) "
+        "SET r = coalesce(row.props, {}) RETURN count(r) AS count", rows)
+
+
+def l0_part(fp, layout, images):
+    """The digest of one layout's L0 part: its L0 files, its images, and the
+    modules that build its rows."""
+    prefix = f"{repo.L0.as_posix()}/{layout}/"
+    code = {f"{compile.PACKAGE}/{name}" for name in L0_CODE}
+    return fp.part(lambda path: path.startswith(prefix) or path in images or path in code)
+
+
+def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
+    """Load the model into the graph; return a summary per part."""
+    ensure_schema(graph)
+    previous = meta(graph)
+    graph.run("MATCH (m:Kb:Meta) DELETE m")
+    if full:
+        graph.drain("MATCH (n:Kb)")
+    nodes, structure_links = structure_rows(model, root)
+    loaded = {row["key"]: row["loaded"] for row in
+              graph.run("MATCH (l:Kb:Layout) RETURN l.key AS key, l.loaded AS loaded")}
+    gone = sorted(set(loaded) - set(model.layouts))
+    for layout in gone:
+        graph.drain(f"MATCH (n:Kb) WHERE (n:Function OR n:Location) AND n.layout = '{layout}'")
+    for label in ("Family", "Image", "Layout"):
+        graph.run(f"MATCH (n:Kb:{label}) WHERE NOT n.key IN $keys DETACH DELETE n",
+                  keys=[row["key"] for row in nodes[label]])
+        graph.rows(f"UNWIND $rows AS row MERGE (n:Kb:{label} {{key: row.key}}) "
+                   "SET n += row RETURN count(n) AS count", nodes[label])
+    graph.run("MATCH (:Kb)-[r:IN]->(:Kb) DELETE r")
+    for left, right in (("Layout", "Family"), ("Image", "Layout")):
+        rows = [{"from": a, "to": b, "props": {"producer": "claim", "src": repo.HOMOLOGY.as_posix()}}
+                for kind_a, a, kind_b, b in structure_links if (kind_a, kind_b) == (left, right)]
+        _create_links(graph, "IN", left, right, rows)
+    summary = {}
+    catalog = repo.images(root)
+    changed = False
+    for layout in model.layouts.values():
+        images = {catalog[image].path.relative_to(root).as_posix() for image in layout.images
+                  if image in catalog}
+        digest = l0_part(fp, layout.id, images)
+        if not full and loaded.get(layout.id) == digest:
+            continue
+        started = time.monotonic()
+        graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = null", key=layout.id)
+        graph.drain(f"MATCH (n:Kb) WHERE (n:Function OR n:Location) AND n.layout = '{layout.id}'")
+        rows = l0_rows(layout, model.spaces[layout.mcu], root)
+        counts = {
+            "functions": _create_nodes(graph, "Function", rows["functions"]),
+            "locations": _create_nodes(graph, "Location", rows["locations"]),
+            "calls": _create_links(graph, "CALL", "Function", "Function", rows["calls"]),
+            "accesses": _create_links(graph, "ACCESS", "Function", "Location", rows["accesses"]),
+        }
+        graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = $digest",
+                  key=layout.id, digest=digest)
+        summary[f"l0 {layout.id}"] = (counts, time.monotonic() - started, rows["outside"])
+        changed = True
+    if full or previous is None or previous.get("fingerprint") != fp.value:
+        started = time.monotonic()
+        for label in CLAIM_LABELS:
+            graph.drain(f"MATCH (n:Kb:{label})")
+        rows = claim_rows(model)
+        counts = {
+            "meanings": _create_nodes(graph, "Meaning", rows["meanings"]),
+            "symbols": _create_nodes(graph, "Symbol", rows["symbols"]),
+            "has": _create_links(graph, "HAS", "Meaning", "Symbol", rows["has"]),
+            "links": sum(_create_links(graph, kind, "Meaning", "Meaning", items)
+                         for kind, items in rows["links"].items()),
+            "symbol links": sum(_create_links(graph, kind, "Symbol", "Symbol", items)
+                                for kind, items in rows["symbol_links"].items()),
+            "statuses": _create_links(graph, "STATUS", "Meaning", "Layout", rows["statuses"]),
+            "citations": sum(_create_links(graph, "CITES", left, right, items)
+                             for (left, right), items in rows["cites"].items()),
+        }
+        summary["claims"] = (counts, time.monotonic() - started, {})
+        changed = True
+    if changed:
+        graph.run("MATCH (:Kb:Symbol)-[r:AT]->() DELETE r")
+        found = at_rows(model)
+        at = sum(_create_links(graph, "AT", "Symbol", label, rows) for label, rows in found.items())
+        for kind, modes in L0_VERIFIED.items():
+            graph.run(
+                f"MATCH (d:Kb:Symbol)-[r:{kind}]->(g:Kb:Symbol) "
+                "OPTIONAL MATCH (d)-[:AT]->(:Location)<-[a:ACCESS]-(:Function)<-[:AT]-(g) "
+                "WITH r, collect(a) AS accesses "
+                "SET r.verified = any(a IN accesses WHERE any(m IN a.modes WHERE m IN $modes))",
+                modes=list(modes))
+        summary["at"] = ({"at": at}, 0.0, {})
+    commit, head = fingerprint.head(root)
+    graph.run("CREATE (m:Kb:Meta) SET m = $props", props={
+        "key": "meta", "fingerprint": fp.value, "commit": commit,
+        "dirty": bool(fingerprint.dirty(fp, head)), "compiler": kb.__version__,
+        "schema": compile.SCHEMA, "worktree": str(root),
+        "loaded_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "producer": "derived", "src": "compiler"})
+    return summary
+
+
+def sync(root=repo.ROOT, full=False, log=print):
+    """Compile the inputs, complete kb/names.csv, and load the graph."""
+    with lock.held(root):
+        model = compile.build(root)
+        added = names.enroll(model, model.names, root)
+        if added:
+            model.names = model.names + added
+            names.write(model.names, root)
+            names.assign(model, model.names)
+            log(f"{names.PATH}: {len(added)} generated names")
+        fp = fingerprint.compute(root)
+        with Graph(root) as graph:
+            summary = load(graph, model, fp, root, full, log)
+            log(f"graph: {graph.uri}")
+        for part, (counts, seconds, outside) in summary.items():
+            text = ", ".join(f"{count} {name}" for name, count in counts.items())
+            extra = "".join(f"; {count} {name} addresses outside the MCU spaces"
+                            for name, count in outside.items())
+            log(f"{part}: {text} ({seconds:.1f} s){extra}")
+        if not summary:
+            log("graph: every part is current")
+        log(f"meta: fingerprint {fp.value[:16]}")
+        return model, fp
+
+
+def refusal(query, write_procedures=()):
+    """Why `kb cypher` refuses a query, or None for a read-only one."""
+    code = LITERALS.sub(" ", query)
+    found = WRITES.search(code)
+    if found:
+        clause = " ".join(found.group(1).split()).upper()
+        return f"the query writes ({clause}); kb cypher is read-only"
+    for name in PROCEDURE.findall(code):
+        if name in write_procedures:
+            return f"the procedure {name} writes; kb cypher is read-only"
+    return None
+
+
+def read_query(graph, query, params=None):
+    """(keys, records) of a read-only query, run in a transaction that is
+    rolled back."""
+    writers = {row["name"] for row in graph.run(
+        "CALL mg.procedures() YIELD name, is_write WHERE is_write RETURN name")}
+    reason = refusal(query, writers)
+    if reason:
+        raise repo.KbError(reason, code=2)
+    from neo4j.exceptions import Neo4jError
+
+    with graph.driver.session() as session:
+        transaction = session.begin_transaction()
+        try:
+            result = transaction.run(query, params or {})
+            keys = result.keys()
+            records = list(result)
+        except Neo4jError as error:
+            raise repo.KbError(f"cypher: {error.message}", code=2) from None
+        finally:
+            transaction.rollback()
+    return keys, records
+
+
+def fresh(root=repo.ROOT, no_sync=False, log=print):
+    """A Graph whose `:Meta` matches the fingerprint of the working tree,
+    syncing a stale graph unless `no_sync`."""
+    fp = fingerprint.compute(root)
+    graph = Graph(root)
+    if not stale(meta(graph), fp):
+        return graph
+    graph.close()
+    if no_sync:
+        raise repo.KbError("the graph is stale for this working tree; run `uv run kb sync`",
+                           code=6)
+    sync(root, log=log)
+    return Graph(root)
