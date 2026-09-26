@@ -759,7 +759,7 @@ class ArchitectureAdapterTest(unittest.TestCase):
 class StageTwoChecksTest(unittest.TestCase):
     def test_the_readme_lists_every_adapter_in_compiler_order(self):
         text = (repo.ROOT / "tools/kb/README.md").read_text(encoding="utf-8")
-        listed = re.findall(r"^\| `([a-z]+)` \| `(?:tools|defs|patches)/", text, re.M)
+        listed = re.findall(r"^\| `([a-z]+)` \| `(?:kb|tools|defs|patches)/", text, re.M)
         self.assertEqual(listed, [adapter.__name__.rsplit(".", 1)[1]
                                   for adapter in adapters.ADAPTERS])
 

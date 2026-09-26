@@ -1,16 +1,18 @@
-"""Adapters of the legacy registries (tools/kb/SPEC.md, section 20).
+"""Adapters of the entity files and of the legacy registries (tools/kb/SPEC.md,
+section 20).
 
-Each adapter module declares `INPUTS`, the repository paths it reads, and two
+Each adapter module declares `inputs`, the repository paths it reads, and two
 passes over a `model.Builder`: `declare` states the symbols, names, keys, and
 statuses of its registry, and `relate` states the links, which resolve
-against the symbols that every adapter declared.
+against the symbols that every adapter declared. The entity files come first:
+they own the facts of the registries that their stage converted.
 """
 
-from kb.adapters import (architecture, curated, definitions, dids, interp, ledgers, native,
-                         overrides, profiles, signals, telemetry)
+from kb.adapters import (architecture, curated, definitions, dids, files, interp, ledgers,
+                         native, overrides, profiles, signals, telemetry)
 
-ADAPTERS = (curated, ledgers, profiles, definitions, interp, native, dids, signals, telemetry,
-            overrides, architecture)
+ADAPTERS = (files, curated, ledgers, profiles, definitions, interp, native, dids, signals,
+            telemetry, overrides, architecture)
 
 
 def inputs(root):

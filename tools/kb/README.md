@@ -29,12 +29,18 @@ uv run kb raw <ref>                  # the registry rows that state an entity
 uv run kb bench                      # the acceptance questions of the current stage
 uv run kb mcp                        # the read commands as MCP tools on stdio
 uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
+uv run kb fmt                        # rewrite the entity files of kb/ in canonical form
 ```
 
 - `kb check` runs the active checks, which `make check` includes: `l0`; the
-  model checks `schema`, `names`, `references`, `symbols`, and `links` over
-  the compiled registries; and `projections` and `guard`
+  model checks `schema`, `canonical`, `names`, `references`, `symbols`, and
+  `links` over the entity files and the compiled registries; and
+  `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
+- `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
+  canonical form of section 4.2 of the specification under `.kb/lock`; the
+  `canonical` check requires every file to equal the canonical rendering of
+  its parse.
 - `kb sync` compiles the registries into the model, appends a generated name
   to `kb/names.csv` for every symbol that has neither a semantic name nor a
   row, and loads the graph under `.kb/lock`. The `names` check fails until
@@ -127,15 +133,19 @@ the parse.
 
 ## Model
 
-The compiler reads every legacy registry through its adapter in
-`kb.adapters`, in two passes: each adapter declares its symbols, names, keys,
-and statuses, and then relates them, so that a link target resolves against
-the symbols of every registry. Symbols of one registry key join one meaning;
-the meaning takes the semantic name of the highest precedence that a registry
+The compiler reads the entity files of `kb/` and every legacy registry
+through its adapter in `kb.adapters`, in two passes: each adapter declares its
+symbols, names, keys, and statuses, and then relates them, so that a link
+target resolves against the symbols of every registry. Symbols of one meaning
+file or one registry key join one meaning; the meaning takes the name of its
+file, or else the semantic name of the highest precedence that a registry
 gives it, and otherwise the generated name of its symbol on its home layout.
+A file states references as text, which resolve once the meanings are named;
+a reference that names nothing fails the `references` check.
 
 | Adapter | Registry | Symbols |
 |---|---|---|
+| `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the targets of the features |
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
 | `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets with the roles that a symbol of another meaning fills on a layout |
@@ -222,7 +232,8 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.vocab` | Kinds, levels, link types, evidence kinds, and the other vocabularies |
 | `kb.tokens` | Legacy evidence tokens and their evidence items |
 | `kb.model` | Symbols, meanings, links, and the builder that joins them |
-| `kb.adapters` | Adapters of the legacy registries |
+| `kb.store` | Entity files of `kb/`, their canonical rendering, and `kb fmt` |
+| `kb.adapters` | Adapters of the entity files and of the legacy registries |
 | `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
 | `kb.compile` | The compiler from the tracked inputs to the model |
 | `kb.checks` | The model checks and the audit |

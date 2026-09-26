@@ -3,7 +3,9 @@
 `kb/names.csv` holds the generated name of every symbol of an unnamed meaning
 whose knowledge lives in a legacy registry. A row is a permanent reservation:
 when the meaning of its symbol takes a semantic name, the generated name stays
-reserved and resolves to the symbol as a former name.
+reserved and resolves to the symbol as a former name. A symbol that a meaning
+file holds takes its generated name and its former names from the file, and
+its row leaves `kb/names.csv` in the conversion of its registry.
 """
 
 import csv
@@ -162,9 +164,13 @@ def draw(taken, domain, attempts, rand=None):
 
 def assign(model, rows):
     """Give every symbol and meaning its name: the semantic name of the meaning,
-    or the generated name of the symbol from `rows`."""
+    or the generated name of the symbol from its file or else from `rows`."""
     by_key = {row.key: row for row in rows}
     for symbol in model.symbols.values():
+        named = model.file_names.get(symbol.key)
+        if named is not None:
+            symbol.generated, symbol.former = named[0], named[1]
+            continue
         row = by_key.get((symbol.layout, symbol.kind, symbol.address))
         symbol.generated = row.name if row else None
         symbol.former = row.former if row else ()
@@ -179,6 +185,8 @@ def assign(model, rows):
 def missing(model, rows):
     """Symbols of unnamed meanings that have no generated name."""
     known = {row.key for row in rows}
+    known.update((key.layout, key.kind, key.address)
+                 for key, (name, _, _) in model.file_names.items() if name)
     return sorted(symbol.key for symbol in model.symbols.values()
                   if symbol.meaning is not None and not symbol.meaning.semantic
                   and (symbol.layout, symbol.kind, symbol.address) not in known)
@@ -203,6 +211,10 @@ def reserved(model, rows):
     found = {row.name for row in rows}
     for row in rows:
         found.update(row.former)
+    for name, former, _ in model.file_names.values():
+        if name:
+            found.add(name)
+        found.update(former)
     for meaning in model.meanings:
         if meaning.semantic:
             found.add(meaning.name)

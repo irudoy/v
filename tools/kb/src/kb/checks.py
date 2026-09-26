@@ -1,4 +1,4 @@
-"""The model checks of stage 2 (tools/kb/SPEC.md, section 13).
+"""The model checks (tools/kb/SPEC.md, section 13).
 
 Each check returns `Issue` records; `kb check` prints one line per issue with
 the file, the subject, and the message. Adapters report the issues they find
@@ -7,7 +7,7 @@ while reading a registry under the check that owns them.
 
 from collections import Counter, defaultdict
 
-from kb import names, vocab
+from kb import names, store, vocab
 from kb.model import Issue, SymbolKey
 
 ROM = ("fn", "tbl", "axis", "const", "hook", "did", "dtc")
@@ -104,6 +104,11 @@ def schema(model):
     return issues
 
 
+def canonical(model):
+    """Every entity file equals the canonical rendering of its parse."""
+    return store.canonical(model.root)
+
+
 def names_check(model):
     issues = []
     semantic = defaultdict(list)
@@ -136,11 +141,52 @@ def names_check(model):
             issues.append(Issue("names", where, subject, f"{row.name} is a semantic name"))
         if row.layout not in model.layouts or row.kind not in vocab.MEANING_KINDS:
             issues.append(Issue("names", where, subject, "unknown layout or kind"))
+    issues.extend(_file_names(model, by_name, by_key, semantic_names))
     lacking = names.missing(model, rows)
     if lacking:
         sample = ", ".join(key.key for key in lacking[:3])
         issues.append(Issue("names", names.PATH.as_posix(), f"{len(lacking)} symbols",
                             f"no generated name, among them {sample}; run `uv run kb sync`"))
+    return issues
+
+
+def _file_names(model, by_name, by_key, semantic_names):
+    """The generated names that files give symbols share the rules of the rows
+    of `kb/names.csv`, and a file carries the name of its meaning."""
+    issues = []
+    files = defaultdict(list)
+    for key, (name, _, src) in sorted(model.file_names.items()):
+        subject = key.key
+        if (key.layout, key.kind, key.address) in by_key:
+            issues.append(Issue("names", src, subject,
+                                f"the symbol has a row of {names.PATH.as_posix()} too"))
+        if not name:
+            continue
+        files[name].append(src)
+        if not vocab.GENERATED_NAME.fullmatch(name):
+            issues.append(Issue("names", src, subject, f"generated name {name!r}"))
+        if name in semantic_names:
+            issues.append(Issue("names", src, subject, f"{name} is a semantic name"))
+        if by_name.get(name):
+            issues.append(Issue("names", src, subject,
+                                f"generated name {name} is a row of {names.PATH.as_posix()}"))
+    for name, srcs in sorted(files.items()):
+        if len(srcs) > 1:
+            issues.append(Issue("names", ";".join(sorted(srcs)), name,
+                                f"generated name {name} repeats"))
+    held = defaultdict(list)
+    for (kind, name), (meaning, src) in sorted(model.files.items()):
+        if meaning is None:
+            continue
+        held[id(meaning)].append(src)
+        if meaning.name != name:
+            issues.append(Issue("names", src, f"{name}/{kind}",
+                                f"the meaning is {meaning.key}; a file carries the name of "
+                                "its meaning"))
+    for srcs in held.values():
+        if len(srcs) > 1:
+            issues.append(Issue("names", ";".join(srcs), f"{len(srcs)} files",
+                                "the files hold one meaning; merge them"))
     return issues
 
 
@@ -187,6 +233,7 @@ def links(model):
 
 CHECKS = {
     "schema": schema,
+    "canonical": canonical,
     "names": names_check,
     "references": references,
     "symbols": symbols,
@@ -212,7 +259,8 @@ def audit(model):
     for meaning in model.meanings:
         others = defaultdict(set)
         for name, tier, src in meaning.other_names:
-            others[(name, tier)].add(src)
+            if tier != "former":
+                others[(name, tier)].add(src)
         for (name, tier), srcs in others.items():
             found["names"].add(Issue("audit", ";".join(sorted(srcs)), meaning.key,
                                      f"the {tier} name {name} names the same meaning"))

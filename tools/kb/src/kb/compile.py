@@ -10,7 +10,7 @@ import csv
 import tomllib
 
 from kb import adapters, names, repo
-from kb.model import Builder
+from kb.model import Builder, SymbolKey
 
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
@@ -63,18 +63,22 @@ def inputs(root=repo.ROOT):
 def build(root=repo.ROOT):
     config = repo.config(root)
     layouts = repo.layouts(root)
+    rows = names.read(root)
     builder = Builder(layouts, spaces(config), functions(layouts, root),
                       calibration(layouts, root), config)
+    builder.generated.update({SymbolKey(row.layout, row.kind, row.address): row.name
+                              for row in rows})
     for adapter in adapters.ADAPTERS:
         adapter.declare(builder, root)
     for adapter in adapters.ADAPTERS:
         adapter.relate(builder, root)
     model = builder.finish()
+    model.root = root
     model.config = config
     model.functions = builder.functions
     model.spaces = builder.spaces
-    model.names = names.read(root)
-    names.assign(model, model.names)
+    model.names = rows
+    names.assign(model, rows)
     return model
 
 

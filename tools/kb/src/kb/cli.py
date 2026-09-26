@@ -12,7 +12,8 @@ import shlex
 import subprocess
 import sys
 
-from kb import answer, checks, compile, graph, guard, instance, l0, project, read, repo
+from kb import (answer, checks, compile, graph, guard, instance, l0, lock, project, read, repo,
+                store)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -294,6 +295,13 @@ def command_project(args, root=repo.ROOT):
     return 0
 
 
+def command_fmt(args, root=repo.ROOT):
+    with lock.held(root):
+        for path in store.fmt(root, args.paths):
+            print(f"{path.as_posix()}: rewritten")
+    return 0
+
+
 def command_mcp(args, root=repo.ROOT):
     from kb import mcp
 
@@ -393,6 +401,10 @@ def build_parser():
     render = commands.add_parser("project", help="render the projections that kb generates")
     render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")
     render.set_defaults(handler=command_project)
+
+    rewrite = commands.add_parser("fmt", help="rewrite entity files in canonical form")
+    rewrite.add_argument("paths", nargs="*", help="entity files; every file by default")
+    rewrite.set_defaults(handler=command_fmt)
 
     serve = commands.add_parser("mcp", help="serve the read commands over MCP on stdio")
     serve.set_defaults(handler=command_mcp)

@@ -8,27 +8,39 @@ into meanings over their group keys, names the meanings, lifts links to
 meanings, and returns the `Model`.
 
 A group key is a tuple whose first element is the kind of its meaning. Every
-symbol that an adapter places in a group joins the group's meaning: a key of a
-symbol table, a native table id, a field source, or a hook key. Joins apply in
-the order of their strength, and a join that would give one meaning two
-symbols of one layout is refused and goes to the audit.
+symbol that an adapter places in a group joins the group's meaning: a meaning
+file, a key of a symbol table, a native table id, a field source, or a hook
+key. Joins apply in the order of their strength, and a join that would give
+one meaning two symbols of one layout is refused and goes to the audit.
+
+A file states references as text (tools/kb/SPEC.md, section 5.2). A `Ref`
+holds one until `finish` has named the meanings: the `to` of a link resolves
+to the meaning, and a value to the symbol of the meaning on the layout of its
+context, or else to the home symbol, as the adapters state references.
 """
 
 from collections import defaultdict
 from dataclasses import dataclass, field
+import re
 
 from kb import vocab
 
-# Name tiers in precedence order (tools/kb/SPEC.md, section 20.1).
-TIERS = ("native", "hook", "symbol_key", "curated", "field")
+# Name tiers in precedence order (tools/kb/SPEC.md, section 20.1): the name of
+# a meaning file wins over every registry name, and a former name that a file
+# records only reserves the name.
+TIERS = ("file", "native", "hook", "symbol_key", "curated", "field", "former")
 TIER_RANK = {tier: rank for rank, tier in enumerate(TIERS)}
-# Join strengths, strongest first: correspondence rows with homology evidence,
-# native table ids, field sources, registry keys, and correspondence rows that
-# bind a target-specific role.
-STRENGTHS = ("homology", "native", "field", "key", "role")
+# Join strengths, strongest first: meaning files, correspondence rows with
+# homology evidence, native table ids, field sources, registry keys, and
+# correspondence rows that bind a target-specific role.
+STRENGTHS = ("file", "homology", "native", "field", "key", "role")
 STRENGTH_RANK = {strength: rank for rank, strength in enumerate(STRENGTHS)}
 # Prose keys accumulate across registries; every other key states one fact.
 PROSE = ("title", "summary", "note")
+# Reference forms of files: a symbol `<name>/<kind>/<layout>` and a meaning or
+# designed entity `<name>/<kind>`.
+SYMBOL_REF = re.compile(r"(?P<name>[a-z][a-z0-9_-]*)/(?P<kind>[a-z]+)/(?P<layout>[0-9a-z]+)")
+MEANING_REF = re.compile(r"(?P<name>[a-z][a-z0-9_-]*)/(?P<kind>[a-z]+)")
 
 
 @dataclass(frozen=True, order=True)
@@ -71,15 +83,31 @@ class Symbol:
         return self.key.address
 
 
+@dataclass(frozen=True)
+class Ref:
+    """A reference that a file states, which `Builder.finish` resolves;
+    `layout` is the layout of its context, whose symbol a meaning reference
+    names there."""
+
+    text: str
+    src: str
+    layout: str | None = None
+
+
 @dataclass
 class LinkFact:
-    owner: SymbolKey
+    """A link that a registry states. `owner` is a symbol key or a group key,
+    `to` a symbol key or a `Ref`, and `layouts` the layouts that state it when
+    the owner is no symbol of one layout."""
+
+    owner: "SymbolKey | tuple"
     type: str
-    to: SymbolKey
+    to: "SymbolKey | Ref"
     props: dict
     evidence: list
     src: str
     stated: str
+    layouts: frozenset | None = None
 
 
 @dataclass(eq=False)
@@ -222,6 +250,13 @@ class Builder:
         self.issues = []
         self.row_tokens = defaultdict(set)
         self._at = defaultdict(set)
+        # Generated names by symbol key, of `kb/names.csv` and of the files,
+        # which references resolve through.
+        self.generated = {}
+        # The names that files give symbols: {symbol key: (generated name or
+        # None, former names, file)}, and the meaning files by kind and name.
+        self.file_names = {}
+        self.files = {}
 
     # Addresses -------------------------------------------------------------
 
@@ -330,9 +365,16 @@ class Builder:
         self._anchor(anchor)
         self.meaning_tables.append((anchor, name, value, str(src)))
 
-    def link(self, owner, type_, to, src, props=None, evidence=None, stated="owner"):
+    def link(self, owner, type_, to, src, props=None, evidence=None, stated="owner",
+             layouts=None):
+        """A link from the meaning of `owner`, a symbol key or a group key, to
+        the meaning of `to`. `layouts` are the layouts that state it, by
+        default the layout of an owning symbol or else the home layout."""
+        if not isinstance(owner, SymbolKey):
+            self._anchor(owner)
         self.link_facts.append(LinkFact(owner, type_, to, dict(props or {}),
-                                        list(evidence or ()), str(src), stated))
+                                        list(evidence or ()), str(src), stated,
+                                        None if layouts is None else frozenset(layouts)))
 
     def status(self, anchor, layout, state, src, props=None, evidence=None, yields=False):
         """A status of the meaning of an anchor on a layout. A status that
@@ -482,7 +524,11 @@ class Builder:
                 by_node[node] = meaning
         model = Model(self.layouts, self.symbols, self.entities, self.targets, self.issues)
         model.meanings = list(meanings.values())
+        model.files = {name: (by_node.get(group), src) for name, (group, src) in self.files.items()}
+        model.file_names = self.file_names
         self._semantic_names(by_node, model)
+        resolver = Resolver(self, by_node, model)
+        self._resolve(resolver)
         same = lambda left, right: _meant(left, by_node) == _meant(right, by_node)
         for anchor, props, src in self.meaning_props:
             meaning = by_node.get(anchor)
@@ -517,9 +563,32 @@ class Builder:
             else:
                 status.sources.add(src)
                 status.evidence.extend(item for item in evidence if item not in status.evidence)
-        self._links(by_node, model)
+        self._links(by_node, model, resolver)
         model.by_node = by_node
         return model
+
+    def _resolve(self, resolver):
+        """Replace the references that files state in every fact by the symbol
+        keys they name."""
+        value = resolver.value
+        self.meaning_props = [(anchor, value(props), src)
+                              for anchor, props, src in self.meaning_props]
+        self.symbol_keys = [(key, value(props), src) for key, props, src in self.symbol_keys]
+        self.meaning_tables = [(anchor, name, value(item), src)
+                               for anchor, name, item, src in self.meaning_tables]
+        self.status_facts = [(anchor, layout, state, value(props), value(evidence), src, yields)
+                             for anchor, layout, state, props, evidence, src, yields
+                             in self.status_facts]
+        for symbol in self.symbols.values():
+            symbol.props = value(symbol.props)
+            symbol.evidence = value(symbol.evidence)
+        for fact in self.link_facts:
+            fact.props = value(fact.props)
+            fact.evidence = value(fact.evidence)
+        for target in self.targets.values():
+            target.props = value(target.props)
+        for entity in self.entities.values():
+            entity.props = value(entity.props)
 
     def _lift(self, model, same):
         stated = defaultdict(dict)
@@ -559,11 +628,11 @@ class Builder:
                                           for _, _, other, other_tier, src in found
                                           if other != name})
 
-    def _links(self, by_node, model):
+    def _links(self, by_node, model, resolver):
         lifted = {}
         for fact in self.link_facts:
             owner = by_node.get(fact.owner)
-            to = by_node.get(fact.to)
+            to = resolver.meaning(fact.to) if isinstance(fact.to, Ref) else by_node.get(fact.to)
             if owner is None or to is None:
                 continue
             if owner is to:
@@ -578,7 +647,12 @@ class Builder:
                 owner.links.append(link)
             link.sources.add(fact.src)
             link.evidence.extend(item for item in fact.evidence if item not in link.evidence)
-            link.stated.add(fact.owner.layout)
+            if fact.layouts is not None:
+                link.stated |= fact.layouts
+            elif isinstance(fact.owner, SymbolKey):
+                link.stated.add(fact.owner.layout)
+            elif owner.home:
+                link.stated.add(owner.home)
             for name, value in fact.props.items():
                 if name in ("slot", "offset"):
                     continue
@@ -635,6 +709,89 @@ def _subject(meaning):
     return first.key.key if first else f"?/{meaning.kind}"
 
 
+class Resolver:
+    """Resolves the references of files against the named meanings: a semantic
+    name, the generated name of a symbol, or a former name, which the
+    `references` check refuses. A reference that names nothing stays text and
+    fails the `references` check."""
+
+    def __init__(self, builder, by_node, model):
+        self.builder = builder
+        self.by_node = by_node
+        self.names, self.formers = {}, {}
+        for meaning in model.meanings:
+            if meaning.semantic:
+                self.names.setdefault((meaning.kind, meaning.name), meaning)
+            for name, _, _ in meaning.other_names:
+                self.formers.setdefault((meaning.kind, name), meaning)
+        self.generated = {(key.kind, name): key for key, name in builder.generated.items()}
+        # `home` is a key of the meaning, which merges after the references
+        # resolve.
+        self.homes = {}
+        for anchor, props, _ in builder.meaning_props:
+            if "home" in props and anchor in by_node:
+                self.homes.setdefault(id(by_node[anchor]), props["home"])
+
+    def _meaning(self, ref, kind, name):
+        found = self.names.get((kind, name))
+        if found is None and (kind, name) in self.generated:
+            found = self.by_node.get(self.generated[(kind, name)])
+        if found is None and (kind, name) in self.formers:
+            found = self.formers[(kind, name)]
+            self.builder.issue("references", ref.src, ref.text,
+                               f"{name} is a former name of {found.key}")
+        return found
+
+    def meaning(self, ref):
+        """The meaning that a reference names, or None."""
+        match = SYMBOL_REF.fullmatch(ref.text) or MEANING_REF.fullmatch(ref.text)
+        found = None
+        if match and match.group("kind") in vocab.MEANING_KINDS:
+            found = self._meaning(ref, match.group("kind"), match.group("name"))
+        if found is None:
+            self.builder.issue("references", ref.src, ref.text, "names no meaning")
+        return found
+
+    def _symbol(self, ref):
+        match = SYMBOL_REF.fullmatch(ref.text)
+        if match:
+            found = self._meaning(ref, match.group("kind"), match.group("name"))
+            symbol = found.symbols.get(match.group("layout")) if found else None
+            if symbol is None:
+                self.builder.issue("references", ref.src, ref.text, "names no symbol")
+                return ref.text
+            return symbol.key
+        match = MEANING_REF.fullmatch(ref.text)
+        if match and match.group("kind") in vocab.DESIGNED_KINDS:
+            if (match.group("kind"), match.group("name")) not in self.builder.entities:
+                self.builder.issue("references", ref.src, ref.text, "names no designed entity")
+            return ref.text
+        found = None
+        if match and match.group("kind") in vocab.MEANING_KINDS:
+            found = self._meaning(ref, match.group("kind"), match.group("name"))
+        symbol = None
+        if found is not None:
+            home = self.homes.get(id(found))
+            symbol = (found.symbols.get(ref.layout) if ref.layout else None) \
+                or (found.symbols.get(home) if home else found.home_symbol)
+        if symbol is None:
+            self.builder.issue("references", ref.src, ref.text, "names no meaning")
+            return ref.text
+        return symbol.key
+
+    def value(self, item):
+        """A value with each reference replaced by the symbol key it names."""
+        if isinstance(item, Ref):
+            return self._symbol(item)
+        if isinstance(item, dict):
+            found = {key: self.value(entry) for key, entry in item.items()}
+            return item if all(found[key] is item[key] for key in item) else found
+        if isinstance(item, list):
+            found = [self.value(entry) for entry in item]
+            return item if all(new is old for new, old in zip(found, item)) else found
+        return item
+
+
 class Model:
     def __init__(self, layouts, symbols, entities, targets, issues):
         self.layouts = layouts
@@ -646,6 +803,10 @@ class Model:
         self.links = []
         self.self_links = []
         self.by_node = {}
+        # {(kind, name): (meaning, file)} of the meaning files, and the names
+        # that files give symbols (`Builder.file_names`).
+        self.files = {}
+        self.file_names = {}
 
     def meaning_of(self, key):
         symbol = self.symbols.get(key)
