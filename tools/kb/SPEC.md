@@ -434,7 +434,7 @@ because both differ by layout.
 | `level` | Level of the claim that this symbol is the meaning on its layout; defaults to the meaning's `level` |
 | `former` | Former full references of the symbol |
 | `images` | Images of the layout that the symbol applies to, when not all |
-| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `quantity`, `unit`, `scale`, `to_raw`, `scale_level`, `[interp]`, `[editor]`, and `[[bit]]` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
+| Overrides | `width`, `signed`, `storage`, `cols`, `rows`, `points`, `count`, `quantity`, `unit`, `scale`, `to_raw`, `scale_level`, `summary`, `[interp]`, `[editor]`, and `[[bit]]` where the layout differs from the meaning; for `dtc`, `index` and `attribute` |
 | `note` | Prose about this layout |
 | `[[symbol.evidence]]` | Evidence of identity or homology |
 
@@ -2247,10 +2247,10 @@ Stage 3. `defs/vq37-native-tables.toml`, per `[[target.<ROM>.table]]` and
 `[[target.<ROM>.axis]]` entry. Entries of the images of one layout join into
 one symbol, and an entry that only some images of the layout carry gives the
 symbol `images`. One id joins the symbols of every target with the strength
-of a native table id. The meaning takes `home` and `summary` from the first
-target in file order that carries the id; the keys of the geometry, the
-scale, the level, and `[editor]` are keys of the symbol that the meaning
-lifts by section 20.1.
+of a native table id. The meaning takes `home` from the first target in file
+order that carries the id; the keys of the geometry, the scale, the level,
+`summary`, and `[editor]` are keys of the symbol that the meaning lifts by
+section 20.1.
 
 | Key | Target |
 |---|---|
@@ -2264,12 +2264,13 @@ lifts by section 20.1.
 | `name`, `category`, `order`, `format`, `fine`, `coarse`, `static_axis`, `static_axis_name` | `[editor]` |
 | `units`, `scale_expr`, `to_byte`, `scale_conf` | `unit`, `scale`, `to_raw`, `scale_level` |
 | `confidence` | `level` |
-| `semantics` | `summary`; the text of another target that differs becomes a `note` of its symbol |
+| `semantics` | `summary` |
 | `note` | `note` of the symbol |
 
-A text that the images of one layout state differently enters the note of
-the symbol once per image, after the image name. `stock_sha256` of a target
-must equal the catalog digest and is not stored.
+The images of one layout state one `semantics` text, and a different text is
+an issue. A `note` that the images of one layout state differently enters the
+note of the symbol once per image, after the image name. `stock_sha256` of a
+target must equal the catalog digest and is not stored.
 `[target.<ROM>.absent]` gives an `absent` status of the meaning each key
 names, with `l0` evidence at each function entry of the layout that its text
 names as `FUN_<address>`, or else `registry` evidence, and the text as the

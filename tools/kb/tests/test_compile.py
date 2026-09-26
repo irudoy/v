@@ -323,6 +323,27 @@ class NativeAdapterTest(unittest.TestCase):
         notes = meaning.symbols["1nd"].props["note"]
         self.assertEqual(sorted({note.split(": ", 1)[0] for note in notes}), ["1ND0A", "1ND3B"])
 
+    def test_a_target_whose_semantics_differ_keeps_its_summary_as_an_override(self):
+        meaning = model().meaning_of(SymbolKey("1nd", "tbl", 0x0001B8DE))
+        own = meaning.symbols["1nd"].props
+        self.assertTrue(own["summary"].startswith("Second copy of monitor floor A"))
+        self.assertNotEqual(own["summary"], meaning.props["summary"])
+        self.assertNotIn(own["summary"], own.get("note", ()))
+        self.assertNotIn("summary", meaning.symbols[meaning.home].props)
+
+    def test_the_images_of_one_layout_state_one_semantics_text(self):
+        catalog = repo.images()
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        entry = {"id": "probe_surface", "address": 0xA000, "width": 2, "height": 1,
+                 "storagetype": "uint8", "semantics": "One text."}
+        native.declare_tables(b, {"schema_version": 3, "target": {
+            "1ND0A": {"stock_sha256": catalog["1ND0A"].sha256, "table": [entry]},
+            "1ND3B": {"stock_sha256": catalog["1ND3B"].sha256,
+                      "table": [{**entry, "semantics": "Another text."}]}}},
+            "probe.toml", catalog)
+        self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
+                         [("schema", "probe_surface@1nd")])
+
     def test_an_absent_entry_gives_l0_evidence_at_the_function_its_text_names(self):
         meaning = model().meaning_of(SymbolKey("1nd", "tbl", 0x0000E6C8))
         found = {layout: (status.state, [item["at"] for item in status.evidence])

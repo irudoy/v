@@ -980,7 +980,8 @@
          wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode byte is 0xFFFEF4D0,
          published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the constant 50.0 for this mode
          and carries no table. 1ND3B shares the 1ND0A code layout and its stock bytes at this
-         address.
+         address. On this image the hold-counter curve 0x1451E is 30 at every node over the axis
+         values 50 through 190.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="VVEL Duration Target - Mode 14"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"

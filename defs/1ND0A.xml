@@ -973,7 +973,8 @@
          0x5f7ac. Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 uint16
          wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode byte is 0xFFFEF4D0,
          published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the constant 50.0 for this mode
-         and carries no table.
+         and carries no table. On this image the hold-counter curve 0x1451E and its axis 0x13618
+         are zero at every node.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="VVEL Duration Target - Mode 14"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"

@@ -90,7 +90,7 @@ VALUE = Table(_plain("value", "name", "summary", "reachable", "level")
               + (("evidence", Array(EVIDENCE)),), sort=("value",))
 SYMBOL = Table(_plain("layout", "address", "name", "level", "former", "images", "width",
                       "signed", "storage", "cols", "rows", "points", "count", "quantity",
-                      *SCALE, "index", "attribute", "note")
+                      *SCALE, "index", "attribute", "summary", "note")
                + (("interp", INTERP), ("editor", EDITOR), ("bit", Array(BIT)),
                   ("evidence", Array(EVIDENCE))),
                sort=("layout", "address"))

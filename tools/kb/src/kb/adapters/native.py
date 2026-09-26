@@ -3,13 +3,14 @@
 - Each table and axis entry of `defs/vq37-native-tables.toml` gives a `tbl`
   or `axis` symbol on the layout of its target image, and its id joins the
   symbols of every target into one meaning with the strength of a native
-  table id and names it. The meaning takes `home` and `summary` from the
-  first target that carries the id. Geometry, scale, level, and `[editor]`
-  are keys of the symbol, which the meaning lifts from its home symbol. The
-  `semantics` of another target, where it differs from the summary, and
-  `note` become notes of the symbol, each prefixed with its image where the
-  images of one layout state different text. An entry that only some images
-  of a layout carry gives the symbol `images`.
+  table id and names it. The meaning takes `home` from the first target that
+  carries the id. Geometry, scale, level, `semantics` as `summary`, and
+  `[editor]` are keys of the symbol, which the meaning lifts from its home
+  symbol, so a target whose text differs keeps its summary as an override;
+  the images of one layout state one `semantics` text. `note` becomes the
+  note of the symbol, prefixed with its image where the images of one layout
+  state different text. An entry that only some images of a layout carry
+  gives the symbol `images`.
 - A pointer binding gives the symbol `l0` evidence at its site, or `indirect`
   evidence with mode `base` and the offset as `value` where the accessor
   displaces the literal, and a `reader` link to the accessor with the same
@@ -54,12 +55,11 @@ EDITOR = ("name", "category", "order", "format", "fine", "coarse", "mask", "stat
 # Symbol keys and the entry keys that state them.
 GEOMETRY = {"tbl": (("cols", "width"), ("rows", "height")),
             "axis": (("points", "length"), ("quantity", "kind"))}
-SCALE = (("unit", "units"), ("scale", "scale_expr"), ("to_raw", "to_byte"),
-         ("scale_level", "scale_conf"), ("level", "confidence"))
-PROSE = ("semantics", "note")
+KEYS = (("unit", "units"), ("scale", "scale_expr"), ("to_raw", "to_byte"),
+        ("scale_level", "scale_conf"), ("level", "confidence"), ("summary", "semantics"))
 ENTRY_KEYS = frozenset({"id", "address", "width", "height", "length", "kind", "storagetype",
-                        "values_sha256", "pointer_bindings", "axis_x", "axis_y", *PROSE,
-                        *EDITOR, *(source for _, source in SCALE)})
+                        "values_sha256", "pointer_bindings", "axis_x", "axis_y", "note",
+                        *EDITOR, *(source for _, source in KEYS)})
 TARGET_KEYS = frozenset({"stock_sha256", *KINDS, "absent"})
 FUNCTION = re.compile(r"\bFUN_([0-9A-Fa-f]{8})\b")
 # Fuel-cut keys that give symbols, with their kind; None takes the kind of the
@@ -148,16 +148,19 @@ def declare_tables(b, document, src, catalog):
 
 def _declare_id(b, src, kind, name, entries, pending):
     group = (kind, "native", name)
-    _, home, first = entries[0]
-    summary = first.get("semantics")
+    _, home, _ = entries[0]
     b.name(group, name, "native", src)
-    b.props(group, {"home": home, "summary": summary}, src)
+    b.props(group, {"home": home}, src)
     carried = defaultdict(list)
     for rom, layout, entry in entries:
         carried[(layout, entry["address"])].append((rom, entry))
     for (layout, address), images in carried.items():
         own = [rom for rom, _ in images]
-        props = {"note": _notes(images, summary)}
+        if len({entry.get("semantics") for _, entry in images}) > 1:
+            b.issue("schema", src, f"{name}@{layout}", "the images of one layout state "
+                    "different semantics")
+        notes = _notes(images)
+        props = {"note": notes} if notes else {}
         if set(own) != set(b.layouts[layout].images):
             props["images"] = [rom for rom in b.layouts[layout].images if rom in own]
         key = b.symbol(layout, kind, address, src, group=group, props=props, strength="native")
@@ -173,7 +176,7 @@ def _declare_id(b, src, kind, name, entries, pending):
 
 
 def _keys(kind, entry):
-    keys = {name: entry.get(source) for name, source in GEOMETRY[kind] + SCALE}
+    keys = {name: entry.get(source) for name, source in GEOMETRY[kind] + KEYS}
     keys["storage"] = vocab.storage(entry.get("storagetype"))
     editor = {name: entry[name] for name in EDITOR if name in entry}
     if editor:
@@ -181,19 +184,13 @@ def _keys(kind, entry):
     return {name: value for name, value in keys.items() if value not in (None, "")}
 
 
-def _notes(images, summary):
-    """Notes of one symbol from the prose of its images: a text that every
+def _notes(images):
+    """Notes of one symbol from the notes of its images: a text that every
     image states alike once, and otherwise each image's text after its name."""
-    notes = []
-    for field in PROSE:
-        texts = [(rom, entry.get(field)) for rom, entry in images]
-        if field == "semantics":
-            texts = [(rom, None if text == summary else text) for rom, text in texts]
-        if len({text for _, text in texts}) == 1:
-            notes.extend(text for _, text in texts[:1] if text)
-        else:
-            notes.extend(f"{rom}: {text}" for rom, text in texts if text)
-    return notes
+    texts = [(rom, entry.get("note")) for rom, entry in images]
+    if len({text for _, text in texts}) == 1:
+        return [text for _, text in texts[:1] if text]
+    return [f"{rom}: {text}" for rom, text in texts if text]
 
 
 def _binding(layout, binding):
