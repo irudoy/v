@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011ff6"
+name = "astute-toad"
+
+[[symbol]]
+layout = "jk00c"
+address = "000142d3"
+name = "able-porcupine"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004820a"
+to = "7mfk:00047282"
+count = 1
+value = 40
