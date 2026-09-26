@@ -9,12 +9,12 @@
 - Each row of the address file that a projection names gives the symbol of
   its entity on the image's layout: `Map` a `tbl` and `Axis` an `axis`
   symbol, so an address that is both a table and an axis operand gives one of
-  each. A homologous row joins it to the meaning of the `7mfk` symbol at
-  `source`, with homology evidence of the kinds that `[function_kinds]` of
-  `tools/kb/config.toml` assigns to its function kinds; a `reviewed-target`
-  row joins an anchor with `l0` evidence; an `unsupported` row gives the
-  status of its reason, except that `stock-inert-path` joins the homologous
-  surface that its evidence names, which the target leaves out.
+  each. A `homologous` row joins it to the meaning of the `7mfk` symbol at
+  `source` with homology evidence of the kind that `function_kinds` names; a
+  `reviewed-target` row joins an anchor with `l0` evidence; an `unsupported`
+  row gives the status that `function_kinds` names, except that
+  `stock-inert-path` joins the homologous surface that its evidence names,
+  which the target leaves out.
 """
 
 import csv
@@ -22,7 +22,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import repo
+from kb import match, repo
 from kb.values import hexed
 
 PROJECTIONS = Path("defs/definition-projections.toml")
@@ -31,12 +31,13 @@ ADDRESSES = "JK08A-*.definition-addresses.csv"
 CANONICAL = "7mfk"
 FEATURE = "definitions"
 KINDS = {"Map": "tbl", "Axis": "axis"}
-HOMOLOGOUS = ("homologous-exact-chain", "homologous-call")
+HOMOLOGOUS = "homologous"
 REVIEWED = "reviewed-target"
 UNSUPPORTED = "unsupported"
-# The status that each reason of an unsupported row states.
-REASONS = {"no-homolog": "unresolved", "removed-subsystem": "absent",
-           "removed-dispatch-slot": "absent", "changed-geometry": "absent"}
+# The evidence kinds of a homologous row (kb.match.typed), and the states of
+# the status of an unsupported row.
+HOMOLOGY_KINDS = (*match.TYPED, "l0")
+STATES = ("absent", "unresolved")
 INERT = "stock-inert-path"
 SURFACE = re.compile(r"\bhomologous surface ([0-9a-f]{8})\b")
 IMAGE_KEYS = ("source", "source_sha256", "target_sha256", "checksum", "romraider_checksum",
@@ -79,19 +80,18 @@ def declare(b, root):
         entry["note"] = projection.get("comment", "").strip()
         entry["evidence"] = projection.get("evidence")
         images.setdefault(layout, {})[rom] = entry
-    kinds = b.config.get("function_kinds", {})
     for layout in sorted(images):
         paths = sorted(path for path, owner in files.items() if owner == layout)
         found = {"variants": [], "omitted": []}
         for path in paths:
-            _declare_rows(b, root, path, layout, kinds, found)
+            _declare_rows(b, root, path, layout, found)
         b.entity("feature", FEATURE, src)
         target = b.target(FEATURE, layout, src, status="supported",
                           props={"images": images[layout], **found})
         target.sources.update(paths)
 
 
-def _declare_rows(b, root, path, layout, kinds, found):
+def _declare_rows(b, root, path, layout, found):
     with (root / path).open(newline="", encoding="utf-8") as source:
         rows = list(csv.DictReader(source))
     for number, row in enumerate(rows, start=2):
@@ -102,11 +102,9 @@ def _declare_rows(b, root, path, layout, kinds, found):
             b.issue("schema", where, subject, f"unknown entity {row['entity']}")
             continue
         origin = b.symbol(CANONICAL, kind, int(row["source"], 16), path)
-        status, text = row["status"], row["evidence"]
-        function_kinds = [name for name in row["function_kinds"].split(";") if name]
+        status, text, stated = row["status"], row["evidence"], row["function_kinds"]
         if status == UNSUPPORTED:
-            reason = function_kinds[0] if len(function_kinds) == 1 else row["function_kinds"]
-            if reason == INERT:
+            if stated == INERT:
                 surface = SURFACE.search(text)
                 if surface is None:
                     b.issue("schema", where, subject, "the evidence names no homologous surface")
@@ -116,26 +114,26 @@ def _declare_rows(b, root, path, layout, kinds, found):
                     "legacy": INERT}])
                 b.join(origin, symbol, where)
                 found["omitted"].append({"symbol": symbol, "reason": INERT, "note": text})
-            elif reason in REASONS:
-                b.status(origin, layout, REASONS[reason], path, props={"note": text},
+            elif stated in STATES:
+                b.status(origin, layout, stated, path, props={"note": text},
                          evidence=[{"kind": "registry", "supports": "identity", "path": path,
                                     "key": subject, "note": text}])
             else:
-                b.issue("schema", where, subject, f"unknown reason {reason}")
+                b.issue("schema", where, subject, f"unknown state {stated}")
             continue
         if not row["target"]:
             b.issue("schema", where, subject, f"a {status} row without target")
             continue
-        if status in HOMOLOGOUS:
-            evidence = []
-            for name in function_kinds:
-                if name not in kinds:
-                    b.issue("schema", where, subject, f"function kind {name} has no entry in "
-                            "[function_kinds] of tools/kb/config.toml")
-                    continue
-                evidence.append({"kind": kinds[name], "supports": "homology", "to": origin,
-                                 "value": name, "note": text, "legacy": f"{status}:{name}"})
+        if status == HOMOLOGOUS:
+            if stated not in HOMOLOGY_KINDS:
+                b.issue("schema", where, subject, f"a homologous row of the kind {stated}")
+                continue
+            evidence = [{"kind": stated, "supports": "homology", "to": origin, "note": text,
+                         "legacy": f"{status}:{stated}"}]
         elif status == REVIEWED:
+            if stated != "l0":
+                b.issue("schema", where, subject, f"a reviewed-target row of the kind {stated}")
+                continue
             evidence = [{"kind": "l0", "supports": "identity", "note": text, "legacy": REVIEWED}]
         else:
             b.issue("schema", where, subject, f"unknown status {status}")

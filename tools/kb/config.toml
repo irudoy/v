@@ -85,43 +85,6 @@ io = ["ffffc000", "100000000"]
 [tokens]
 manual = ["esm-", "sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
 
-# Evidence kinds of the function kinds that the definition address
-# correspondences name (tools/kb/SPEC.md, section 20.3): exact bytes and exact
-# storage compare bytes; shape, sequence, and reference hashes and mutual-best
-# accessor pairs match functions; call orders, call signatures, operands,
-# branch orders, and the homologous consumers that preserve an operand match
-# call ordinals; target literals and instruction-aligned loads match pool
-# literals; shared contracts match interpolation contracts.
-[function_kinds]
-coordinator-call-order = "call-ordinal"
-exact-bytes = "byte-identical"
-exact-normalized-function-shape = "function-match"
-exact-storage = "byte-identical"
-homologous-accessor-operand = "call-ordinal"
-homologous-base-fuel-consumer = "call-ordinal"
-homologous-coordinator = "call-ordinal"
-homologous-request-limiter = "call-ordinal"
-homologous-state-machine = "call-ordinal"
-homologous-torque-consumer = "call-ordinal"
-instruction-aligned-homolog = "literal-pool"
-mutual-best-accessor-pair = "function-match"
-normalized-function-reference = "function-match"
-normalized-function-sequence = "function-match"
-normalized-shape = "function-match"
-ordered-exact-map-storage-anchor = "byte-identical"
-ordered-normalized-shape = "function-match"
-ordered-structural-accessor = "call-ordinal"
-ordered-unique-interpolation-call-signature = "call-ordinal"
-ordered-unique-mapped-neighbor-fingerprint = "call-ordinal"
-paired-consumer = "call-ordinal"
-paired-threshold-loads = "call-ordinal"
-selector-branch-order = "call-ordinal"
-shared-explicit-contract = "interp-contract"
-shared-implicit-contract = "interp-contract"
-shared-scalar-operand-set = "call-ordinal"
-target-literal = "literal-pool"
-unique-same-contract-accessor = "interp-contract"
-
 [vocab]
 quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "speed",
             "temp", "time", "voltage"]

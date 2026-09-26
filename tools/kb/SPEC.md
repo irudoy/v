@@ -2173,28 +2173,37 @@ commit.
   `Map` for `tbl` and `Axis` for `axis`: an address that is both a table and
   an axis operand has a row of each entity and gives a symbol of each kind.
   `source` and `target` give the symbols; `variant` gives an entry of
-  `variants` of the `definitions` target; `sites` is derived from L0;
-  `evidence` becomes the `note` of the typed evidence.
-- `homologous-exact-chain` and `homologous-call` rows give homology evidence
-  of the kinds that `function_kinds` names, through `[function_kinds]` of
-  `tools/kb/config.toml`: exact bytes, exact storage, and ordered exact
-  storage anchors give `byte-identical`; the shape, sequence, and reference
-  hashes and mutual-best accessor pairs give `function-match`; call orders,
-  call signatures, operands, branch orders, and the homologous consumers
-  that preserve an operand give `call-ordinal`; target literals and
-  instruction-aligned loads give `literal-pool`; shared contracts give
-  `interp-contract`. A value without an entry fails the conversion.
-- `reviewed-target` rows give an anchor symbol with `l0` evidence.
-- `unsupported` rows give a status by their reason: `no-homolog` gives
-  `unresolved`; `removed-subsystem`, `removed-dispatch-slot`, and
-  `changed-geometry` give `absent`; `stock-inert-path` gives the symbol of
-  the homologous surface that the evidence names, which `omitted` of the
+  `variants` of the `definitions` target; `evidence` becomes the `note` of
+  the row's evidence item. Rows follow the order of entity, source, variant,
+  and target.
+- A `homologous` row gives homology evidence toward the `7mfk` symbol of the
+  kind that `function_kinds` names. The kind is that of the first evidence
+  item that `kb.match.typed` finds: the matchers of the `homology` check
+  propose items of the kinds `call-ordinal`, `literal-pool`,
+  `masked-match`, `function-match`, and `byte-identical`, in that order and
+  then by `at` and `to`, and the first item that verifies and grounds
+  `code` types the row. A row that no matcher reproduces toward `7mfk`, such
+  as a row of 1ND or 1ME3B whose matches reach only the other of these two
+  layouts, has `l0` evidence at the first instruction that touches the
+  target, with `to` naming the `7mfk` symbol.
+- A `reviewed-target` row gives an anchor symbol with `l0` evidence, and its
+  `function_kinds` is `l0`; the definition projection keeps the code
+  confidence of such a row.
+- An `unsupported` row gives the status of the state that `function_kinds`
+  names, `absent` or `unresolved`; the prose of the row states why the
+  target has no counterpart. `stock-inert-path` gives the symbol of the
+  homologous surface that the prose names, which `omitted` of the
   `definitions` target lists.
+- `sites` counts the instructions of the target layout that touch the
+  target storage in a relation of the matchers, a census operand, a pool
+  literal, a load, a store, or an update (`kb.match.touching`), and is 0 for
+  an `unsupported` row.
 
 `defs/definition-projections.toml`: the keys of `[projection.<ROM>]` and
 `[projection.<ROM>.switch]` become the entry of the image in `images` of the
 `definitions` target of its layout, with `comment` as `note`; the two digests
 must equal the image catalog, and `addresses` is derived from the symbols.
+The projections follow the order of their ROM keys.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
 symbol, with `family` as `access`, `kernel`, `width` and `height` as `cols`

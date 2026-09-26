@@ -66,7 +66,9 @@ addresses.
 
 `definition-projections.toml` binds JK00C and JK00D to exact source and target
 image hashes. Its per-target correspondence CSV relocates every visible stock
-map and required axis with explicit status and evidence. A source map without
+map and required axis with explicit status and evidence; `status`,
+`function_kinds`, and `sites` state the evidence of each row as section 20.3
+of `../tools/kb/SPEC.md` defines them. A source map without
 a unique target homolog is recorded as unsupported instead of being guessed.
 Both projections record the two end-of-injection angle tables as unsupported:
 the homologous stage reads eight-cell `uint16` curves with an explicit axis
@@ -361,7 +363,11 @@ The generator validates ROM identity, exact inheritance or projection hashes,
 map geometry, scaling, visibility, DTC stock bytes, and every target capability
 enabled in `definition-projections.toml`. The `checksum` capability binds a
 target to a verified project checksum layout, while `romraider_checksum`
-independently controls native RomRaider checksum metadata. A visible map must
+states that native RomRaider handlers maintain every checksum field that a
+definition entity can invalidate: a checksum domain without a native handler
+is admissible only when its whole region lies below the editable floor, the
+first primary SUM16 field, and `emit_def.py` fails when a published entity
+lies outside every native checksum region. A visible map must
 pass the definition gate. Hidden research maps remain in the graph and ledger.
 Presentation text uses the explicit `{target_rom}` token where a target label
 is required; source ROM labels and evidence filenames are never rewritten as

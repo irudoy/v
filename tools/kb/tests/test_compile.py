@@ -167,15 +167,12 @@ class DefinitionAdapterTest(unittest.TestCase):
         self.assertIsNot(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000E98E)),
                          m.meaning_of(SymbolKey("7mfk", "axis", 0x0000E98E)))
 
-    def test_function_kinds_type_the_homology_evidence(self):
+    def test_the_function_kind_is_the_kind_of_the_row_evidence(self):
         m = model()
         symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x000104A2)]
-        found = {(item["kind"], item["value"]) for item in symbol.evidence
-                 if item.get("supports") == "homology"}
-        self.assertEqual(found, {("byte-identical", "exact-bytes"),
-                                 ("function-match", "normalized-shape")})
-        self.assertTrue(all(item["to"] == SymbolKey("7mfk", "tbl", 0x0000E98E)
-                            for item in symbol.evidence if item.get("supports") == "homology"))
+        found = [(item["kind"], item["to"]) for item in symbol.evidence
+                 if item.get("supports") == "homology"]
+        self.assertEqual(found, [("call-ordinal", SymbolKey("7mfk", "tbl", 0x0000E98E))])
 
     def test_a_reviewed_target_is_an_anchor_of_the_source_meaning(self):
         m = model()

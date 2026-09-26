@@ -60,9 +60,8 @@ PROJECTION_FIELDS = frozenset(
     }
 )
 ENTITIES = frozenset({"Map", "Axis"})
-MAPPED_STATUSES = frozenset(
-    {"homologous-call", "homologous-exact-chain", "reviewed-target"}
-)
+STATUS_HOMOLOGOUS = "homologous"
+MAPPED_STATUSES = frozenset({STATUS_HOMOLOGOUS, "reviewed-target"})
 STATUS_UNSUPPORTED = "unsupported"
 ADDRESS_RE = re.compile(r"^[0-9a-f]{8}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -347,7 +346,7 @@ def verify_image_binding(projection):
 
 
 def _downgrade(value, binding):
-    if binding.status in {"homologous-call", "homologous-exact-chain"}:
+    if binding.status == STATUS_HOMOLOGOUS:
         return "candidate" if value in {"code", "silicon"} else value
     # A hardware result holds for the measured ROM; a reviewed target shares
     # only its code basis.

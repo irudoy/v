@@ -167,7 +167,7 @@ LIMITER_CORRESPONDENCE = {
 
 
 def test_projection_never_carries_a_hardware_result_to_another_rom():
-    homologous = type("Binding", (), {"status": "homologous-call"})()
+    homologous = type("Binding", (), {"status": "homologous"})()
     reviewed = type("Binding", (), {"status": "reviewed-target"})()
     assert definition_projections._downgrade("silicon", homologous) == "candidate"
     assert definition_projections._downgrade("code", homologous) == "candidate"
@@ -187,7 +187,7 @@ def test_limiter_and_pedal_thresholds_bind_target_literals():
         assert {row.source: row.target for row in rows} == expected
         assert all(row.status == "reviewed-target" for row in rows)
         assert all(row.variant == "" for row in rows)
-        assert all(row.function_kinds == "normalized-shape" for row in rows)
+        assert all(row.function_kinds == "l0" and row.sites > 0 for row in rows)
 
 
 def test_runtime_definition_layouts_use_target_allocation():

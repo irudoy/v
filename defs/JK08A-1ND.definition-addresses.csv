@@ -1,59 +1,59 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
-Axis,00011ebe,0001398a,,homologous-exact-chain,2,exact-storage;shared-explicit-contract,exact 16-byte ignition load axis is used by the homologous 16x16 accessors
-Axis,00011ece,0001399a,,homologous-call,2,selector-branch-order;shared-explicit-contract,homologous ignition selector preserves the 16-point RPM axis and branch order
-Axis,00011cf0,00013f2a,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,both target compensation accessors share the exact 16-point X axis
-Axis,00011d4c,00013f4a,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,both target compensation accessors share the exact 16-point Y axis
-Axis,00011d0c,0001380d,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,00014114,00015a52,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,00014aba,000162c0,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,homologous torque accessor preserves the exact eight-point RPM axis
-Axis,00014b4a,00016310,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,homologous torque accessor preserves the exact 16-point RPM axis
-Axis,000155a0,00016e02,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,00018716,0001af3e,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,00018ac6,0001b4ae,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,000190d0,0001bafe,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
-Axis,0002378c,00024c78,,homologous-exact-chain,2,homologous-accessor-operand;exact-storage,homologous engine-torque accessor copies the exact 16-word normalized-load axis
-Map,000085d9,00008524,,homologous-call,2,homologous-state-machine;paired-threshold-loads,homologous state machine preserves the 36 and 30 activation and release thresholds
-Map,00008a27,00008939,,homologous-call,2,homologous-base-fuel-consumer;target-literal,target Base Fuel Schedule consumer uses the independently recorded value 133
-Map,00008fdc,00008e50,,homologous-call,2,normalized-function-sequence;paired-threshold-loads,homologous pedal-state consumer preserves the 610 and 528 threshold pair
-Map,0000911c,00008f74,,homologous-call,1,homologous-state-machine;target-literal,homologous readiness state machine preserves the 0x04b0 threshold role
-Map,00009284,00009106,,homologous-call,2,homologous-base-fuel-consumer;target-literal,homologous Base Fuel Schedule consumers preserve the K-value operand
-Map,0000934e,,,unsupported,0,changed-geometry,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
-Map,0000942c,000092c2,,homologous-call,3,homologous-request-limiter;target-literal,multiple homologous consumers preserve the 0x2580 limiter scalar role
-Map,00009534,0000940a,,homologous-call,3,homologous-base-fuel-consumer;homologous-torque-consumer,homologous fuel and torque consumers preserve the 0x9f38 normalization reference
+Axis,00011cf0,00013f2a,,homologous,7,l0,both target compensation accessors share the exact 16-point X axis
+Axis,00011d0c,0001380d,,homologous,22,l0,unique structural axis pair preserves interpolation-call order
+Axis,00011d4c,00013f4a,,homologous,7,l0,both target compensation accessors share the exact 16-point Y axis
+Axis,00011ebe,0001398a,,homologous,118,l0,exact 16-byte ignition load axis is used by the homologous 16x16 accessors
+Axis,00011ece,0001399a,,homologous,115,l0,homologous ignition selector preserves the 16-point RPM axis and branch order
+Axis,00014114,00015a52,,homologous,20,l0,unique structural axis pair preserves interpolation-call order
+Axis,00014aba,000162c0,,homologous,6,l0,homologous torque accessor preserves the exact eight-point RPM axis
+Axis,00014b4a,00016310,,homologous,2,l0,homologous torque accessor preserves the exact 16-point RPM axis
+Axis,000155a0,00016e02,,homologous,36,l0,unique structural axis pair preserves interpolation-call order
+Axis,00018716,0001af3e,,homologous,11,l0,unique structural axis pair preserves interpolation-call order
+Axis,00018ac6,0001b4ae,,homologous,10,l0,unique structural axis pair preserves interpolation-call order
+Axis,000190d0,0001bafe,,homologous,20,l0,unique structural axis pair preserves interpolation-call order
+Axis,0002378c,00024c78,,homologous,3,l0,homologous engine-torque accessor copies the exact 16-word normalized-load axis
+Map,000085d9,00008524,,homologous,4,byte-identical,homologous state machine preserves the 36 and 30 activation and release thresholds
+Map,00008a27,00008939,,homologous,9,l0,target Base Fuel Schedule consumer uses the independently recorded value 133
+Map,00008e36,,,unsupported,0,absent,standstill exhaust-VTC override target is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3a,,,unsupported,0,absent,standstill exhaust-VTC override RPM ceiling is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3b,,,unsupported,0,absent,standstill exhaust-VTC override RPM floor is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3c,,,unsupported,0,absent,standstill exhaust-VTC override speed threshold is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008fdc,00008e50,,homologous,3,byte-identical,homologous pedal-state consumer preserves the 610 and 528 threshold pair
+Map,0000911c,00008f74,,homologous,2,l0,homologous readiness state machine preserves the 0x04b0 threshold role
+Map,00009284,00009106,,homologous,11,byte-identical,homologous Base Fuel Schedule consumers preserve the K-value operand
+Map,0000934e,,,unsupported,0,absent,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
+Map,0000942c,000092c2,,homologous,6,byte-identical,multiple homologous consumers preserve the 0x2580 limiter scalar role
+Map,00009534,0000940a,,homologous,14,l0,homologous fuel and torque consumers preserve the 0x9f38 normalization reference
 Map,0000991a,,,unsupported,0,stock-inert-path,"the homologous surface 00009880 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009980 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 Map,00009a1a,,,unsupported,0,stock-inert-path,"the homologous surface 00009980 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 Map,00009b1a,,,unsupported,0,stock-inert-path,"the homologous surface 00009a80 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009980, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
-Map,0000a29a,0000a1c0,default,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,the accessor on the default arm of the target state selector preserves exact geometry and storage
-Map,0000a9aa,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and neither the map nor its axes 00011cc0 and 00011ac7 recur as exact storage in the target image"
-Map,0000ab4a,,,unsupported,0,removed-subsystem,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
-Map,0000b2fa,,,unsupported,0,removed-subsystem,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000b33a,,,unsupported,0,removed-subsystem,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
-Map,0000b53a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
-Map,0000e98e,00010048,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural accessor pair preserves interpolation-call order
-Map,00010b8e,000120c8,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,unique engine-torque surface preserves geometry and exact storage
-Map,0001108e,000122c8,,homologous-call,2,normalized-function-sequence;homologous-accessor-operand,homologous direct-row-major accessor preserves the second torque surface operand
-Map,00012196,00013c12,,homologous-call,1,homologous-coordinator;selector-branch-order,homologous fallback branch preserves the default table role
-Map,000121a6,00013c2a,,homologous-call,1,homologous-coordinator;selector-branch-order,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
-Map,0001219e,00013c1a,default,homologous-call,1,homologous-coordinator;selector-branch-order,the branch on the default arm of the target state selector preserves the source warm-transition table role
-Map,000124d2,00013ea2,,homologous-exact-chain,2,normalized-function-sequence;exact-storage,homologous state-machine accessor preserves geometry and exact table bytes
-Map,00012552,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and the multiplier does not recur as exact storage in the target image"
-Map,000126e4,000140c4,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the held-request table role and near-exact calibration shape
-Map,00012718,00014104,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the rising-edge table role and near-exact calibration shape
-Map,00012818,000141d4,,homologous-exact-chain,2,shared-implicit-contract;exact-storage,homologous restore coordinator preserves the lower table role and exact table bytes
-Map,0001298c,00014308,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous restore coordinator preserves the upper table role and calibration shape
-Map,000129c0,00014324,,homologous-exact-chain,2,normalized-function-sequence;exact-storage,homologous channel accessor preserves the six exact unity-multiplier bytes
-Map,00013202,000149ee,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural pair preserves interpolation-call order
-Map,000141f4,00015ac2,,homologous-call,1,ordered-structural-accessor,unique structural pair preserves interpolation-call order
-Map,00014274,00015b42,,homologous-call,1,ordered-structural-accessor,unique structural pair preserves interpolation-call order
-Map,00014c1a,00016410,,homologous-exact-chain,1,exact-storage,shared torque interpolation contract preserves the exact eight-word coefficient table
-Map,000154a0,00016c82,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,shared torque interpolation contract preserves the exact eight-word base table
-Map,000175c8,00019b5c,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural pair preserves interpolation-call order
-Map,00018766,0001af9e,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural pair preserves interpolation-call order
-Map,00008e36,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override target is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3b,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override RPM floor is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3a,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override RPM ceiling is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3c,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override speed threshold is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00012302,,,unsupported,0,changed-geometry,homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the doubled word store at 0007f972 but reads the base curve as eight uint16 cells at 00016540 through explicit-axis wrapper 00028910 at callsites 0007f91a and 0007f95c with the eight-word axis 00016550 instead of the source uint8 table of the implicit eight-point primitive
-Map,0001230a,,,unsupported,0,changed-geometry,homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the doubled word store at 0007f972 but reads the conditional curve as eight uint16 cells at 00016560 through explicit-axis wrapper 00028910 at callsite 0007f824 with the eight-word axis 00016550 instead of the source uint8 table of the implicit eight-point primitive
+Map,0000a29a,0000a1c0,default,homologous,4,l0,the accessor on the default arm of the target state selector preserves exact geometry and storage
+Map,0000a9aa,,,unsupported,0,unresolved,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and neither the map nor its axes 00011cc0 and 00011ac7 recur as exact storage in the target image"
+Map,0000ab4a,,,unsupported,0,absent,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000ab5a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000b2fa,,,unsupported,0,absent,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000b33a,,,unsupported,0,absent,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000b43a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000b53a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000e98e,00010048,,homologous,21,l0,unique structural accessor pair preserves interpolation-call order
+Map,00010b8e,000120c8,,homologous,2,l0,unique engine-torque surface preserves geometry and exact storage
+Map,0001108e,000122c8,,homologous,1,l0,homologous direct-row-major accessor preserves the second torque surface operand
+Map,00012196,00013c12,,homologous,2,l0,homologous fallback branch preserves the default table role
+Map,0001219e,00013c1a,default,homologous,2,l0,the branch on the default arm of the target state selector preserves the source warm-transition table role
+Map,000121a6,00013c2a,,homologous,2,l0,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
+Map,00012302,,,unsupported,0,absent,homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the doubled word store at 0007f972 but reads the base curve as eight uint16 cells at 00016540 through explicit-axis wrapper 00028910 at callsites 0007f91a and 0007f95c with the eight-word axis 00016550 instead of the source uint8 table of the implicit eight-point primitive
+Map,0001230a,,,unsupported,0,absent,homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the doubled word store at 0007f972 but reads the conditional curve as eight uint16 cells at 00016560 through explicit-axis wrapper 00028910 at callsite 0007f824 with the eight-word axis 00016550 instead of the source uint8 table of the implicit eight-point primitive
+Map,000124d2,00013ea2,,homologous,2,l0,homologous state-machine accessor preserves geometry and exact table bytes
+Map,00012552,,,unsupported,0,unresolved,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and the multiplier does not recur as exact storage in the target image"
+Map,000126e4,000140c4,,homologous,2,l0,homologous DFCO coordinator preserves the held-request table role and near-exact calibration shape
+Map,00012718,00014104,,homologous,2,l0,homologous DFCO coordinator preserves the rising-edge table role and near-exact calibration shape
+Map,00012818,000141d4,,homologous,2,l0,homologous restore coordinator preserves the lower table role and exact table bytes
+Map,0001298c,00014308,,homologous,2,l0,homologous restore coordinator preserves the upper table role and calibration shape
+Map,000129c0,00014324,,homologous,2,byte-identical,homologous channel accessor preserves the six exact unity-multiplier bytes
+Map,00013202,000149ee,,homologous,63,l0,unique structural pair preserves interpolation-call order
+Map,000141f4,00015ac2,,homologous,2,l0,unique structural pair preserves interpolation-call order
+Map,00014274,00015b42,,homologous,2,l0,unique structural pair preserves interpolation-call order
+Map,00014c1a,00016410,,homologous,4,l0,shared torque interpolation contract preserves the exact eight-word coefficient table
+Map,000154a0,00016c82,,homologous,2,l0,shared torque interpolation contract preserves the exact eight-word base table
+Map,000175c8,00019b5c,,homologous,10,l0,unique structural pair preserves interpolation-call order
+Map,00018766,0001af9e,,homologous,41,l0,unique structural pair preserves interpolation-call order

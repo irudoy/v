@@ -20,6 +20,8 @@ target of a call, and an operand of a census call in the same register.
   them, on their own layout or through verified homology evidence.
 - `search` lists the candidates for the counterpart of a symbol on another
   layout, with the evidence of each.
+- `typed` picks the evidence item that types the homology of a symbol toward
+  its counterpart, and `touching` lists the instructions that touch a symbol.
 - `writers` is the writer gate.
 
 `code` keeps the matching index of a layout in `.kb/cache/match/`, keyed by
@@ -914,9 +916,13 @@ def grounded(model, keys):
 
 @dataclass
 class Candidate:
+    """A candidate address with its strongest evidence item, the number of
+    items that voted for it, and those items."""
+
     address: int
     evidence: dict
     votes: int = 0
+    items: list = field(default_factory=list)
 
 
 @dataclass
@@ -961,10 +967,11 @@ def search(model, symbol, layout):
     touches the symbol."""
     home, other = code(symbol.layout, model.root), code(layout, model.root)
     result = Search(symbol, layout, "masked-match")
-    votes, best = defaultdict(int), {}
+    votes, best, every = defaultdict(int), {}, defaultdict(list)
 
     def vote(address, item, strength):
         votes[address] += 1
+        every[address].append(item)
         if address not in best or strength > best[address][0]:
             best[address] = (strength, item)
 
@@ -1013,8 +1020,104 @@ def search(model, symbol, layout):
     if best and all(item["kind"] == "function-match" for _, item in best.values()):
         result.method = "function-match"
     for address, (_, item) in best.items():
-        result.candidates[address] = Candidate(address, item, votes[address])
+        result.candidates[address] = Candidate(address, item, votes[address], every[address])
     return result
+
+
+# Typing.
+
+# The kinds that type the homology of a symbol toward its counterpart, in the
+# order in which `typed` picks the item.
+TYPED = ("call-ordinal", "literal-pool", "masked-match", "function-match", "byte-identical")
+
+
+def touching(model, symbol):
+    """Sorted instructions of the symbol's layout that touch an address of its
+    storage, or its entry for a function, in a relation of the matchers."""
+    here = code(symbol.layout, model.root)
+    return sorted({site for address in range(symbol.address, symbol.address + _span(symbol))
+                   for site, _ in here.sites_of(address)})
+
+
+def _call_ordinals(model, symbol, other):
+    here, there = code(symbol.layout, model.root), code(other.layout, model.root)
+    for site in sorted({site for site, _ in here.sites_of(symbol.address)}):
+        place = here.call_ordinal(site)
+        if place is None:
+            continue
+        mine = {relation for address, relation in here.touches(site)
+                if address == symbol.address}
+        for other_site in sorted({site for site, relation in there.sites_of(other.address)
+                                  if relation in mine}):
+            other_place = there.call_ordinal(other_site)
+            if other_place is None or other_place[1] != place[1]:
+                continue
+            count = len({address for address, relation in there.touches(other_site)
+                         if relation in mine})
+            yield {"kind": "call-ordinal", "supports": "homology",
+                   "at": f"{symbol.layout}:{site:08x}", "to": f"{other.layout}:{other_site:08x}",
+                   "count": count, "value": place[1]}
+
+
+def _literal_pools(model, symbol, other):
+    here, there = code(symbol.layout, model.root), code(other.layout, model.root)
+    mine = sorted({pool for pool, value in here.literals.values() if value == symbol.address})
+    theirs = sorted({pool for pool, value in there.literals.values() if value == other.address})
+    for pool in mine:
+        for other_pool in theirs:
+            yield {"kind": "literal-pool", "supports": "homology",
+                   "at": f"{symbol.layout}:{pool:08x}", "to": f"{other.layout}:{other_pool:08x}",
+                   "value": f"{symbol.address:08x}"}
+
+
+def _byte_identical(model, symbol, other):
+    if symbol.kind == "fn":
+        here = code(symbol.layout, model.root).functions.get(symbol.address)
+        there = code(other.layout, model.root).functions.get(other.address)
+        if here is None or there is None or here.hashes[0] != there.hashes[0]:
+            return
+        yield {"kind": "byte-identical", "supports": "homology",
+               "at": f"{symbol.layout}:{symbol.address:08x}",
+               "to": f"{other.layout}:{other.address:08x}", "sha256": here.hashes[0]}
+        return
+    size = storage_size(symbol)
+    if size is None or storage_size(other) != size:
+        return
+    digests = {hashlib.sha256(data[address:address + size]).hexdigest()
+               for layout, address, only in (
+                   (symbol.layout, symbol.address, symbol.props.get("images")),
+                   (other.layout, other.address, None))
+               for _, data in images(model, layout, only)}
+    if len(digests) == 1:
+        yield {"kind": "byte-identical", "supports": "homology",
+               "at": f"{symbol.layout}:{symbol.address:08x}",
+               "to": f"{other.layout}:{other.address:08x}", "sha256": digests.pop()}
+
+
+def homology_items(model, symbol, other):
+    """The evidence items of the kinds of `TYPED` that the matchers find for
+    `symbol` toward `other`, a symbol of its meaning on another layout; they
+    still need `verify`."""
+    yield from _call_ordinals(model, symbol, other)
+    yield from _literal_pools(model, symbol, other)
+    hit = search(model, other, symbol.layout).candidates.get(symbol.address)
+    if hit is not None:
+        yield from hit.items
+    yield from _byte_identical(model, symbol, other)
+
+
+def _typed_order(item):
+    return TYPED.index(item["kind"]), str(item.get("at")), str(item.get("to"))
+
+
+def typed(model, symbol, other):
+    """The evidence item that types the homology of `symbol` toward `other`:
+    the first item of `homology_items`, by the order of `TYPED` and then by
+    `at` and `to`, that verifies and grounds `code`; None when none does."""
+    for item in sorted(homology_items(model, symbol, other), key=_typed_order):
+        if rank(item) >= vocab.LEVEL_RANK["code"] and verify(model, symbol, item) is None:
+            return item
+    return None
 
 
 # The writer gate.

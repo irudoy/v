@@ -1,62 +1,62 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
-Axis,00011ebe,000135b8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the load-axis operand and 16-point geometry
-Axis,00011ece,000135c8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the RPM-axis operand and 16-point geometry
-Axis,00011ac7,000132b6,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa passes this load axis at the homologous lookup of map 0000a3ca; its input ffff1032 is the copy of ffff1042 that scheduler 00020f1a makes at 00020f84, and producer 0004068c stores ffff1042 as min(255, BFS ffff102e * 128 / ROM16[0x91ee]), the Q7 normalized load that the source forms from ffff1026 and ROM16[0x9534]"
-Axis,00011cc0,0001340f,,homologous-call,1,instruction-aligned-homolog,target mixture stage 00071dfa passes this RPM axis with RPM word ffff11ac at the homologous lookup of map 0000a3ca
-Axis,00011cd8,00013417,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa passes this RPM axis with RPM/50 snapshot ffff119d at the homologous multiplier lookup; scheduler 00020f1a copies it from ffff11d1, which 0003b87e stores as min(255, ffff11d4 >> 5) like source byte ffff11e6"
-Axis,00011cf0,00013af8,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point X axis
-Axis,00011d4c,00013b18,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point Y axis
-Axis,00011d0c,00013463,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,00014114,0001552c,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,00014aba,00015cf2,,homologous-call,2,ordered-normalized-shape;ordered-unique-mapped-neighbor-fingerprint,unique structural axis pair preserves mapped neighbors
-Axis,00014b4a,00015d42,,homologous-call,1,ordered-normalized-shape,unique structural axis pair preserves normalized geometry
-Axis,000155a0,000167e4,,homologous-call,3,ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,00018716,0001a8ea,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,00018ac6,0001ae5a,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,000190d0,0001b4aa,,homologous-call,3,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
-Axis,0002378c,00024674,,homologous-call,1,ordered-normalized-shape,unique structural axis pair preserves normalized geometry
-Map,000085d9,000084ed,,homologous-call,1,instruction-aligned-homolog,aligned activation and release threshold loads preserve the state-machine role and stock values
-Map,00008a27,00008896,,homologous-call,2,normalized-function-reference,normalized homologous consumers reference the target MAF factor scalar
-Map,00008fdc,00008d28,,homologous-call,1,instruction-aligned-homolog,aligned homologous consumer preserves the scalar operand role and stock value
-Map,0000911c,00008e2a,,homologous-call,1,instruction-aligned-homolog,aligned readiness state machine preserves the threshold role
-Map,00009284,00008f80,,homologous-call,3,normalized-function-reference,normalized homologous consumers preserve the K-value operand role
-Map,0000934e,,,unsupported,0,changed-geometry,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
-Map,0000942c,0000911e,,homologous-call,2,instruction-aligned-homolog,two homologous consumers preserve the limiter scalar role and stock value
-Map,00009534,000091ee,,homologous-call,4,normalized-function-reference,normalized homologous consumers preserve the primary limiter scalar role
+Axis,00011ac7,000132b6,,homologous,2,literal-pool,"target mixture stage 00071dfa passes this load axis at the homologous lookup of map 0000a3ca; its input ffff1032 is the copy of ffff1042 that scheduler 00020f1a makes at 00020f84, and producer 0004068c stores ffff1042 as min(255, BFS ffff102e * 128 / ROM16[0x91ee]), the Q7 normalized load that the source forms from ffff1026 and ROM16[0x9534]"
+Axis,00011cc0,0001340f,,homologous,2,literal-pool,target mixture stage 00071dfa passes this RPM axis with RPM word ffff11ac at the homologous lookup of map 0000a3ca
+Axis,00011cd8,00013417,,homologous,2,literal-pool,"target mixture stage 00071dfa passes this RPM axis with RPM/50 snapshot ffff119d at the homologous multiplier lookup; scheduler 00020f1a copies it from ffff11d1, which 0003b87e stores as min(255, ffff11d4 >> 5) like source byte ffff11e6"
+Axis,00011cf0,00013af8,,homologous,6,l0,both target compensation accessors share the reviewed 16-point X axis
+Axis,00011d0c,00013463,,homologous,23,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,00011d4c,00013b18,,homologous,6,l0,both target compensation accessors share the reviewed 16-point Y axis
+Axis,00011ebe,000135b8,,homologous,48,literal-pool,target ignition accessor preserves the load-axis operand and 16-point geometry
+Axis,00011ece,000135c8,,homologous,62,l0,target ignition accessor preserves the RPM-axis operand and 16-point geometry
+Axis,00014114,0001552c,,homologous,22,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,00014aba,00015cf2,,homologous,4,call-ordinal,unique structural axis pair preserves mapped neighbors
+Axis,00014b4a,00015d42,,homologous,2,call-ordinal,unique structural axis pair preserves normalized geometry
+Axis,000155a0,000167e4,,homologous,35,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,00018716,0001a8ea,,homologous,12,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,00018ac6,0001ae5a,,homologous,10,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,000190d0,0001b4aa,,homologous,15,call-ordinal,unique structural axis pair preserves interpolation-call order
+Axis,0002378c,00024674,,homologous,1,literal-pool,unique structural axis pair preserves normalized geometry
+Map,000085d9,000084ed,,homologous,4,byte-identical,aligned activation and release threshold loads preserve the state-machine role and stock values
+Map,00008a27,00008896,,homologous,12,literal-pool,normalized homologous consumers reference the target MAF factor scalar
+Map,00008e36,,,unsupported,0,absent,standstill exhaust-VTC override target is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3a,,,unsupported,0,absent,standstill exhaust-VTC override RPM ceiling is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3b,,,unsupported,0,absent,standstill exhaust-VTC override RPM floor is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008e3c,,,unsupported,0,absent,standstill exhaust-VTC override speed threshold is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
+Map,00008fdc,00008d28,,homologous,4,literal-pool,aligned homologous consumer preserves the scalar operand role and stock value
+Map,0000911c,00008e2a,,homologous,2,l0,aligned readiness state machine preserves the threshold role
+Map,00009284,00008f80,,homologous,14,literal-pool,normalized homologous consumers preserve the K-value operand role
+Map,0000934e,,,unsupported,0,absent,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
+Map,0000942c,0000911e,,homologous,6,literal-pool,two homologous consumers preserve the limiter scalar role and stock value
+Map,00009534,000091ee,,homologous,14,literal-pool,normalized homologous consumers preserve the primary limiter scalar role
 Map,0000991a,,,unsupported,0,stock-inert-path,"the homologous surface 000095ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000096ca and 000097ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
 Map,00009a1a,,,unsupported,0,stock-inert-path,"the homologous surface 000096ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000097ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
 Map,00009b1a,,,unsupported,0,stock-inert-path,"the homologous surface 000097ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000096ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
-Map,0000a29a,00009eba,default,homologous-call,1,mutual-best-accessor-pair,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
-Map,0000a9aa,0000a3ca,,homologous-call,1,instruction-aligned-homolog,target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and passes this literal with RPM word ffff11ac and normalized-load snapshot ffff1032 to the homologous explicit-axis wrapper 00027f58
-Map,0000ab4a,,,unsupported,0,removed-subsystem,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
-Map,0000b2fa,,,unsupported,0,removed-subsystem,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000b33a,,,unsupported,0,removed-subsystem,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
-Map,0000b53a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
-Map,0000e98e,0000face,,homologous-exact-chain,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural accessor pair and exact storage anchor preserve interpolation-call order
-Map,00010b8e,00011d4e,,homologous-call,1,ordered-normalized-shape,unique structural map pair preserves normalized geometry
-Map,0001108e,00011f4e,,homologous-call,1,exact-normalized-function-shape,exact normalized accessor shape preserves the direct-row-major table operand
-Map,00012196,000137e0,,homologous-call,1,instruction-aligned-homolog,homologous fallback branch preserves the default table role
-Map,000121a6,000137f8,,homologous-call,1,instruction-aligned-homolog,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
-Map,0001219e,000137e8,default,homologous-call,1,instruction-aligned-homolog,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
-Map,000124d2,00013a70,,homologous-call,1,unique-same-contract-accessor,unique state-machine accessor preserves the lookup role and geometry
-Map,00012552,00013ad8,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and, while bit 6 of ffff23c6 selects the high-detonation surface, passes this multiplier with RPM/50 snapshot ffff119d to the homologous wrapper 0002829c"
-Map,000126e4,00013c5a,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
-Map,00012718,00013c86,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
-Map,00012818,00013d46,,homologous-call,1,unique-same-contract-accessor;coordinator-call-order,unique accessor and coordinator preserve lookup role and order
-Map,0001298c,00013e72,,homologous-call,1,unique-same-contract-accessor;coordinator-call-order,unique accessor and coordinator preserve lookup role and order
-Map,000129c0,00013e86,,homologous-exact-chain,1,instruction-aligned-homolog;exact-bytes,near-exact homologous accessor preserves the operand and six exact bytes
-Map,00013202,00014538,,homologous-call,3,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
-Map,000141f4,0001559c,,homologous-call,1,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
-Map,00014274,0001561c,,homologous-call,1,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
-Map,00014c1a,00015e12,,homologous-call,1,ordered-unique-mapped-neighbor-fingerprint,unique structural pair preserves mapped neighbors
-Map,000154a0,00016664,,homologous-call,1,ordered-normalized-shape,unique structural pair preserves normalized geometry
-Map,000175c8,0001950c,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
-Map,00018766,0001a94a,,homologous-call,3,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
-Map,00008e36,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override target is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3b,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override RPM floor is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3a,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override RPM ceiling is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00008e3c,,,unsupported,0,removed-subsystem,standstill exhaust-VTC override speed threshold is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image
-Map,00012302,,,unsupported,0,changed-geometry,homologous end-of-injection stage 000730cc keeps the 209-count clamp and the doubled word store at 000733b8 but reads the base curve as eight uint16 cells at 00015f22 through explicit-axis wrapper 000282f4 at callsites 0007335e and 000733a2 with the eight-word axis 00015f32 instead of the source uint8 table of the implicit eight-point primitive
-Map,0001230a,,,unsupported,0,changed-geometry,homologous end-of-injection stage 000730cc keeps the 209-count clamp and the doubled word store at 000733b8 but reads the conditional curve as eight uint16 cells at 00015f42 through explicit-axis wrapper 000282f4 at callsite 000731c0 with the eight-word axis 00015f32 instead of the source uint8 table of the implicit eight-point primitive
+Map,0000a29a,00009eba,default,homologous,4,l0,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
+Map,0000a9aa,0000a3ca,,homologous,2,literal-pool,target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and passes this literal with RPM word ffff11ac and normalized-load snapshot ffff1032 to the homologous explicit-axis wrapper 00027f58
+Map,0000ab4a,,,unsupported,0,absent,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000ab5a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000b2fa,,,unsupported,0,absent,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000b33a,,,unsupported,0,absent,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
+Map,0000b43a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000b53a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000e98e,0000face,,homologous,22,call-ordinal,unique structural accessor pair and exact storage anchor preserve interpolation-call order
+Map,00010b8e,00011d4e,,homologous,2,call-ordinal,unique structural map pair preserves normalized geometry
+Map,0001108e,00011f4e,,homologous,1,literal-pool,exact normalized accessor shape preserves the direct-row-major table operand
+Map,00012196,000137e0,,homologous,2,l0,homologous fallback branch preserves the default table role
+Map,0001219e,000137e8,default,homologous,3,l0,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
+Map,000121a6,000137f8,,homologous,2,l0,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
+Map,00012302,,,unsupported,0,absent,homologous end-of-injection stage 000730cc keeps the 209-count clamp and the doubled word store at 000733b8 but reads the base curve as eight uint16 cells at 00015f22 through explicit-axis wrapper 000282f4 at callsites 0007335e and 000733a2 with the eight-word axis 00015f32 instead of the source uint8 table of the implicit eight-point primitive
+Map,0001230a,,,unsupported,0,absent,homologous end-of-injection stage 000730cc keeps the 209-count clamp and the doubled word store at 000733b8 but reads the conditional curve as eight uint16 cells at 00015f42 through explicit-axis wrapper 000282f4 at callsite 000731c0 with the eight-word axis 00015f32 instead of the source uint8 table of the implicit eight-point primitive
+Map,000124d2,00013a70,,homologous,2,literal-pool,unique state-machine accessor preserves the lookup role and geometry
+Map,00012552,00013ad8,,homologous,2,literal-pool,"target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and, while bit 6 of ffff23c6 selects the high-detonation surface, passes this multiplier with RPM/50 snapshot ffff119d to the homologous wrapper 0002829c"
+Map,000126e4,00013c5a,,homologous,2,l0,homologous coordinator preserves lookup order and exact map bytes
+Map,00012718,00013c86,,homologous,2,l0,homologous coordinator preserves lookup order and exact map bytes
+Map,00012818,00013d46,,homologous,2,l0,unique accessor and coordinator preserve lookup role and order
+Map,0001298c,00013e72,,homologous,2,l0,unique accessor and coordinator preserve lookup role and order
+Map,000129c0,00013e86,,homologous,2,literal-pool,near-exact homologous accessor preserves the operand and six exact bytes
+Map,00013202,00014538,,homologous,59,call-ordinal,unique structural pair preserves interpolation-call order
+Map,000141f4,0001559c,,homologous,2,literal-pool,unique structural pair preserves interpolation-call order
+Map,00014274,0001561c,,homologous,2,literal-pool,unique structural pair preserves interpolation-call order
+Map,00014c1a,00015e12,,homologous,2,literal-pool,unique structural pair preserves mapped neighbors
+Map,000154a0,00016664,,homologous,2,call-ordinal,unique structural pair preserves normalized geometry
+Map,000175c8,0001950c,,homologous,12,call-ordinal,unique structural pair preserves interpolation-call order
+Map,00018766,0001a94a,,homologous,34,call-ordinal,unique structural pair preserves interpolation-call order

@@ -1,296 +1,296 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
-Axis,00008000,00008000,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0000e98e,00010492,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0001199e,00013c22,,homologous-exact-chain,10,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000119ae,00013c32,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000119b2,00013c36,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011a55,00013cda,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011ac7,00013d64,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Axis,00011b47,00013dec,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011b7b,00013e20,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bbb,00013e60,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bc3,00013e70,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bcb,00013e78,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bd3,00013e80,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bdb,00013e88,,homologous-exact-chain,2,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011be3,00013e90,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011beb,00013e98,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011bfb,00013ea8,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011cc0,00013f85,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Axis,00011cd8,00013f9d,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Axis,00011d0c,00013fd9,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011d24,00013ff1,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011ebe,0001419b,,homologous-exact-chain,7,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011ece,000141ab,,homologous-exact-chain,7,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012778,00014ae5,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012f66,000152f3,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012f9e,0001532f,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012fce,0001535f,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012fd6,00015367,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012ff6,00015387,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012ffe,0001538f,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013026,000153b7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0001302e,000153bf,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013046,000153d7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0001304e,000153df,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013202,00015594,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000133b2,00015764,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000133c2,00015774,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013498,0001584a,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013518,000158ca,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013a98,00015e5a,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013b28,00015eea,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013b98,00015f3a,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013c88,0001604a,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013fb4,000163c6,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00013fc4,000163d6,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014114,000164e6,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000145ea,000169ec,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000146da,00016adc,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0001498a,00016d9c,,homologous-exact-chain,4,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000149aa,00016dbc,,homologous-exact-chain,4,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000149ca,00016ddc,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014aba,00016ecc,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014ada,00016eec,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014aea,00016efc,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014b4a,00016f1c,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014baa,00016f7c,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014f82,000173d4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015286,00017778,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015340,00017842,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015500,00017a02,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015540,00017a42,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000155a0,00017aa2,,homologous-exact-chain,5,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015690,00017b92,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000156d0,00017bd2,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015ce0,00018172,,homologous-exact-chain,5,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015d60,000181f2,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015d70,00018202,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015da0,00018232,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00015db0,00018242,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018716,0001b694,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018766,0001b6f4,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018846,0001b7d4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018866,0001b7f4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018886,0001b814,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018ac6,0001bb14,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018e26,0001be84,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018e46,0001bea4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018e86,0001bee4,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018f96,0001bff4,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018fd6,0001c034,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000190d0,0001c1de,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0002378c,00023884,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000991a,000099de,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00009a1a,00009ade,,homologous-exact-chain,6,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00009b1a,00009bde,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00009c5a,00009d1e,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000a09a,0000a1de,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000bb5a,0000bf5e,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000d68e,0000ec92,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000e98e,00010492,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000f38e,00010e92,,homologous-exact-chain,2,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000f40e,00010f12,,homologous-exact-chain,2,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00010b0e,00012892,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00010b8e,00012912,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001199e,00013c22,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011d24,00013ff1,,homologous-exact-chain,10,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011e46,00014123,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011e56,00014133,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011e5e,0001413b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011e8e,0001416b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011e9e,0001417b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011fb6,00014293,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00011fbe,0001429b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012006,000142e3,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012016,000142f3,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001202e,0001430b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000120ce,000143ab,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012126,000143fb,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012176,00014463,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121ae,000144a3,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121c6,000144bb,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121ce,000144c3,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121d6,000144cb,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121de,000144d3,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121e6,000144db,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121f6,000144eb,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000121fe,000144f3,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012206,000144fb,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001220e,00014503,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001221e,00014513,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012292,00014587,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000122aa,0001459f,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000122ea,000145df,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000122f2,000145e7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012312,00014607,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012332,00014627,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123b2,000146af,,homologous-exact-chain,2,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123c2,000146bf,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123d2,000146cf,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123e2,000146df,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123ea,000146e7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123f2,000146ef,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000123fa,000146f7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012412,0001470f,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001242a,00014727,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012432,0001472f,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001243a,00014737,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001244a,00014747,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001245a,00014757,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012462,0001475f,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012472,0001476f,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001252a,00014857,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012532,0001485f,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000126a0,00014a0d,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000126a8,00014a15,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012798,00014b05,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000127a8,00014b15,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000127d8,00014b45,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000127e8,00014b55,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001296c,00014ce1,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000129d2,00014d57,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a02,00014d87,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a1a,00014d9f,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a22,00014da7,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a2a,00014daf,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a32,00014db7,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a62,00014def,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a7a,00014e07,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012ab2,00014e3f,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012afa,00014e97,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012c4a,00014fd7,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012c56,00014fe3,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d22,000150af,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d32,000150bf,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d42,000150cf,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d52,000150df,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d62,000150ef,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d72,000150ff,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012d82,0001510f,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012dea,00015177,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e32,000151bf,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e3a,000151c7,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e72,000151ff,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e7a,00015207,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e82,0001520f,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012e8a,00015217,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012ede,0001526b,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012efe,0001528b,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012f06,00015293,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012fb6,00015347,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012fc6,00015357,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00013182,00015514,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000131a2,00015534,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000131c2,00015554,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00013202,00015594,,homologous-exact-chain,5,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000133d2,00015784,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00013528,000158da,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014114,000164e6,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000141f4,000165d6,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014274,00016656,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014304,000166f6,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014314,00016706,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001459a,0001699c,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000145ca,000169cc,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001491a,00016d2c,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001495a,00016d6c,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014a2a,00016e3c,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014bea,00016fdc,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014bfa,00016fec,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014c1a,0001700c,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014c9a,0001708c,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014cba,000170ac,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014de2,00017224,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014e02,00017244,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014ea2,000172d4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014ed2,00017304,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014fa2,00017404,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015022,000174c4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015042,000174e4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015062,00017504,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015082,00017524,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015172,00017664,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015182,00017674,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000151d2,000176c4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015276,00017768,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015306,000177f8,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000153a0,000178a2,,homologous-exact-chain,2,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000153b0,000178b2,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000153b8,000178ba,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000153f0,000178f2,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000154a0,000179a2,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000154b0,000179b2,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000154c0,000179c2,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000154e0,000179e2,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015500,00017a02,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015540,00017a42,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000155a0,00017aa2,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015690,00017b92,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000156d0,00017bd2,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015750,00017c52,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015770,00017c72,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015ad0,00018012,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00015b10,00018052,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00016948,000192b8,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000175c8,0001a2b8,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018766,0001b6f4,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018ac6,0001bb14,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018c76,0001bce4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018c96,0001bd04,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018dd6,0001be34,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018de6,0001be44,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018e06,0001be64,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018e46,0001bea4,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018e86,0001bee4,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018f96,0001bff4,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00018fd6,0001c034,,homologous-exact-chain,3,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000190d0,0001c1de,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00019190,0001c29e,,homologous-exact-chain,1,exact-bytes,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00023dd4,00023ecc,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000126e4,00014a51,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00012718,00014a85,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00012818,00014b85,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0001298c,00014d11,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00012196,00014483,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0001219e,0001448b,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0000a29a,0000a3de,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0000934e,000093e6,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0000942c,000094d6,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00008a27,00008a4c,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00009284,0000930e,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,00009534,000095e8,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0001108e,00012e12,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,000129c0,00014d45,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
-Map,0000ab4a,0000aece,,reviewed-target,1,normalized-shape,exhaust-cam correction table in the stock exhaust CVTC descriptor block at 0x000C5B4C; 4x4 operand of target exhaust accessor 000c5a44 at callsite 000c5ade
-Map,0000ab5a,0000aede,,reviewed-target,1,normalized-shape,intake-cam correction table in the stock intake CVTC descriptor block at 0x000C386C
-Map,0000b2fa,0000b67e,,reviewed-target,1,normalized-shape,cold exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C; 8x8 operand of target exhaust accessor 000c5a44 at callsite 000c5a92
-Map,0000b33a,0000b6be,,reviewed-target,1,normalized-shape,warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table
-Map,0000b43a,0000b7be,,reviewed-target,1,normalized-shape,warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table
-Map,0000b53a,0000b8be,,reviewed-target,1,normalized-shape,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C
-Map,000085d9,000085e4,,reviewed-target,2,normalized-shape,stationary rev-limiter activation and release thresholds read at both comparison sites of target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
-Map,00008fdc,00009030,,reviewed-target,2,normalized-shape,accelerator-pedal activation and release thresholds read at both comparison sites of target function 00048adc which is the reviewed homolog of JK08A FUN 00047a56
-Map,0000911c,00009174,,reviewed-target,1,normalized-shape,stationary rev-limiter readiness threshold literal in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
-Map,0000a9aa,0000ad2e,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Map,000124d2,000147cf,,reviewed-target,1,normalized-shape,stationary rev-limiter step table literal preceding reviewed interpolation entry 00026f8c in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
-Map,00012552,0001487f,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Map,00008e36,00008e74,,reviewed-target,1,exact-bytes;target-literal,unique 8-byte constant block 28 14 00 00 50 24 02 02 at 0x008E74 referenced as literal 0x00008E74 by the target exhaust CVTC conditioner 000c5b64 that follows the target exhaust accessor 000c5a44; byte 0 is read at 000c5e46 through the pool slot 000c5fd4 as the source conditioner 000bfe88 reads byte 0 at 000c01a4 through 000c0290
-Map,00008e3b,00008e79,,reviewed-target,1,exact-bytes;target-literal,byte 5 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5baa through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 5 at 000bfece through 000c0034
-Map,00008e3a,00008e78,,reviewed-target,1,exact-bytes;target-literal,byte 4 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5bc2 through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 4 at 000bfee6 through 000c0034
-Map,00008e3c,00008e7a,,reviewed-target,1,exact-bytes;target-literal,byte 6 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5bfa through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 6 at 000bff1e through 000c0034
-Axis,00012f2e,000152bb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm exhaust-target interpolation callsite
-Axis,00012f0e,0001529b,,reviewed-target,1,normalized-shape,load axis operand at the warm exhaust-target interpolation callsite
-Axis,00012f3e,000152cb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm intake-target interpolation callsite
-Axis,00012f1e,000152ab,,reviewed-target,1,normalized-shape,load axis operand at the warm intake-target interpolation callsite
-Axis,00012eca,00015257,,reviewed-target,1,normalized-shape,engine-speed axis operand at the cold intake-target interpolation callsite
-Axis,00012eaa,00015237,,reviewed-target,1,normalized-shape,load axis operand at the cold intake-target interpolation callsite
-Axis,00012f9a,00015327,,reviewed-target,1,normalized-shape,engine-speed axis operand at the intake-correction interpolation callsite
-Axis,00012f92,0001531f,,reviewed-target,1,normalized-shape,load axis operand at the intake-correction interpolation callsite
-Axis,00012ec2,0001524f,,reviewed-target,1,normalized-shape,engine-speed axis operand at the cold exhaust-target interpolation callsite
-Axis,00012ea2,0001522f,,reviewed-target,1,normalized-shape,load axis operand at the cold exhaust-target interpolation callsite
-Axis,00012f96,00015323,,reviewed-target,1,normalized-shape,engine-speed axis operand at the exhaust-correction interpolation callsite
-Axis,00012f8e,0001531b,,reviewed-target,1,normalized-shape,load axis operand at the exhaust-correction interpolation callsite
-Axis,00011cf0,00013fb5,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology
-Axis,00011d4c,00014019,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology
-Map,00012302,,,unsupported,0,changed-geometry,homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the doubled word store at 00058d66 but reads the base curve as eight uint16 cells at 0001715c through explicit-axis wrapper 000270d0 at callsite 00058d58 with the eight-word axis 0001716c instead of the source uint8 table of the implicit eight-point primitive
-Map,0001230a,,,unsupported,0,changed-geometry,homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the doubled word store at 00058d66 but reads the conditional curve as eight uint16 cells at 0001717c through explicit-axis wrapper 000270d0 at callsite 00058bd2 with the eight-word axis 0001716c instead of the source uint8 table of the implicit eight-point primitive
+Axis,00008000,00008000,,homologous,92,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0000e98e,00010492,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0001199e,00013c22,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000119ae,00013c32,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000119b2,00013c36,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011a55,00013cda,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011ac7,00013d64,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Axis,00011b47,00013dec,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011b7b,00013e20,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bbb,00013e60,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bc3,00013e70,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bcb,00013e78,,homologous,4,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bd3,00013e80,,homologous,4,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bdb,00013e88,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011be3,00013e90,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011beb,00013e98,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011bfb,00013ea8,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011cc0,00013f85,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Axis,00011cd8,00013f9d,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Axis,00011cf0,00013fb5,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
+Axis,00011d0c,00013fd9,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011d24,00013ff1,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011d4c,00014019,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
+Axis,00011ebe,0001419b,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011ece,000141ab,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012778,00014ae5,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012ea2,0001522f,,reviewed-target,2,l0,load axis operand at the cold exhaust-target interpolation callsite
+Axis,00012eaa,00015237,,reviewed-target,2,l0,load axis operand at the cold intake-target interpolation callsite
+Axis,00012ec2,0001524f,,reviewed-target,1,l0,engine-speed axis operand at the cold exhaust-target interpolation callsite
+Axis,00012eca,00015257,,reviewed-target,1,l0,engine-speed axis operand at the cold intake-target interpolation callsite
+Axis,00012f0e,0001529b,,reviewed-target,1,l0,load axis operand at the warm exhaust-target interpolation callsite
+Axis,00012f1e,000152ab,,reviewed-target,1,l0,load axis operand at the warm intake-target interpolation callsite
+Axis,00012f2e,000152bb,,reviewed-target,1,l0,engine-speed axis operand at the warm exhaust-target interpolation callsite
+Axis,00012f3e,000152cb,,reviewed-target,1,l0,engine-speed axis operand at the warm intake-target interpolation callsite
+Axis,00012f66,000152f3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012f8e,0001531b,,reviewed-target,1,l0,load axis operand at the exhaust-correction interpolation callsite
+Axis,00012f92,0001531f,,reviewed-target,1,l0,load axis operand at the intake-correction interpolation callsite
+Axis,00012f96,00015323,,reviewed-target,1,l0,engine-speed axis operand at the exhaust-correction interpolation callsite
+Axis,00012f9a,00015327,,reviewed-target,1,l0,engine-speed axis operand at the intake-correction interpolation callsite
+Axis,00012f9e,0001532f,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012fce,0001535f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012fd6,00015367,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012ff6,00015387,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012ffe,0001538f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013026,000153b7,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0001302e,000153bf,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013046,000153d7,,homologous,3,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0001304e,000153df,,homologous,1,masked-match,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013202,00015594,,homologous,48,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000133b2,00015764,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000133c2,00015774,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013498,0001584a,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013518,000158ca,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013a98,00015e5a,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013b28,00015eea,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013b98,00015f3a,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013c88,0001604a,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013fb4,000163c6,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00013fc4,000163d6,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014114,000164e6,,homologous,26,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000145ea,000169ec,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000146da,00016adc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0001498a,00016d9c,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000149aa,00016dbc,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000149ca,00016ddc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014aba,00016ecc,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014ada,00016eec,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014aea,00016efc,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014b4a,00016f1c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014baa,00016f7c,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014f82,000173d4,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015286,00017778,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015340,00017842,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015500,00017a02,,homologous,14,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015540,00017a42,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000155a0,00017aa2,,homologous,41,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015690,00017b92,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000156d0,00017bd2,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015ce0,00018172,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015d60,000181f2,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015d70,00018202,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015da0,00018232,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00015db0,00018242,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018716,0001b694,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018766,0001b6f4,,homologous,17,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018846,0001b7d4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018866,0001b7f4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018886,0001b814,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018ac6,0001bb14,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018e26,0001be84,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018e46,0001bea4,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018e86,0001bee4,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018f96,0001bff4,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018fd6,0001c034,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000190d0,0001c1de,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0002378c,00023884,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000085d9,000085e4,,reviewed-target,4,l0,stationary rev-limiter activation and release thresholds read at both comparison sites of target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,00008a27,00008a4c,,reviewed-target,6,l0,target literals and reviewed homologous consumer topology
+Map,00008e36,00008e74,,reviewed-target,9,l0,unique 8-byte constant block 28 14 00 00 50 24 02 02 at 0x008E74 referenced as literal 0x00008E74 by the target exhaust CVTC conditioner 000c5b64 that follows the target exhaust accessor 000c5a44; byte 0 is read at 000c5e46 through the pool slot 000c5fd4 as the source conditioner 000bfe88 reads byte 0 at 000c01a4 through 000c0290
+Map,00008e3a,00008e78,,reviewed-target,1,l0,byte 4 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5bc2 through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 4 at 000bfee6 through 000c0034
+Map,00008e3b,00008e79,,reviewed-target,1,l0,byte 5 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5baa through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 5 at 000bfece through 000c0034
+Map,00008e3c,00008e7a,,reviewed-target,1,l0,byte 6 of the unique 8-byte constant block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5bfa through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 6 at 000bff1e through 000c0034
+Map,00008fdc,00009030,,reviewed-target,4,l0,accelerator-pedal activation and release thresholds read at both comparison sites of target function 00048adc which is the reviewed homolog of JK08A FUN 00047a56
+Map,0000911c,00009174,,reviewed-target,2,l0,stationary rev-limiter readiness threshold literal in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,00009284,0000930e,,reviewed-target,10,l0,target literals and reviewed homologous consumer topology
+Map,0000934e,000093e6,,reviewed-target,7,l0,target literals and reviewed homologous consumer topology
+Map,0000942c,000094d6,,reviewed-target,5,l0,target literals and reviewed homologous consumer topology
+Map,00009534,000095e8,,reviewed-target,16,l0,target literals and reviewed homologous consumer topology
+Map,0000991a,000099de,,homologous,7,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00009a1a,00009ade,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00009b1a,00009bde,,homologous,5,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00009c5a,00009d1e,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000a09a,0000a1de,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000a29a,0000a3de,,reviewed-target,4,l0,target literals and reviewed homologous consumer topology
+Map,0000a9aa,0000ad2e,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Map,0000ab4a,0000aece,,reviewed-target,2,l0,exhaust-cam correction table in the stock exhaust CVTC descriptor block at 0x000C5B4C; 4x4 operand of target exhaust accessor 000c5a44 at callsite 000c5ade
+Map,0000ab5a,0000aede,,reviewed-target,2,l0,intake-cam correction table in the stock intake CVTC descriptor block at 0x000C386C
+Map,0000b2fa,0000b67e,,reviewed-target,2,l0,cold exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C; 8x8 operand of target exhaust accessor 000c5a44 at callsite 000c5a92
+Map,0000b33a,0000b6be,,reviewed-target,2,l0,warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table
+Map,0000b43a,0000b7be,,reviewed-target,2,l0,warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table
+Map,0000b53a,0000b8be,,reviewed-target,2,l0,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C
+Map,0000bb5a,0000bf5e,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000d68e,0000ec92,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000e98e,00010492,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000f38e,00010e92,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000f40e,00010f12,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00010b0e,00012892,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00010b8e,00012912,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001108e,00012e12,,reviewed-target,1,l0,target literals and reviewed homologous consumer topology
+Map,0001199e,00013c22,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011d24,00013ff1,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011e46,00014123,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011e56,00014133,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011e5e,0001413b,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011e8e,0001416b,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011e9e,0001417b,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011fb6,00014293,,homologous,8,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00011fbe,0001429b,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012006,000142e3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012016,000142f3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001202e,0001430b,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000120ce,000143ab,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012126,000143fb,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012176,00014463,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012196,00014483,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,0001219e,0001448b,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,000121ae,000144a3,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121c6,000144bb,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121ce,000144c3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121d6,000144cb,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121de,000144d3,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121e6,000144db,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121f6,000144eb,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000121fe,000144f3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012206,000144fb,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001220e,00014503,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001221e,00014513,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012292,00014587,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000122aa,0001459f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000122ea,000145df,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000122f2,000145e7,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012302,,,unsupported,0,absent,homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the doubled word store at 00058d66 but reads the base curve as eight uint16 cells at 0001715c through explicit-axis wrapper 000270d0 at callsite 00058d58 with the eight-word axis 0001716c instead of the source uint8 table of the implicit eight-point primitive
+Map,0001230a,,,unsupported,0,absent,homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the doubled word store at 00058d66 but reads the conditional curve as eight uint16 cells at 0001717c through explicit-axis wrapper 000270d0 at callsite 00058bd2 with the eight-word axis 0001716c instead of the source uint8 table of the implicit eight-point primitive
+Map,00012312,00014607,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012332,00014627,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123b2,000146af,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123c2,000146bf,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123d2,000146cf,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123e2,000146df,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123ea,000146e7,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123f2,000146ef,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000123fa,000146f7,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012412,0001470f,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001242a,00014727,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012432,0001472f,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001243a,00014737,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001244a,00014747,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001245a,00014757,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012462,0001475f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012472,0001476f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000124d2,000147cf,,reviewed-target,2,l0,stationary rev-limiter step table literal preceding reviewed interpolation entry 00026f8c in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,0001252a,00014857,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012532,0001485f,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012552,0001487f,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Map,000126a0,00014a0d,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000126a8,00014a15,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000126e4,00014a51,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,00012718,00014a85,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,00012798,00014b05,,homologous,5,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000127a8,00014b15,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000127d8,00014b45,,homologous,5,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000127e8,00014b55,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012818,00014b85,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,0001296c,00014ce1,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001298c,00014d11,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,000129c0,00014d45,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
+Map,000129d2,00014d57,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a02,00014d87,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a1a,00014d9f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a22,00014da7,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a2a,00014daf,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a32,00014db7,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a62,00014def,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a7a,00014e07,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012ab2,00014e3f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012afa,00014e97,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012c4a,00014fd7,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012c56,00014fe3,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d22,000150af,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d32,000150bf,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d42,000150cf,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d52,000150df,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d62,000150ef,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d72,000150ff,,homologous,5,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012d82,0001510f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012dea,00015177,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e32,000151bf,,homologous,4,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e3a,000151c7,,homologous,4,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e72,000151ff,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e7a,00015207,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e82,0001520f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012e8a,00015217,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012ede,0001526b,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012efe,0001528b,,homologous,5,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012f06,00015293,,homologous,3,function-match,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012fb6,00015347,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012fc6,00015357,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00013182,00015514,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000131a2,00015534,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000131c2,00015554,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00013202,00015594,,homologous,48,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000133d2,00015784,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00013528,000158da,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014114,000164e6,,homologous,26,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000141f4,000165d6,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014274,00016656,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014304,000166f6,,homologous,3,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014314,00016706,,homologous,1,masked-match,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001459a,0001699c,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000145ca,000169cc,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001491a,00016d2c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001495a,00016d6c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014a2a,00016e3c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014bea,00016fdc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014bfa,00016fec,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014c1a,0001700c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014c9a,0001708c,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014cba,000170ac,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014de2,00017224,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014e02,00017244,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014ea2,000172d4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014ed2,00017304,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00014fa2,00017404,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015022,000174c4,,homologous,10,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015042,000174e4,,homologous,10,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015062,00017504,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015082,00017524,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015172,00017664,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015182,00017674,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000151d2,000176c4,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015276,00017768,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015306,000177f8,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000153a0,000178a2,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000153b0,000178b2,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000153b8,000178ba,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000153f0,000178f2,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000154a0,000179a2,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000154b0,000179b2,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000154c0,000179c2,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000154e0,000179e2,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015500,00017a02,,homologous,14,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015540,00017a42,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000155a0,00017aa2,,homologous,41,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015690,00017b92,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000156d0,00017bd2,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015750,00017c52,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015770,00017c72,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015ad0,00018012,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00015b10,00018052,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00016948,000192b8,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000175c8,0001a2b8,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018766,0001b6f4,,homologous,17,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018ac6,0001bb14,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018c76,0001bce4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018c96,0001bd04,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018dd6,0001be34,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018de6,0001be44,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018e06,0001be64,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018e46,0001bea4,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018e86,0001bee4,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018f96,0001bff4,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00018fd6,0001c034,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000190d0,0001c1de,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00019190,0001c29e,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00023dd4,00023ecc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands

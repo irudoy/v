@@ -200,6 +200,38 @@ class ApcOutputTest(unittest.TestCase):
             former, former.symbols[SymbolKey("jk00d", "ram", APC_FORMER)], item))
 
 
+class TypedTest(unittest.TestCase):
+    """The evidence of a definition row: JK00D 000104a2 and 7MFK 0000e98e are
+    operands at one ordinal of the calls of homologous functions."""
+
+    def model(self):
+        def declare(b):
+            b.symbol("7mfk", "tbl", 0xE98E, "test", group=("tbl", "row"))
+            b.symbol("jk00d", "tbl", 0x104A2, "test", group=("tbl", "row"))
+        return model_of(declare)
+
+    def test_the_first_verified_item_of_the_first_kind_types_the_row(self):
+        m = self.model()
+        symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x104A2)]
+        other = m.symbols[SymbolKey("7mfk", "tbl", 0xE98E)]
+        self.assertEqual(match.typed(m, symbol, other),
+                         {"kind": "call-ordinal", "supports": "homology",
+                          "at": "jk00d:00075c70", "to": "7mfk:000734d4", "count": 1, "value": 0})
+        # The call at 000725cc precedes it, but no function that calls the
+        # table on 7MFK at that ordinal is homologous to its caller.
+        refuted = [item for item in match.homology_items(m, symbol, other)
+                   if item["kind"] == "call-ordinal" and item["at"] == "jk00d:000725cc"]
+        self.assertTrue(refuted)
+        self.assertTrue(all("neither one meaning" in match.verify(m, symbol, item)
+                            for item in refuted))
+
+    def test_touching_lists_every_instruction_that_touches_the_storage(self):
+        m = self.model()
+        found = match.touching(m, m.symbols[SymbolKey("jk00d", "tbl", 0x104A2)])
+        self.assertEqual(len(found), 25)
+        self.assertEqual(found[:2], [0x725C2, 0x725CC])
+
+
 class InterpContractTest(unittest.TestCase):
     """interp-contract evidence: two wrappers share the contract and call the
     entries of their kernels, and two kernels share the entry that a wrapper
