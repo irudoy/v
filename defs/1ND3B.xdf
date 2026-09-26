@@ -5936,7 +5936,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xA30E" flags="0x0">
     <title>Map 1 - Engine Speed Limit - Fuel Cut Caps</title>
-    <description>Exact 1ND3B. Address 0x91D2; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound.</description>
+    <description>Exact 1ND3B. Address 0x91D2; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -6021,7 +6021,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xDB84" flags="0x0">
     <title>Map 1 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x17202; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x17202; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -9854,7 +9854,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x8826" flags="0x0">
     <title>Map 2 - Engine Speed Limit - Fuel Cut Caps</title>
-    <description>Exact 1ND3B. Address 0x1324F4; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 2 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound.</description>
+    <description>Exact 1ND3B. Address 0x1324F4; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 2 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -9939,7 +9939,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xACF7" flags="0x0">
     <title>Map 2 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x1336E0; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 2 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x1336E0; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 2 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -13772,7 +13772,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xC40D" flags="0x0">
     <title>Map 3 - Engine Speed Limit - Fuel Cut Caps</title>
-    <description>Exact 1ND3B. Address 0x1324F8; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 3 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound.</description>
+    <description>Exact 1ND3B. Address 0x1324F8; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 3 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -13857,7 +13857,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x6FD1" flags="0x0">
     <title>Map 3 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133700; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 3 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133700; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 3 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -17690,7 +17690,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x4C71" flags="0x0">
     <title>Map 4 - Engine Speed Limit - Fuel Cut Caps</title>
-    <description>Exact 1ND3B. Address 0x1324FC; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 4 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound.</description>
+    <description>Exact 1ND3B. Address 0x1324FC; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 4 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -17775,7 +17775,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xD53" flags="0x0">
     <title>Map 4 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133720; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 4 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133720; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 4 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -21608,7 +21608,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xE832" flags="0x0">
     <title>Map 5 - Engine Speed Limit - Fuel Cut Caps</title>
-    <description>Exact 1ND3B. Address 0x13353C; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 5 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound.</description>
+    <description>Exact 1ND3B. Address 0x13353C; 1 rows x 2 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release scalar caps. Common-definition Map 5 storage is projected from 0x91D2. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -21693,7 +21693,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xAAD5" flags="0x0">
     <title>Map 5 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133740; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 5 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133740; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 5 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />

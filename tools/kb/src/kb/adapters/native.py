@@ -20,12 +20,22 @@
 - Each target of `defs/vq37-native-fuel-cut.toml` gives the `fn`, `ram`,
   `tbl`, and `axis` symbols of its fuel-cut mechanism, joined across targets
   by registry key, and the state byte names its armed and active bits. The
-  call site gives the predicate function `l0` evidence with the instruction
-  ordinal as `value` and the target's `evidence` as `note`; the scheduler
-  word gives the coordinator `l0` evidence. Each pointer binding gives the
-  symbol at its target `l0` evidence at its site and a `reader` link to the
-  predicate function. The function size and digest must equal L0.
+  call site gives the predicate function `l0` evidence with the ordinal of
+  the predicate in the coordinator as `value` and the target's `evidence` as
+  `note`; the site lies the instruction ordinal of the call from the
+  coordinator entry. The scheduler word gives the coordinator `l0`
+  evidence, and the curves take the axis as their `x` axis. Each pointer
+  binding gives the symbol at its target `l0` evidence at its site and a
+  `reader` link to the predicate function. The function size and digest
+  must equal L0, and the targets of the images of one layout state one
+  evidence text.
 - The stock digest of every target must equal the image catalog.
+- `render_tables` and `render_fuel_cut` write a registry document in the
+  form of its file: targets, entries, and absent ids in document order, the
+  keys of an entry in a fixed order, and addresses as eight uppercase
+  hexadecimal digits. The files list the entries of a target by address,
+  the pointer bindings of an entry by site and offset, and the absent ids by
+  name.
 """
 
 from collections import defaultdict
@@ -33,7 +43,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import repo, vocab
+from kb import repo, store, vocab
 
 TABLES = Path("defs/vq37-native-tables.toml")
 FUEL_CUT = Path("defs/vq37-native-fuel-cut.toml")
@@ -216,8 +226,12 @@ def _declare_absent(b, src, subject, group, layout, text):
 def declare_fuel_cut(b, root, document, src, catalog):
     pending = b.stash.setdefault(__name__, [])
     signatures = {}
+    evidence = {}
     for rom, layout, target in _targets(b, src, document, catalog, FUEL_CUT_KEYS):
         subject = f"target.{rom}"
+        if evidence.setdefault(layout, target["evidence"]) != target["evidence"]:
+            b.issue("schema", src, f"{subject}.evidence", "the targets of one layout state "
+                    "different evidence texts")
         keys = {}
         for name, kind in FUEL_CUT_SYMBOLS:
             address = target[name]
@@ -244,14 +258,19 @@ def declare_fuel_cut(b, root, document, src, catalog):
             b.keys(keys["state_address"], {"bit": sorted(bits, key=lambda item: item["bit"])},
                    src)
         function = keys["function_address"]
+        site = target["predicate_call_site"]
+        if site != target["coordinator_address"] + 2 * target["predicate_instruction_ordinal"]:
+            b.issue("schema", src, f"{subject}.predicate_call_site", "the call site is not "
+                    "predicate_instruction_ordinal instructions from the coordinator entry")
         b.symbol(layout, "fn", function.address, src, evidence=[{
-            "kind": "l0", "supports": "identity",
-            "at": _location(layout, target["predicate_call_site"]),
-            "value": target["predicate_instruction_ordinal"], "path": src, "key": subject,
-            "note": target["evidence"]}])
+            "kind": "l0", "supports": "identity", "at": _location(layout, site),
+            "value": target["coordinator_predicate_ordinal"], "note": target["evidence"]}])
         b.symbol(layout, "fn", target["coordinator_address"], src, evidence=[{
             "kind": "l0", "supports": "identity",
             "at": _location(layout, target["coordinator_pointer_site"])}])
+        if "curves_address" in keys and "axis_address" in keys:
+            b.link(keys["curves_address"], "axis", keys["axis_address"], src,
+                   props={"slot": "x"})
         for name, kinds in BINDINGS.items():
             for binding in target.get(name, ()):
                 item = {"kind": "l0", "supports": "identity",
@@ -288,3 +307,112 @@ def relate(b, root):
                 continue
             b.symbol(layout, datum.kind, datum.address, src, evidence=[item])
             b.link(datum, "reader", function, src, evidence=[item])
+
+
+# Rendering -----------------------------------------------------------------
+
+# Keys of the entries and targets in the order of their files.
+TABLE_ORDER = ("id", "address", "width", "height", "storagetype", "values_sha256",
+               "pointer_bindings", "axis_x", "axis_y", "mask", "name", "category", "order",
+               "format", "fine", "coarse", "units", "confidence", "scale_conf", "scale_expr",
+               "to_byte", "static_axis_name", "static_axis", "semantics", "note")
+AXIS_ORDER = ("id", "address", "length", "storagetype", "values_sha256", "pointer_bindings",
+              "name", "kind", "format", "fine", "coarse", "units", "confidence", "scale_conf",
+              "scale_expr", "to_byte", "note")
+FUEL_CUT_ORDER = (
+    "stock_sha256", "function_address", "function_size", "function_sha256",
+    "coordinator_address", "coordinator_pointer_site", "coordinator_predicate_ordinal",
+    "predicate_call_site", "predicate_instruction_ordinal", "selector_address", "rpm_address",
+    "state_address", "state_active_mask", "state_armed_mask", "delay_address",
+    "delay_calibration_address", "delay_calibration_value", "axis_address", "axis_values",
+    "caps_address", "caps_values", "curves_address", "curve_values", "pointer_bindings",
+    "ram_pointer_bindings", "evidence")
+ENTRY_ADDRESSES = frozenset({"address", "axis_x", "axis_y"})
+# Elements per line of the curve values.
+CURVE_ROW = 8
+
+
+def render_tables(document):
+    """The text of `defs/vq37-native-tables.toml` from its document: the
+    targets in document order, each with its tables, axes, and absent ids in
+    document order, and the keys of an entry in the order of the file."""
+    lines = [f"schema_version = {document['schema_version']}"]
+    for rom, target in document["target"].items():
+        lines += ["", f"[target.{rom}]", f"stock_sha256 = {_string(target['stock_sha256'])}"]
+        for name, order in (("table", TABLE_ORDER), ("axis", AXIS_ORDER)):
+            for entry in target.get(name, ()):
+                _known(entry, order, f"target.{rom}.{name}")
+                lines += ["", f"[[target.{rom}.{name}]]"]
+                lines += [f"{key} = {_entry_value(key, entry[key])}"
+                          for key in order if key in entry]
+        if target.get("absent"):
+            lines += ["", f"[target.{rom}.absent]"]
+            lines += [f"{key} = {_string(text)}" for key, text in target["absent"].items()]
+    return "\n".join(lines) + "\n"
+
+
+def render_fuel_cut(document):
+    """The text of `defs/vq37-native-fuel-cut.toml` from its document."""
+    lines = [f"schema_version = {document['schema_version']}"]
+    for rom, target in document["target"].items():
+        _known(target, FUEL_CUT_ORDER, f"target.{rom}")
+        lines += ["", f"[target.{rom}]"]
+        for key in FUEL_CUT_ORDER:
+            value = target[key]
+            if key in BINDINGS:
+                lines.append(f"{key} = [")
+                lines += [f"  {{ site = {_address(item['site'])}, "
+                          f"target = {_address(item['target'])} }}," for item in value]
+                lines.append("]")
+            elif key == "curve_values":
+                lines.append(f"{key} = [")
+                lines += ["  " + ", ".join(str(item) for item in value[start:start + CURVE_ROW])
+                          + "," for start in range(0, len(value), CURVE_ROW)]
+                lines.append("]")
+            elif key.endswith("_mask"):
+                lines.append(f"{key} = 0x{value:02X}")
+            elif key.endswith(("_address", "_site")):
+                lines.append(f"{key} = {_address(value)}")
+            else:
+                lines.append(f"{key} = {_plain(value)}")
+    return "\n".join(lines) + "\n"
+
+
+def _known(entry, order, subject):
+    unknown = sorted(set(entry) - set(order))
+    if unknown:
+        raise repo.KbError(f"{subject}: no rendering of {', '.join(unknown)}", code=3)
+
+
+def _address(value):
+    return f"0x{value:08X}"
+
+
+def _string(text):
+    return f'"{store.escape(text)}"'
+
+
+def _plain(value):
+    """A string, a number, or an array of them."""
+    if isinstance(value, str):
+        return _string(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(_plain(item) for item in value) + "]"
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise repo.KbError(f"no rendering of {value!r}", code=3)
+    return repr(value)
+
+
+def _entry_value(key, value):
+    if key in ENTRY_ADDRESSES:
+        return _address(value)
+    if key == "pointer_bindings":
+        return "[" + ", ".join(_pointer(item) for item in value) + "]"
+    return _plain(value)
+
+
+def _pointer(item):
+    parts = [f"site = {_address(item['site'])}", f"accessor = {_address(item['accessor'])}"]
+    if item.get("offset"):
+        parts.append(f"offset = 0x{item['offset']:X}")
+    return "{ " + ", ".join(parts) + " }"

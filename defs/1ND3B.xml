@@ -1951,9 +1951,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Engine Speed Limit - Fuel Cut Caps"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2004,10 +2005,11 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound. The two rows are interpolated independently; no interpolation occurs
-         between rows.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state. The two rows are interpolated independently;
+         no interpolation occurs between rows.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Engine Speed Limit - Fuel Cut Curves"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2458,9 +2460,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Engine Speed Limit - Fuel Cut Caps"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2513,10 +2516,11 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound. The two rows are interpolated independently; no interpolation occurs
-         between rows.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state. The two rows are interpolated independently;
+         no interpolation occurs between rows.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Engine Speed Limit - Fuel Cut Curves"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2967,9 +2971,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Engine Speed Limit - Fuel Cut Caps"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3022,10 +3027,11 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound. The two rows are interpolated independently; no interpolation occurs
-         between rows.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state. The two rows are interpolated independently;
+         no interpolation occurs between rows.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Engine Speed Limit - Fuel Cut Curves"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3476,9 +3482,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Engine Speed Limit - Fuel Cut Caps"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3531,10 +3538,11 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound. The two rows are interpolated independently; no interpolation occurs
-         between rows.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state. The two rows are interpolated independently;
+         no interpolation occurs between rows.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Engine Speed Limit - Fuel Cut Curves"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3985,9 +3993,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Engine Speed Limit - Fuel Cut Caps"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -4040,10 +4049,11 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072.
-         The complete 1ND3B fuel-cut function and every address-bearing pointer binding are
-         byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain
-         target-bound. The two rows are interpolated independently; no interpolation occurs
-         between rows.
+         The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean
+         predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation
+         preserves the JK78C cap, interpolation, activation, release, and hysteresis structure
+         with target-local storage and RAM state. The two rows are interpolated independently;
+         no interpolation occurs between rows.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Engine Speed Limit - Fuel Cut Curves"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"

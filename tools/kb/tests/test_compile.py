@@ -346,11 +346,36 @@ class NativeAdapterTest(unittest.TestCase):
                          {"jk78c": 0x16A64, "1nd": 0x17072, "1me3b": 0x17106})
         function = m.meaning_of(SymbolKey("jk78c", "fn", 0x0006AEB8))
         call = function.symbols["jk78c"].evidence[-1]
-        self.assertEqual((call["kind"], call["at"], call["value"]), ("l0", "jk78c:0006a9e8", 28))
+        self.assertEqual((call["kind"], call["at"], call["value"]), ("l0", "jk78c:0006a9e8", 3))
         base = m.meaning_of(SymbolKey("jk78c", "ram", 0xFFFF1084))
         self.assertEqual(list(_readers(base, "jk78c")), [0x0006AEB8])
         self.assertEqual(base.symbols["jk78c"].evidence,
                          [{"kind": "l0", "supports": "identity", "at": "jk78c:0006b044"}])
+
+    def test_the_fuel_cut_curves_take_the_axis_as_their_x_axis(self):
+        m = model()
+        curves = m.meaning_of(SymbolKey("jk78c", "tbl", _fuel_cut()["JK78C"]["curves_address"]))
+        axis = m.meaning_of(SymbolKey("jk78c", "axis", 0x16A64))
+        self.assertEqual({(link.slot, link.to.key) for link in curves.links if link.type == "axis"},
+                         {("x", axis.key)})
+
+    def test_a_call_site_off_its_instruction_ordinal_is_an_issue(self):
+        targets = _fuel_cut()
+        targets["JK78C"]["predicate_call_site"] += 2
+        self.assertEqual(_fuel_cut_issues(targets),
+                         [("schema", "target.JK78C.predicate_call_site")])
+
+    def test_the_targets_of_one_layout_state_one_evidence_text(self):
+        targets = _fuel_cut()
+        targets["1ND3B"]["evidence"] = "Another text."
+        self.assertEqual(_fuel_cut_issues(targets), [("schema", "target.1ND3B.evidence")])
+
+    def test_the_registries_are_their_canonical_rendering(self):
+        for path, render in ((native.TABLES, native.render_tables),
+                             (native.FUEL_CUT, native.render_fuel_cut)):
+            with self.subTest(path=path):
+                text = (repo.ROOT / path).read_text(encoding="utf-8")
+                self.assertEqual(render(tomllib.loads(text)), text)
 
     def test_an_entry_that_some_images_of_a_layout_carry_gives_the_symbol_images(self):
         catalog = repo.images()
@@ -364,6 +389,18 @@ class NativeAdapterTest(unittest.TestCase):
         self.assertEqual(meaning.symbols["1nd"].props["images"], ["1ND0A"])
         self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
                          [("audit", "target.1ND3B")])
+
+
+def _fuel_cut():
+    return tomllib.loads((repo.ROOT / native.FUEL_CUT).read_text(encoding="utf-8"))["target"]
+
+
+def _fuel_cut_issues(targets):
+    """(check, subject) of the issues of a fuel-cut document of these targets."""
+    b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+    native.declare_fuel_cut(b, repo.ROOT, {"schema_version": 1, "target": targets},
+                            "probe.toml", repo.images())
+    return [(issue.check, issue.subject) for issue in b.issues]
 
 
 def _sources(meaning):

@@ -1,12 +1,5 @@
 schema_version = 1
 
-# VQ37 does not use the canonical VQ35HR 2x2 fuel-cut table. Each target below
-# binds the exact stock state machine to two adjacent scalar caps and two
-# adjacent eight-point curves. Values are big-endian uint16 RPM codes.
-# Coordinator bodies are discontiguous Ghidra functions. The complete stock
-# image hash, scheduler pointer, exact BSR site, and contiguous predicate hash
-# bind the executable chain without treating a contiguous envelope as a body.
-
 [target.JK78C]
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
 function_address = 0x0006AEB8
@@ -124,7 +117,7 @@ ram_pointer_bindings = [
   { site = 0x00076CB0, target = 0xFFFE81B6 },
   { site = 0x00076CB8, target = 0xFFFE950E },
 ]
-evidence = "The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound."
+evidence = "The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state."
 
 [target.1ME3B]
 stock_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"

@@ -40,7 +40,10 @@ identities, and stock calibration values. The JK78C definition exposes fourteen
 target-specific Map Switching families and the 1ND definitions eighteen, the
 four 8x8 state-code ignition surfaces included, together with the native fuel-cut cap and curve
 tables, Rolling Launch controls, and CAN telemetry control from the same
-validated runtime target consumed by the production builder.
+validated runtime target consumed by the production builder. The generator
+verifies every address, geometry, stock value block, and accessor
+literal-pool binding of the native registries against the exact stock image
+before the entity reaches a definition.
 
 ## Paired editor definitions
 

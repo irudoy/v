@@ -2288,15 +2288,34 @@ status `note`.
   `delay_calibration_value` are image bytes and become `rom-bytes` evidence
   where a claim rests on them.
 - `predicate_call_site` gives the function `l0` evidence with
-  `predicate_instruction_ordinal` as `value` and `evidence` as `note`, and
-  `coordinator_pointer_site` gives the coordinator `l0` evidence at the
-  scheduler word. `coordinator_predicate_ordinal` is 3 on `jk78c` and 1 on
-  `1nd` and `1me3b`, so the call grounds no `call-ordinal` homology.
+  `coordinator_predicate_ordinal`, the position of the function among the
+  Boolean predicates that the coordinator aggregates, as `value` and
+  `evidence` as `note`. The site lies `predicate_instruction_ordinal`
+  instructions from the coordinator entry, so the instruction ordinal is not
+  stored, and a site elsewhere is an issue. `coordinator_pointer_site` gives
+  the coordinator `l0` evidence at the scheduler word.
+  `coordinator_predicate_ordinal` is 3 on `jk78c` and 1 on `1nd` and
+  `1me3b`, so the call grounds no `call-ordinal` homology.
+- The coordinator bodies are discontiguous Ghidra functions: the stock
+  image, the scheduler word, the call site, and the digest of the
+  contiguous predicate bind the chain, and no contiguous envelope stands
+  for a coordinator body.
+- `axis_address` is the `x` axis of the curves, an `axis` link from the
+  curves symbol with slot `x`.
 - `pointer_bindings` and `ram_pointer_bindings` give the symbol at each
   target `l0` evidence at the site and a `reader` link to the function with
   that evidence.
 - `function_size` and `function_sha256` must equal L0, and `stock_sha256`
   must equal the catalog digest; neither is stored.
+
+Both registries have one canonical text, which the projection of the stage
+reproduces byte for byte: no comments, `schema_version` first, the targets
+in file order, one section per target and per entry with the keys in a fixed
+order, addresses as eight uppercase hexadecimal digits, the entries of a
+target by address, the pointer bindings of an entry by site and offset, the
+absent ids by name, and the curve values eight to a line. The fuel-cut
+targets of the images of one layout state one `evidence` text, and a
+different text is an issue.
 
 ### 20.5 Telemetry, signals, and presentation
 

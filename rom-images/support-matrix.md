@@ -109,7 +109,11 @@ homologs are not traced.
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
 coordinator, scheduler pointer, calibration bytes, ROM pointers, and RAM bases
-are bound in `../defs/vq37-native-fuel-cut.toml`. Rolling Launch executes the
+are bound in `../defs/vq37-native-fuel-cut.toml`; the caps and curves hold
+big-endian uint16 RPM codes. The coordinator bodies are discontiguous Ghidra
+functions, so the stock image hash, the scheduler pointer, the exact BSR site,
+and the hash of the contiguous predicate bind the executable chain, and no
+contiguous envelope stands for a body. Rolling Launch executes the
 stock final-mask coordinator first and adds all six cylinder bits only for the
 exact request value `0x003F`.
 
@@ -152,7 +156,11 @@ by coolant temperature. 1ND `0x074D98` and 1ME3B `0x0797CC` pick one of two
 `0x0A410`, `0x0A510`, `0x0A610`, `0x0A710`, `0x0A690`, and `0x0A6D0` on 1ND and
 `0x0A344`, `0x0A444`, `0x0A544`, `0x0A644`, `0x0A5C4`, and `0x0A604` on 1ME3B.
 These surfaces have no canonical source and are registered in
-`../defs/vq37-native-tables.toml` with a `7F` timing-field mask. The canonical
+`../defs/vq37-native-tables.toml` with a `7F` timing-field mask: the
+state-code branch of the coordinator takes only the low seven bits of the
+lookup. Bit 7 survives only through the temperature branch, which stores the
+lookup at `0xFFFE86BA` on 1ND and at `0xFFFE8632` on 1ME3B. What it selects
+downstream is unresolved, so no role publishes it. The canonical
 ignition trio reaches three byte-identical copies in the gated coordinator half
 of JK78C and 1ND, which the stock configuration bytes `0x8965` and `0x8A2B`
 (`0xBA`, bit 5 set) leave unexecuted, so the trio is unsupported on every VQ37

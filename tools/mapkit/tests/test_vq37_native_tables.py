@@ -241,8 +241,8 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
 def test_registry_rejects_a_missing_role_declaration(tmp_path):
     path = _edited_registry(
         tmp_path,
-        "[target.JK78C.absent]\nvvel_duration_mode_14 = ",
-        "[target.JK78C.absent]\nvvel_duration_mode_14_removed = ",
+        '\nvvel_duration_mode_14 = "The JK78C resolver',
+        '\nvvel_duration_mode_14_removed = "The JK78C resolver',
     )
 
     with pytest.raises(

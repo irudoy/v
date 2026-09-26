@@ -270,10 +270,10 @@ def _dotted(parts):
 
 
 def _key(name):
-    return name if BARE_KEY.fullmatch(name) else f'"{_escape(name)}"'
+    return name if BARE_KEY.fullmatch(name) else f'"{escape(name)}"'
 
 
-def _escape(text):
+def escape(text):
     out = []
     for char in text:
         if char in ESCAPES:
@@ -307,7 +307,7 @@ def _scalar(value, spec):
     if isinstance(value, float):
         return repr(value)
     if isinstance(value, str):
-        return f'"{_escape(value)}"'
+        return f'"{escape(value)}"'
     if isinstance(value, dict):
         table = spec if isinstance(spec, Table) else Table()
         items = [f"{_key(key)} = {_scalar(value[key], table.spec(key))}"
@@ -339,7 +339,7 @@ def _string(text, prefix, suffix):
     """A string as a basic string on one line when it has at most 72
     characters, and otherwise as a multiline basic string whose lines end in a
     space and a backslash, so that the value holds no newline."""
-    escaped = _escape(text)
+    escaped = escape(text)
     if len(text) <= SHORT:
         return [f'{prefix}"{escaped}"{suffix}']
     close = '"""' + suffix
