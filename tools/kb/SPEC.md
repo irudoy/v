@@ -1121,9 +1121,9 @@ Options common to the read commands:
 | `kb new <kind> <layout>:<address>` | A meaning with one symbol, named or with a generated name |
 | `kb new <kind> <slug>` | A designed entity |
 | `kb set <ref> <key>=<value>...` | Keys of an entity or a symbol |
-| `kb bind <meaning> <layout>:<address>` | A symbol of an existing meaning on another layout, with evidence |
-| `kb absent <meaning> --layout <l>` | Status `absent` with the evidence that removes the mechanism |
-| `kb unresolved <meaning> --layout <l>` | Status `unresolved` with the method and target of the search |
+| `kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>]` | A symbol of an existing meaning on another layout, with evidence |
+| `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>]` | Status `absent` with the evidence that removes the mechanism |
+| `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>]` | Status `unresolved` with the method and target of the search |
 | `kb link <from> <type> <to>` / `kb unlink` | A typed link and its evidence |
 | `kb rename`, `kb merge`, `kb move` | [Renames, merges, and moves](#55-renames-merges-and-moves) |
 | `kb retire <ref>` | Retires a meaning or designed entity; its names stay reserved |
@@ -1136,18 +1136,48 @@ Options common to the read commands:
 
 Every write:
 
-1. takes the lock and syncs a stale graph;
-2. builds the change in memory and runs the schema, reference, uniqueness, and
-   affected checks on the result;
-3. refuses the whole change with exit code 3 and the failed checks when any
-   check fails;
+1. takes the lock, syncs a stale graph, and resolves its references on it;
+2. builds the change in memory and compiles the model with the changed files
+   in place of those on disk;
+3. refuses the whole change with exit code 3 when the result has an issue of
+   a model check of [Checks](#13-checks) or a registry disagreement of `kb
+   audit` that the working tree lacks, and prints those issues;
 4. writes the files in canonical form through temporary files and renames,
    updates the graph, and writes `:Meta`;
 5. prints the changed files and one line per change.
 
+`--dry-run` stops after step 3 and prints the diff of the change; a write
+draws its generated names anew.
+
+The file of a meaning that has none starts with the entry of its home symbol,
+which joins the file with the registries that state the meaning. A symbol
+that a file takes leaves `kb/names.csv`: in an unnamed meaning its generated
+name becomes the `name` of its entry, and its other names become `former`
+references.
+
+- `kb bind` refuses a layout where the meaning has a symbol and a location
+  that holds a symbol of another meaning, which `kb merge` joins. Without
+  `--evidence`, the evidence is that of the candidate at the location that
+  the search of `kb.match` finds from the symbol on the layout of `--from`,
+  the symbol that the reference names, or the home symbol; a `to` that names
+  a symbol becomes its location. A location that is no candidate is refused
+  with the candidates. A new symbol of an unnamed meaning draws a generated
+  name, and `home` keeps the home of the meaning when the symbol would move
+  it. The status of the layout leaves the file.
+- `kb absent` requires evidence.
+- `kb unresolved` records the `method`, `target`, and `count` of that search
+  with the `l0` digest of the layout, or those that `--method`, `--target`,
+  and `--count` state together. A search that finds one candidate is refused
+  with the `kb bind` that records it.
+- An evidence item is a TOML inline table, for example `kind = "l0", at =
+  "jk00c:00043f10"`, with the keys of its kind ([Evidence](#76-evidence)).
+
 A batch is a TOML file of `[[op]]` tables, each with `cmd` and the arguments
-of one command. `kb apply` applies all operations or none. Subagents write
-only through batches, so the parent reviews one diff.
+of one command under their names: `meaning`, `symbol`, `layout`, `evidence`
+as an array of tables, `from`, `level`, `method`, `target`, `count`, and
+`note`. `kb apply` applies all operations or none, and each operation reads
+the working tree, not the result of an earlier operation of the batch.
+Subagents write only through batches, so the parent reviews one diff.
 
 ### 12.4 Output
 
@@ -1198,7 +1228,7 @@ only through batches, so the parent reviews one diff.
 
 `kb mcp` exposes one tool `kb_<command>` per read command and `kb_apply` for
 writes, with the same arguments, budgets, and exit semantics as errors;
-`kb_apply` joins with the write commands of stage 3. The transport is
+`kb_apply` takes the path of a batch and `dry_run`. The transport is
 newline-delimited JSON-RPC on standard input and output. The local `.mcp.json`
 registers it; `tools/kb/README.md` gives the entry.
 
@@ -1232,13 +1262,17 @@ until the stage that replaces them.
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered | 2 |
 | `guard` | `.claude/settings.json` is tracked and runs `tools/kb/hook.py` before every guarded tool; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |
 
-A write command runs the `schema`, `references`, `names`, `symbols`, and
-`canonical` checks on its result and the other active checks on the entities
-it touches ([Write commands](#123-write-commands)).
+A write command runs the model checks on its result and refuses the issues
+that the result adds to those of the working tree ([Write
+commands](#123-write-commands)).
 
-The `homology` and `statuses` checks cover the symbols and statuses that the
-entity files of `kb/` state, which the conversion of each registry extends.
-The `image-bytes` and `writers` checks cover the whole model.
+The `homology` check covers the symbols that the entity files of `kb/` own:
+those that only files state and those whose file entry states evidence. A
+file entry that only names a symbol of a registry joins the file with the
+meaning, and the registry keeps the symbol's evidence. The `statuses` check
+covers the statuses that the files state. The conversion of each registry
+extends both. The `image-bytes` and `writers` checks cover the whole
+model.
 
 An evidence item that an adapter maps from a legacy token keeps the token in
 `legacy`. The `schema` check does not require the keys of its kind, and the

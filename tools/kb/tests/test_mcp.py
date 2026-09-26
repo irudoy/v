@@ -5,15 +5,24 @@ import unittest
 from kb import cli, mcp
 
 # Commands that change state or serve, and so are no MCP read tools.
-NOT_READ = {"sync", "instance", "mcp", "project", "fmt"}
+NOT_READ = {"sync", "instance", "mcp", "project", "fmt", "bind", "absent", "unresolved",
+            "apply"}
 
 
 class ToolTest(unittest.TestCase):
-    def test_every_read_command_is_one_tool(self):
+    def test_every_read_command_and_apply_is_one_tool(self):
         commands = set(mcp._subparsers(cli.build_parser()).choices)
         self.assertEqual(set(mcp.READ_COMMANDS), commands - NOT_READ)
+        self.assertEqual(mcp.WRITE_COMMANDS, ("apply",))
         self.assertEqual([tool["name"] for tool in mcp.tools()],
-                         [f"kb_{name}" for name in mcp.READ_COMMANDS])
+                         [f"kb_{name}" for name in mcp.READ_COMMANDS + mcp.WRITE_COMMANDS])
+
+    def test_apply_takes_a_batch_and_a_dry_run(self):
+        schema = {tool["name"]: tool["inputSchema"] for tool in mcp.tools()}["kb_apply"]
+        self.assertEqual(schema["required"], ["batch"])
+        self.assertEqual(schema["properties"]["dry_run"]["type"], "boolean")
+        self.assertEqual(mcp.argv("apply", {"batch": "ops.toml", "dry_run": True}),
+                         ["apply", "ops.toml", "--dry-run"])
 
     def test_the_schema_follows_the_arguments_of_the_command(self):
         tools = {tool["name"]: tool["inputSchema"] for tool in mcp.tools()}

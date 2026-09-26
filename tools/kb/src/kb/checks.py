@@ -26,10 +26,22 @@ def _sources(meaning):
     return ";".join(sorted(meaning.sources)) or "model"
 
 
+def _file(src):
+    return src.startswith(f"{store.TREE.as_posix()}/")
+
+
 def _from_files(sources):
     """Whether an entity file of `kb/` states the fact. The facts of an
     unconverted registry join the checks of stage 3 with its conversion."""
-    return any(src.startswith(f"{store.TREE.as_posix()}/") for src in sources)
+    return any(_file(src) for src in sources)
+
+
+def _owned(model, symbol):
+    """Whether the files own a symbol: only files state it, or a file entry
+    states its evidence. A file entry that only names the symbol of a registry
+    joins its meaning, and the registry keeps the symbol's evidence."""
+    return symbol.key in model.file_evidence or (
+        bool(symbol.sources) and all(_file(src) for src in symbol.sources))
 
 
 def _files(sources):
@@ -119,7 +131,7 @@ def schema(model):
 
 def canonical(model):
     """Every entity file equals the canonical rendering of its parse."""
-    return store.canonical(model.root)
+    return store.canonical(model.root, model.overlay)
 
 
 def names_check(model):
@@ -240,10 +252,10 @@ def _item(item):
 
 
 def homology(model):
-    """Every symbol that a file states is an anchor or reaches one through
-    verified homology evidence, and each of its identity and homology evidence
-    items that L0 or the images decide holds (section 7.3)."""
-    keys = sorted(key for key, symbol in model.symbols.items() if _from_files(symbol.sources))
+    """Every symbol that the files own is an anchor or reaches one through
+    verified homology evidence, and each of its typed identity and homology
+    evidence items that L0 or the images decide holds (section 7.3)."""
+    keys = sorted(key for key, symbol in model.symbols.items() if _owned(model, symbol))
     if not keys:
         return []
     ranks = match.grounded(model, keys)
@@ -253,7 +265,8 @@ def homology(model):
         path = _files(symbol.sources)
         for item in symbol.evidence:
             supports = item.get("supports", "identity")
-            if supports not in ("identity", "homology") or item.get("kind") == "rom-bytes":
+            if (supports not in ("identity", "homology") or item.get("kind") == "rom-bytes"
+                    or "legacy" in item):
                 continue
             if supports == "homology" and item.get("kind") not in match.HOMOLOGY_KINDS:
                 issues.append(Issue("homology", path, key.key,

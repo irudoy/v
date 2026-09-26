@@ -51,17 +51,24 @@ def inputs():
             NATIVE.as_posix()]
 
 
-def read(root=repo.ROOT):
+def read(root=repo.ROOT, overlay=None):
+    """The rows of `kb/names.csv`, or of its text in `overlay` ({repository
+    path: text}) when a change rewrites it."""
+    if overlay and PATH in overlay:
+        return parse(overlay[PATH])
     path = root / PATH
     if not path.exists():
         return []
-    with path.open(newline="", encoding="utf-8") as source:
-        reader = csv.DictReader(source)
-        if tuple(reader.fieldnames or ()) != HEADER:
-            raise repo.KbError(f"{PATH}: header must be {','.join(HEADER)}")
-        return [Row(row["layout"], row["kind"], int(row["address"], 16), row["name"],
-                    tuple(row["former"].split()))
-                for row in reader]
+    return parse(path.read_text(encoding="utf-8"))
+
+
+def parse(text):
+    reader = csv.DictReader(io.StringIO(text, newline=""))
+    if tuple(reader.fieldnames or ()) != HEADER:
+        raise repo.KbError(f"{PATH}: header must be {','.join(HEADER)}")
+    return [Row(row["layout"], row["kind"], int(row["address"], 16), row["name"],
+                tuple(row["former"].split()))
+            for row in reader]
 
 
 def render(rows):

@@ -491,26 +491,32 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
 def sync(root=repo.ROOT, full=False, log=print):
     """Compile the inputs, complete kb/names.csv, and load the graph."""
     with lock.held(root):
-        model = compile.build(root)
-        added = names.enroll(model, model.names, root)
-        if added:
-            model.names = model.names + added
-            names.write(model.names, root)
-            names.assign(model, model.names)
-            log(f"{names.PATH}: {len(added)} generated names")
-        fp = fingerprint.compute(root)
-        with Graph(root) as graph:
-            summary = load(graph, model, fp, root, full, log)
-            log(f"graph: {graph.uri}")
-        for part, (counts, seconds, outside) in summary.items():
-            text = ", ".join(f"{count} {name}" for name, count in counts.items())
-            extra = "".join(f"; {count} {name} addresses outside the MCU spaces"
-                            for name, count in outside.items())
-            log(f"{part}: {text} ({seconds:.1f} s){extra}")
-        if not summary:
-            log("graph: every part is current")
-        log(f"meta: fingerprint {fp.value[:16]}")
-        return model, fp
+        return sync_held(root, full, log)
+
+
+def sync_held(root=repo.ROOT, full=False, log=print, model=None):
+    """`sync` under a lock that the caller holds, loading `model` when the
+    caller has compiled the working tree."""
+    model = model or compile.build(root)
+    added = names.enroll(model, model.names, root)
+    if added:
+        model.names = model.names + added
+        names.write(model.names, root)
+        names.assign(model, model.names)
+        log(f"{names.PATH}: {len(added)} generated names")
+    fp = fingerprint.compute(root)
+    with Graph(root) as graph:
+        summary = load(graph, model, fp, root, full, log)
+        log(f"graph: {graph.uri}")
+    for part, (counts, seconds, outside) in summary.items():
+        text = ", ".join(f"{count} {name}" for name, count in counts.items())
+        extra = "".join(f"; {count} {name} addresses outside the MCU spaces"
+                        for name, count in outside.items())
+        log(f"{part}: {text} ({seconds:.1f} s){extra}")
+    if not summary:
+        log("graph: every part is current")
+    log(f"meta: fingerprint {fp.value[:16]}")
+    return model, fp
 
 
 def refusal(query, write_procedures=()):
@@ -549,9 +555,10 @@ def read_query(graph, query, params=None):
     return keys, records
 
 
-def fresh(root=repo.ROOT, no_sync=False, log=print):
+def fresh(root=repo.ROOT, no_sync=False, log=print, held=False):
     """A Graph whose `:Meta` matches the fingerprint of the working tree,
-    syncing a stale graph unless `no_sync`."""
+    syncing a stale graph unless `no_sync`; `held` when the caller holds the
+    lock."""
     fp = fingerprint.compute(root)
     graph = Graph(root)
     if not stale(meta(graph), fp):
@@ -560,5 +567,8 @@ def fresh(root=repo.ROOT, no_sync=False, log=print):
     if no_sync:
         raise repo.KbError("the graph is stale for this working tree; run `uv run kb sync`",
                            code=6)
-    sync(root, log=log)
+    if held:
+        sync_held(root, log=log)
+    else:
+        sync(root, log=log)
     return Graph(root)

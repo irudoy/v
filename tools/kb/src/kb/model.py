@@ -257,6 +257,11 @@ class Builder:
         # None, former names, file)}, and the meaning files by kind and name.
         self.file_names = {}
         self.files = {}
+        # The symbols whose file entries state evidence.
+        self.file_evidence = set()
+        # {repository path: text, or None} of the entity files that a change
+        # replaces or removes before it writes them (`kb.write`).
+        self.overlay = {}
 
     # Addresses -------------------------------------------------------------
 
@@ -526,6 +531,7 @@ class Builder:
         model.meanings = list(meanings.values())
         model.files = {name: (by_node.get(group), src) for name, (group, src) in self.files.items()}
         model.file_names = self.file_names
+        model.file_evidence = self.file_evidence
         self._semantic_names(by_node, model)
         resolver = Resolver(self, by_node, model)
         self._resolve(resolver)
@@ -803,10 +809,14 @@ class Model:
         self.links = []
         self.self_links = []
         self.by_node = {}
-        # {(kind, name): (meaning, file)} of the meaning files, and the names
-        # that files give symbols (`Builder.file_names`).
+        # {(kind, name): (meaning, file)} of the meaning files, the names that
+        # files give symbols (`Builder.file_names`), and the symbols whose file
+        # entries state evidence.
         self.files = {}
         self.file_names = {}
+        self.file_evidence = set()
+        # The texts that replace files of the working tree (`compile.build`).
+        self.overlay = {}
 
     def meaning_of(self, key):
         symbol = self.symbols.get(key)

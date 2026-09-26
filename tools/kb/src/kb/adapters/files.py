@@ -39,10 +39,10 @@ def inputs(root):
 
 
 def declare(b, root):
-    for kind, name, path in store.files(root):
+    for kind, name, path in store.files(root, b.overlay):
         src = path.as_posix()
         try:
-            document = store.load(root, path)
+            document = store.load(root, path, b.overlay)
         except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as error:
             b.issue("schema", src, f"{name}/{kind}", f"no TOML: {error}")
             continue
@@ -147,6 +147,8 @@ def _meaning(b, kind, name, document, src):
         key = b.symbol(layout, kind, address, src, group=group, strength="file",
                        props=_keys(props, src, layout),
                        evidence=_evidence(entry.get("evidence", ()), src))
+        if entry.get("evidence"):
+            b.file_evidence.add(key)
         generated = entry.get("name")
         if semantic and generated:
             b.issue("names", src, key.key, "a symbol of a named meaning carries a generated name")

@@ -28,9 +28,13 @@ uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings withou
 uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
 uv run kb bench                      # the acceptance questions of the current stage
-uv run kb mcp                        # the read commands as MCP tools on stdio
+uv run kb mcp                        # the read commands and kb_apply as MCP tools on stdio
 uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
 uv run kb fmt                        # rewrite the entity files of kb/ in canonical form
+uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning on another layout
+uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
+uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
+uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
 - `kb check` runs the active checks, which `make check` includes: `l0`; the
@@ -68,8 +72,9 @@ uv run kb fmt                        # rewrite the entity files of kb/ in canoni
   of `kb code`; `-f` reruns Ghidra. An answer longer than its budget in
   `config.toml` starts with a `TRUNCATED:` line; `--budget` and `--full`
   change the budget.
-- `kb mcp` serves each read command as the MCP tool `kb_<command>` over
-  newline-delimited JSON-RPC on standard input and output. A tool takes the
+- `kb mcp` serves each read command as the MCP tool `kb_<command>`, and
+  `kb apply` as `kb_apply`, over newline-delimited JSON-RPC on standard input
+  and output. A tool takes the
   arguments of its command under their option names (`no_sync` for
   `--no-sync`) and returns the output of the command with the same budget; a
   nonzero exit code gives an error result that starts with `exit <code>`.
@@ -81,9 +86,9 @@ uv run kb fmt                        # rewrite the entity files of kb/ in canoni
   ```
 
 - Exit codes follow the specification: 1 for failed checks, 2 for usage
-  errors, 4 for an ambiguous reference, 5 for an unknown layout, address, or
-  entity, 6 for a failed Ghidra run or an unavailable or stale graph, and 7
-  for a lock timeout.
+  errors, 3 for a refused write, 4 for an ambiguous reference, 5 for an
+  unknown layout, address, or entity, 6 for a failed Ghidra run or an
+  unavailable or stale graph, and 7 for a lock timeout.
 
 ## Read commands
 
@@ -125,6 +130,45 @@ name resolves with a note that names the current reference.
   runs the questions of later stages, and `--only <id>` runs one.
   `tools/single_source.py` compares the questions, budgets, and stages of
   `bench.toml` with the table of section 18 of the specification.
+
+## Write commands
+
+`kb bind`, `kb absent`, and `kb unresolved` write one operation, and `kb
+apply` the operations of a TOML file of `[[op]]` tables, as one change under
+`.kb/lock` (section 12.3 of the specification). A change resolves its
+references on a current graph, edits the entity files in memory, and compiles
+the model with them in place of the files on disk (`compile.build` with an
+overlay). When the result has an issue of a model check or a registry
+disagreement that the working tree lacks, the change is refused with exit
+code 3 and the issues, and nothing is written; otherwise the files are written
+through temporary files and renames, and the graph loads the compiled result.
+`--dry-run` prints the diff instead of writing; the write draws the generated
+names of the diff anew.
+
+- The file of a meaning without one starts with the entry of the home symbol,
+  so that the file joins the meaning that the registries state. The row of
+  `kb/names.csv` of that symbol moves into its entry: the generated name of a
+  symbol of an unnamed meaning becomes its `name`, and the other names become
+  `former` references.
+- `kb bind <meaning> <layout>:<address>` records the evidence of the
+  candidate that `match.search` finds at the address, from the symbol on the
+  layout of `--from`, the symbol that the reference names, or the home
+  symbol; `--evidence` states the items instead. It refuses a layout where the
+  meaning has a symbol, a location of another meaning, and a location that the
+  search does not find. A new symbol of an unnamed meaning draws a generated
+  name, and the file pins `home` when the symbol would move it.
+- `kb absent <meaning> --layout <l> --evidence <item>` and `kb unresolved
+  <meaning> --layout <l>` replace the status of the layout in the file. An
+  unresolved status records the method, the target, and the count of the
+  search with the L0 digest of the layout, or those of `--method`, `--target`,
+  and `--count`; a search with one candidate is refused with the `kb bind`
+  that records it.
+- An evidence item is a TOML inline table, for example `--evidence 'kind =
+  "l0", at = "jk00c:00043f10"'`, and a batch states it as an `[[op.evidence]]`
+  table.
+- A status that a registry states stays until the conversion of that
+  registry: a symbol on its layout fails the `symbols` check, and a status of
+  another state disagrees with it, so either write is refused.
 
 ## L0
 
@@ -190,7 +234,7 @@ of a census call.
 
 | Check | Scope |
 |---|---|
-| `homology` | The symbols of the entity files of `kb/`: each identity and homology evidence item that L0 or the images decide holds, and a chain of verified evidence reaches an anchor |
+| `homology` | The symbols that the entity files of `kb/` own, which only files state or whose file entry states evidence: each identity and homology evidence item that L0 or the images decide holds, and a chain of verified evidence reaches an anchor |
 | `image-bytes` | Hook `target` words, the sources of DID entries, and each typed `rom-bytes` and `did-table` item, on every image the symbol applies to |
 | `statuses` | The statuses of the entity files: `absent` carries evidence, and `unresolved` states its search; a search older than the L0 of its layout prints a note |
 | `writers` | Every `ram` and `reg` meaning: a store of one symbol that aligns on the layout of another symbol aligns with a store of that symbol |
@@ -206,6 +250,8 @@ aligned sites and function pairs that vote for it. `match.code` keeps the
 index of a layout in `.kb/cache/match/<layout>.pickle`, keyed by the L0
 manifest, the image digest, the census plan, `[match] words`, and the sources
 of the matcher and the derivations; a rebuild takes a few seconds per layout.
+A loaded index lives as long as the process and is frozen for the garbage
+collector, so that later compiles do not traverse it.
 
 ## Graph
 
@@ -232,9 +278,9 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   `indirect` evidence explains it.
 - The fingerprint covers every input: the model inputs, the compiler
   modules, `l0/`, and the images of the catalog. The modules of the command
-  line, the read commands, the MCP server, the checks, the projections, the
-  guard, and the instances, which `compile.NOT_COMPILER` lists, are no
-  inputs. `.kb/cache/hashes.json` keeps the git blob hash of each file
+  line, the read and write commands, the MCP server, the checks, the
+  projections, the guard, and the instances, which `compile.NOT_COMPILER`
+  lists, are no inputs. `.kb/cache/hashes.json` keeps the git blob hash of each file
   by size and modification time. `:Meta` is deleted first and written last.
 - The main working tree uses the compose service of
   [`../memgraph/`](../memgraph/README.md). `kb instance up` in a linked
@@ -279,7 +325,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.store` | Entity files of `kb/`, their canonical rendering, and `kb fmt` |
 | `kb.adapters` | Adapters of the entity files and of the legacy registries |
 | `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
-| `kb.compile` | The compiler from the tracked inputs to the model |
+| `kb.compile` | The compiler from the tracked inputs, or from those with an overlay of changed files, to the model |
 | `kb.checks` | The model checks and the audit |
 | `kb.fingerprint` | Input paths, git blob hashes, and the fingerprint |
 | `kb.lock` | `.kb/lock` |
@@ -290,7 +336,8 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.refs` | References of the read commands and their resolution |
 | `kb.answer` | Answers, sections, token counts, and budgets |
 | `kb.read` | The read commands |
-| `kb.mcp` | The read commands as MCP tools over JSON-RPC on standard input and output |
+| `kb.write` | The write commands: changes of the entity files, the checks of their result, and batches |
+| `kb.mcp` | The read commands and `kb_apply` as MCP tools over JSON-RPC on standard input and output |
 | `kb.spec` | The stages, owners, and acceptance questions of the specification |
 | `kb.project` | `projections.toml`, `kb project`, the `projections` check, and the `AGENTS.md#kb` section |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |

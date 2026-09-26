@@ -7,6 +7,7 @@ and the checks read the model it returns.
 
 from functools import lru_cache
 import csv
+from pathlib import Path
 import tomllib
 
 from kb import adapters, names, repo
@@ -14,11 +15,12 @@ from kb.model import Builder, SymbolKey
 
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
-# Modules of the command line, the read commands, the MCP server, the checks,
-# the projections, the guard, and the instances. They do not change the graph,
-# so they are no compiler inputs.
+# Modules of the command line, the read and write commands, the MCP server, the
+# checks, the projections, the guard, and the instances. They do not change the
+# graph, so they are no compiler inputs.
 NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "guard.py", "instance.py",
-                          "lock.py", "mcp.py", "project.py", "read.py", "refs.py", "spec.py"})
+                          "lock.py", "mcp.py", "project.py", "read.py", "refs.py", "spec.py",
+                          "write.py"})
 
 
 def spaces(config):
@@ -60,12 +62,17 @@ def inputs(root=repo.ROOT):
     return sorted(found)
 
 
-def build(root=repo.ROOT):
+def build(root=repo.ROOT, overlay=None):
+    """The model of the working tree, with the entity files and `kb/names.csv`
+    of `overlay` ({repository path: text, or None}) in place of those on
+    disk."""
     config = repo.config(root)
     layouts = repo.layouts(root)
-    rows = names.read(root)
+    overlay = {Path(path): text for path, text in (overlay or {}).items()}
+    rows = names.read(root, overlay)
     builder = Builder(layouts, spaces(config), functions(layouts, root),
                       calibration(layouts, root), config)
+    builder.overlay = overlay
     builder.generated.update({SymbolKey(row.layout, row.kind, row.address): row.name
                               for row in rows})
     for adapter in adapters.ADAPTERS:
@@ -74,6 +81,7 @@ def build(root=repo.ROOT):
         adapter.relate(builder, root)
     model = builder.finish()
     model.root = root
+    model.overlay = overlay
     model.config = config
     model.functions = builder.functions
     model.spaces = builder.spaces

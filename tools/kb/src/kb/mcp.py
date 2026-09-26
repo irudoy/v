@@ -1,8 +1,9 @@
-"""`kb mcp`: the read commands over the Model Context Protocol on standard
-input and output (tools/kb/SPEC.md, section 12.6).
+"""`kb mcp`: the read commands and `kb apply` over the Model Context Protocol
+on standard input and output (tools/kb/SPEC.md, section 12.6).
 
-Each read command is one tool `kb_<command>` whose input schema follows the
-arguments of the command. A call runs the command as `kb <command>` runs it,
+Each read command is one tool `kb_<command>`, and `kb_apply` applies a batch of
+write operations; the input schema of a tool follows the arguments of its
+command. A call runs the command as `kb <command>` runs it,
 with the same budgets, and returns its standard output; a nonzero exit code
 returns an error result that states the code and the error. The transport is
 newline-delimited JSON-RPC 2.0. Child processes write their output to the
@@ -21,12 +22,17 @@ from kb import cli
 # The read commands of section 12.2 that the current stage implements.
 READ_COMMANDS = ("brief", "show", "at", "where", "impact", "path", "find", "gaps", "code",
                  "log", "raw", "cypher", "audit", "bench", "check")
+# Writes reach MCP as batches (section 12.3).
+WRITE_COMMANDS = ("apply",)
+COMMANDS = READ_COMMANDS + WRITE_COMMANDS
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 INSTRUCTIONS = (
     "Knowledge of the VQ HR ECU repository: symbols, meanings, links, statuses, and "
     "evidence of every layout. Each tool runs the `kb` command of its name with the same "
     "arguments and budgets. Answers state full references, one fact per line; a first "
-    "line that reads TRUNCATED names the option that shows the rest.")
+    "line that reads TRUNCATED names the option that shows the rest. kb_apply applies a "
+    "batch file of bind, absent, and unresolved operations as one change, or checks it "
+    "and returns its diff with dry_run.")
 
 
 def _subparsers(parser):
@@ -59,12 +65,12 @@ def _arguments(command):
 
 
 def tools(parser=None):
-    """The tool descriptions of the read commands."""
+    """The tool descriptions of the read commands and `kb_apply`."""
     parser = parser or cli.build_parser()
     commands = _subparsers(parser)
     helps = {choice.dest: choice.help for choice in commands._choices_actions}
     found = []
-    for name in READ_COMMANDS:
+    for name in COMMANDS:
         properties, required = {}, []
         for dest, action in _arguments(commands.choices[name]):
             properties[dest] = _property(action)
@@ -151,7 +157,7 @@ def handle(message, state):
         result = {"tools": state.setdefault("tools", tools())}
     elif method == "tools/call":
         name = str(params.get("name", ""))
-        if not name.startswith("kb_") or name[3:] not in READ_COMMANDS:
+        if not name.startswith("kb_") or name[3:] not in COMMANDS:
             return _error(ident, -32602, f"Unknown tool: {name}")
         arguments = params.get("arguments") or {}
         if not isinstance(arguments, dict):

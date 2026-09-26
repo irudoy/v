@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 from kb import (answer, checks, compile, graph, guard, instance, l0, lock, project, read, repo,
-                store)
+                store, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -310,6 +310,44 @@ def command_fmt(args, root=repo.ROOT):
     return 0
 
 
+def _write(args, ops, root=repo.ROOT):
+    """Apply write operations as one change and print the files it writes and
+    one line per operation; a dry run prints the diff instead of writing."""
+    change, texts = write.apply(ops, root, dry_run=args.dry_run, log=_stderr)
+    for path in texts:
+        print(f"{path.as_posix()}: {'would be written' if args.dry_run else 'written'}")
+    for line in change.lines:
+        print(line)
+    if args.dry_run:
+        sys.stdout.write(change.diff(texts))
+    return 0
+
+
+def command_bind(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "bind", "meaning": args.meaning, "symbol": args.symbol,
+        "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
+        "from": args.source, "level": args.level, "note": args.note}], root)
+
+
+def command_absent(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "absent", "meaning": args.meaning, "layout": args.layout,
+        "evidence": [write.parse_evidence(text) for text in args.evidence],
+        "note": args.note}], root)
+
+
+def command_unresolved(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "unresolved", "meaning": args.meaning, "layout": args.layout,
+        "from": args.source, "method": args.method, "target": args.target,
+        "count": args.count, "note": args.note}], root)
+
+
+def command_apply(args, root=repo.ROOT):
+    return _write(args, write.read_batch(Path(args.batch)), root)
+
+
 def command_mcp(args, root=repo.ROOT):
     from kb import mcp
 
@@ -417,7 +455,46 @@ def build_parser():
     rewrite.add_argument("paths", nargs="*", help="entity files; every file by default")
     rewrite.set_defaults(handler=command_fmt)
 
-    serve = commands.add_parser("mcp", help="serve the read commands over MCP on stdio")
+    def writer(name, help_text, *positional):
+        command = commands.add_parser(name, help=help_text)
+        for argument, argument_help in positional:
+            command.add_argument(argument, help=argument_help)
+        command.add_argument("--dry-run", action="store_true",
+                             help="check the change and print its diff without writing")
+        return command
+
+    meaning = ("meaning", "the meaning, or its symbol that a search starts from")
+    evidence = "an evidence item as a TOML inline table; repeatable"
+    source = "the layout of the symbol of the meaning that the search starts from"
+    bind = writer("bind", "a symbol of a meaning on another layout, with evidence", meaning,
+                  ("symbol", "<layout>:<address> of the symbol"))
+    bind.add_argument("--evidence", action="append",
+                      help=f"{evidence}; by default the evidence of the search")
+    bind.add_argument("--from", dest="source", help=source)
+    bind.add_argument("--level", choices=vocab.LEVELS, help="the level of the symbol")
+    bind.add_argument("--note", help="prose about the symbol")
+    bind.set_defaults(handler=command_bind)
+    absent = writer("absent", "status absent with the evidence that removes the mechanism",
+                    meaning)
+    absent.add_argument("--layout", required=True)
+    absent.add_argument("--evidence", action="append", required=True, help=evidence)
+    absent.add_argument("--note", help="prose about the status")
+    absent.set_defaults(handler=command_absent)
+    unresolved = writer("unresolved", "status unresolved with the method and target of the "
+                        "search", meaning)
+    unresolved.add_argument("--layout", required=True)
+    unresolved.add_argument("--from", dest="source", help=source)
+    unresolved.add_argument("--method", choices=tuple(vocab.EVIDENCE_KINDS),
+                            help="the evidence kind of a stated search")
+    unresolved.add_argument("--target", help="what a stated search looked for")
+    unresolved.add_argument("--count", type=int, help="the matches of a stated search")
+    unresolved.add_argument("--note", help="prose about the status")
+    unresolved.set_defaults(handler=command_unresolved)
+    writer("apply", "a batch of write operations as one change",
+           ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
+
+    serve = commands.add_parser("mcp", help="serve the read commands and kb_apply over MCP "
+                                "on stdio")
     serve.set_defaults(handler=command_mcp)
     return parser
 

@@ -154,18 +154,30 @@ def path_of(kind, name):
     return TREE / kind / f"{name}.toml"
 
 
-def files(root):
-    """[(kind, name, repository path)] of every entity file, by kind and name."""
-    found = []
+def files(root, overlay=None):
+    """[(kind, name, repository path)] of every entity file, by kind and name.
+    `overlay` maps repository paths to the text that replaces a file, or to
+    None for a file that a change removes."""
+    found = set()
     for kind in vocab.KINDS:
         directory = root / TREE / kind
         if directory.is_dir():
-            found.extend((kind, path.stem, path.relative_to(root))
-                         for path in sorted(directory.glob("*.toml")))
-    return found
+            found.update((kind, path.stem, path.relative_to(root))
+                         for path in directory.glob("*.toml"))
+    for path, text in (overlay or {}).items():
+        path = Path(path)
+        entry = (path.parent.name, path.stem, path)
+        if text is None:
+            found.discard(entry)
+        elif path.parent.parent == TREE and path.parent.name in vocab.KINDS \
+                and path.suffix == ".toml":
+            found.add(entry)
+    return sorted(found, key=lambda entry: (vocab.KINDS.index(entry[0]), entry[1]))
 
 
-def load(root, path):
+def load(root, path, overlay=None):
+    if overlay and Path(path) in overlay:
+        return tomllib.loads(overlay[Path(path)])
     return tomllib.loads((root / path).read_text(encoding="utf-8"))
 
 
@@ -361,12 +373,15 @@ def _breaks(left, right):
 # The canonical check --------------------------------------------------------
 
 
-def canonical(root):
+def canonical(root, overlay=None):
     """Issues of the files that differ from the canonical rendering of their
-    parse, or that do not parse."""
+    parse, or that do not parse; `overlay` as in `files`."""
     issues = []
-    for kind, name, path in files(root):
-        text = (root / path).read_text(encoding="utf-8")
+    for kind, name, path in files(root, overlay):
+        if overlay and path in overlay:
+            text = overlay[path]
+        else:
+            text = (root / path).read_text(encoding="utf-8")
         try:
             document = tomllib.loads(text)
         except tomllib.TOMLDecodeError as error:
