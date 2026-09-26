@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from kb import project
 from kb.repo import KbError
@@ -19,6 +20,7 @@ SPEC = """\
 | `l0` exports | Code structure | 1 | `l0/<layout>/` | Cache |
 | `kb/names.csv` | Generated names | created in 2 | itself, shrinking with each conversion | Removed in 11 |
 | `profiles.toml` | Targets | 3 | Meanings | Projection |
+| `defs/*.interp.csv` | Interpolation | 3 | `fn` meanings | Projection |
 | `symbols/<layout>.csv` | Names | 5 for `7mfk`, 9 for `1nd` | Names of `fn` meanings | Projection |
 | `maps.csv` | Map tracker | generated | `build_tracker.py` | Projection |
 
@@ -74,6 +76,16 @@ generator = "uv run python tools/defs/build.py"
 inputs = ["defs/source.toml"]
 consumers = ["tools/defs/"]
 read = "open"
+"""
+
+PATTERN = """
+[[projection]]
+path = "defs/*.interp.csv"
+generator = "kb.project:tracked"
+stage = 3
+inputs = ["defs/source.toml"]
+consumers = []
+read = "guarded"
 """
 
 AGENTS = """\
@@ -173,6 +185,70 @@ class WriteTest(RepoCase):
                       "`7mfk`, 9 for `1nd` |", text)
         self.assertTrue(text.startswith("\n\n## Knowledge access\n"))
         self.assertTrue(text.endswith("|\n\n"))
+
+
+def _interp(root):
+    return {"defs/A.interp.csv": "a\n", "defs/B.interp.csv": "b\n"}
+
+
+class PatternTest(RepoCase):
+    """A projection of a pattern whose generator returns {path: text}, at
+    stage 3, where it applies."""
+
+    def setUp(self):
+        super().setUp()
+        original = project.generator
+        patcher = mock.patch.object(project, "generator", lambda entry: _interp
+                                    if entry["path"] == "defs/*.interp.csv" else original(entry))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def repo(self, name, files=None):
+        return super().repo(name, {
+            "tools/kb/projections.toml": PROJECTIONS + PATTERN,
+            "tools/kb/bench.toml": BENCH.replace("stage = 2\n\n[[question]]",
+                                                 "stage = 3\n\n[[question]]", 1),
+            "defs/A.interp.csv": "a\n", "defs/B.interp.csv": "old\n", **(files or {})})
+
+    def test_kb_writes_each_file_of_the_pattern(self):
+        root = self.repo("write")
+        self.assertIn(("defs/*.interp.csv", True), project.write(root))
+        self.assertEqual((root / "defs/B.interp.csv").read_text(), "b\n")
+        self.assertIn(("defs/*.interp.csv", False), project.write(root))
+        self.assertEqual(project.check(root), [])
+
+    def test_the_check_compares_the_tracked_files_with_the_rendering(self):
+        root = self.repo("compare", {"defs/C.interp.csv": "c\n"})
+        project.write(root)
+        (root / "defs/A.interp.csv").write_text("x\n")
+        self.assertEqual(project.check(root), [
+            "defs/C.interp.csv: matches defs/*.interp.csv and is no file of its rendering "
+            "(fix: git rm defs/C.interp.csv)",
+            "defs/A.interp.csv: file: differs from its rendering "
+            "(fix: uv run kb project defs/*.interp.csv)"])
+
+    def test_a_rendered_file_that_git_does_not_track_fails(self):
+        root = self.repo("untracked", {"defs/B.interp.csv": None})
+        project.write(root)
+        self.assertEqual(project.check(root), [
+            "defs/B.interp.csv: not tracked (fix: git add defs/B.interp.csv)"])
+
+    def test_a_registry_of_the_stage_changes_owner_when_kb_renders_its_files(self):
+        root = self.repo("owner")
+        text = project.agents(root)
+        self.assertIn("| `defs/*.interp.csv` | Interpolation | `fn` meanings since stage 3 |",
+                      text)
+        self.assertIn("| `profiles.toml` | Targets | the registry until stage 3 |", text)
+        self.assertIn("| `l0` exports | Code structure | `l0/<layout>/` since stage 1 |", text)
+        owners = project.owners(root)
+        self.assertEqual(owners["pending"], {3: 1, 5: 1})
+        self.assertEqual([row["registry"] for row in owners["converted"]],
+                         ["l0 exports", "kb/names.csv", "defs/*.interp.csv"])
+
+    def test_a_projection_ahead_of_the_stage_leaves_the_owner(self):
+        root = self.repo("ahead", {"tools/kb/bench.toml": BENCH})
+        self.assertIn("| `defs/*.interp.csv` | Interpolation | the registry until stage 3 |",
+                      project.agents(root))
 
 
 class CheckTest(RepoCase):

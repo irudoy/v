@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028674"
+name = "beryl-sawfish"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026270"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026270"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002867e"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026270"
+name = "nondescript-seagull"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026e34"
+name = "careful-kittiwake"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026e34"
+to = "jk00d:00026e34"
+sha256 = "373d6ce5ad77bc710cc083a06316ed282f3471b578bb5e5db0592606cf34e3fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026e3e"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026e34"
+name = "funny-mastiff"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026270"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026270"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026e3e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028058"
+name = "voracious-oriole"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026270"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026270"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028062"

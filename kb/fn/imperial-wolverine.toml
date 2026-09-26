@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "imperial-wolverine/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00028ff0"
+name = "imperial-wolverine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00028ff0"

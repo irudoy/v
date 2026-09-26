@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 8
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028910"
+name = "delectable-mastodon"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264cc"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000264cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028918"
+
+[[symbol]]
+layout = "7mfk"
+address = "000264cc"
+name = "jasmine-lizard"
+
+[[symbol]]
+layout = "jk00c"
+address = "000270d0"
+name = "gregarious-barnacle"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000270d0"
+to = "jk00d:000270d0"
+sha256 = "c6ef352415fc55d3896cbd70408d30a109995d7674f3847a2953034799860ebf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000270d8"
+
+[[symbol]]
+layout = "jk00d"
+address = "000270d0"
+name = "spiffy-nuthatch"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264cc"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000264cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000270d8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000282f4"
+name = "pristine-slug"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264cc"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000264cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000282fc"

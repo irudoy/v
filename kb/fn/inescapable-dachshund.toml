@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "garnet-caracara/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028b58"
+name = "pearl-fox"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028b60"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026714"
+name = "inescapable-dachshund"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027318"
+name = "hopping-pogona"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027318"
+to = "jk00d:00027318"
+sha256 = "69a5b421e30c27f8b6033e258591cd9b5831edc0666426eea26235edf261d63e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027320"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027318"
+name = "ubiquitous-chicken"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027320"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002853c"
+name = "modest-finch"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028544"

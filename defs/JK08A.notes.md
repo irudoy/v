@@ -16,7 +16,7 @@ diagnostic bindings.
 
 | Evidence or decision | Canonical location |
 |---|---|
-| Interpolation entries, geometry, storage type, and implicit steps | `JK08A.interp.csv` |
+| Interpolation entries, geometry, storage type, and implicit steps | `[interp]` of the `fn` meanings in `kb/fn/`, projected into `JK08A.interp.csv` |
 | Map semantics, role, scaling, confidence, evidence, and note | `JK08A.findings.csv` |
 | Axis semantics and scaling | `JK08A.axes.csv` |
 | Function semantics and callable contracts | `JK08A.funcs.csv` |

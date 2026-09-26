@@ -1,0 +1,65 @@
+[interp]
+access = "implicit"
+kernel = "precise-koala/fn"
+offset = 0x20
+cols = 8
+step = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a9f4"
+
+[symbol.interp]
+access = "implicit"
+kernel = "idle_ignition_lookup/fn"
+cols = 8
+step = 32
+
+[[symbol]]
+layout = "1nd"
+address = "000287b4"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026370"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026370"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026370"
+former = ["rebel-cow/fn/7mfk-00026370"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00026f74"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026f74"
+to = "jk00d:00026f74"
+sha256 = "4387e8c3fbaf776df95ee0effce48fd3a3c861449944218a5fc619fb536e1edb"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026f74"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026370"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026370"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028198"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026370"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026370"

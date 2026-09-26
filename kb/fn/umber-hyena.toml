@@ -1,0 +1,35 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026ee4"
+name = "umber-hyena"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026ee4"
+to = "jk00d:00026ee4"
+sha256 = "3b66a0587e34cf7856563fd4bf2759f873077066b34db471deab3741d40f94f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026efe"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026ee4"
+name = "scarlet-gazelle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026efe"

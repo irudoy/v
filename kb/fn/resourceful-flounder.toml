@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "garnet-caracara/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028a34"
+name = "persimmon-coucal"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028a3e"
+
+[[symbol]]
+layout = "7mfk"
+address = "000265f0"
+name = "resourceful-flounder"
+
+[[symbol]]
+layout = "jk00c"
+address = "000271f4"
+name = "steady-monkey"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000271f4"
+to = "jk00d:000271f4"
+sha256 = "373d6ce5ad77bc710cc083a06316ed282f3471b578bb5e5db0592606cf34e3fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000271fe"
+
+[[symbol]]
+layout = "jk00d"
+address = "000271f4"
+name = "rigorous-bug"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000271fe"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028418"
+name = "rousing-groundhog"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028422"

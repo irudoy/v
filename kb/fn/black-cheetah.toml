@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "uptight-tiger/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1nd"
+address = "00028764"
+name = "amethyst-chachalaca"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002876e"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026320"
+name = "black-cheetah"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026f24"
+name = "flashy-puffin"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026f24"
+to = "jk00d:00026f24"
+sha256 = "abc367c96be1b198ca2bf39faa9a60506937d15533cd66b3810a3410d56b8321"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026f2e"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026f24"
+name = "porcelain-tuatara"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026f2e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028148"
+name = "benign-robin"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028152"

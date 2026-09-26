@@ -1,0 +1,78 @@
+[interp]
+access = "implicit"
+kernel = "intrepid-millipede/fn"
+cols = 4
+step = 16384
+
+[[symbol]]
+layout = "1nd"
+address = "00028800"
+name = "exuberant-seahorse"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263bc"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000263bc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028808"
+
+[[symbol]]
+layout = "7mfk"
+address = "000263bc"
+name = "placid-shrew"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026fc0"
+name = "platinum-pegasus"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026fc0"
+to = "jk00d:00026fc0"
+sha256 = "ce22b34cb5d0322caf00825f19abd4929352e1fcb4666bd9215fd13a12665b7f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026fc8"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026fc0"
+name = "important-magpie"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263bc"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "000263bc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026fc8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000281e4"
+name = "determined-ostrich"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263bc"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000263bc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000281ec"

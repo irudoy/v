@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "uptight-tiger/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027f98"
+name = "tomato-ostrich"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00027fb2"

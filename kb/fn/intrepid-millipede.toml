@@ -1,0 +1,52 @@
+[[symbol]]
+layout = "1nd"
+address = "00028ea0"
+name = "industrious-emu"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a5c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026a5c"
+name = "intrepid-millipede"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027660"
+name = "imported-giraffe"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027660"
+to = "jk00d:00027660"
+sha256 = "66bd2d8169588fc8d2f04d90d242c2cb08992be0b47b44970aab0783be7e8f12"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027660"
+name = "faithful-heron"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a5c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028884"
+name = "refreshing-dragonfly"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a5c"

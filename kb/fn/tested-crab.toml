@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "tested-crab/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002b878"
+name = "tested-crab"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002b878"

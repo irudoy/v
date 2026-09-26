@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "garnet-caracara/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028a6c"
+name = "busy-wrasse"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026628"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026628"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028a76"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026628"
+name = "striped-stallion"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002722c"
+name = "transparent-rook"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:0002722c"
+to = "jk00d:0002722c"
+sha256 = "1e3fb259ea3aa0ddce0db21c2847270bd2c48614d2ccc98c15924eb0408929be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027236"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002722c"
+name = "arcane-urchin"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026628"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026628"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027236"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028450"
+name = "able-gorilla"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026628"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026628"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002845a"

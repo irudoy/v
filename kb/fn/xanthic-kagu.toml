@@ -1,0 +1,79 @@
+[interp]
+access = "implicit"
+kernel = "precise-koala/fn"
+offset = 0x14
+cols = 64
+step = 256
+
+[[symbol]]
+layout = "1nd"
+address = "00028854"
+name = "jade-lorikeet"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002885c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026410"
+name = "xanthic-kagu"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027014"
+name = "colossal-camel"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027014"
+to = "jk00d:00027014"
+sha256 = "6aade16303b491140a6bc735a2ba21f5b45b978e3b4bbe8d04562d8acbe847c2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002701c"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027014"
+name = "ruby-tarantula"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002701c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028238"
+name = "quick-puma"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028240"

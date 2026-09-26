@@ -1,0 +1,16 @@
+[interp]
+access = "explicit"
+kernel = "jolly-guan/fn"
+cols = 8
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002ac9c"
+name = "jolly-guan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ac9c"

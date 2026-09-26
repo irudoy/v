@@ -1,0 +1,15 @@
+[interp]
+access = "implicit"
+kernel = "carrot-cheetah/fn"
+cols = 64
+step = 256
+
+[[symbol]]
+layout = "1me3b"
+address = "0002abec"
+name = "carrot-cheetah"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002abec"

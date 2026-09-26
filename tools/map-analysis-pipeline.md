@@ -31,8 +31,8 @@ stock ROM + tracked source registries
 | `defs/rom-inheritance.toml` | Canonical annotation source, target ROM, exact hashes, and code-equality ranges |
 | `l0/<layout>/` | Normalized Ghidra structure, reference, token, and accessor-census exports of each layout with their manifest |
 | `tools/ghidra/symbols/<layout>.csv` | Curated function names of a layout |
-| `defs/<source>.interp.csv` | Interpolation entry, family, role, geometry, element type, and implicit-axis mechanics; a fused entry names itself as its kernel |
-| `defs/<source>-<target>.interp-correspondence.csv` | Reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
+| `defs/<source>.interp.csv` | Projection of the `[interp]` tables of the `fn` meanings in `kb/fn/`: interpolation entry, family, geometry, element type, and implicit-axis mechanics; a fused entry names itself as its kernel |
+| `defs/<source>-<target>.interp-correspondence.csv` | Projection of the `interp-contract` evidence and `unresolved` statuses of those meanings: reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
 | `defs/<source>.findings.csv` | Map role, semantics, scaling, confidence, evidence, and manually traced non-interpolation geometry |
 | `defs/<source>.axes.csv` | Axis semantics, scaling, confidence, and evidence |
 | `defs/<source>.funcs.csv` | Function semantics, contracts, independent confidence fields, and evidence |

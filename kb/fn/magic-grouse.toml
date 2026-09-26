@@ -1,0 +1,15 @@
+[interp]
+access = "implicit"
+kernel = "magic-grouse/fn"
+cols = 4
+step = 64
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a9a4"
+name = "magic-grouse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a9a4"

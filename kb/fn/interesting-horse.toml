@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "garnet-caracara/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028aa4"
+name = "lime-jellyfish"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028abe"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026660"
+name = "interesting-horse"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027264"
+name = "thundering-ermine"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027264"
+to = "jk00d:00027264"
+sha256 = "b0b532309ddb4a579c4efba4262b94315f757b9e6ead4d94817f6e0defb5e581"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002727e"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027264"
+name = "sapphire-poodle"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002727e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028488"
+name = "calculating-grouse"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000284a2"

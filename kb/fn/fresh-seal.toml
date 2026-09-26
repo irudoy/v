@@ -1,0 +1,15 @@
+[interp]
+access = "implicit"
+kernel = "fresh-seal/fn"
+cols = 16
+step = 4096
+
+[[symbol]]
+layout = "1me3b"
+address = "0002ab98"
+name = "fresh-seal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ab98"

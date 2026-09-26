@@ -1,0 +1,79 @@
+[interp]
+access = "implicit"
+kernel = "precise-koala/fn"
+offset = 0x1c
+cols = 4
+step = 64
+
+[[symbol]]
+layout = "1nd"
+address = "0002879c"
+name = "crazy-tuatara"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000287a4"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026358"
+name = "hypnotic-dugong"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026f5c"
+name = "proud-hog"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026f5c"
+to = "jk00d:00026f5c"
+sha256 = "879785c4cb7add021c9dbb3613f0b4f3874f2bbf384ab64f064ede217db0148b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026f64"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026f5c"
+name = "boisterous-ibex"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026f64"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028180"
+name = "brainy-jackal"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028188"

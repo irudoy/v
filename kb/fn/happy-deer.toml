@@ -1,0 +1,35 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026cfc"
+name = "happy-deer"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026cfc"
+to = "jk00d:00026cfc"
+sha256 = "3f469b2ed3baa0614ae19550294b63fd363ff6ca36eedb3d0966b0c68c86e340"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026d16"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026cfc"
+name = "festive-avocet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026d16"

@@ -47,23 +47,6 @@ def stages(root=repo.ROOT):
     return found
 
 
-def owners(root=repo.ROOT, stage=0):
-    """Registries converted by `stage` with their owners, and the number of
-    unconverted registries by the stage that converts them."""
-    converted, pending = [], {}
-    for registry, _, when, owner, _ in table(OWNERSHIP, root):
-        number = re.search(r"\d+", when)
-        if number is None:
-            continue
-        number = int(number.group())
-        if number <= stage:
-            converted.append({"registry": plain(registry), "owner": plain(owner),
-                              "stage": number})
-        else:
-            pending[number] = pending.get(number, 0) + 1
-    return {"converted": converted, "pending": pending}
-
-
 def questions(root=repo.ROOT):
     return [{"id": int(number), "question": question, "command": plain(command),
              "budget": int(budget), "stage": int(stage)}

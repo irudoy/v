@@ -82,6 +82,13 @@ class Symbol:
     def address(self):
         return self.key.address
 
+    def value(self, name):
+        """A key on the symbol's layout: its override, or else the key of its
+        meaning."""
+        if name in self.props:
+            return self.props[name]
+        return self.meaning.props.get(name) if self.meaning is not None else None
+
 
 @dataclass(frozen=True)
 class Ref:

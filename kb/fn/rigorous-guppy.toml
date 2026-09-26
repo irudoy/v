@@ -1,0 +1,15 @@
+[interp]
+access = "implicit"
+kernel = "rigorous-guppy/fn"
+cols = 32
+step = 8
+
+[[symbol]]
+layout = "1me3b"
+address = "0002aa98"
+name = "rigorous-guppy"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002aa98"

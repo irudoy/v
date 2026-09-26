@@ -1,0 +1,78 @@
+[interp]
+access = "implicit"
+kernel = "didactic-civet/fn"
+cols = 16
+step = 16
+
+[[symbol]]
+layout = "1nd"
+address = "00028870"
+name = "crimson-seagull"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:0002642c"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "0002642c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028898"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002642c"
+name = "realistic-cormorant"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027030"
+name = "discerning-mouflon"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027030"
+to = "jk00d:00027030"
+sha256 = "fd167ca321089146f392ede5fb2b6067f5bbbfc2c9389f2452dd95f10be437bf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027058"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027030"
+name = "misty-falcon"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:0002642c"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "0002642c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027058"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028254"
+name = "vermilion-spider"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:0002642c"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "0002642c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002827c"

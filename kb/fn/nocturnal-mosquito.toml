@@ -1,0 +1,15 @@
+[interp]
+access = "implicit"
+kernel = "nocturnal-mosquito/fn"
+cols = 16
+step = 4096
+
+[[symbol]]
+layout = "1me3b"
+address = "0002bba4"
+name = "nocturnal-mosquito"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002bba4"

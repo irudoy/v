@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "dashing-badger/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000291dc"
+name = "dashing-badger"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000291dc"

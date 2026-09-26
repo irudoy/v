@@ -200,6 +200,37 @@ class ApcOutputTest(unittest.TestCase):
             former, former.symbols[SymbolKey("jk00d", "ram", APC_FORMER)], item))
 
 
+class InterpContractTest(unittest.TestCase):
+    """interp-contract evidence: two wrappers share the contract and call the
+    entries of their kernels, and two kernels share the entry that a wrapper
+    of one meaning calls on both layouts."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.model = compile.cached(repo.ROOT)
+
+    def verify(self, layout, address, to, key):
+        symbol = self.model.symbols[SymbolKey(layout, "fn", address)]
+        return match.verify(self.model, symbol, {"kind": "interp-contract", "supports": "homology",
+                                                 "to": to, "key": key})
+
+    def test_two_wrappers_share_the_contract_and_call_their_kernel_entries(self):
+        self.assertIsNone(self.verify("jk00d", 0x26FF8, "7mfk:000263f4", "000263f4"))
+        self.assertIn("is not the address of",
+                      self.verify("jk00d", 0x26FF8, "7mfk:000263f4", "000263f8"))
+        self.assertIn("`to` locates 000263f8",
+                      self.verify("jk00d", 0x26FF8, "7mfk:000263f8", "000263f4"))
+
+    def test_a_fused_wrapper_differs_from_a_wrapper_with_an_offset_entry(self):
+        self.assertIn("the interpolation contracts differ in offset",
+                      self.verify("1me3b", 0x2AA48, "7mfk:00026388", "00026388"))
+
+    def test_two_kernels_share_an_entry_inside_their_functions(self):
+        self.assertIsNone(self.verify("jk00d", 0x27664, "7mfk:00026a60", "00026a84"))
+        self.assertIn("no wrapper of one meaning on jk00d and 7mfk calls the kernel entry "
+                      "00026a90", self.verify("jk00d", 0x27664, "7mfk:00026a60", "00026a90"))
+
+
 class ImageBytesTest(unittest.TestCase):
     def test_a_hook_word_names_its_target(self):
         def declare(target):

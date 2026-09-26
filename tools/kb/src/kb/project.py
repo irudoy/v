@@ -6,9 +6,10 @@ is a repository path, a pattern whose `*` stays inside one directory for the
 files of one generator, or `<file>#<name>` for the section of a file between
 `<!-- <name>:begin -->` and `<!-- <name>:end -->`. A generator `kb.<module>:<function>`
 is a function of this package that renders the file or the section from the
-repository root; `kb project` writes the projections of such generators whose
-stage the transition has reached, and the `projections` check compares them
-with their rendering. A projection of another generator keeps that generator
+repository root, and for a pattern returns {path: text} of its files; `kb
+project` writes the projections of such generators whose stage the
+transition has reached, and the `projections` check compares them with their
+rendering and a pattern's tracked files with the files of its rendering. A projection of another generator keeps that generator
 and the gate that compares it, and the check requires its files and the
 repository paths of its command to exist. The path grammar is that of the
 access guard `tools/kb/hook.py`, whose functions this module uses.
@@ -83,6 +84,14 @@ def generator(entry):
     return getattr(import_module(module), function)
 
 
+def renderings(root, entry):
+    """{file: text} of a projection that `kb` renders as whole files."""
+    result = generator(entry)(root)
+    if isinstance(result, dict):
+        return {Path(name).as_posix(): text for name, text in result.items()}
+    return {split(entry["path"])[0]: result}
+
+
 def current(root, entry):
     """The current content of a projection that `kb` renders."""
     file, section = split(entry["path"])
@@ -107,15 +116,20 @@ def write(root=repo.ROOT, paths=()):
         if paths and entry["path"] not in paths:
             continue
         file, section = split(entry["path"])
-        text = generator(entry)(root)
-        old = (root / file).read_text(encoding="utf-8")
         if section is None:
-            new = text
-        else:
-            span = section_span(old, section)
-            if span is None:
-                raise KbError(f"{file} has no markers {' '.join(markers(section))}", code=1)
-            new = old[:span[0]] + text + old[span[1]:]
+            changed = False
+            for name, text in sorted(renderings(root, entry).items()):
+                path = root / name
+                if not path.is_file() or path.read_text(encoding="utf-8") != text:
+                    _replace(path, text)
+                    changed = True
+            done.append((entry["path"], changed))
+            continue
+        old = (root / file).read_text(encoding="utf-8")
+        span = section_span(old, section)
+        if span is None:
+            raise KbError(f"{file} has no markers {' '.join(markers(section))}", code=1)
+        new = old[:span[0]] + generator(entry)(root) + old[span[1]:]
         if new != old:
             _replace(root / file, new)
         done.append((entry["path"], new != old))
@@ -123,10 +137,12 @@ def write(root=repo.ROOT, paths=()):
 
 
 def _replace(path, text):
+    mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
+    path.parent.mkdir(parents=True, exist_ok=True)
     handle, temporary = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
     with os.fdopen(handle, "w", encoding="utf-8", newline="") as target:
         target.write(text)
-    os.chmod(temporary, path.stat().st_mode & 0o777)
+    os.chmod(temporary, mode)
     os.replace(temporary, path)
 
 
@@ -143,6 +159,26 @@ def _paths(root, items, files):
             continue
         missing.append(item)
     return missing
+
+
+def _compare(root, entry, found):
+    """Failure lines of the files of a projection that `kb` renders whole,
+    whose tracked files are `found`."""
+    fix = f"(fix: uv run kb project {entry['path']})"
+    files = renderings(root, entry)
+    failures = [f"{name}: matches {entry['path']} and is no file of its rendering "
+                f"(fix: git rm {name})" for name in sorted(set(found) - set(files))]
+    for name, text in sorted(files.items()):
+        if not matches(split(entry["path"])[0], name):
+            failures.append(f"{name}: lies outside the path of projection {entry['path']} "
+                            f"(fix: {entry['generator']})")
+        elif not (root / name).is_file():
+            failures.append(f"{name}: missing {fix}")
+        elif name not in found:
+            failures.append(f"{name}: not tracked (fix: git add {name})")
+        elif (root / name).read_text(encoding="utf-8") != text:
+            failures.append(f"{name}: file: differs from its rendering {fix}")
+    return failures
 
 
 def check(root=repo.ROOT):
@@ -187,6 +223,9 @@ def check(root=repo.ROOT):
                 continue
             if entry.get("stage", 0) > now or not found:
                 continue
+            if section is None:
+                failures.extend(_compare(root, entry, found))
+                continue
             text = current(root, entry)
             if text is None:
                 failures.append(f"{file}: {section}: no markers {' '.join(markers(section))} "
@@ -218,13 +257,70 @@ def check(root=repo.ROOT):
 # Generators ------------------------------------------------------------------
 
 
-def _owner(row, now):
+def active(root=repo.ROOT, now=None):
+    """The tracked files of the projections that `kb` renders whole at stage
+    `now`, by default the current one."""
+    now = stage(root) if now is None else now
+    files = tracked(root)
+    found = set()
+    for entry in load(root):
+        file, section = split(entry["path"])
+        if rendered(entry) and section is None and entry.get("stage", 0) <= now:
+            found.update(name for name in files if matches(file, name))
+    return found
+
+
+def _first(when):
+    """The first stage that a conversion cell of section 19 names, or None."""
+    numbers = [int(number) for number in re.findall(r"(?<![\w`])\d+(?![\w`])", when)]
+    return min(numbers) if numbers else None
+
+
+def converted(row, now, files, rendered_files):
+    """Whether the owner after conversion owns the facts of a row of section
+    19 at stage `now`: the row's stage precedes `now`, or it is `now` and a
+    projection that `kb` renders registers every tracked file that the row
+    names (`rendered_files`, of the tracked `files`). A registry created in a
+    stage owns its facts from that stage."""
+    when = row[2]
+    first = _first(when)
+    if first is None:
+        return False
+    if first < now or (first == now and when.startswith("created in ")):
+        return True
+    if first > now:
+        return False
+    patterns = [re.sub(r"<[^>]+>", "*", item) for item in re.findall(r"`([^`]+)`", row[0])
+                if "/" in item]
+    named = {name for pattern in patterns for name in files if matches(pattern, name)}
+    return bool(named) and named <= rendered_files
+
+
+def owners(root=repo.ROOT, now=None):
+    """Registries whose owner after conversion owns their facts at stage
+    `now`, with the owners, and the number of registries that own their facts
+    until conversion by the stage that converts them."""
+    now = stage(root) if now is None else now
+    files, rendered_files = tracked(root), active(root, now)
+    done, pending = [], {}
+    for row in spec.table(spec.OWNERSHIP, root):
+        first = _first(row[2])
+        if first is None:
+            continue
+        if converted(row, now, files, rendered_files):
+            done.append({"registry": spec.plain(row[0]), "owner": spec.plain(row[3]),
+                         "stage": first})
+        else:
+            pending[first] = pending.get(first, 0) + 1
+    return {"converted": done, "pending": pending}
+
+
+def _owner(row, now, files, rendered_files):
     """The owner of the facts of a registry of section 19 at stage `now`."""
     _, _, when, after, _ = row
-    numbers = [int(number) for number in re.findall(r"(?<![\w`])\d+(?![\w`])", when)]
-    if not numbers or when.startswith("created in "):
+    if _first(when) is None or when.startswith("created in "):
         return after
-    if min(numbers) <= now:
+    if converted(row, now, files, rendered_files):
         return f"{after} since stage {when}"
     return f"the registry until stage {when}"
 
@@ -261,8 +357,9 @@ def agents(root=repo.ROOT):
     ]
     lines.extend(f"| {item['question']} | `uv run {item['command']}` |"
                  for item in bench["question"] if item["stage"] <= now)
+    files, rendered_files = tracked(root), active(root, now)
     lines.extend(["", f"| Registry | Facts | Owner at stage {now} |", "|---|---|---|"])
-    lines.extend(f"| {row[0]} | {row[1]} | {_owner(row, now)} |"
+    lines.extend(f"| {row[0]} | {row[1]} | {_owner(row, now, files, rendered_files)} |"
                  for row in spec.table(spec.OWNERSHIP, root))
     lines.append("")
     return "\n".join(lines) + "\n"

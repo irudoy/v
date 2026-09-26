@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "uptight-tiger/fn"
+cols = 16
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol]]
+layout = "1nd"
+address = "000288e4"
+name = "peach-beluga"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264a0"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000264a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000288ec"
+
+[[symbol]]
+layout = "7mfk"
+address = "000264a0"
+name = "fortunate-adder"
+
+[[symbol]]
+layout = "jk00c"
+address = "000270a4"
+name = "glittering-boar"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000270a4"
+to = "jk00d:000270a4"
+sha256 = "d5d47dd218efa6c10779ef0cbfd9995274bd5379553916a11083a9b5cb566ed1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000270ac"
+
+[[symbol]]
+layout = "jk00d"
+address = "000270a4"
+name = "peridot-camel"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264a0"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000264a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000270ac"
+
+[[symbol]]
+layout = "jk78c"
+address = "000282c8"
+name = "speedy-guan"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264a0"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000264a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000282d0"

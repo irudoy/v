@@ -208,7 +208,7 @@ class Change:
                     f"{listed or 'no candidate'} on {layout}, not {key.location}; state the "
                     "evidence", code=3)
             evidence = [self._stored(candidate.evidence)]
-        path, document = self._document(meaning)
+        path, document = self.document(meaning)
         name = meaning.name if meaning.semantic else self._draw()
         entry = {"layout": layout, "address": f"{address:08x}"}
         if not meaning.semantic:
@@ -294,7 +294,7 @@ class Change:
         target = self.root / path
         return target.read_text(encoding="utf-8") if target.exists() else None
 
-    def _document(self, meaning):
+    def document(self, meaning):
         """(path, document) of the file of a meaning; a meaning without one
         starts a file with the entry of its home symbol."""
         path = next((Path(src) for owner, src in self.model.files.values()
@@ -308,10 +308,10 @@ class Change:
             if self._current(path) is not None:
                 self.documents[path] = store.load(self.root, path, self.model.overlay)
             else:
-                self.documents[path] = {"symbol": [self._adopt(meaning, meaning.home_symbol)]}
+                self.documents[path] = {"symbol": [self.adopt(meaning, meaning.home_symbol)]}
         return path, self.documents[path]
 
-    def _adopt(self, meaning, symbol):
+    def adopt(self, meaning, symbol):
         """The entry of a symbol that a registry states; its row of
         `kb/names.csv` moves into the entry."""
         entry = {"layout": symbol.layout, "address": f"{symbol.address:08x}"}
@@ -329,7 +329,7 @@ class Change:
         return entry
 
     def _status(self, meaning, status):
-        _, document = self._document(meaning)
+        _, document = self.document(meaning)
         kept = [entry for entry in document.get("status", ())
                 if entry.get("layout") != status["layout"]]
         document["status"] = kept + [status]

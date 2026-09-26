@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "transparent-nuthatch/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000295f4"
+name = "transparent-nuthatch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000295f4"

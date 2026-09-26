@@ -205,7 +205,6 @@ a reference that names nothing fails the `references` check.
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
 | `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets with the roles that a symbol of another meaning fills on a layout |
 | `definitions` | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | `tbl` and `axis` symbols of the definition projections; the `definitions` target |
-| `interp` | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | `fn` symbols of kernels and wrappers with `[interp]` |
 | `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
@@ -217,6 +216,42 @@ Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`
 evidence, and a token target without a registry row becomes an implicit
 symbol of the kind its role and address admit.
+
+The entity files own the facts of a registry from the commit that converts
+it, and the compiler leaves out the adapters of the converted registries
+(`adapters.CONVERTED`); the module of such an adapter renders the registry as
+a projection of the files.
+
+| Registry | Converted in stage | Entity files | Generators |
+|---|---|---|---|
+| `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | 3 | `fn` meanings with `[interp]`, the evidence of their symbols, and the `unresolved` statuses of the `interp-contract` search | `kb.adapters.interp:registries`, `kb.adapters.interp:correspondences` |
+
+`uv run python -m kb.convert <registry> [--dry-run]` converts a registry
+under `.kb/lock`. It compiles the model with every adapter, writes the facts
+that the registry's adapter states into the files of their meanings through
+the change of the write commands, and compiles the model from those files
+with the adapters of the compiler. It refuses the conversion with exit code
+3 when the two models differ beyond the rules of the registry, when the
+files add an issue of a model check or a registry disagreement, or when a
+projection of the registry differs from its file; otherwise it writes the
+files and `kb/names.csv` and loads the result into the graph. On a converted
+tree it writes nothing. The rules of the interpolation registries:
+
+- The meaning of every symbol that the registries state takes `[interp]`,
+  and each symbol an entry with the override of its layout and the typed
+  evidence of the registries, whose `to` becomes a location.
+- A wrapper symbol that no other registry states takes `l0` identity
+  evidence at the first instruction of its body that calls its kernel entry,
+  or at its entry when it is its own kernel.
+- An `unsupported` correspondence becomes an `unresolved` status with the L0
+  digest of its layout and without the registry evidence.
+
+`defs/<ROM>.interp.csv` lists, by address, the wrappers of the layout of its
+image, each with the entry of its kernel: the address of the `kernel`
+function on the layout plus `offset`. `defs/JK08A-<ROM>.interp-correspondence.csv`
+lists a `mapped` row for each `interp-contract` item of a wrapper of the
+image's layout toward `7mfk`, and an `unsupported` row for each `unresolved`
+status whose method is `interp-contract`, by source wrapper.
 
 ## Matchers
 
@@ -295,12 +330,19 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 `projections.toml` registers every generated file of the repository with its
 generator, inputs, consumers, stage, and read mode, as section 14 of the
 specification states. `uv run kb project` renders the projections of `kb`
-functions, such as the `AGENTS.md#kb` section; a projection of another
-generator keeps that generator and its gate. The `projections` check requires
-every entry to match tracked files that no other entry claims and to name
-existing paths, compares each projection of `kb` with its rendering, and
-requires every tracked file whose first lines declare it generated to be
-registered.
+functions whose stage the transition has reached, such as the `AGENTS.md#kb`
+section and the interpolation registries; the generator of a pattern returns
+the text of each of its files. A projection of another generator keeps that
+generator and its gate. The `projections` check requires every entry to
+match tracked files that no other entry claims and to name existing paths,
+compares each projection of `kb` with its rendering and the tracked files of
+a pattern with the files of its rendering, and requires every tracked file
+whose first lines declare it generated to be registered.
+
+The owner of a registry of the current stage changes with its conversion:
+`kb brief` and `AGENTS.md#kb` name the owner after conversion once a
+projection of `kb` that applies registers every tracked file that the
+registry's row of section 19 names, and the registry until then.
 
 `hook.py` is the access guard of section 15. The tracked
 `.claude/settings.json` runs it before `Read`, `Edit`, `Write`, `MultiEdit`,
@@ -338,8 +380,9 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.read` | The read commands |
 | `kb.write` | The write commands: changes of the entity files, the checks of their result, and batches |
 | `kb.mcp` | The read commands and `kb_apply` as MCP tools over JSON-RPC on standard input and output |
-| `kb.spec` | The stages, owners, and acceptance questions of the specification |
-| `kb.project` | `projections.toml`, `kb project`, the `projections` check, and the `AGENTS.md#kb` section |
+| `kb.spec` | The stages, the ownership table, and the acceptance questions of the specification |
+| `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, and the `AGENTS.md#kb` section |
+| `kb.convert` | The conversions of legacy registries into entity files |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
 | `kb.l0` | L0 export, normal form, manifest, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |

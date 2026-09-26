@@ -35,6 +35,7 @@ import gc
 import hashlib
 from pathlib import Path
 import pickle
+import weakref
 
 from kb import derive, l0, repo, sh2, sites, vocab
 from kb.model import SymbolKey
@@ -722,22 +723,87 @@ def _verify_call_ordinal(ctx):
     return _stated_count(ctx, len(candidates))
 
 
+def interp_entry(model, symbol):
+    """(kernel, entry) of the `[interp]` of a function on its layout: the
+    symbol of the kernel meaning there and the address of the kernel entry, or
+    None."""
+    table = symbol.value("interp")
+    held = model.symbols.get(table.get("kernel")) if isinstance(table, dict) else None
+    kernel = (held.meaning.symbols.get(symbol.layout)
+              if held is not None and held.meaning is not None else None)
+    if kernel is None:
+        return None
+    return kernel, kernel.address + (table.get("offset") or 0)
+
+
+def kernel_calls(model, symbol, entry):
+    """The instructions of the L0 body of a function that reference `entry`."""
+    references = sites.references(symbol.layout, model.root)
+    return [site for site in sites.bodies(symbol.layout, model.root).get(symbol.address, ())
+            if entry in references.get(site, ())]
+
+
+def _calls_kernel(model, symbol):
+    """None when a wrapper is its own kernel or its L0 body references the
+    kernel entry of its `[interp]`, else what fails."""
+    found = interp_entry(model, symbol)
+    if found is None:
+        return f"the [interp] of {symbol.key.key} names no kernel on {symbol.layout}"
+    kernel, entry = found
+    if kernel is symbol or kernel_calls(model, symbol, entry):
+        return None
+    return f"L0 of {symbol.layout} holds no call of {entry:08x} in {symbol.address:08x}"
+
+
+_WRAPPERS = weakref.WeakKeyDictionary()
+
+
+def _wrappers(model):
+    """{id of a kernel meaning: the meanings whose `[interp]` names it}."""
+    found = _WRAPPERS.get(model)
+    if found is None:
+        found = defaultdict(list)
+        for meaning in model.meanings:
+            tables = [meaning.props.get("interp")]
+            tables += [symbol.props.get("interp") for symbol in meaning.symbols.values()]
+            kernels = {id(held.meaning) for held in (
+                model.symbols.get(table.get("kernel")) for table in tables
+                if isinstance(table, dict)) if held is not None and held.meaning is not None}
+            for kernel in kernels:
+                found[kernel].append(meaning)
+        _WRAPPERS[model] = found
+    return found
+
+
 def _verify_interp_contract(ctx):
     failure = _counterpart(ctx)
     if failure:
         return failure
+    if ctx.symbol.kind != "fn":
+        return "interp-contract evidence relates two functions"
+    model, symbol, other = ctx.model, ctx.symbol, ctx.other
+    if not ctx.named and ctx.to[1] != other.address:
+        return f"`to` locates {ctx.to[1]:08x}, not {other.key.key}"
     key = _int("0x" + str(ctx.item["key"]).lower().removeprefix("0x"))
-    if ctx.symbol.kind == "fn":
-        if key != ctx.other.address:
-            return f"key {ctx.item['key']} is not the address of {ctx.other.key.key}"
-        mine = {**ctx.symbol.meaning.props.get("interp", {}), **ctx.symbol.props.get("interp", {})}
-        theirs = {**ctx.other.meaning.props.get("interp", {}),
-                  **ctx.other.props.get("interp", {})}
+    mine, theirs = symbol.value("interp") or {}, other.value("interp") or {}
+    if mine or theirs:
+        if key != other.address:
+            return f"key {ctx.item['key']} is not the address of {other.key.key}"
         differ = [name for name in CONTRACT_KEYS if mine.get(name) != theirs.get(name)]
         if differ:
             return f"the interpolation contracts differ in {', '.join(differ)}"
-        return None
-    return "interp-contract evidence relates two functions"
+        return _calls_kernel(model, symbol) or _calls_kernel(model, other)
+    for wrapper in _wrappers(model).get(id(symbol.meaning), ()):
+        here, there = wrapper.symbols.get(symbol.layout), wrapper.symbols.get(other.layout)
+        if here is None or there is None:
+            continue
+        mine, theirs = interp_entry(model, here), interp_entry(model, there)
+        if (mine is not None and theirs is not None and mine[0] is symbol
+                and theirs[0] is other and theirs[1] == key
+                and _calls_kernel(model, here) is None and _calls_kernel(model, there) is None):
+            return None
+    return (f"no wrapper of one meaning on {symbol.layout} and {other.layout} calls the kernel "
+            f"entry {ctx.item['key']} of {other.key.key}")
 
 
 VERIFIERS = {

@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 16
+storage = "uint8"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028994"
+name = "helpful-toucan"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026550"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026550"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002899c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026550"
+name = "sly-tuna"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027154"
+name = "nondescript-tapir"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027154"
+to = "jk00d:00027154"
+sha256 = "1f258269f37ae068ddb1e215803bb6c0592c75df70789d742ff72ffb03079036"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002715c"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027154"
+name = "meek-bull"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026550"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026550"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002715c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028378"
+name = "fierce-toucanet"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026550"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026550"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028380"

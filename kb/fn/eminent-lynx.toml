@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "0002893c"
+name = "merciful-harrier"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264f8"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000264f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028944"
+
+[[symbol]]
+layout = "7mfk"
+address = "000264f8"
+name = "eminent-lynx"
+
+[[symbol]]
+layout = "jk00c"
+address = "000270fc"
+name = "cheerful-poodle"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000270fc"
+to = "jk00d:000270fc"
+sha256 = "447b6ff9e2250de46f0f19e880e6f6600b0da89b99ff5e85914495630fc7c5ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027104"
+
+[[symbol]]
+layout = "jk00d"
+address = "000270fc"
+name = "rampant-bonobo"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264f8"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000264f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027104"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028320"
+name = "blue-mouflon"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000264f8"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000264f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028328"

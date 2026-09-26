@@ -1,0 +1,52 @@
+[[symbol]]
+layout = "1nd"
+address = "00029060"
+name = "enlightened-chameleon"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026c1c"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026c1c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026c1c"
+name = "sparkling-warthog"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027820"
+name = "hospitable-aardwolf"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027820"
+to = "jk00d:00027820"
+sha256 = "1c3f84cf0e83469d90c1f9afda5fac02be77db8e864bb13ad0442a9afb5b9ccf"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027820"
+name = "astonishing-kangaroo"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026c1c"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026c1c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028a44"
+name = "woodoo-leech"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026c1c"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026c1c"

@@ -2,3 +2,5 @@
 # commands answer queries over them.
 /kb/
 /l0/
+/defs/*.interp.csv
+/defs/JK08A-*.interp-correspondence.csv

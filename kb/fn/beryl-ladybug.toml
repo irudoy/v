@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028108"
+name = "beryl-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028122"

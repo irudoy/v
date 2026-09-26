@@ -24,6 +24,34 @@ consumers = ["Claude Code", "Codex"]
 read = "open"
 
 [[projection]]
+path = "defs/*.interp.csv"
+generator = "kb.adapters.interp:registries"
+stage = 3
+inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
+consumers = [
+    "tools/census_homology.py",
+    "tools/rom_correspondence.py",
+    "tools/rom_sources.py",
+    "tools/memgraph/load_maps.py",
+    "tools/romviz/model.py",
+    "tools/kb/src/kb/l0.py",
+    "tools/kb/src/kb/match.py",
+    "tools/kb/tests/test_l0.py",
+    "tools/mapkit/tests/",
+    "tools/memgraph/tests/",
+    "tools/tests/test_rom_correspondence.py",
+]
+read = "guarded"
+
+[[projection]]
+path = "defs/JK08A-*.interp-correspondence.csv"
+generator = "kb.adapters.interp:correspondences"
+stage = 3
+inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
+consumers = ["tools/rom_correspondence.py", "tools/tests/test_rom_correspondence.py"]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

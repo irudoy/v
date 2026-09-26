@@ -90,10 +90,16 @@ def references(layout_id, root=repo.ROOT):
 
 
 @lru_cache(maxsize=None)
+def bodies(layout_id, root=repo.ROOT):
+    """{function entry: sorted instruction addresses of its body}."""
+    return derive.bodies(layout_id, root)
+
+
+@lru_cache(maxsize=None)
 def owners(layout_id, root=repo.ROOT):
     """{instruction address: entries of the functions whose body holds it}."""
     found = collections.defaultdict(set)
-    for func, addresses in derive.bodies(layout_id, root).items():
+    for func, addresses in bodies(layout_id, root).items():
         for address in addresses:
             found[address].add(func)
     return found

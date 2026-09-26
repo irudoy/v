@@ -1,0 +1,78 @@
+[interp]
+access = "implicit"
+kernel = "precise-koala/fn"
+cols = 8
+step = 8192
+
+[[symbol]]
+layout = "1nd"
+address = "0002881c"
+name = "outgoing-dove"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028824"
+
+[[symbol]]
+layout = "7mfk"
+address = "000263d8"
+name = "urban-potoo"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026fdc"
+name = "viridian-bird"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026fdc"
+to = "jk00d:00026fdc"
+sha256 = "ddd42efc04d77b07a6a8a33bd9a80e20712de9c000ff8915564d739f51fa3903"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026fe4"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026fdc"
+name = "greedy-scallop"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026fe4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028200"
+name = "caped-mustang"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028208"

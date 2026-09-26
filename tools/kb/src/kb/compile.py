@@ -16,11 +16,14 @@ from kb.model import Builder, SymbolKey
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
 # Modules of the command line, the read and write commands, the MCP server, the
-# checks, the projections, the guard, and the instances. They do not change the
-# graph, so they are no compiler inputs.
-NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "guard.py", "instance.py",
-                          "lock.py", "mcp.py", "project.py", "read.py", "refs.py", "spec.py",
-                          "write.py"})
+# checks, the projections, the conversions, the guard, and the instances, and
+# the adapters of converted registries, by their path in the package. They do
+# not change the graph, so they are no compiler inputs.
+NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "convert.py", "guard.py",
+                          "instance.py", "lock.py", "mcp.py", "project.py", "read.py",
+                          "refs.py", "spec.py", "write.py",
+                          *(f"adapters/{adapter.__name__.rsplit('.', 1)[1]}.py"
+                            for adapter in adapters.CONVERTED)})
 
 
 def spaces(config):
@@ -58,26 +61,35 @@ def inputs(root=repo.ROOT):
     found.update(names.inputs())
     found.update((repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix(), repo.CONFIG.as_posix()))
     found.update(path.relative_to(root).as_posix()
-                 for path in (root / PACKAGE).rglob("*.py") if path.name not in NOT_COMPILER)
+                 for path in (root / PACKAGE).rglob("*.py")
+                 if path.relative_to(root / PACKAGE).as_posix() not in NOT_COMPILER)
     return sorted(found)
 
 
-def build(root=repo.ROOT, overlay=None):
-    """The model of the working tree, with the entity files and `kb/names.csv`
-    of `overlay` ({repository path: text, or None}) in place of those on
-    disk."""
+def builder_of(root=repo.ROOT, overlay=None):
+    """A builder over the layouts, functions, and regions of the working tree,
+    whose adapters read the files of `overlay` in place of those on disk."""
     config = repo.config(root)
     layouts = repo.layouts(root)
-    overlay = {Path(path): text for path, text in (overlay or {}).items()}
-    rows = names.read(root, overlay)
     builder = Builder(layouts, spaces(config), functions(layouts, root),
                       calibration(layouts, root), config)
-    builder.overlay = overlay
+    builder.overlay = {Path(path): text for path, text in (overlay or {}).items()}
+    return builder
+
+
+def build(root=repo.ROOT, overlay=None, order=None):
+    """The model of the working tree, with the entity files and `kb/names.csv`
+    of `overlay` ({repository path: text, or None}) in place of those on
+    disk, compiled by the adapters of `order`, by default the compiler's."""
+    builder = builder_of(root, overlay)
+    config, overlay = builder.config, builder.overlay
+    rows = names.read(root, overlay)
     builder.generated.update({SymbolKey(row.layout, row.kind, row.address): row.name
                               for row in rows})
-    for adapter in adapters.ADAPTERS:
+    order = adapters.ADAPTERS if order is None else order
+    for adapter in order:
         adapter.declare(builder, root)
-    for adapter in adapters.ADAPTERS:
+    for adapter in order:
         adapter.relate(builder, root)
     model = builder.finish()
     model.root = root

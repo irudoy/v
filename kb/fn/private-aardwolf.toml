@@ -1,0 +1,81 @@
+[interp]
+access = "explicit"
+kernel = "uptight-tiger/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1nd"
+address = "000284fc"
+name = "fierce-gharial"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026140"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026140"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028506"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026140"
+name = "private-aardwolf"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026cc4"
+name = "ancient-barracuda"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026cc4"
+to = "jk00d:00026cc4"
+sha256 = "bc4c2a049efb136e85aa6db973ce4de0670438c6f9599c427616d6e54aed7751"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026cce"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026cc4"
+name = "fat-elephant"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026140"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026140"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026cce"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027ee0"
+name = "inquisitive-wallaby"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026140"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026140"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00027eea"

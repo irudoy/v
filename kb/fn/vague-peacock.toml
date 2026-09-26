@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "vague-peacock/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "00028e10"
+name = "vague-peacock"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00028e10"

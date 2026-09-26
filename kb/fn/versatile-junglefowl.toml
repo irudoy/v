@@ -1,0 +1,52 @@
+[[symbol]]
+layout = "1nd"
+address = "00028dc8"
+name = "aromatic-caracal"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026984"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026984"
+name = "versatile-junglefowl"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027588"
+name = "gentle-trout"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027588"
+to = "jk00d:00027588"
+sha256 = "ab62a51b7580cfa4bff1a671bb9db89aa74b5a51e133600f7fb351dfbe4275d7"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027588"
+name = "spiffy-hoatzin"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026984"
+
+[[symbol]]
+layout = "jk78c"
+address = "000287ac"
+name = "melodic-toad"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026984"

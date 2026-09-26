@@ -1,0 +1,52 @@
+[[symbol]]
+layout = "1nd"
+address = "00028b84"
+name = "fanatic-taipan"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026740"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026740"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026740"
+name = "didactic-civet"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027344"
+name = "marvellous-manatee"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027344"
+to = "jk00d:00027344"
+sha256 = "e5ebb39cde98cd32ad8cbf753572029a70a828ea592d112b2d4d5cef40cd2cb0"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027344"
+name = "fractal-llama"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026740"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026740"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028568"
+name = "maize-marten"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026740"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026740"

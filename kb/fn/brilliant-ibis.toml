@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "uptight-tiger/fn"
+cols = 8
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol]]
+layout = "1nd"
+address = "000288b8"
+name = "simple-pug"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026474"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026474"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000288c0"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026474"
+name = "brilliant-ibis"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027078"
+name = "enormous-peccary"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027078"
+to = "jk00d:00027078"
+sha256 = "80889554fee09ff920cd133f9232d68bbb06ad4d30ae6d6200dfb65033fc0db5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027080"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027078"
+name = "observant-prawn"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026474"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026474"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027080"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002829c"
+name = "cyan-waxbill"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026474"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026474"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000282a4"

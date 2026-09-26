@@ -9,14 +9,14 @@ presentation and generated output.
 
 | File | Responsibility | Edit directly |
 |---|---|---|
-| `JK08A.interp.csv` | Interpolation entries and recovered geometry | yes |
-| `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | yes |
-| `JK78C.interp.csv` | SH7058 VQ37 interpolation entries and recovered geometry | yes |
-| `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | yes |
-| `1ME3B.interp.csv` | SH7059 1ME3B fused interpolation leaves and recovered geometry | yes |
-| `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
-| `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | yes |
-| `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | yes |
+| `JK08A.interp.csv` | Interpolation entries and recovered geometry | no, `kb` projection |
+| `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | no, `kb` projection |
+| `JK78C.interp.csv` | SH7058 VQ37 interpolation entries and recovered geometry | no, `kb` projection |
+| `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | no, `kb` projection |
+| `1ME3B.interp.csv` | SH7059 1ME3B fused interpolation leaves and recovered geometry | no, `kb` projection |
+| `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | no, `kb` projection |
+| `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
+| `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
 | `1ND0A-1ME3B.census-correspondence.csv` | Table-level homology of the 1ME3B accessor census against the 1ND0A census | no, regenerate |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
@@ -81,12 +81,19 @@ entity outputs are deterministic review candidates. They do not establish
 semantic inheritance by themselves; promoted target claims remain explicit
 tracked evidence.
 
-An interpolation correspondence may use the six-column format with `status`
-set to `mapped` or `unsupported`. An unsupported row must identify the source
-kernel and wrapper, leave both target address fields empty, and cite a complete
-target-library census. This records a real source-only interpolation contract
-without inventing a target pair. Target-only wrappers remain in the target
-interpolation registry and do not need correspondence rows.
+The interpolation registries and correspondences are projections of the `fn`
+meanings with `[interp]` in `kb/fn/` (stage 3 of `tools/kb/SPEC.md`), and `uv
+run kb project` regenerates them. A registry lists, by wrapper address, the
+wrappers of the layout of its image with their kernel entries. An
+interpolation correspondence has six columns with `status` set to `mapped` or
+`unsupported`: a mapped row is an `interp-contract` item of a target wrapper
+toward its JK08A counterpart, and an unsupported row identifies the source
+kernel and wrapper, leaves both target address fields empty, and carries the
+note of the `unresolved` status of the wrapper's meaning on the target
+layout, which cites a complete target-library census. This records a real
+source-only interpolation contract without inventing a target pair.
+Target-only wrappers remain in the target interpolation registry and do not
+need correspondence rows.
 
 The SH7059 1ND library retains the same interpolation mechanics but adds two
 mixed-axis wrappers and an alternate-finisher 8x8 byte wrapper while omitting

@@ -12,7 +12,7 @@ import math
 import re
 import tomllib
 
-from kb import refs, repo, spec
+from kb import project, refs, repo, spec
 from kb.answer import DETAIL, EVIDENCE, FACTS, IDENTITY, LINKS, Answer
 from kb.refs import location_ref, symbol_ref
 from kb.repo import KbError
@@ -1434,7 +1434,7 @@ def brief(graph, root=repo.ROOT):
     config = bench(root)
     stage = config["stage"]
     stages = {row["number"]: row["name"] for row in spec.stages(root)}
-    owners = spec.owners(root, stage)
+    owners = project.owners(root, stage)
     owner_lines = [f"  {row['registry']}: {row['owner']}" for row in owners["converted"]]
     pending = ", ".join(f"stage {number}: {count}" for number, count in
                         sorted(owners["pending"].items()))

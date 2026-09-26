@@ -1,0 +1,79 @@
+[interp]
+access = "explicit"
+kernel = "versatile-junglefowl/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00028968"
+name = "adept-limpet"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026524"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026524"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028970"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026524"
+name = "angelic-saluki"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027128"
+name = "jasmine-wallaby"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027128"
+to = "jk00d:00027128"
+sha256 = "69a5b421e30c27f8b6033e258591cd9b5831edc0666426eea26235edf261d63e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027130"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027128"
+name = "outstanding-millipede"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026524"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026524"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027130"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002834c"
+name = "loose-lion"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026524"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026524"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028354"

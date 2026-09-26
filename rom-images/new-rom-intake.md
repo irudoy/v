@@ -152,7 +152,8 @@ correspondence can be composed rather than recovered. JK00C was established by
 composing reviewed JK08A-to-JK00D operands through unique exact or normalized
 JK00D-to-JK00C function matches.
 
-Deliverables: a target interpolation registry when the library relocated; a
+Deliverables: the target symbols of the interpolation meanings, which project
+the target interpolation registry, when the library relocated; a
 `../defs/<SOURCE>-<TARGET>.definition-addresses.csv` covering every visible
 stock map and required axis, with a `unsupported` row and evidence wherever no
 unique target homolog exists; a checksum layout; a definition projection; an

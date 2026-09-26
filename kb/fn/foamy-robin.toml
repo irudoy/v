@@ -1,0 +1,18 @@
+[interp]
+access = "explicit"
+kernel = "foamy-robin/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a6b4"
+name = "foamy-robin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a6b4"

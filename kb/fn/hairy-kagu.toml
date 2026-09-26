@@ -1,0 +1,16 @@
+[interp]
+access = "explicit"
+kernel = "hairy-kagu/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002b0d4"
+name = "hairy-kagu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002b0d4"

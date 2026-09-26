@@ -3,9 +3,9 @@ import re
 import tomllib
 import unittest
 
-from kb import adapters, checks, compile, names, repo
-from kb.adapters import (architecture, definitions, ledgers, native, overrides, signals,
-                         telemetry)
+from kb import adapters, checks, compile, match, names, repo
+from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
+                         signals, telemetry)
 from kb.model import Builder, SymbolKey
 
 
@@ -210,7 +210,9 @@ class DefinitionAdapterTest(unittest.TestCase):
         self.assertEqual([issue for issue in m.issues if issue.check == "schema"], [])
 
 
-class InterpAdapterTest(unittest.TestCase):
+class InterpFilesTest(unittest.TestCase):
+    """The interpolation facts that the entity files own from stage 3."""
+
     def test_a_kernel_entry_inside_a_function_names_the_function_and_the_offset(self):
         m = model()
         interp = m.meaning_of(SymbolKey("7mfk", "fn", 0x000263F4)).props["interp"]
@@ -238,12 +240,16 @@ class InterpAdapterTest(unittest.TestCase):
                           if key != "kernel"})
         self.assertNotIn("interp", meaning.symbols["jk00d"].props)
 
-    def test_a_shared_registry_carries_to_a_layout_with_the_same_function_bytes(self):
+    def test_a_copied_wrapper_carries_its_bytes_and_its_call_of_the_kernel_entry(self):
         m = model()
         symbol = m.symbols[SymbolKey("jk00c", "fn", 0x00026FC0)]
         self.assertIs(symbol.meaning, m.meaning_of(SymbolKey("jk00d", "fn", 0x00026FC0)))
-        self.assertEqual([(item["kind"], item["to"]) for item in symbol.evidence],
-                         [("byte-identical", SymbolKey("jk00d", "fn", 0x00026FC0))])
+        self.assertEqual([(item["kind"], item["at"], item.get("to")) for item in symbol.evidence],
+                         [("byte-identical", "jk00c:00026fc0", "jk00d:00026fc0"),
+                          ("l0", "jk00c:00026fc8", None)])
+        _, entry = match.interp_entry(m, symbol)
+        self.assertEqual(match.kernel_calls(m, symbol, entry)[0], 0x00026FC8)
+        self.assertTrue(all(source.startswith("kb/fn/") for source in symbol.sources))
 
     def test_an_unsupported_correspondence_is_an_unresolved_search(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x000261B8))
@@ -251,6 +257,20 @@ class InterpAdapterTest(unittest.TestCase):
             status = meaning.statuses[layout]
             self.assertEqual((status.state, status.props["method"], status.props["count"]),
                              ("unresolved", "interp-contract", 0))
+            self.assertEqual(list(status.evidence), [])
+            self.assertRegex(status.props["l0"], r"^[0-9a-f]{16}$")
+
+    def test_the_registries_are_projections_of_the_files(self):
+        m = model()
+        files = {**interp.render_registries(m), **interp.render_correspondences(m)}
+        self.assertEqual(sorted(files), [f"defs/{name}" for name in (
+            "1ME3B.interp.csv", "1ND0A.interp.csv", "JK00D.interp.csv",
+            "JK08A-1ND0A.interp-correspondence.csv", "JK08A-JK00D.interp-correspondence.csv",
+            "JK08A-JK78C.interp-correspondence.csv", "JK08A.interp.csv", "JK78C.interp.csv")])
+        for path, text in files.items():
+            with self.subTest(path=path):
+                self.assertEqual((repo.ROOT / path).read_text(encoding="utf-8"), text)
+        self.assertNotIn(interp, adapters.ADAPTERS)
 
 
 def _readers(meaning, layout):
