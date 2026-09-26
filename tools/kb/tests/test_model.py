@@ -135,5 +135,29 @@ class LinkTest(unittest.TestCase):
         self.assertFalse(b.symbols[SymbolKey("7mfk", "axis", 0x125EA)].implicit)
 
 
+
+class RequiredTest(unittest.TestCase):
+    def test_a_feature_requires_the_sources_of_its_fields_on_every_layout_it_targets(self):
+        b = builder()
+        group = ("ram", "field", "load_raw")
+        source = b.symbol("7mfk", "ram", 0xFFFF102C, "p.toml", group=group)
+        b.symbol("jk00d", "ram", 0xFFFF1034, "c.csv", group=group)
+        b.name(group, "normalized_load", "field", "p.toml")
+        b.status(group, "1nd", "unresolved", "c.csv")
+        b.entity("field", "load_raw", "p.toml", props={"origin": "ecu_ram"},
+                 refs={"source": [source]})
+        b.entity("field", "tick16", "p.toml", props={"origin": "telemetry_state"})
+        b.entity("feature", "can_telemetry", "p.toml",
+                 refs={"requires": [("field", "load_raw"), ("field", "tick16")]})
+        for layout in ("7mfk", "jk00d", "1nd", "jk78c"):
+            b.target("can_telemetry", layout, "p.toml", status="supported")
+        model = b.finish()
+        through = "can_telemetry via load_raw/field"
+        self.assertEqual(model.required(), {
+            ("normalized_load/ram", "1nd"): {through},
+            ("normalized_load/ram", "jk78c"): {through},
+            ("normalized_load/ram", "jk00c"): {"family"}})
+
+
 if __name__ == "__main__":
     unittest.main()

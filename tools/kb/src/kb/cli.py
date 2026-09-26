@@ -232,6 +232,10 @@ def command_brief(args, root=repo.ROOT):
     return _answer(args, "brief", lambda g: read.brief(g, root), root)
 
 
+def command_gaps(args, root=repo.ROOT):
+    return _answer(args, "gaps", lambda g: read.gaps(g, args.feature, args.layout, root), root)
+
+
 def command_log(args, root=repo.ROOT):
     return _answer(args, "log", lambda g: read.log(g, args.ref, root), root)
 
@@ -379,6 +383,9 @@ def build_parser():
     search.set_defaults(handler=command_find)
     reader("brief", "the state of the knowledge base", layout=False) \
         .set_defaults(handler=command_brief)
+    gap = reader("gaps", "required meanings without a symbol, grouped by status")
+    gap.add_argument("--feature", help="the meanings that one feature requires")
+    gap.set_defaults(handler=command_gaps)
     reader("log", "the history of an entity through renames and redirects", reference,
            layout=False).set_defaults(handler=command_log)
     reader("raw", "the registry records of an entity", reference, layout=False) \

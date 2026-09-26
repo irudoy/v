@@ -1855,7 +1855,7 @@ below its baseline.
 | # | Question | Command | Budget | From stage |
 |---|---|---|---|---|
 | 1 | What is at an address of another layout | `kb at jk00d:ffff1034` | 600 | 2 |
-| 2 | Where a meaning is on every layout | `kb where normalized_bfs_snapshot` | 400 | 3 |
+| 2 | Where a meaning is on every layout | `kb where normalized_load/ram` | 400 | 3 |
 | 3 | What depends on a table | `kb impact 7mfk:0000a4aa` | 1500 | 2 |
 | 4 | How coolant temperature reaches the intake-cam target | `kb path 7mfk:ffff1079 7mfk:ffff2326` | 1500 | 2 |
 | 5 | Which telemetry sources lack a symbol on a layout | `kb gaps --feature can_telemetry --layout 1nd` | 1000 | 3 |

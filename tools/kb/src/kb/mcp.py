@@ -19,8 +19,8 @@ import sys
 from kb import cli
 
 # The read commands of section 12.2 that the current stage implements.
-READ_COMMANDS = ("brief", "show", "at", "where", "impact", "path", "find", "code", "log",
-                 "raw", "cypher", "audit", "bench", "check")
+READ_COMMANDS = ("brief", "show", "at", "where", "impact", "path", "find", "gaps", "code",
+                 "log", "raw", "cypher", "audit", "bench", "check")
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 INSTRUCTIONS = (
     "Knowledge of the VQ HR ECU repository: symbols, meanings, links, statuses, and "

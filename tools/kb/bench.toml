@@ -22,11 +22,11 @@ baseline = [
 [[question]]
 id = 2
 question = "Where a meaning is on every layout"
-command = "kb where normalized_bfs_snapshot"
+command = "kb where normalized_load/ram"
 budget = 400
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "-i", "-e", "normalized_bfs_snapshot", "-e", "ffff102c", "patches", "defs"] },
+    { run = ["rg", "-n", "-i", "-e", "normalized_load_raw", "-e", "ffff102c", "patches", "defs"] },
 ]
 
 [[question]]
@@ -56,7 +56,7 @@ command = "kb gaps --feature can_telemetry --layout 1nd"
 budget = 1000
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "-i", "-e", "telemetry_unavailable", "-e", "can_symbols", "patches/rom-address-profiles.toml"] },
+    { run = ["rg", "-n", "^telemetry,.*,unsupported,", "patches/1nd-runtime-correspondence.csv"] },
 ]
 
 [[question]]
@@ -96,7 +96,7 @@ command = "kb log apc_output"
 budget = 800
 stage = 3
 baseline = [
-    { run = ["git", "log", "--oneline", "-S", "apc_output", "--", "patches", "defs"] },
+    { run = ["git", "log", "--oneline", "-G", "apc_output", "--", "patches", "defs"] },
 ]
 
 [[question]]
@@ -116,7 +116,7 @@ command = "kb gaps --feature can_telemetry --layout 1me3b"
 budget = 1000
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "-i", "-e", "telemetry_unavailable", "-e", "can_symbols", "patches/rom-address-profiles.toml"] },
+    { run = ["rg", "-n", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
 ]
 
 [[question]]

@@ -811,3 +811,41 @@ class Model:
     def meaning_of(self, key):
         symbol = self.symbols.get(key)
         return symbol.meaning if symbol else None
+
+    def required(self):
+        """{(meaning key, layout): requirements} of the named meanings that are
+        required on a layout where they have no symbol (section 7.4). A
+        requirement is `family` when the meaning has a symbol on another layout
+        of the family, `<feature>` when a feature that targets the layout
+        requires it, and `<feature> via <field>/field` when the feature requires
+        a field whose `source` it is."""
+        family = {layout.id: layout.family for layout in self.layouts.values()}
+        found = defaultdict(set)
+        for meaning in self.meanings:
+            if not meaning.name:
+                continue
+            families = {family[layout] for layout in meaning.symbols}
+            for layout in self.layouts:
+                if layout not in meaning.symbols and family[layout] in families:
+                    found[(meaning.key, layout)].add("family")
+        targeted = defaultdict(list)
+        for feature, layout in self.targets:
+            targeted[feature].append(layout)
+        for (kind, slug), entity in sorted(self.entities.items()):
+            if kind != "feature":
+                continue
+            for ref in entity.refs.get("requires", ()):
+                if isinstance(ref, tuple):
+                    field = self.entities.get(ref)
+                    sources = field.refs.get("source", ()) if field is not None else ()
+                    requirement = f"{slug} via {ref[1]}/{ref[0]}"
+                else:
+                    sources, requirement = (ref,), slug
+                for source in sources:
+                    meaning = self.meaning_of(source)
+                    if meaning is None or not meaning.name:
+                        continue
+                    for layout in targeted[slug]:
+                        if layout not in meaning.symbols:
+                            found[(meaning.key, layout)].add(requirement)
+        return dict(found)

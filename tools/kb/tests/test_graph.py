@@ -68,6 +68,21 @@ class ClaimRowsTest(unittest.TestCase):
         symbol = next(row for row in rows["symbols"] if row["key"] == "7mfk-00020dfe/fn")
         self.assertEqual((symbol["layout"], symbol["address"]), ("7mfk", 0x20DFE))
 
+    def test_a_required_meaning_without_a_symbol_or_a_status_is_unknown(self):
+        rows = graph.claim_rows(model())
+        unknown = {(row["from"], row["to"]): row["props"] for row in rows["statuses"]
+                   if row["props"]["state"] == "unknown"}
+        required = model().required()
+        self.assertTrue(set(unknown) <= set(required))
+        self.assertTrue(all(props["required"] == sorted(required[pair])
+                            for pair, props in unknown.items()))
+        claimed = {(row["from"], row["to"]) for row in rows["statuses"]
+                   if row["props"]["producer"] == "claim"}
+        self.assertEqual(set(required) - set(unknown), set(required) & claimed)
+        requires = rows["entity_links"][("REQUIRES", "Entity", "Entity")]
+        self.assertIn({"from": "can_telemetry/feature", "to": "normalized_load_raw/field"},
+                      [{"from": row["from"], "to": row["to"]} for row in requires])
+
     def test_values_become_storable(self):
         stored = graph.properties({"to": SymbolKey("7mfk", "fn", 0x26740), "empty": [],
                                    "none": None, "set": {"b", "a"}, "nested": [{"x": None}]})

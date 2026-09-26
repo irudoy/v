@@ -24,6 +24,7 @@ uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion
 uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
 uv run kb find knock threshold       # meanings and designed entities ranked by name, former name, title, and summary
 uv run kb brief                      # graph state, layouts, stage, owners, gaps, and the questions
+uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings without a symbol, by status
 uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
 uv run kb bench                      # the acceptance questions of the current stage
@@ -107,6 +108,14 @@ name resolves with a note that names the current reference.
   Both leave nodes above the 99th degree percentile of their kind unexpanded
   and name the `--expand` option; `kb path` states a shorter path through
   hubs when one exists.
+- `kb gaps` lists the required meanings without a symbol on a layout, grouped
+  by status: `unknown`, `unresolved` with its search and `stale` when the L0
+  manifest of the layout changed since, and `absent` with its first typed
+  evidence. A meaning is required on the layouts that a feature targets when
+  the feature requires it directly or through the `source` of a field it
+  requires, and on the layouts of a family where another layout has its
+  symbol; `--feature` lists the requirements of one feature, `--layout` one
+  layout.
 - `kb bench` answers every question of `bench.toml` that the current stage
   activates, with `--full`, and passes a question when its answer exits with
   0, fits its budget, and stays below its baseline: the output of the `rg`

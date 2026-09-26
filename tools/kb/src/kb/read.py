@@ -1298,6 +1298,101 @@ def find(graph, words, limit=15, root=repo.ROOT):
     return answer
 
 
+# kb gaps ----------------------------------------------------------------------------------------
+
+# The order of the status groups: no search yet, a search without a unique
+# result, and a mechanism that the layout lacks.
+GAP_STATES = ("unknown", "unresolved", "absent")
+FAMILY = "family"
+
+
+def gap_rows(graph, feature=None, layout=None):
+    """[{feature, layout, field, meaning, status, current}] of the required
+    meanings without a symbol on a layout: those a feature requires directly or
+    through the source of a field, and without `feature`, those a symbol on
+    another layout of the family requires. `current` is the L0 digest of the
+    layout, which a stale search does not match."""
+    rows = graph.run(
+        "MATCH (f:Kb:Entity {kind: 'feature'})-[:TARGETS]->(l:Kb:Layout) "
+        "WHERE ($feature IS NULL OR f.slug = $feature) AND ($layout IS NULL OR l.key = $layout) "
+        "MATCH (f)-[:REQUIRES]->(x) "
+        "OPTIONAL MATCH (x)-[:CARRIES]->(c:Kb:Meaning) "
+        "WITH f, l, x, CASE WHEN x:Meaning THEN x ELSE c END AS m WHERE m IS NOT NULL "
+        "OPTIONAL MATCH (m)-[:HAS]->(s:Kb:Symbol) WHERE s.layout = l.key "
+        "WITH f, l, x, m, s WHERE s IS NULL "
+        "OPTIONAL MATCH (m)-[r:STATUS]->(l) "
+        "RETURN f.slug AS feature, l.key AS layout, "
+        "CASE WHEN x:Meaning THEN null ELSE x.key END AS field, m.key AS meaning, "
+        "properties(r) AS status, substring(l.l0, 0, 16) AS current",
+        feature=feature, layout=layout)
+    if feature is None:
+        listed = {(row["meaning"], row["layout"]) for row in rows}
+        rows += [row for row in graph.run(
+            "MATCH (m:Kb:Meaning)-[r:STATUS {state: 'unknown'}]->(l:Kb:Layout) "
+            "WHERE ($layout IS NULL OR l.key = $layout) AND $family IN r.required "
+            "RETURN $family AS feature, l.key AS layout, null AS field, m.key AS meaning, "
+            "properties(r) AS status, substring(l.l0, 0, 16) AS current",
+            layout=layout, family=FAMILY) if (row["meaning"], row["layout"]) not in listed]
+    return sorted(rows, key=lambda row: (row["feature"] == FAMILY, row["feature"],
+                                         row["layout"], row["field"] or "", row["meaning"]))
+
+
+def gap_detail(row):
+    """The search of an `unresolved` status, or the first evidence of an
+    `absent` one; a status without either names its evidence kinds."""
+    status = row["status"] or {}
+    if status.get("method"):
+        parts = [status["method"], status.get("target")]
+        if status.get("count") is not None:
+            parts.append(f"count {status['count']}")
+        if status.get("l0") and row.get("current") and status["l0"] != row["current"]:
+            parts.append("stale")
+        return "  ".join(str(part) for part in parts if part not in (None, ""))
+    evidence = status.get("evidence") or ()
+    typed = [item for item in evidence if item.get("kind") != "registry"]
+    if typed:
+        item = typed[0]
+        return "  ".join(str(part) for part in (item["kind"], item.get("at") or item.get("to"))
+                         if part)
+    return " ".join(sorted({item.get("kind", "?") for item in evidence}))
+
+
+def gaps(graph, feature=None, layout=None, root=repo.ROOT):
+    if feature is not None and not graph.run(
+            "MATCH (f:Kb:Entity {kind: 'feature', slug: $feature}) RETURN f.key AS key",
+            feature=feature):
+        raise KbError(f"no feature {feature}; kb find {feature} lists near names", code=5)
+    if layout is not None and layout not in repo.layouts(root):
+        raise KbError(f"no layout {layout}", code=2)
+    rows = gap_rows(graph, feature, layout)
+    subject = " ".join(filter(None, (feature, f"on {layout}" if layout else None)))
+    features = sorted({row["feature"] for row in rows})
+    layouts = sorted({row["layout"] for row in rows})
+    head = f"{len(rows)} required meanings without a symbol"
+    if not layout and rows:
+        head += f" on {len(layouts)} layouts"
+    if not feature and len(features) > 1:
+        counts = defaultdict(int)
+        for row in rows:
+            counts[row["feature"]] += 1
+        head += " (" + ", ".join(f"{name} {counts[name]}" for name in features) + ")"
+    answer = Answer("kb gaps --feature <feature> --layout <layout>")
+    answer.section(None, IDENTITY, [f"{subject}: {head}" if subject else head])
+    groups = defaultdict(list)
+    for row in rows:
+        state = (row["status"] or {}).get("state", "unknown")
+        columns = [f"{row['layout']:<6}" if not layout else None,
+                   row["feature"] if not feature and len(features) > 1 else None,
+                   row["field"], row["meaning"], gap_detail(row)]
+        groups[state].append("  " + "  ".join(part for part in columns if part))
+    for state in GAP_STATES + tuple(sorted(set(groups) - set(GAP_STATES))):
+        if groups.get(state):
+            answer.section(f"{state}: {len(groups[state])}", FACTS, groups[state])
+    answer.data = {"gaps": [{**row, "state": (row["status"] or {}).get("state", "unknown")}
+                            for row in rows]}
+    return answer
+
+
 # kb brief ---------------------------------------------------------------------------------------
 
 def bench(root=repo.ROOT):

@@ -60,6 +60,7 @@ brief = 2000
 code = 4000
 cypher = 2000
 find = 800
+gaps = 1000
 impact = 1500
 log = 800
 path = 1500

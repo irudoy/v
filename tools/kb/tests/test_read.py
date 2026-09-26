@@ -283,6 +283,68 @@ class RoleTest(unittest.TestCase):
         self.assertEqual(read.roles_of(store, {"key": "rpm/ram", "name": "rpm"}), [])
 
 
+
+class GapStore:
+    """Required meanings without a symbol: two telemetry sources of 1nd, one
+    with a search and one absent, and one meaning a symbol of the family
+    requires on jk00c."""
+
+    L0 = "0123456789abcdef"
+    FEATURE = [
+        {"feature": "can_telemetry", "layout": "1nd", "field": "normalized_load_raw/field",
+         "meaning": "normalized_load/ram", "current": L0, "status": {
+             "state": "unresolved", "method": "masked-match", "target": "7mfk:0003bd1c",
+             "count": 0, "l0": L0}},
+        {"feature": "can_telemetry", "layout": "1nd", "field": "knock_timing_state_raw/field",
+         "meaning": "knock_timing_state/ram", "current": L0, "status": {
+             "state": "absent", "evidence": [{"kind": "registry"}, {
+                 "kind": "l0", "supports": "identity", "at": "1nd:0004d464"}]}},
+        {"feature": "can_telemetry", "layout": "jk78c", "field": "request_flow_raw/field",
+         "meaning": "request_flow/ram", "current": "fedcba9876543210", "status": {
+             "state": "unresolved", "method": "trace", "target": "request_flow/ram/7mfk",
+             "count": 0, "l0": L0}},
+    ]
+    FAMILY = [{"feature": "family", "layout": "jk00c", "field": None,
+               "meaning": "astute-toad/tbl", "current": L0,
+               "status": {"state": "unknown", "required": ["family"]}}]
+
+    def run(self, query, **params):
+        if "slug: $feature" in query:
+            return [{"key": "can_telemetry/feature"}] if params["feature"] == "can_telemetry" \
+                else []
+        rows = self.FEATURE if "[:REQUIRES]" in query else self.FAMILY
+        return [dict(row) for row in rows if params.get("layout") in (None, row["layout"])
+                and params.get("feature") in (None, row["feature"])]
+
+
+class GapsTest(unittest.TestCase):
+    def test_a_feature_on_a_layout_lists_its_fields_by_status(self):
+        answer = read.gaps(GapStore(), "can_telemetry", "1nd")
+        self.assertEqual(answer.text(), (
+            "can_telemetry on 1nd: 2 required meanings without a symbol\n"
+            "unresolved: 1\n"
+            "  normalized_load_raw/field  normalized_load/ram  masked-match  7mfk:0003bd1c  "
+            "count 0\n"
+            "absent: 1\n"
+            "  knock_timing_state_raw/field  knock_timing_state/ram  l0  1nd:0004d464\n"))
+
+    def test_without_a_feature_the_family_requirements_follow_and_a_stale_search_says_so(self):
+        answer = read.gaps(GapStore())
+        lines = answer.text().splitlines()
+        self.assertEqual(lines[0], "4 required meanings without a symbol on 3 layouts "
+                                   "(can_telemetry 3, family 1)")
+        self.assertEqual(lines[1:3], ["unknown: 1", "  jk00c   family  astute-toad/tbl"])
+        self.assertIn("  jk78c   can_telemetry  request_flow_raw/field  request_flow/ram  trace  "
+                      "request_flow/ram/7mfk  count 0  stale", lines)
+        self.assertEqual([gap["state"] for gap in answer.data["gaps"]],
+                         ["absent", "unresolved", "unresolved", "unknown"])
+
+    def test_an_unknown_feature_names_the_search(self):
+        with self.assertRaises(read.KbError) as missing:
+            read.gaps(GapStore(), "launch_control")
+        self.assertEqual(missing.exception.code, 5)
+
+
 class EvidenceTest(unittest.TestCase):
     def test_items_that_differ_in_at_share_a_line(self):
         items = [{"kind": "l0", "supports": "identity", "at": f"7mfk:{address:08x}"}

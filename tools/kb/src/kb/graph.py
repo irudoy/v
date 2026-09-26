@@ -192,10 +192,12 @@ def _referenced(model, item):
 
 # Relationships of designed entities: the reference key that states each, and
 # the label of the node it reaches.
+# A reference key whose relationships reach both labels lists them.
 ENTITY_LINKS = {"observes": ("OBSERVES", "Meaning"), "source": ("CARRIES", "Meaning"),
                 "signal": ("SERVES", "Entity"), "stage": ("STAGE", "Entity"),
                 "block": ("BLOCK", "Entity"), "registers": ("REGISTER", "Meaning"),
-                "functions": ("FUNCTION", "Meaning"), "output": ("OUTPUT", "Meaning")}
+                "functions": ("FUNCTION", "Meaning"), "output": ("OUTPUT", "Meaning"),
+                "requires": ("REQUIRES", ("Meaning", "Entity"))}
 # The relationships of a chain step to the meanings of its keys.
 STEP_LINKS = (("from", "FROM"), ("to", "TO"), ("via", "THROUGH"))
 
@@ -247,12 +249,12 @@ def claim_rows(model):
             statuses.append({"from": meaning.key, "to": layout, "props": properties({
                 **status.props, "state": status.state, "evidence": status.evidence,
                 "producer": "claim", "src": _src(status.sources)})})
-        claimed = set(meaning.symbols) | set(meaning.statuses)
-        families = {family[layout] for layout in meaning.symbols}
-        for layout in sorted(model.layouts):
-            if layout not in claimed and family[layout] in families:
-                statuses.append({"from": meaning.key, "to": layout, "props": {
-                    "state": "unknown", "producer": "derived", "src": "required-meanings"}})
+    by_key = {meaning.key: meaning for meaning in model.meanings if meaning.name}
+    for (key, layout), requirements in sorted(model.required().items()):
+        if layout not in by_key[key].statuses:
+            statuses.append({"from": key, "to": layout, "props": {
+                "state": "unknown", "required": sorted(requirements),
+                "producer": "derived", "src": "required-meanings"}})
     for link in model.links:
         if not (link.owner.name and link.to.name):
             continue
@@ -278,14 +280,19 @@ def claim_rows(model):
     for _, entity in sorted(model.entities.items()):
         entities.append(entity_node(entity))
         claim = {"producer": "claim", "src": _src(entity.sources)}
-        for name, (kind, label) in ENTITY_LINKS.items():
+        for name, (kind, labels) in ENTITY_LINKS.items():
             refs = entity.refs.get(name, ())
-            if label == "Meaning":
-                keys = sorted(_named_keys(model, refs))
-            else:
-                keys = sorted(model.entities[ref].key for ref in refs if ref in model.entities)
-            entity_links[(kind, "Entity", label)].extend(
-                {"from": entity.key, "to": key, "props": claim} for key in keys)
+            for label in (labels,) if isinstance(labels, str) else labels:
+                # An entity reference is a (kind, slug) tuple; any other
+                # reference is a symbol key of a meaning.
+                if label == "Meaning":
+                    keys = sorted(_named_keys(model, [
+                        ref for ref in refs if not isinstance(ref, tuple)]))
+                else:
+                    keys = sorted(model.entities[ref].key for ref in refs
+                                  if isinstance(ref, tuple) and ref in model.entities)
+                entity_links[(kind, "Entity", label)].extend(
+                    {"from": entity.key, "to": key, "props": claim} for key in keys)
         for order, step in enumerate(entity.steps, start=1):
             key = f"{entity.slug}#{order}"
             steps.append(properties({

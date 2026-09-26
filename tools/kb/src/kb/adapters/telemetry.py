@@ -25,7 +25,9 @@
   every feature.
 - The wire constants, `[[profile]]`, and the contexts become keys of the
   `can_telemetry` feature; the mailbox and the table, configuration, and
-  state addresses become keys of its `7mfk` target.
+  state addresses become keys of its `7mfk` target. The feature `requires`
+  every field it declares, so the source meaning of each is required on every
+  layout that the feature targets.
 """
 
 from pathlib import Path
@@ -143,7 +145,7 @@ def declare_profile(b, document, regions, src):
     units = frozenset(b.config.get("vocab", {}).get("unit", ()))
     owners = b.stash.get("signal_fields", {})
     scaled = b.stash.setdefault("telemetry_units", set())
-    seen = set()
+    seen, declared = set(), []
     fields = [(item, STREAM_KEYS, {"page": item.get("page"), "offset": item.get("offset"),
                                    "profiles": item.get("profiles")})
               for item in document.get("field", ())]
@@ -195,6 +197,10 @@ def declare_profile(b, document, regions, src):
             b.issue("schema", src, subject, f"kind {kind!r}")
             continue
         b.entity("field", name, src, props=props, refs=refs)
+        declared.append(("field", name))
+    # The feature transmits every field of its profiles and contexts, so it
+    # requires the source meaning of each on every layout it targets.
+    b.entity("feature", FEATURE, src, refs={"requires": declared})
     for name, signal in sorted(owners.items()):
         if name not in seen:
             b.issue("references", src, f"signal.{signal}",
