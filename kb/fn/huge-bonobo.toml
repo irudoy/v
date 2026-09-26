@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "00044f1c"
+name = "huge-bonobo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045392"

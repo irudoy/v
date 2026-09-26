@@ -1,0 +1,64 @@
+cols = 2
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00009266"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1aa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b320"
+
+[[symbol]]
+layout = "1nd"
+address = "000091d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076adc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076c98"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009040"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aecc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b068"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b068"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076c98"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b320"

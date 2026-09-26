@@ -1,0 +1,74 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 8
+storage = "uint16"
+unit = "%"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[editor]
+name = "Demand [%]"
+format = "0.0"
+fine = 0.125
+coarse = 1
+
+[[symbol]]
+layout = "1me3b"
+address = "000165cc"
+note = """
+Eight-point axis 100..800 of the two floor curves, loaded from its own \
+literal pool word; stock bytes are identical to JK78C 0x00015FFA, where 1/8 \
+percent per count of the demand word is a catalog candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633ec"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015ffa"
+note = """
+Eight-point axis 100..800 of the two floor curves, the GBR base of the \
+resolver; the coordinate is the demand word 0xFFFF2350 published by DID \
+0x1218. 1/8 percent per count is a catalog candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056678"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a \
+floor lookup; its literal pool holds no eight-point floor curve and no \
+demand axis."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f468"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056678"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633ec"

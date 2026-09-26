@@ -1,0 +1,133 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 16
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "00017366"
+note = """
+Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; \
+stock bytes are identical to JK78C 0x00016CA4. The same bytes repeat at \
+0x00017546, the axis of the running CVTC curve."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063edc"
+
+[[symbol]]
+layout = "1nd"
+address = "000172b2"
+note = [
+    """
+1ND0A: Sixteen-point engine-speed axis 400..7200 RPM of the running duration \
+curve; stock bytes are identical to JK78C 0x00016CA4.""",
+    """
+1ND3B: Sixteen-point engine-speed axis 400..7200 RPM of the running duration \
+curve; stock bytes are identical to JK78C 0x00016CA4. 1ND3B shares the 1ND0A \
+code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f760"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe58"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ca4"
+note = """
+Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; \
+the coordinate is 0xFFFF11A6 at 3.125 RPM per count."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056684"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056f7c"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe58"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063edc"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f760"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056684"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633fc"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056f7c"

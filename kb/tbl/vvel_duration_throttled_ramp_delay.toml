@@ -1,0 +1,83 @@
+summary = """
+Delay curve of the stepped approach to the throttled duration: FUN_00063534 \
+multiplies the value by 100 and passes it to the delay helper FUN_0002861E, \
+which gates the offset that steps toward the curve 0x000173D6. Stock values \
+fall from 30 at -30 degC to 0 at 40 degC."""
+level = "code"
+home = "1me3b"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "count"
+scale = "x"
+to_raw = "x"
+scale_level = "code"
+
+[editor]
+name = "VVEL Duration Throttled - Ramp Delay"
+category = "Variable Valve Timing / VVEL Duration"
+order = 21
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001457a"
+note = """
+Read by FUN_00063534 at callsite 0x6355C through the 8-point uint8 leaf \
+0x2AC9C indexed by its first byte argument, the byte that the resolver \
+FUN_00062FAC also passes to FUN_0006375E as the start-up curve coordinate. \
+The time weight of one count of the helper argument is not bound to a \
+published parameter."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637bc"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+The 1ND resolver FUN_0005F468 stores the throttled curve value directly, \
+without a stepped approach or a delay curve; the stock image holds no copy \
+of the 1ME3B curve bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f468"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C resolver FUN_000564A4 stores the throttled curve value directly, \
+without a stepped approach or a delay curve; the stock image holds no copy \
+of the 1ME3B curve bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000564a4"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_throttled_ramp_delay_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006355c"
+
+[[link]]
+type = "reader"
+to = "efficient-ant/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637bc"

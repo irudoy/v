@@ -1,0 +1,128 @@
+summary = """
+Ignition surface for state codes 6 and 7, VVEL modes 13 and 14, of the \
+mode-selected half of the ignition coordinator FUN_00074D98, the half that \
+stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C \
+(bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the \
+mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 \
+code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode \
+15 code 8, and every other mode code 1. The coordinator takes the low seven \
+bits of the lookup and crossfades the previous and current state values by \
+the progress word 0xFFFEB6DC, where 0x8000 is 1.0."""
+level = "code"
+home = "1nd"
+cols = 8
+rows = 8
+storage = "uint8"
+unit = "deg"
+scale = "x-64"
+to_raw = "x+64"
+scale_level = "candidate"
+
+[editor]
+name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
+category = "Ignition Timing / State Surfaces"
+order = 108
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[symbol]]
+layout = "1me3b"
+address = "0000a604"
+summary = """
+Ignition surface for state codes 6 and 7, VVEL modes 13 and 14, of the \
+mode-selected half of the ignition coordinator FUN_000797CC, the only half \
+this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the \
+surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 \
+derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code \
+4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every \
+other mode code 1. The coordinator takes the low seven bits of the lookup \
+and crossfades the previous and current state values by the progress word \
+0xFFFEB824, where 0x8000 is 1.0."""
+note = """
+Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves \
+the four state-code surfaces of this coordinator. The literal words 0x79400 \
+hold the same address; the structure export recovers no instruction that \
+reads them."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799cc"
+
+[[symbol]]
+layout = "1nd"
+address = "0000a6d0"
+note = """
+Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves \
+the four state-code surfaces of this coordinator."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fac"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant \
+and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no \
+state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface \
+bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069ab8"
+
+[[link]]
+type = "axis"
+to = "ignition_state_surface_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074e1a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007984a"
+
+[[link]]
+type = "axis"
+to = "ignition_state_surface_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074e1a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007984a"
+
+[[link]]
+type = "reader"
+to = "accomplished-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799cc"
+
+[[link]]
+type = "reader"
+to = "roaring-bullmastiff/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fac"

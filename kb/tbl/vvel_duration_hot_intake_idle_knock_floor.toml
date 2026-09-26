@@ -1,0 +1,103 @@
+summary = """
+Eight-point lower bound of the mode 13 duration: the resolver takes the \
+maximum of this curve and the surface 0x0000E24E. Stock values are 900 = \
+45.0 at every point."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Floor - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 15
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000165ec"
+summary = """
+Eight-point lower bound of the mode 13 duration: the resolver takes the \
+maximum of this curve and the surface 0x0000E1FC. Stock values are 1000 = \
+50.0 at every point."""
+note = """
+Read by the resolver FUN_00062FAC at callsite 0x63130 through the 8-point \
+uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool \
+word. JK78C holds 900 = 45.0 at every point of its floor 0x0001601A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633f8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001601a"
+note = """
+Read by the resolver FUN_000564A4 at callsite 0x5656C through the 8-point \
+uint16 wrapper 0x282F4 as GBR + 0x20 with the axis at GBR + 0 and the demand \
+coordinate 0xFFFF2350."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 32
+mode = "base"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a \
+floor lookup; its literal pool holds no eight-point floor curve and no \
+demand axis."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f468"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_hot_intake_idle_floor_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005656c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063130"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 32
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000633f8"

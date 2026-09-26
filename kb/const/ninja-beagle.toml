@@ -1,0 +1,18 @@
+[[symbol]]
+layout = "1me3b"
+address = "000172c6"
+name = "ninja-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b334"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b334"

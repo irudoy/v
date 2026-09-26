@@ -1,0 +1,18 @@
+[[symbol]]
+layout = "jk78c"
+address = "ffff1084"
+name = "cocky-quetzal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b044"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b044"

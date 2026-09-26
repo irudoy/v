@@ -1,0 +1,50 @@
+[[bit]]
+bit = 2
+name = "armed"
+
+[[bit]]
+bit = 3
+name = "active"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe948a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1ec"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe94ba"
+
+[[symbol.bit]]
+bit = 4
+name = "armed"
+
+[[symbol.bit]]
+bit = 5
+name = "active"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076b1e"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23f5"
+
+[[symbol.bit]]
+bit = 3
+name = "armed"
+
+[[symbol.bit]]
+bit = 4
+name = "active"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006af04"

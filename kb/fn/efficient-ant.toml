@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "00063534"
+name = "efficient-ant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006355c"

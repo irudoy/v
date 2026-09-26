@@ -1,0 +1,130 @@
+summary = """
+Duration word surface of the state-code dispatcher FUN_000657E4 for state \
+code 5; FUN_0004692A assigns code 5 to VVEL mode 12, code 6 to mode 13, and \
+code 7 to mode 14 from the published mode byte 0xFFFF2808; mode 14 is \
+unreachable on JK78C, so code 7 is never produced. The dispatcher evaluates \
+the state bytes 0xFFFF43F2 and 0xFFFF4480 in turn and publishes the duration \
+word 0xFFFF122C. Stock values span 900..1180 = 45.0..59.0."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 8
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration State Word - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 19
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001027c"
+summary = """
+Duration word surface of the state-code dispatcher FUN_0007448C for state \
+code 5; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode 13, and \
+code 7 to mode 14. The dispatcher evaluates the state bytes 0xFFFEB826 and \
+0xFFFEB8DC in turn and publishes the duration word 0xFFFE821E. Stock values \
+are 1000 = 50.0 at every cell."""
+note = """
+Read by FUN_0007448C at callsites 0x750AE and 0x75176 through the 8x8 uint16 \
+leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E << 2), the 12.5 RPM per count \
+engine-speed word in the 3.125 RPM domain on the first axis and the stack \
+coordinate the load byte 0xFFFE8034 << 8, the byte that indexes the ignition \
+mode surfaces in FUN_000797CC on the second axis. The same dispatcher takes \
+the throttled curve 0x000173D6 for state codes 1 and 3, so the word shares \
+the 0.05 domain of that curve. The resolver pair of modes 12 and 13 is a \
+separate pair of surfaces with its own axes."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075244"
+
+[[symbol]]
+layout = "jk78c"
+address = "000102ce"
+note = """
+Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where r4 holds the \
+surface selected before the call through the 8x8 uint16 wrapper 0x28058 with \
+r7 = min(0xFFFF, 0xFFFF11AC << 2), the latched 12.5 RPM per count \
+engine-speed word in the 3.125 RPM domain on the first axis and the stack \
+coordinate the load byte 0xFFFF1032 << 8, the byte that indexes the ignition \
+mode surfaces in FUN_00069AB8 on the second axis. The same dispatcher takes \
+the throttled curve 0x00016D14 for state codes 1 and 3, so the word shares \
+the 0.05 domain of that curve. The resolver pair of modes 12 and 13 is a \
+separate pair of surfaces with its own axes."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066670"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+FUN_00070514, the state-code dispatcher of this image, reads the resolver \
+surfaces 0x0000E748 and 0x0000E7C8 over the axes 0x000166D8 and 0x000166C8 \
+at these two positions; the image carries no separate pair."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070514"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_model_hot_intake_idle_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664b8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000750ae"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_model_hot_intake_idle_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664b8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000750ae"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066670"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075244"

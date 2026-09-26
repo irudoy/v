@@ -1,0 +1,84 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 16
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
+
+[editor]
+name = "VVEL Shaft Angle [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001b718"
+note = """
+Control-shaft angle axis 0..15536 = 0..30.3 degrees of the second conversion \
+copy, the argument domain of FUN_0005C7D4. Stock bytes are identical to the \
+primary axis 0x00015A56."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c970"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b63e"
+note = """
+Control-shaft angle axis 0..15536 = 0..30.3 degrees of the second conversion \
+copy, the argument domain of FUN_00058964. Stock bytes are identical to the \
+primary axis 0x00015C02."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058b00"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001afea"
+note = """
+Control-shaft angle axis 0..15536 = 0..30.3 degrees of the second conversion \
+copy, the argument domain of FUN_0004FCB8. Stock bytes are identical to the \
+primary axis 0x000156DC."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fd84"
+
+[[link]]
+type = "reader"
+to = "fervent-walrus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fd84"
+
+[[link]]
+type = "reader"
+to = "helpful-raccoon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058b00"
+
+[[link]]
+type = "reader"
+to = "venomous-lynx/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c970"

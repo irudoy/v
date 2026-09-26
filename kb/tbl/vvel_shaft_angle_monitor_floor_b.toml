@@ -1,0 +1,121 @@
+summary = """
+Second engine-speed floor of the expected control-shaft angle, combined with \
+floor A by maximum in FUN_000BF0C0 and FUN_000BF122 before the deficit \
+against the measured angle 0xFFFF2670 is formed."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
+
+[editor]
+name = "VVEL Shaft Angle Monitor Floor - B"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001669c"
+summary = """
+Second engine-speed floor of the expected control-shaft angle used by the \
+shaft-angle deficit monitors."""
+note = """
+Read by the task FUN_00061D46 at callsite 0x61E12 through the 8-point uint16 \
+leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4E0. Stock bytes are \
+identical to JK78C 0x000160AA. FUN_00066C18 reads a byte-identical second \
+pair 0x0001B9C8 over 0x0001BD98."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f9c"
+
+[[symbol]]
+layout = "1nd"
+address = "000166a8"
+summary = """
+Second engine-speed floor of the expected control-shaft angle used by the \
+shaft-angle deficit monitors."""
+note = [
+    """
+1ND0A: Read by the task FUN_0005E2A0 at callsite 0x5E360 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160AA.""",
+    """
+1ND3B: Read by the task FUN_0005E2A0 at callsite 0x5E360 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160AA. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e59c"
+
+[[symbol]]
+layout = "jk78c"
+address = "000160aa"
+note = """
+Read by the task FUN_00054FD0 at callsite 0x550D6 through the 8-point uint16 \
+wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF3278."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552a4"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_monitor_floor_b_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000550d6"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e360"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061e12"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e59c"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f9c"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552a4"

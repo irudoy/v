@@ -1,0 +1,75 @@
+level = "code"
+home = "1nd"
+quantity = "rpm"
+points = 8
+storage = "uint8"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 50
+coarse = 200
+
+[[symbol]]
+layout = "1me3b"
+address = "00013dce"
+note = """
+First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the \
+lookup receives the same engine-speed word as the 16x16 surfaces. The \
+literal words 0x793FC hold the same address; the structure export recovers \
+no instruction that reads them."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799c8"
+
+[[symbol]]
+layout = "1nd"
+address = "00013fe2"
+note = """
+First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the \
+lookup receives the same engine-speed word as the 16x16 surfaces."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fa8"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant \
+and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no \
+state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface \
+bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069ab8"
+
+[[link]]
+type = "reader"
+to = "accomplished-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799c8"
+
+[[link]]
+type = "reader"
+to = "roaring-bullmastiff/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fa8"

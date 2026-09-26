@@ -28,7 +28,6 @@ HEADER = ("layout", "kind", "address", "name", "former")
 # Registries whose labels and editor names join the domain dictionary.
 SIGNALS = Path("defs/JK08A.tuning-signals.toml")
 OVERRIDES = Path("defs/JK08A.overrides.toml")
-NATIVE = Path("defs/vq37-native-tables.toml")
 WORD = re.compile(r"[a-z]+")
 HEX_WORD = re.compile(r"[a-f]+")
 
@@ -47,8 +46,7 @@ class Row:
 
 
 def inputs():
-    return [PATH.as_posix(), DOMAIN.as_posix(), SIGNALS.as_posix(), OVERRIDES.as_posix(),
-            NATIVE.as_posix()]
+    return [PATH.as_posix(), DOMAIN.as_posix(), SIGNALS.as_posix(), OVERRIDES.as_posix()]
 
 
 def read(root=repo.ROOT, overlay=None):
@@ -113,11 +111,11 @@ def domain_dictionary(model, root=repo.ROOT):
     for table in ("table", "axis"):
         for entry in overrides.get(table, {}).values():
             found |= words(entry.get("name", ""))
-    native = tomllib.loads((root / NATIVE).read_text(encoding="utf-8"))
-    for target in native.get("target", {}).values():
-        for table in ("table", "axis"):
-            for entry in target.get(table, ()):
-                found |= words(entry.get("name", ""))
+    for meaning in model.meanings:
+        for props in (meaning.props, *(symbol.props for symbol in meaning.symbols.values())):
+            editor = props.get("editor")
+            if isinstance(editor, dict):
+                found |= words(editor.get("name", ""))
     return found
 
 

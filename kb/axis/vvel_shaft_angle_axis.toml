@@ -1,0 +1,197 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 16
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
+
+[editor]
+name = "VVEL Shaft Angle [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "00015a56"
+note = """
+Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
+conversion, also the value array of the reverse lookup; stock bytes are \
+identical to JK78C 0x000156DC."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00059180"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062508"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000630e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066bd4"
+
+[[symbol]]
+layout = "1nd"
+address = "00015c02"
+note = [
+    """
+1ND0A: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
+conversion, also the value array of the reverse lookup; stock bytes are \
+identical to JK78C 0x000156DC.""",
+    """
+1ND3B: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
+conversion, also the value array of the reverse lookup; stock bytes are \
+identical to JK78C 0x000156DC. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00055318"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e9b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f584"
+
+[[symbol]]
+layout = "jk78c"
+address = "000156dc"
+note = """
+Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
+conversion; the same block serves as the value array when the task converts \
+a command word back to an angle. FUN_0004D3CE loads it into GBR from \
+0x4D58C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d58c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055854"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569f8"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e9b8"
+
+[[link]]
+type = "reader"
+to = "dangerous-koel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066bd4"
+
+[[link]]
+type = "reader"
+to = "ebony-tamarin/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00059180"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f584"
+
+[[link]]
+type = "reader"
+to = "loud-rottweiler/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d58c"
+
+[[link]]
+type = "reader"
+to = "lurking-wolverine/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00055318"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062508"
+
+[[link]]
+type = "reader"
+to = "sandy-hare/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569f8"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055854"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000630e0"

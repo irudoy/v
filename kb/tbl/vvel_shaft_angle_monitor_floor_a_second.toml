@@ -1,0 +1,128 @@
+summary = """
+Second copy of monitor floor A: FUN_00059B82 interpolates it by the word \
+0xFFFF11BC into 0xFFFF380A, one of the four floor words 0xFFFF3276, \
+0xFFFF3278, 0xFFFF380A, and 0xFFFF380C whose maximum the deficit monitors \
+FUN_000BF0C0 and FUN_000BF122 compare with the measured control-shaft \
+angle."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
+
+[editor]
+name = "VVEL Shaft Angle Monitor Floor - A, Second Copy"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001b9b8"
+summary = """
+Second copy of monitor floor A: FUN_00066C30 interpolates it by the word \
+0xFFFE81B0 into 0xFFFEABA4, one of the four floor words 0xFFFEA4DE, \
+0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors \
+FUN_000EB19A compare with the measured control-shaft angle."""
+note = """
+Read by FUN_00066C30 at callsite 0x66C3C through the 8-point uint16 leaf \
+0x2AEAC. No direct call reaches the reader; its entry address is the word at \
+0x22240 of a function-pointer list. The maximum with the primary floor words \
+fixes the 1/512 degree domain. Stock bytes are identical to the primary \
+table 0x0001668C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c60"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b8de"
+summary = """
+Second copy of monitor floor A: FUN_00062774 interpolates it by the word \
+0xFFFE81C8 into 0xFFFEAA76, one of the four floor words 0xFFFEA422, \
+0xFFFEA424, 0xFFFEAA76, and 0xFFFEAA78 whose maximum the deficit monitors \
+FUN_000DFFE6 compare with the measured control-shaft angle."""
+note = """
+Read by FUN_00062774 at callsite 0x62780 through the 8-point uint16 wrapper \
+0x28910. No direct call reaches the reader; its entry address is the word at \
+0x221D8 of a function-pointer list. The maximum with the primary floor words \
+fixes the 1/512 degree domain. Stock bytes are identical to the primary \
+table 0x00016698."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000627a4"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b28a"
+note = """
+Read by FUN_00059B82 at callsite 0x59B90 through the 8-point uint16 wrapper \
+0x282F4. No direct call reaches the reader; its entry address is the word at \
+0x21BC0 of a function-pointer list. The maximum with the primary floor words \
+fixes the 1/512 degree domain. Stock bytes are identical to the primary \
+table 0x0001609A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059bb8"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_monitor_floor_a_second_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059b90"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062780"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c3c"
+
+[[link]]
+type = "reader"
+to = "peach-fulmar/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000627a4"
+
+[[link]]
+type = "reader"
+to = "pompous-harrier/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c60"
+
+[[link]]
+type = "reader"
+to = "resourceful-mastodon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059bb8"

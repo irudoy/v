@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "0005fd88"
+name = "daft-mackerel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fdd0"

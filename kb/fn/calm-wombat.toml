@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "00070514"
+name = "calm-wombat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070eae"

@@ -1,0 +1,75 @@
+level = "code"
+home = "1nd"
+quantity = "load"
+points = 8
+storage = "uint8"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Load"
+format = "0"
+fine = 0.78125
+coarse = 3.125
+
+[[symbol]]
+layout = "1me3b"
+address = "00013dc6"
+note = """
+Second axis of the four 8x8 state-code ignition surfaces; the lookup \
+receives the same load byte as the 16x16 surfaces. The literal words 0x793F8 \
+hold the same address; the structure export recovers no instruction that \
+reads them."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799c4"
+
+[[symbol]]
+layout = "1nd"
+address = "00013fda"
+note = """
+Second axis of the four 8x8 state-code ignition surfaces; the lookup \
+receives the same load byte as the 16x16 surfaces."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fa4"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant \
+and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no \
+state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface \
+bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069ab8"
+
+[[link]]
+type = "reader"
+to = "accomplished-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799c4"
+
+[[link]]
+type = "reader"
+to = "roaring-bullmastiff/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fa4"

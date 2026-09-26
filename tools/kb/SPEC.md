@@ -2328,6 +2328,36 @@ absent ids by name, and the curve values eight to a line. The fuel-cut
 targets of the images of one layout state one `evidence` text, and a
 different text is an issue.
 
+The conversion of stage 3 writes these facts into the files of their
+meanings. A meaning takes `home` where the registries state it, and each key
+that they state for its symbols where one of them has the value of the
+meaning; each symbol that they declare takes an entry with its overrides of
+those keys, its `images`, its notes, and its evidence; each link takes an
+entry with its slot, its role, and the evidence of every symbol that states
+it; and each `absent` status takes an entry with its note and evidence. An
+axis that the registries only name is a symbol that another registry
+declares. The notes of a file precede those of the registries in the note
+of its symbol. From the conversion the registries are projections of the
+files. `defs/vq37-native-tables.toml` lists for each target an entry of
+every `tbl` and `axis` meaning with `[editor]` whose home is the layout of a
+target, where the image carries its symbol: the keys of the symbol, the
+pointer bindings from the evidence of its `reader` links with the role
+`accessor`, the axes from its `axis` links that the layout states, the note
+from the file entry of the symbol, split by image where the note names the
+images, and `values_sha256` from the image; and the meanings absent on the
+layout. `defs/vq37-native-fuel-cut.toml` lists for each target the symbols
+of `rev_fuel_cut_state_machine/fn`, `fuel_cut_coordinator/fn`,
+`rev_fuel_cut_selector/ram`, `rpm/ram`, `rev_fuel_cut_state/ram`,
+`rev_fuel_cut_delay/ram`, `rev_limit_fuel_cut_delay_calibration/tbl`,
+`rev_limit_fuel_cut_caps/tbl`, and `rev_limit_fuel_cut_curves/tbl` on its
+layout and the `x` axis of the curves; the call site, the ordinal, and the
+evidence text from the `l0` item of the function whose `value` is the
+ordinal; the scheduler word from the `rom-bytes` item of the coordinator;
+the masks from the bits of the state; the values from the image by the
+geometry of their symbols; the size and the digest of the function from L0;
+and the pointer bindings from the evidence of the `reader` links to the
+function that carry no role.
+
 ### 20.5 Telemetry, signals, and presentation
 
 Stage 4.

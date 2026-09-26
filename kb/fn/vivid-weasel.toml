@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "00069ab8"
+name = "vivid-weasel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069f46"

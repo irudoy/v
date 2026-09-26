@@ -1,0 +1,136 @@
+summary = """
+Mode 14 duration surface of the VVEL selector, interpolated with the \
+coordinates and axes of the hot-intake idle surfaces. Stock values are 960 = \
+48.0 at every cell. The 1ND0A machine FUN_0005D974 selects mode 14 on the \
+hot-intake idle request when the knock-state byte 0xFFFEF5B3 \
+(0xFFFE9488.bit6) or the snapshot byte 0xFFFEF4B6 (0xFFFE94CC.bit5) is set \
+and either 0xFFFEF4B6 is set or the flag 0xFFFEF4CB is set; FUN_0005D0FC \
+sets 0xFFFEF4CB when the idle target byte 0xFFFE92E9 (DID 0x110D, 12.5 RPM \
+per count) reaches ROM8[0x87FD] = 52 and clears it below 52 - ROM8[0x8607] = \
+48. With the flag clear the same request selects mode 13, and with both \
+bytes clear mode 12. FUN_00062DCC is the only writer of 0xFFFE94CC.bit5, a \
+low-engine-speed flag: it sets while the sticky flag 0xFFFEB85A.bit1 is set \
+and the RPM/12.5 latch 0xFFFE81AC (written by FUN_0003EF48) is at or below \
+the curve 0x13FC2 (52 = 650 RPM at every node) over the \
+engine-oil-temperature latch 0xFFFE80F9 (DID 0x111F source 0xFFFE8179), or \
+while that latch reaches ROM8[0x8774] = 255 with RPM/12.5 at or below \
+ROM8[0x8772] = 44. The same function sets 0xFFFEB85A.bit1 from \
+0xFFFE94AE.bit1 and no code clears it; FUN_001110DA sets 0xFFFE94AE.bit1 \
+once 0xFFFE94AE.bit0 and 0xFFFE94CC.bit4 have held until the counter \
+0xFFFE958F, reloaded from ROM8[0x8C63] = 10, reaches zero. FUN_001110DA \
+belongs to the intake valve timing module, whose per-bank producer \
+FUN_0010EA78 publishes DID 0x1138 and 0x1139 (INT/V SOL B1 and B2 in two \
+public parameter lists) from the words 0xFFFE9694 and 0xFFFE9696 and writes \
+the deviation words 0xFFFE9462 and 0xFFFE9464 around 0x8000. It sets \
+0xFFFE94AE.bit0 on the pass where the sequence flag 0xFFFEB89C.bit2 of \
+FUN_00110222 falls, or where its own window flag 0xFFFE94B0.bit4 falls with \
+that flag clear, while the gate 0xFFFEB7F3.bit4 is clear, the filter-seeded \
+flag 0xFFFE94C4.bit7 is set, the hold counter 0xFFFE9571 is zero, and the \
+stability flag 0xFFFE94CC.bit4 is set; it clears the bit whenever \
+0xFFFE94CC.bit4 is clear. The stability flag requires 0xFFFE948D.bit6, the \
+word 0xFFFE9328 at or above 0x8000 + ROM8[0x8C2E] - 0x80 = 0x8006, and a \
+filtered deviation word (0xFFFE8B2E, 0xFFFE8B30) within ROM8[0x8C5A] = 14 of \
+its reference (0xFFFE8CA2, 0xFFFE8CA4) on at least one bank. The window \
+opens with the stability flag and 0xFFFE947A.bit6 set, the delay counter \
+0xFFFE958E at zero, and bits 0 and 1 of 0xFFFEA9EA and 0xFFFEA9EC clear, and \
+runs for the curve 0x146D6 over the engine-oil-temperature axis 0x1372C, 5 \
+at every node. The gate seeds the filter and loads the hold counter from the \
+curve 0x1451E over the axis 0x13618. JK78C writes no value 14 to its mode \
+byte."""
+level = "code"
+home = "1nd"
+cols = 8
+rows = 8
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Mode 14"
+category = "Variable Valve Timing / VVEL Duration"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1nd"
+address = "0000e6c8"
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 \
+uint16 wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode \
+byte is 0xFFFEF4D0, published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the \
+constant 50.0 for this mode and carries no table. On this image the \
+hold-counter curve 0x1451E and its axis 0x13618 are zero at every node.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 \
+uint16 wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode \
+byte is 0xFFFEF4D0, published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the \
+constant 50.0 for this mode and carries no table. 1ND3B shares the 1ND0A \
+code layout and its stock bytes at this address. On this image the \
+hold-counter curve 0x1451E is 30 at every node over the axis values 50 \
+through 190.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7ac"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+The 1ME3B resolver FUN_00062FAC stores the constant 50.0, the float literal \
+0x42480000 at 0x63448, in pair 13 of its output and reads no table for it; \
+its two 8x8 calls read the hot-intake idle surfaces."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062fac"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C resolver FUN_000564A4 stores the constant 50.0 for mode 14 and \
+reads no table for it; JK78C.vvel.md lists the mode."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000564a4"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_hot_intake_idle_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f6ac"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_hot_intake_idle_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f6ac"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7ac"

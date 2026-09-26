@@ -1,0 +1,75 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 8
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000173b6"
+note = """
+First axis of the state-word hot-intake idle surfaces, 400..2000 RPM; the \
+coordinate is min(0xFFFF, 0xFFFE819E << 2), the 12.5 RPM per count \
+engine-speed word in the 3.125 RPM domain. Stock bytes are identical to \
+JK78C 0x00016CF4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075240"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016cf4"
+note = """
+First axis of the state-word hot-intake idle surfaces, 400..2000 RPM; the \
+coordinate is min(0xFFFF, 0xFFFF11AC << 2), the latched 12.5 RPM per count \
+engine-speed word in the 3.125 RPM domain."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066678"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+FUN_00070514, the state-code dispatcher of this image, reads the resolver \
+surfaces 0x0000E748 and 0x0000E7C8 over the axes 0x000166D8 and 0x000166C8 \
+at these two positions; the image carries no separate pair."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070514"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066678"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075240"

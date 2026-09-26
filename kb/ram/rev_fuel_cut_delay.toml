@@ -1,0 +1,50 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe94e2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b21c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b340"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe950e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076b4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cb8"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2449"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006af42"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cb8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b340"

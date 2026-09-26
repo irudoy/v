@@ -1,0 +1,63 @@
+level = "code"
+home = "1me3b"
+quantity = "temp"
+points = 8
+storage = "uint16"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "code"
+
+[editor]
+name = "Coolant Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "00017186"
+note = """
+Eight-point axis 100..170 = 50..120 degC of the start-up blend target; the \
+coordinate is the coolant-coded byte of the cold duration curve."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639cc"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+The 1ND start-up function FUN_0005F9F0 uses the ROM-word ramp of JK78C and \
+reads no blend curve; the stock image holds no copy of the 1ME3B curve \
+bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f9f0"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C start-up function FUN_00056AB4 ramps between ROM16[0x91C6] and \
+ROM16[0x91C8] and reads no blend curve; the stock image holds no copy of the \
+1ME3B curve bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056ab4"
+
+[[link]]
+type = "reader"
+to = "quantum-narwhal/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639cc"

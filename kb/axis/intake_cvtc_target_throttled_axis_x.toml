@@ -1,0 +1,87 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 16
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000174b6"
+note = """
+First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes are \
+identical to JK78C 0x00016DE4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637d8"
+
+[[symbol]]
+layout = "1nd"
+address = "000173e2"
+note = [
+    """
+1ND0A: First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes \
+are identical to JK78C 0x00016DE4.""",
+    """
+1ND3B: First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes \
+are identical to JK78C 0x00016DE4. 1ND3B shares the 1ND0A code layout and \
+its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f78c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016de4"
+note = """
+First axis of the throttled CVTC surface, 800..6800 RPM; the coordinate is \
+0xFFFF11A6 in r7."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569d8"
+
+[[link]]
+type = "reader"
+to = "efficient-ant/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637d8"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f78c"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569d8"

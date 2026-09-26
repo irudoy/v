@@ -1,0 +1,129 @@
+summary = """
+Mode 15 intake-cam target of the VVEL selector: the VTC half of the normal \
+running pair, interpolated by engine speed. Zero at raw 0x8000, 0.5 per \
+count."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "degCA"
+scale = "(x-32768)*0.5"
+to_raw = "x*2+32768"
+scale_level = "candidate"
+
+[editor]
+name = "Intake CVTC Target - Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 30
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol]]
+layout = "1me3b"
+address = "00017496"
+summary = """
+Mode 15 intake-cam target of the VVEL resolver, interpolated by engine \
+speed. Zero at raw 0x8000, 0.5 per count."""
+note = """
+Read by the resolver FUN_00062FAC at callsite 0x6315E through the 16-point \
+uint16 leaf 0x2AF88 and converted with the float literals 0xC6800000 at \
+0x63410 and 0x3F000000 at 0x63414. Stock bytes are identical to 1ND0A \
+0x000173C2: the curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks \
+at 30.0. Degrees of cam advance are a vendor-catalog candidate for the \
+scaled value."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006340c"
+
+[[symbol]]
+layout = "1nd"
+address = "000173c2"
+summary = """
+Mode 15 intake-cam target of the VVEL selector, interpolated by engine \
+speed. Zero at raw 0x8000, 0.5 per count."""
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the \
+16-point uint16 wrapper 0x2893C and converted with the float literals \
+0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C \
+curve 0x00016DC4 peaks at 30.0.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the \
+16-point uint16 wrapper 0x2893C and converted with the float literals \
+0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C \
+curve 0x00016DC4 peaks at 30.0. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f770"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016dc4"
+note = """
+Read by the resolver FUN_000564A4 at callsite 0x565A6 through the 16-point \
+uint16 wrapper 0x28320 indexed by 0xFFFF11A6 and converted with the float \
+literals 0xC6800000 (-16384) and 0x3F000000 (0.5). Degrees of cam advance \
+are a vendor-catalog candidate for the scaled value."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005668c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_target_running_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000565a6"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f5f6"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006315e"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f770"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005668c"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006340c"

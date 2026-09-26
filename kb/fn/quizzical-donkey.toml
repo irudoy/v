@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "00061d46"
+name = "quizzical-donkey"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061e00"

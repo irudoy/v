@@ -1,0 +1,125 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 8
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000166bc"
+note = """
+First axis of the hot-intake idle surfaces, 400..2000 RPM, loaded from its \
+own literal pool word; the coordinate is the r7 word argument of the \
+resolver. Stock bytes are identical to JK78C 0x000160CA; 1ND indexes its \
+surfaces by two temperature bytes instead."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006341c"
+
+[[symbol]]
+layout = "1nd"
+address = "000166d8"
+quantity = "temp"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "candidate"
+note = [
+    """
+1ND0A: First axis of the hot-intake idle and mode 14 surfaces, stock points \
+90..160. The r7 coordinate is the byte 0xFFFE8073, the per-pass latch that \
+the list walker FUN_00021218 takes at 0x212E6 from the coolant temperature \
+byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 writes at 0x30C1E from \
+curve 0x1468E over the channel 0 ADC word; the axis is degC + 50.""",
+    """
+1ND3B: First axis of the hot-intake idle and mode 14 surfaces, stock points \
+90..160. The r7 coordinate is the byte 0xFFFE8073, the per-pass latch that \
+the list walker FUN_00021218 takes at 0x212E6 from the coolant temperature \
+byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 writes at 0x30C1E from \
+curve 0x1468E over the channel 0 ADC word; the axis is degC + 50. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[symbol.editor]
+name = "Coolant Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f79c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071298"
+
+[[symbol]]
+layout = "jk78c"
+address = "000160ca"
+note = """
+First axis of the hot-intake idle surfaces, 400..2000 RPM, reached as GBR + \
+0xD0 from the literal 0x00015FFA; the coordinate is 0xFFFF11A6 in r7."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 208
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071298"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f79c"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 208
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006341c"

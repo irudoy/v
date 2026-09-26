@@ -1,0 +1,177 @@
+summary = """
+Mode 15 duration target of the VVEL selector: the normal running mode above \
+idle without a hot-intake or throttled request. The resolver interpolates it \
+by engine speed and scales the count by the float literal 0.005 before the \
+selector publishes the command."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x*0.005"
+to_raw = "x/0.005"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+
+[[symbol]]
+layout = "1me3b"
+address = "00017276"
+summary = """
+Mode 15 duration target of the VVEL resolver: the normal running pair. The \
+resolver interpolates it by engine speed and scales the count by the float \
+literal 0.005."""
+note = """
+Read by the resolver FUN_00062FAC at callsite 0x63142 and by FUN_00063CD4 at \
+0x63D1C through the 16-point uint16 leaf 0x2AF88; the 0.005 factor is the \
+float literal 0x3BA3D70A at 0x63404. The resolver stores the value in pair \
+14 of its thirty-float output, the slot that the JK78C resolver FUN_000564A4 \
+and the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair. Stock bytes \
+are identical to 1ND0A 0x000171C2; the unit of the scaled duration is a \
+vendor-catalog candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063400"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063ee0"
+
+[[symbol]]
+layout = "1nd"
+address = "000171c2"
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by \
+FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor \
+is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points \
+differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the \
+scaled duration is a vendor-catalog candidate.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by \
+FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor \
+is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points \
+differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the \
+scaled duration is a vendor-catalog candidate. 1ND3B shares the 1ND0A code \
+layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f764"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe5c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016bb4"
+note = """
+Read by the resolver FUN_000564A4 at callsite 0x5658C and by FUN_00056DCA at \
+0x56E1E, both through the 16-point uint16 wrapper 0x28320 indexed by \
+0xFFFF11A6 (3.125 RPM per count). The 0.005 factor is the float literal \
+0x3BA3D70A at 0x56690; the unit of the scaled duration is a vendor-catalog \
+candidate. Mode assignment and selector logic are in JK78C.vvel.md."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056680"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056f78"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_running_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005658c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f5de"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063142"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe5c"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063ee0"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f764"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056680"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063400"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056f78"

@@ -1,0 +1,194 @@
+summary = """
+Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It \
+shares the index byte, both axes, and the interpolator of the projected \
+default surface, and the downstream state selector reads it in place of that \
+surface."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 16
+storage = "uint8"
+unit = "%"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "candidate"
+
+[editor]
+name = "Fuel Compensation - Main - Alternate"
+category = "Fuelling / Compensation"
+order = 21
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+
+[[symbol]]
+layout = "1me3b"
+address = "0000a1f4"
+summary = """
+Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It \
+shares both coordinates, both axes, and the interpolator of the projected \
+default surface 0x0000A0F4, and the state selector in FUN_000486E0 reads it \
+in place of that surface for state code 2."""
+note = """
+Read by FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 \
+through the 16x16 uint8 leaf 0x298B4, in each accessor directly after the \
+default surface 0x0000A0F4 with the same coordinates and the same axis pair \
+0x00013D06 and 0x00013D26, so neither surface carries an engine-bank \
+identity. Both accessors store the default result in the channel byte \
+0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis \
+0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte \
+0xFFFE8ED4 and the held byte 0xFFFE8ED8 with the default channel. \
+FUN_000486E0 selects a channel by a state code, where code 2 selects this \
+surface, code 8 selects the curve, and every other code selects the default \
+surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state \
+byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of \
+state byte 0xFFFEB850, or against the held output while the transition flag \
+0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The \
+call pair reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. \
+Thirteen of the 256 stock cells differ from the JK78C surface 0x00009FBA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033ed8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048b7c"
+
+[[symbol]]
+layout = "1nd"
+address = "0000a2c0"
+note = """
+The two 16x16 surfaces are read with the same index byte, the same axis \
+pair, and the same interpolator in both accessors, so neither surface \
+carries an engine-bank identity. The accessors publish four parallel \
+compensation channels and the consumer selects one by a state code, then \
+crossfades the value of the current state with the value of the previous \
+state by a normalized progress weight where 0x8000 is 1.0. The default arm \
+of that selector reads the projected canonical surface; this table is the \
+arm the state code selects instead."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00031164"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000454f8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009fba"
+note = """
+The two 16x16 surfaces are read with the same index byte, the same axis \
+pair, and the same interpolator in both accessors, so neither surface \
+carries an engine-bank identity. The accessors publish four parallel \
+compensation channels and the consumer selects one by a state code, then \
+crossfades the value of the current state with the value of the previous \
+state by a normalized progress weight where 0x8000 is 1.0. The default arm \
+of that selector reads the projected canonical surface; this table is the \
+arm the state code selects instead."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002febc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040f70"
+
+[[link]]
+type = "axis"
+to = "fascinating-hog/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002fd32"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f7c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cec"
+
+[[link]]
+type = "axis"
+to = "mellow-turtle/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002fd32"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f7c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cec"
+
+[[link]]
+type = "reader"
+to = "asparagus-scallop/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040f70"
+
+[[link]]
+type = "reader"
+to = "huge-bonobo/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000454f8"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002febc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00031164"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033ed8"
+
+[[link]]
+type = "reader"
+to = "thundering-seahorse/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048b7c"

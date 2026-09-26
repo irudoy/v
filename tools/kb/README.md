@@ -205,7 +205,6 @@ a reference that names nothing fails the `references` check.
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
 | `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py`, and the canonical feature layouts | Target symbols, hook words, DIDs, and telemetry sources with their statuses; the feature targets with the roles that a symbol of another meaning fills on a layout |
 | `definitions` | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | `tbl` and `axis` symbols of the definition projections; the `definitions` target |
-| `native` | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | `tbl`, `axis`, `fn`, and `ram` symbols of the native tables and the fuel-cut mechanism of the VQ37VHR layouts |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
 | `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
@@ -225,17 +224,19 @@ a projection of the files.
 | Registry | Converted in stage | Entity files | Generators |
 |---|---|---|---|
 | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | 3 | `fn` meanings with `[interp]`, the evidence of their symbols, and the `unresolved` statuses of the `interp-contract` search | `kb.adapters.interp:registries`, `kb.adapters.interp:correspondences` |
+| `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | 3 | `tbl`, `axis`, `fn`, `ram`, and `const` meanings with symbols on `jk78c`, `1nd`, and `1me3b`: the keys and `[editor]` of the native tables, the evidence of their symbols, their `reader` and `axis` links, and their `absent` statuses | `kb.adapters.native:tables`, `kb.adapters.native:fuel_cut` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
-under `.kb/lock`. It compiles the model with every adapter, writes the facts
-that the registry's adapter states into the files of their meanings through
-the change of the write commands, and compiles the model from those files
-with the adapters of the compiler. It refuses the conversion with exit code
-3 when the two models differ beyond the rules of the registry, when the
-files add an issue of a model check or a registry disagreement, or when a
-projection of the registry differs from its file; otherwise it writes the
-files and `kb/names.csv` and loads the result into the graph. On a converted
-tree it writes nothing. The rules of the interpolation registries:
+under `.kb/lock`. It compiles the model with the adapters of the compiler and
+the registry's adapter, writes the facts that the registry's adapter states
+into the files of their meanings through the change of the write commands,
+and compiles the model from those files with the adapters of the compiler.
+It refuses the conversion with exit code 3 when the two models differ beyond
+the rules of the registry, when the files add an issue of a model check or a
+registry disagreement, or when a projection of the registry differs from its
+file; otherwise it writes the files and `kb/names.csv` and loads the result
+into the graph. On a converted tree it writes nothing. The rules of the
+interpolation registries:
 
 - The meaning of every symbol that the registries state takes `[interp]`,
   and each symbol an entry with the override of its layout and the typed
@@ -252,6 +253,30 @@ function on the layout plus `offset`. `defs/JK08A-<ROM>.interp-correspondence.cs
 lists a `mapped` row for each `interp-contract` item of a wrapper of the
 image's layout toward `7mfk`, and an `unsupported` row for each `unresolved`
 status whose method is `interp-contract`, by source wrapper.
+
+The rules of the native registries:
+
+- A meaning takes `home` where the registries state it, and each key that
+  they state for its symbols where one of them has the value of the meaning.
+- Each symbol that they declare takes an entry with its overrides of those
+  keys, its `images`, its notes, and its evidence. An axis that they only
+  name is a symbol that another registry declares.
+- Each link takes an entry with its slot, its role, and the evidence of every
+  symbol that states it, and each `absent` status an entry with its note and
+  evidence. The notes of a file precede those of the registries in the note
+  of its symbol.
+
+`defs/vq37-native-tables.toml` lists for each target, by address, the `tbl`
+and `axis` meanings with `[editor]` whose home is the layout of a target and
+whose symbol the image carries, with the pointer bindings from the evidence
+of their `reader` links with the role `accessor`, the axes from their `axis`
+links, the note from the file entry of the symbol, and `values_sha256` from
+the image, and then the meanings absent on the layout by name.
+`defs/vq37-native-fuel-cut.toml` lists for each target the symbols of the
+fuel-cut meanings on its layout with the call and the scheduler word from
+their evidence, the values from the image, the size and the digest of the
+function from L0, and the pointer bindings from the `reader` links to the
+function.
 
 ## Matchers
 
@@ -331,9 +356,9 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 generator, inputs, consumers, stage, and read mode, as section 14 of the
 specification states. `uv run kb project` renders the projections of `kb`
 functions whose stage the transition has reached, such as the `AGENTS.md#kb`
-section and the interpolation registries; the generator of a pattern returns
-the text of each of its files. A projection of another generator keeps that
-generator and its gate. The `projections` check requires every entry to
+section, the interpolation registries, and the native registries; the
+generator of a pattern returns the text of each of its files. A projection of
+another generator keeps that generator and its gate. The `projections` check requires every entry to
 match tracked files that no other entry claims and to name existing paths,
 compares each projection of `kb` with its rendering and the tracked files of
 a pattern with the files of its rendering, and requires every tracked file

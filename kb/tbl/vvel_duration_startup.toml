@@ -1,0 +1,128 @@
+summary = """
+Start-up duration 0xFFFFA194 used by modes 2 and 11: the curve by the \
+selected temperature 0xFFFF1066 while 0xFFFF45CA.bit1 is clear, scaled by \
+0.05. With the bit set a ramp between ROM16[0x91C6] and ROM16[0x91C8] \
+replaces the curve."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Start-up"
+category = "Variable Valve Timing / VVEL Duration"
+order = 18
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000163e4"
+summary = """
+Start-up duration of the mode 2 and mode 11 pairs: the curve by a \
+temperature byte, scaled by 0.05. With the request argument set, a weighted \
+mix of ROM16[0x94A8] and the eight-point curve 0x00017136 replaces the \
+curve."""
+note = """
+Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf \
+0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to \
+pairs 1 and 10 of its output. With the request argument set, FUN_0006375E \
+publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis \
+0x00017186, scaled by 0.05, where the weight w moves by ROM16[0x9474] / \
+32768 per pass within 0..1; JK78C ramps between two ROM words instead. Stock \
+bytes are identical to JK78C 0x00015E32."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639e4"
+
+[[symbol]]
+layout = "1nd"
+address = "00016440"
+summary = """
+Start-up duration used by modes 2 and 11: the curve by the selected \
+temperature, scaled by 0.05, with the same ramp alternative as JK78C."""
+note = [
+    """
+1ND0A: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 \
+wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32.""",
+    """
+1ND3B: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 \
+wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fb08"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015e32"
+note = """
+Read by FUN_00056AB4 at callsite 0x56B7E through the 16-point uint16 wrapper \
+0x28320; the literal pool at 0x56CB8 follows FUN_00056BAA. The axis \
+0x00017204 = 10..160 is -40..110 degC."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056cb8"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_startup_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056b7e"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005faae"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063894"
+
+[[link]]
+type = "reader"
+to = "origami-sawfish/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056cb8"
+
+[[link]]
+type = "reader"
+to = "quantum-narwhal/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639e4"
+
+[[link]]
+type = "reader"
+to = "spicy-waxbill/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fb08"

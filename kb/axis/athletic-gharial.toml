@@ -1,0 +1,32 @@
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00017106"
+name = "athletic-gharial"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1ac"
+
+[[symbol]]
+layout = "1nd"
+address = "00017072"
+name = "crystal-cheetah"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076ade"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016a64"
+name = "statuesque-puma"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aee0"

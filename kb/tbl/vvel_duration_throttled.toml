@@ -1,0 +1,215 @@
+summary = """
+Mode 4 duration target of the VVEL selector: the throttled mode \
+0xFFFF4565.bit6 of FUN_0005A314, which, unless 0xFFFF4573.bit4 is set, is \
+requested while booster vacuum is low or not yet sufficient, while the brake \
+input is set without 0xFFFF23BD bit 5 or bit 4 or at a speed byte of 253 or \
+more, or while bit 7 of 0xFFFF5FCA or 0xFFFF5FCD is set; and the cold path \
+after 2000 passes with 0xFFFF23B8.bit6, the per-pass latch of the CLSD THL \
+POS status 0xFFFF23B9.bit6 (DID 0x1302 bit 0). Interpolated by engine speed \
+and scaled by 0.05."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Throttled"
+category = "Variable Valve Timing / VVEL Duration"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000173d6"
+summary = """
+Mode 4 duration target of the VVEL resolver: the throttled pair. \
+Interpolated by engine speed and scaled by 0.05; FUN_00063534 publishes the \
+curve value or a stepped approach to it from ROM16[0x94A6] * 0.05 = 50.0."""
+note = """
+Read by FUN_00063534 at callsite 0x63570 through the 16-point uint16 leaf \
+0x2AF88 and by FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same \
+axis; the resolver FUN_00062FAC calls FUN_00063534 after the hot-intake idle \
+pair. The 0.05 factor is the float literal 0x3D4CCCCC at 0x637D0. \
+FUN_00063534 keeps the scaled curve value at 0xFFFEF458 and publishes the \
+pair 3 duration slot 0xFFFEF460 as that value or as 50.0 plus an offset that \
+steps by ROM16[0x9384] * 0.001 = 0.05 toward the curve value within +/-50.0; \
+the delay helper FUN_0002861E gates the offset with a time from the byte \
+curve 0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store \
+the curve value directly. Stock bytes are identical to JK78C 0x00016D14."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074fdc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007525c"
+
+[[symbol]]
+layout = "1nd"
+address = "00017302"
+summary = """
+Mode 4 duration target of the VVEL selector: the throttled mode and the late \
+cold path. Interpolated by engine speed and scaled by 0.05."""
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F616 through the \
+16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the \
+0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are \
+identical to JK78C 0x00016D14.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F616 through the \
+16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the \
+0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are \
+identical to JK78C 0x00016D14. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f780"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071030"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000712b8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d14"
+note = """
+Read by the resolver FUN_000564A4 at callsite 0x566BA through the 16-point \
+uint16 wrapper 0x28320 indexed by 0xFFFF11A6, and by FUN_000657E4 at three \
+callsites with the same axis. The resolver loads the literal from the pool \
+at 0x569CC that follows FUN_0005693A. The 0.05 factor is the float literal \
+0x3D4CCCCC; the duration unit is a vendor-catalog candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006645c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066698"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_throttled_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000566ba"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f616"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063570"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071030"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000712b8"
+
+[[link]]
+type = "reader"
+to = "efficient-ant/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637c8"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f780"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006645c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066698"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569cc"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074fdc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007525c"

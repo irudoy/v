@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "00059b64"
+name = "warping-beaver"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059b72"

@@ -1,0 +1,29 @@
+[[symbol]]
+layout = "1me3b"
+address = "0007a740"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00022144"
+value = "0007a740"
+
+[[symbol]]
+layout = "1nd"
+address = "000760cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000220d8"
+value = "000760cc"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a9b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00021ac8"
+value = "0006a9b0"

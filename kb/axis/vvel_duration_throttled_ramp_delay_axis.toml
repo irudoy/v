@@ -1,0 +1,63 @@
+level = "code"
+home = "1me3b"
+quantity = "temp"
+points = 8
+storage = "uint8"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "code"
+
+[editor]
+name = "Selected Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "00014582"
+note = """
+Eight-point axis 20..90 = -30..40 degC of the throttled ramp delay; the \
+coordinate is the selected-temperature byte argument of FUN_00063534."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637b8"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+The 1ND resolver FUN_0005F468 stores the throttled curve value directly, \
+without a stepped approach or a delay curve; the stock image holds no copy \
+of the 1ME3B curve bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f468"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+The JK78C resolver FUN_000564A4 stores the throttled curve value directly, \
+without a stepped approach or a delay curve; the stock image holds no copy \
+of the 1ME3B curve bytes."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000564a4"
+
+[[link]]
+type = "reader"
+to = "efficient-ant/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000637b8"

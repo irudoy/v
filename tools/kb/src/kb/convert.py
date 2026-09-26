@@ -3,14 +3,17 @@ sections 20 and 21.1).
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 whose adapter `adapters.CONVERTED` lists. It compiles the model with the
-adapters of `adapters.ORDER`, writes the facts that the registry's adapter
-states into the files of their meanings through `write.Change`, and compiles
-the model from those files with the adapters of the compiler. It refuses the
+adapters of the compiler and the registry's adapter in the order of
+`adapters.ORDER`, writes the facts that the registry's adapter states into
+the files of their meanings through `write.Change`, and compiles the model
+from those files with the adapters of the compiler. It refuses the
 conversion with exit code 3 when the two models differ beyond the rules of
 the registry, when the files add an issue of a model check or a registry
 disagreement, or when a projection of the registry differs from its file;
 otherwise it writes the files and `kb/names.csv` under the lock and loads
-the result into the graph. On a converted tree it writes nothing.
+the result into the graph. On a converted tree it writes nothing. The files
+adapter runs first, so the notes that a file states precede those of the
+registries in the note of a symbol.
 
 The interpolation registries (section 20.3):
 
@@ -22,13 +25,26 @@ The interpolation registries (section 20.3):
   or at its entry when it is its own kernel.
 - An `unsupported` correspondence becomes an `unresolved` status with the L0
   digest of its layout and without the registry evidence.
+
+The native registries (section 20.4):
+
+- A meaning takes `home` where the registries state it, and each key that
+  they state for its symbols where one of them has the value of the meaning.
+- Each symbol that they declare takes an entry with its overrides of those
+  keys, its `images`, its notes, and its evidence; a symbol that they only
+  name, as an axis link names its axis, must be one that another registry
+  declares.
+- Each link takes an entry with its slot, its role, and the evidence of every
+  symbol that states it, and each `absent` status an entry with its note and
+  evidence; a status that cites the registry as its evidence is refused.
 """
 
 import argparse
+from collections import defaultdict
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import interp
+from kb.adapters import interp, native
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
@@ -86,15 +102,17 @@ class Conversion:
         self.inputs = set(adapter.inputs(root))
         self.facts = compile.builder_of(root, before.overlay)
         adapter.declare(self.facts, root)
+        adapter.relate(self.facts, root)
         if self.facts.issues:
             lines = [f"the registry has {len(self.facts.issues)} issues; nothing is written"]
             lines += [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
                       for issue in self.facts.issues[:SHOWN]]
             raise KbError("\n".join(lines), code=3)
         self.change = write.Change(before, None, root)
-        # {symbol key: (converted items, raw items)} and {(meaning id, layout):
-        # (converted status, raw evidence)}.
-        self.evidence, self.statuses = {}, {}
+        # {symbol key: (converted items, raw items)}, {(meaning id, layout):
+        # (converted status, raw evidence)}, the keys that a converted status
+        # adds, and {symbol key: notes of its entry}.
+        self.evidence, self.statuses, self.added, self.notes = {}, {}, (), {}
 
     def run(self):
         getattr(self, self.adapter.__name__.rsplit(".", 1)[1])()
@@ -102,6 +120,7 @@ class Conversion:
 
     def interp(self):
         before, change = self.before, self.change
+        self.added = ("l0",)
         grouped = {}
         for key in sorted(self.facts.symbols):
             symbol = before.symbols.get(key)
@@ -148,6 +167,100 @@ class Conversion:
                 document["status"] = kept + [status]
                 self.statuses[(key, layout)] = (status, evidence)
 
+    def native(self):
+        before, facts = self.before, self.facts
+        stated = defaultdict(dict)
+        for key, props, _ in facts.symbol_keys:
+            stated[key].update(props)
+        homes = [anchor for anchor, props, _ in facts.meaning_props if "home" in props]
+        for key, symbol in sorted(facts.symbols.items()):
+            held = before.symbols.get(key)
+            if held is None or held.meaning is None or symbol.implicit and held.implicit:
+                raise KbError(f"{key.key}: no other registry declares the symbol that the "
+                              "registries only name", code=3)
+        for _, _, _, _, evidence, _, _ in facts.status_facts:
+            if any(item.get("kind") == "registry" for item in evidence):
+                raise KbError("a status cites the registry as its evidence", code=3)
+        documents = {}
+
+        def document(meaning):
+            if id(meaning) not in documents:
+                _, found = self.change.document(meaning)
+                documents[id(meaning)] = found
+            return documents[id(meaning)]
+
+        for anchor in homes:
+            meaning = before.by_node[anchor]
+            document(meaning)["home"] = meaning.props["home"]
+        by_meaning = defaultdict(list)
+        for key, symbol in sorted(facts.symbols.items()):
+            if not symbol.implicit:
+                by_meaning[id(before.symbols[key].meaning)].append(key)
+        for keys in by_meaning.values():
+            meaning = before.symbols[keys[0]].meaning
+            found = document(meaning)
+            for name in sorted({name for key in keys for name in stated[key]}):
+                values = [stated[key][name] for key in keys if name in stated[key]]
+                if meaning.props.get(name) in values:
+                    found[name] = meaning.props[name]
+            for key in keys:
+                self._native_symbol(meaning, found, key, stated[key])
+        for fact in facts.link_facts:
+            owner = before.symbols[fact.owner].meaning
+            self._native_link(document(owner), fact)
+        for anchor, layout, state, props, evidence, _, _ in facts.status_facts:
+            meaning = before.by_node[anchor]
+            found = document(meaning)
+            status = {"layout": layout, "state": state, **props,
+                      "evidence": [_location(item) for item in evidence]}
+            found["status"] = [entry for entry in found.get("status", ())
+                               if entry.get("layout") != layout] + [status]
+            self.statuses[(id(meaning), layout)] = (status, evidence)
+
+    def _native_symbol(self, meaning, document, key, stated):
+        """The entry of a symbol that the native registries state: its
+        overrides of their keys, their notes, its images, and their evidence."""
+        symbol, fact = self.before.symbols[key], self.facts.symbols[key]
+        entries = {(entry["layout"], entry["address"]): entry
+                   for entry in document.get("symbol", ())}
+        entry = entries.get((key.layout, f"{key.address:08x}"))
+        if entry is None:
+            entry = self.change.adopt(meaning, symbol)
+            document["symbol"] = [*document.get("symbol", ()), entry]
+        for name in stated:
+            if name in symbol.props:
+                entry[name] = symbol.props[name]
+        if fact.props.get("images"):
+            entry["images"] = fact.props["images"]
+        notes = entry.get("note", [])
+        notes = [notes] if isinstance(notes, str) else list(notes)
+        notes += [note for note in fact.props.get("note", ()) if note not in notes]
+        if notes:
+            entry["note"] = notes[0] if len(notes) == 1 else notes
+            self.notes[key] = notes
+        items = [_location(item) for item in fact.evidence]
+        self.evidence[key] = (items, fact.evidence)
+        found = list(entry.get("evidence", ()))
+        found += [item for item in items if item not in found]
+        if found:
+            entry["evidence"] = found
+
+    def _native_link(self, document, fact):
+        """The link entry of a link that the native registries state, with the
+        evidence of every symbol that states it."""
+        to = self.before.symbols[fact.to].meaning
+        slot, role = fact.props.get("slot"), fact.props.get("role")
+        entry = next((link for link in document.get("link", ())
+                      if (link.get("type"), link.get("to"), link.get("slot"), link.get("role"))
+                      == (fact.type, to.key, slot, role)), None)
+        if entry is None:
+            entry = {"type": fact.type, "to": to.key, "slot": slot, "role": role}
+            entry = {name: value for name, value in entry.items() if value is not None}
+            document["link"] = [*document.get("link", ()), entry]
+        found = list(entry.get("evidence", ()))
+        found += [_location(item) for item in fact.evidence if _location(item) not in found]
+        entry["evidence"] = found
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -170,14 +283,23 @@ class Conversion:
             if before.symbols[SymbolKey(layout, kind, address)].meaning.semantic:
                 generated, former = None, (row.name, *row.former)
             found["symbols"][where] = (name, generated, former, props, evidence, meaning)
+        for key, notes in self.notes.items():
+            where = (key.location, key.kind)
+            name, generated, former, props, evidence, meaning = found["symbols"][where]
+            props = dict(props)
+            props["note"] = tuple(notes) + tuple(note for note in props.get("note", ())
+                                                 if note not in notes)
+            found["symbols"][where] = (name, generated, former, tuple(sorted(props.items())),
+                                       evidence, meaning)
         by_id = {id(meaning): meaning for meaning in before.meanings}
         for (key, layout), (status, raw) in self.statuses.items():
             meaning = by_id[key]
             entry = found["meanings"][meaning.key]
             listed = dict(entry["statuses"])
             state, props, evidence = listed[layout]
-            props = _value(before, {**dict(props), "l0": status["l0"]})
-            evidence = frozenset(set(evidence) - {_value(before, item) for item in raw})
+            props = _value(before, {**dict(props), **{name: status[name] for name in self.added}})
+            evidence = frozenset((set(evidence) - {_value(before, item) for item in raw})
+                                 | {_value(before, item) for item in status.get("evidence", ())})
             listed[layout] = (state, props, evidence)
             entry["statuses"] = tuple(sorted(listed.items()))
         return found
@@ -255,7 +377,8 @@ def plan(name, root=repo.ROOT):
     if adapter is None:
         known = ", ".join(item.__name__.rsplit(".", 1)[1] for item in adapters.CONVERTED)
         raise KbError(f"no conversion {name!r}; the conversions are {known}", code=2)
-    before = compile.build(root, order=adapters.ORDER)
+    before = compile.build(root, order=tuple(
+        item for item in adapters.ORDER if item not in adapters.CONVERTED or item is adapter))
     conversion = Conversion(adapter, before, root)
     texts = conversion.run()
     result = compile.build(root, {**before.overlay, **texts})
@@ -282,6 +405,10 @@ def projections(adapter, model):
     """{path: text} of the projections of a converted registry."""
     if adapter is interp:
         return {**interp.render_registries(model), **interp.render_correspondences(model)}
+    if adapter is native:
+        return {native.TABLES.as_posix(): native.render_tables(native.tables_document(model)),
+                native.FUEL_CUT.as_posix(): native.render_fuel_cut(
+                    native.fuel_cut_document(model))}
     return {}
 
 

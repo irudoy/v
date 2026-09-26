@@ -1,0 +1,128 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 8
+storage = "uint16"
+unit = "Nm"
+scale = "x*0.1"
+to_raw = "x/0.1"
+scale_level = "candidate"
+
+[editor]
+name = "Target Torque [Nm]"
+format = "0.0"
+fine = 0.1
+coarse = 1
+
+[[symbol]]
+layout = "1me3b"
+address = "000166cc"
+note = """
+Second axis of the hot-intake idle surfaces, stock points 250..2000, loaded \
+from its own literal pool word; the coordinate is a signed word argument \
+clamped at zero in the stack slot. Stock bytes are identical to JK78C \
+0x000160DA, where 0.1 Nm per count is a catalog candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063418"
+
+[[symbol]]
+layout = "1nd"
+address = "000166c8"
+quantity = "temp"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+note = [
+    """
+1ND0A: Second axis of the hot-intake idle and mode 14 surfaces, stock points \
+90..160. The stack coordinate is the byte 0xFFFE9796 pushed by the task \
+FUN_0005E2A0, the block-copy latch that the list walker FUN_00021218 takes \
+at 0x21422 from the intake air temperature byte 0xFFFE98AA (DID 0x1106), \
+which FUN_00046A4E writes at 0x46A84 from curve 0x1468E over the filtered \
+word 0xFFFE98A6 or as the constant 0x4B; the axis is degC + 50.""",
+    """
+1ND3B: Second axis of the hot-intake idle and mode 14 surfaces, stock points \
+90..160. The stack coordinate is the byte 0xFFFE9796 pushed by the task \
+FUN_0005E2A0, the block-copy latch that the list walker FUN_00021218 takes \
+at 0x21422 from the intake air temperature byte 0xFFFE98AA (DID 0x1106), \
+which FUN_00046A4E writes at 0x46A84 from curve 0x1468E over the filtered \
+word 0xFFFE98A6 or as the constant 0x4B; the axis is degC + 50. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[symbol.editor]
+name = "Second Temperature Coordinate [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f798"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071294"
+
+[[symbol]]
+layout = "jk78c"
+address = "000160da"
+note = """
+Second axis of the hot-intake idle surfaces, stock points 250..2000, reached \
+as GBR + 0xE0 from the literal 0x00015FFA; the coordinate is max(0, \
+0xFFFF2E26) in the stack slot. 0.1 Nm per count is a catalog candidate for \
+that word."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 224
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071294"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f798"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00056678"
+value = 224
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063418"

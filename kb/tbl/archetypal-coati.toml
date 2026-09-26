@@ -1,0 +1,18 @@
+[[symbol]]
+layout = "1nd"
+address = "00017212"
+name = "archetypal-coati"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cac"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cac"

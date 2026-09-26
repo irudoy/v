@@ -1,0 +1,93 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 8
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001b438"
+note = """
+Eight-point engine-speed axis 1200..6400 RPM of the second copy of monitor \
+floor A; the coordinate is the word 0xFFFE81B0, and the count weight rests \
+on the byte identity with the primary axis. Stock bytes are identical to the \
+primary axis 0x00015636."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c5c"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b35e"
+note = """
+Eight-point engine-speed axis 1200..6400 RPM of the second copy of monitor \
+floor A; the coordinate is the word 0xFFFE81C8, and the count weight rests \
+on the byte identity with the primary axis. Stock bytes are identical to the \
+primary axis 0x000157B2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000627a0"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ad0a"
+note = """
+Eight-point engine-speed axis 1200..6400 RPM of the second copy of monitor \
+floor A; the coordinate is the word 0xFFFF11BC, the latched copy of \
+0xFFFF11F0 = (12000000 / (ROM8[0x87AB] * period 0xFFFF2230)) >> 1 that \
+FUN_0003B938 writes with ROM8[0x87AB] = 3. The primary coordinate 0xFFFF11A6 \
+latches 0xFFFF11DA = (32000000 / period 0xFFFF11E8) >> 4; both forms equal \
+2000000 / period, and FUN_0002B548 and FUN_0002B5AC take the two periods \
+from the same timestamp 0xFFFF1864 >> 5 at separate events. The angular span \
+of the second period is not bound to a published parameter, which leaves the \
+count weight a candidate. Stock bytes are identical to the primary axis \
+0x0001528C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059bbc"
+
+[[link]]
+type = "reader"
+to = "peach-fulmar/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000627a0"
+
+[[link]]
+type = "reader"
+to = "pompous-harrier/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c5c"
+
+[[link]]
+type = "reader"
+to = "resourceful-mastodon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059bbc"

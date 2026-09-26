@@ -47,6 +47,22 @@
   hexadecimal digits. The files list the entries of a target by address,
   the pointer bindings of an entry by site and offset, and the absent ids by
   name.
+
+The compiler leaves out this adapter (`adapters.CONVERTED`), so this module
+is no compiler input, and `kb.convert` runs `declare` and `relate` to compile
+the model before the conversion. `tables` and `fuel_cut` render the files as
+projections of the model. The tables list for each target an entry of every
+`tbl` and `axis` meaning with `[editor]` whose home is the layout of a
+target, where the image carries its symbol: the keys of the symbol, the
+pointer bindings from the evidence of its `reader` links with the role
+`accessor`, the axes from its `axis` links that the layout states, the note
+from the file entry of the symbol, and `values_sha256` from the image; and
+the meanings absent on the layout. The fuel cut lists for each target the
+symbols of the fuel-cut meanings on its layout, the call and the scheduler
+word from their evidence, the masks from the bits of the state, the values
+from the image by the geometry of their symbols, the size and the digest of
+the function from L0, and the pointer bindings from the evidence of the
+`reader` links to the function that carry no role.
 """
 
 from collections import defaultdict
@@ -542,3 +558,252 @@ def _pointer(item):
     if item.get("offset"):
         parts.append(f"offset = 0x{item['offset']:X}")
     return "{ " + ", ".join(parts) + " }"
+
+
+# Projections ---------------------------------------------------------------
+
+# Target images in the order of the registry files.
+TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+# The meaning of the symbol at each fuel-cut key; the axis is the x axis of
+# the curves.
+FUEL_CUT_MEANINGS = (("function_address", "rev_fuel_cut_state_machine/fn"),
+                     ("coordinator_address", "fuel_cut_coordinator/fn"),
+                     ("selector_address", "rev_fuel_cut_selector/ram"),
+                     ("rpm_address", "rpm/ram"),
+                     ("state_address", "rev_fuel_cut_state/ram"),
+                     ("delay_address", "rev_fuel_cut_delay/ram"),
+                     ("delay_calibration_address", "rev_limit_fuel_cut_delay_calibration/tbl"),
+                     ("caps_address", "rev_limit_fuel_cut_caps/tbl"),
+                     ("curves_address", "rev_limit_fuel_cut_curves/tbl"))
+# The registry spelling of a kb storage.
+STORAGE_TYPES = {storage: registry for registry, storage in vocab.STORAGE_ALIASES.items()}
+
+
+def tables(root=repo.ROOT):
+    """The text of `defs/vq37-native-tables.toml` from the model."""
+    from kb import compile
+    return render_tables(tables_document(compile.cached(root)))
+
+
+def fuel_cut(root=repo.ROOT):
+    """The text of `defs/vq37-native-fuel-cut.toml` from the model."""
+    from kb import compile
+    return render_fuel_cut(fuel_cut_document(compile.cached(root)))
+
+
+def targets(model):
+    """(ROM, layout, image) of each target image."""
+    catalog = repo.images(model.root)
+    layout_of = {rom: layout.id for layout in model.layouts.values() for rom in layout.images}
+    return [(rom, layout_of[rom], catalog[rom]) for rom in TARGETS]
+
+
+def meanings(model):
+    """The meanings of the native tables: the `tbl` and `axis` meanings with
+    `[editor]` whose home is the layout of a target."""
+    layouts = {layout for _, layout, _ in targets(model)}
+    return [meaning for meaning in model.meanings
+            if meaning.kind in KINDS.values() and meaning.home in layouts
+            and ("editor" in meaning.props
+                 or any("editor" in symbol.props for symbol in meaning.symbols.values()))]
+
+
+def file_notes(model, chosen):
+    """{symbol key: notes} that the files of the chosen meanings state for their
+    symbols."""
+    paths = {id(meaning): Path(src) for meaning, src in model.files.values()
+             if meaning is not None}
+    found = {}
+    for meaning in chosen:
+        if id(meaning) not in paths:
+            continue
+        for entry in store.load(model.root, paths[id(meaning)], model.overlay).get("symbol", ()):
+            note = entry.get("note")
+            if note:
+                key = (entry["layout"], meaning.kind, int(entry["address"], 16))
+                found[key] = note if isinstance(note, list) else [note]
+    return found
+
+
+def _site(item, layout):
+    """The address of an evidence item on a layout, or None elsewhere."""
+    at = item.get("at")
+    if not isinstance(at, str) or not at.startswith(f"{layout}:"):
+        return None
+    return int(at.split(":", 1)[1], 16)
+
+
+def _note(notes, carriers, rom, subject):
+    """The note of one image from the notes of its symbol: the text after the
+    image's name where the notes name the images, and otherwise the one note."""
+    named = [text for text in notes
+             if any(text.startswith(f"{image}: ") for image in carriers)]
+    texts = ([text.removeprefix(f"{rom}: ") for text in named if text.startswith(f"{rom}: ")]
+             if named else list(notes))
+    if len(named) not in (0, len(notes)) or len(texts) > 1:
+        raise repo.KbError(f"{subject}: the notes of the symbol give {rom} no single note",
+                           code=3)
+    return texts[0] if texts else None
+
+
+def _axis(meaning, layout, slot, subject):
+    """The axis symbol of a slot on a layout, or None."""
+    found = [link.to.symbols[layout] for link in meaning.links
+             if link.type == "axis" and link.slot == slot and layout in link.stated
+             and layout in link.to.symbols]
+    if len(found) > 1:
+        raise repo.KbError(f"{subject}: {len(found)} axes of slot {slot} on {layout}", code=3)
+    return found[0] if found else None
+
+
+def _accessor_bindings(meaning, layout, subject):
+    """The pointer bindings of a table on a layout: the evidence of its reader
+    links with the role `accessor`, by site and offset."""
+    found = []
+    for link in meaning.links:
+        if link.type != "reader" or "accessor" not in link.roles:
+            continue
+        for item in link.evidence:
+            site = _site(item, layout)
+            if site is None:
+                continue
+            accessor = link.to.symbols.get(layout)
+            if accessor is None:
+                raise repo.KbError(f"{subject}: the accessor {link.to.key} has no symbol on "
+                                   f"{layout}", code=3)
+            binding = {"site": site, "accessor": accessor.address}
+            if item.get("kind") == "indirect":
+                binding["offset"] = item["value"]
+            found.append(binding)
+    return sorted(found, key=lambda item: (item["site"], item.get("offset", 0)))
+
+
+def _table_entry(meaning, symbol, rom, image, notes, carriers):
+    """The entry of a symbol for one image of the images that carry it."""
+    subject = f"target.{rom}.{meaning.name}"
+    entry = {"id": meaning.name, "address": symbol.address}
+    for name, source in GEOMETRY[symbol.kind] + KEYS:
+        value = symbol.value(name)
+        if value is not None:
+            entry[source] = value
+    storage = symbol.value("storage")
+    entry["storagetype"] = STORAGE_TYPES.get(storage, storage)
+    entry["values_sha256"] = _digest(symbol.kind, entry, image)
+    bindings = _accessor_bindings(meaning, symbol.layout, subject)
+    if bindings:
+        entry["pointer_bindings"] = bindings
+    for slot in ("x", "y"):
+        axis = _axis(meaning, symbol.layout, slot, subject)
+        if axis is not None:
+            entry[f"axis_{slot}"] = axis.address
+    editor = symbol.value("editor") or {}
+    entry.update({name: editor[name] for name in EDITOR if name in editor})
+    note = _note(notes.get((symbol.layout, symbol.kind, symbol.address), ()), carriers, rom,
+                 subject)
+    if note is not None:
+        entry["note"] = note
+    return entry
+
+
+def tables_document(model, notes=None):
+    """The document of `defs/vq37-native-tables.toml`: for each target, an
+    entry of every native meaning with a symbol on its layout that the image
+    carries, by address, and the native meanings absent there, by name.
+    `notes` gives the notes of the symbols, by default those of the files."""
+    chosen = meanings(model)
+    notes = file_notes(model, chosen) if notes is None else notes
+    layout_images = {layout.id: layout.images for layout in model.layouts.values()}
+    document = {"schema_version": SCHEMA_VERSIONS[TABLES], "target": {}}
+    for rom, layout, image in targets(model):
+        target = {"stock_sha256": image.sha256}
+        for name, kind in KINDS.items():
+            entries = []
+            for meaning in chosen:
+                symbol = meaning.symbols.get(layout)
+                if meaning.kind != kind or symbol is None:
+                    continue
+                carriers = symbol.props.get("images") or list(layout_images[layout])
+                if rom not in carriers:
+                    continue
+                entries.append(_table_entry(meaning, symbol, rom, image, notes, carriers))
+            if entries:
+                target[name] = sorted(entries, key=lambda entry: entry["address"])
+        absent = {}
+        for meaning in chosen:
+            status = meaning.statuses.get(layout)
+            if status is not None and status.state == "absent":
+                absent[meaning.name] = status.props["note"]
+        if absent:
+            target["absent"] = dict(sorted(absent.items()))
+        document["target"][rom] = target
+    return document
+
+
+def fuel_cut_document(model):
+    """The document of `defs/vq37-native-fuel-cut.toml`: for each target, the
+    fuel-cut symbols of its layout, the call and the scheduler word from their
+    evidence, the values from the image, and the pointer bindings from the
+    evidence of the reader links to the predicate function."""
+    by_key = {meaning.key: meaning for meaning in model.meanings}
+    document = {"schema_version": SCHEMA_VERSIONS[FUEL_CUT], "target": {}}
+    for rom, layout, image in targets(model):
+        subject = f"target.{rom}"
+        found = {}
+        for name, key in FUEL_CUT_MEANINGS:
+            meaning = by_key.get(key)
+            symbol = meaning.symbols.get(layout) if meaning is not None else None
+            if symbol is None:
+                raise repo.KbError(f"{subject}: {key} has no symbol on {layout}", code=3)
+            found[name] = symbol
+        function, coordinator = found["function_address"], found["coordinator_address"]
+        axis = _axis(found["curves_address"].meaning, layout, "x", subject)
+        if axis is None:
+            raise repo.KbError(f"{subject}: the curves have no x axis on {layout}", code=3)
+        found["axis_address"] = axis
+        calls = [item for item in function.evidence if item.get("kind") == "l0"
+                 and isinstance(item.get("value"), int) and _site(item, layout) is not None]
+        words = [item for item in coordinator.evidence if item.get("kind") == "rom-bytes"
+                 and item.get("value") == f"{coordinator.address:08x}"
+                 and _site(item, layout) is not None]
+        if len(calls) != 1 or len(words) != 1:
+            raise repo.KbError(f"{subject}: {len(calls)} predicate calls and {len(words)} "
+                               "scheduler words on the layout", code=3)
+        [call], [word] = calls, words
+        site = _site(call, layout)
+        size, digest = repo.signatures(layout, model.root)[function.address]
+        masks = {item["name"]: 1 << item["bit"] for item in found["state_address"].value("bit")}
+        data = _image(image.path)
+        values = {}
+        for name, key, _ in FUEL_CUT_DATA:
+            symbol = found[name]
+            count = (symbol.value("points") if symbol.kind == "axis"
+                     else symbol.value("cols") * symbol.value("rows"))
+            values[key] = _values(data, symbol.address, symbol.value("storage"), count)
+        target = {"stock_sha256": image.sha256, "function_size": size,
+                  "function_sha256": digest,
+                  "coordinator_pointer_site": _site(word, layout),
+                  "coordinator_predicate_ordinal": call["value"],
+                  "predicate_call_site": site,
+                  "predicate_instruction_ordinal": (site - coordinator.address) // 2,
+                  "state_active_mask": masks["active"], "state_armed_mask": masks["armed"],
+                  **{name: symbol.address for name, symbol in found.items()},
+                  **values, "delay_calibration_value": values["delay_calibration_value"][0],
+                  **_function_bindings(model, function, layout), "evidence": call["note"]}
+        document["target"][rom] = target
+    return document
+
+
+def _function_bindings(model, function, layout):
+    """The pointer bindings of the predicate function on a layout: the evidence
+    of the reader links to its meaning without a role, by site."""
+    found = {name: [] for name in BINDINGS}
+    for link in model.links:
+        if link.type != "reader" or link.to is not function.meaning or link.roles:
+            continue
+        group = next(name for name, kinds in BINDINGS.items() if link.owner.kind in kinds)
+        for item in link.evidence:
+            site = _site(item, layout)
+            if site is not None:
+                found[group].append({"site": site,
+                                     "target": link.owner.symbols[layout].address})
+    return {name: sorted(items, key=lambda item: item["site"]) for name, items in found.items()}

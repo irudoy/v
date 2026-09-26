@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "000564a4"
+name = "solemn-aardwark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005655e"

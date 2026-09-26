@@ -1,0 +1,127 @@
+summary = """
+First engine-speed floor of the expected control-shaft angle: FUN_000BF0C0 \
+and FUN_000BF122 take the maximum of the four floor words 0xFFFF3276, \
+0xFFFF3278, 0xFFFF380A, and 0xFFFF380C, this curve, floor B, and their \
+second copies, then subtract the measured angle 0xFFFF2670 and clamp at zero \
+into 0xFFFF2B2E."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
+
+[editor]
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001668c"
+summary = """
+First engine-speed floor of the expected control-shaft angle used by the \
+shaft-angle deficit monitors."""
+note = """
+Read by the task FUN_00061D46 at callsite 0x61E00 through the 8-point uint16 \
+leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4DE. Stock bytes are \
+identical to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and \
+FUN_000BF122 fixes the domain. FUN_00066C30 reads a byte-identical second \
+pair 0x0001B9B8 over 0x0001B438."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f8c"
+
+[[symbol]]
+layout = "1nd"
+address = "00016698"
+summary = """
+First engine-speed floor of the expected control-shaft angle used by the \
+shaft-angle deficit monitors."""
+note = [
+    """
+1ND0A: Read by the task FUN_0005E2A0 at callsite 0x5E350 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x0001609A; the \
+JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain.""",
+    """
+1ND3B: Read by the task FUN_0005E2A0 at callsite 0x5E350 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x0001609A; the \
+JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e58c"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001609a"
+note = """
+Read by the task FUN_00054FD0 at callsite 0x550C0 through the 8-point uint16 \
+wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF3276. The subtraction from \
+the 1/512 degree angle word 0xFFFF2670 fixes the domain."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055294"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_monitor_floor_a_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000550c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e350"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061e00"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e58c"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f8c"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055294"

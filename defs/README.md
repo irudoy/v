@@ -31,8 +31,8 @@ presentation and generated output.
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
 | `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
-| `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | yes |
-| `vq37-native-tables.toml` | Exact VQ37 calibration tables and axes that have no canonical source, with stock value and accessor bindings and declared absent roles | yes |
+| `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | no, `kb` projection |
+| `vq37-native-tables.toml` | Exact VQ37 calibration tables and axes that have no canonical source, with stock value and accessor bindings and declared absent roles | no, `kb` projection |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
@@ -145,6 +145,15 @@ that recur in the census, and `no-content-match` for bytes absent from the
 1ND0A census. The ledger is a candidate-level address index and assigns no
 semantics. `make check` validates it against both stock images and the
 published registries and requires it to equal the ledger that L0 produces.
+
+The target-native table registry `vq37-native-tables.toml` and the
+target-native fuel-cut registry `vq37-native-fuel-cut.toml` are projections of
+the `tbl`, `axis`, `fn`, `ram`, and `const` meanings with symbols on the
+layouts `jk78c`, `1nd`, and `1me3b` in `kb/` (stage 3 of `tools/kb/SPEC.md`),
+and `uv run kb project` regenerates them. A table entry carries the keys of
+its symbol, the accessor bindings from the evidence of its `reader` links,
+its axes from its `axis` links, and the digest of its stock values; an absent
+role is an `absent` status of its meaning on the layout.
 
 `JK08A-JK78C.definition-addresses.csv` binds 27 source maps to JK78C storage
 and records eighteen source maps as unsupported. The unsupported entries cover

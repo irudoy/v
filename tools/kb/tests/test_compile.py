@@ -280,10 +280,13 @@ def _readers(meaning, layout):
 
 
 class NativeAdapterTest(unittest.TestCase):
+    """The native facts that the entity files own from stage 3, and the
+    adapter that states them from the registries."""
+
     def test_a_native_id_joins_its_targets_and_names_the_meaning(self):
         meaning = model().meaning_of(SymbolKey("jk78c", "tbl", 0x00009FBA))
         self.assertEqual((meaning.key, meaning.tier, meaning.home),
-                         ("fuel_compensation_alternate/tbl", "native", "jk78c"))
+                         ("fuel_compensation_alternate/tbl", "file", "jk78c"))
         self.assertEqual({layout: symbol.address for layout, symbol in meaning.symbols.items()},
                          {"jk78c": 0x9FBA, "1nd": 0xA2C0, "1me3b": 0xA1F4})
         self.assertIn("fuel_compensation_main_alternate",
@@ -454,6 +457,17 @@ class NativeAdapterTest(unittest.TestCase):
             with self.subTest(path=path):
                 text = (repo.ROOT / path).read_text(encoding="utf-8")
                 self.assertEqual(render(tomllib.loads(text)), text)
+
+    def test_the_registries_are_projections_of_the_files(self):
+        m = model()
+        files = {native.TABLES: native.render_tables(native.tables_document(m)),
+                 native.FUEL_CUT: native.render_fuel_cut(native.fuel_cut_document(m))}
+        for path, text in files.items():
+            with self.subTest(path=path):
+                self.assertEqual((repo.ROOT / path).read_text(encoding="utf-8"), text)
+        self.assertNotIn(native, adapters.ADAPTERS)
+        self.assertTrue(all(source.startswith("kb/")
+                            for source in m.symbols[SymbolKey("1nd", "tbl", 0x0000E6C8)].sources))
 
     def test_an_entry_that_some_images_of_a_layout_carry_gives_the_symbol_images(self):
         catalog = repo.images()

@@ -4,3 +4,5 @@
 /l0/
 /defs/*.interp.csv
 /defs/JK08A-*.interp-correspondence.csv
+/defs/vq37-native-tables.toml
+/defs/vq37-native-fuel-cut.toml

@@ -1,0 +1,87 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 16
+storage = "uint16"
+unit = "degCA"
+scale = "(x-32768)*0.5"
+to_raw = "x*2+32768"
+scale_level = "candidate"
+
+[editor]
+name = "Intake CVTC Angle [degCA]"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol]]
+layout = "1me3b"
+address = "00017466"
+note = """
+Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC \
+shaft-angle limit; stock bytes are identical to JK78C 0x00016D94."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062084"
+
+[[symbol]]
+layout = "1nd"
+address = "00017392"
+note = [
+    """
+1ND0A: Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the \
+CVTC shaft-angle limit; stock bytes are identical to JK78C 0x00016D94.""",
+    """
+1ND3B: Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the \
+CVTC shaft-angle limit; stock bytes are identical to JK78C 0x00016D94. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e5bc"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d94"
+note = """
+Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC \
+shaft-angle limit; the coordinate is min(0xFFFF23A0, 0xFFFF23A2)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000555b4"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e5bc"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062084"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000555b4"

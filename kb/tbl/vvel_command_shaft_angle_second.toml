@@ -1,0 +1,135 @@
+summary = """
+Second copy of the shaft-angle conversion, read only by FUN_0004FCB8: it \
+converts the two measured control-shaft angle words 0xFFFF2670 and \
+0xFFFF2672 to the command-word domain and publishes the mean of the two \
+results times 1/512 as the float 0xFFFF9E98 for FUN_0004F3FE."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "count"
+scale = "x"
+to_raw = "x"
+scale_level = "code"
+
+[editor]
+name = "VVEL Command Word - Shaft Angle Conversion, Second Copy"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 15
+format = "0"
+fine = 1
+coarse = 64
+
+[[symbol]]
+layout = "1me3b"
+address = "0001b738"
+summary = """
+Second copy of the shaft-angle conversion, read only by FUN_0005C7D4: it \
+converts the two measured control-shaft angle words 0xFFFE97A6 and \
+0xFFFE97A8 to the command-word domain and publishes the mean of the two \
+results times 1/512 as the float 0xFFFEF1A8 for FUN_0005BB04."""
+note = """
+Read by FUN_0005C7D4 at callsites 0x5C7E6 and 0x5C7FA through the 16-point \
+uint16 leaf 0x2BCD4; the primary conversion 0x00015A76 goes through the leaf \
+0x2AF88. FUN_0005BB04 is the only caller and the only reader of the float. \
+The two argument words are the measured angles that the deficit monitors \
+FUN_000EB19A subtract from the floor maximum. Stock bytes are identical to \
+the primary table 0x00015A76."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c974"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b65e"
+summary = """
+Second copy of the shaft-angle conversion, read only by FUN_00058964: it \
+converts the two measured control-shaft angle words 0xFFFE977A and \
+0xFFFE977C to the command-word domain and publishes the mean of the two \
+results times 1/512 as the float 0xFFFEF178 for FUN_00057C94."""
+note = """
+Read by FUN_00058964 at callsites 0x58976 and 0x5898A through the 16-point \
+uint16 wrapper 0x28B2C of the kernel 0x28FC8; the primary conversion \
+0x00015C22 goes through the wrapper 0x2893C. FUN_00057C94 is the only caller \
+and the only reader of the float. The two argument words are the measured \
+angles that the deficit monitors FUN_000DFFE6 subtract from the floor \
+maximum. Stock bytes are identical to the primary table 0x00015C22."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058b04"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b00a"
+note = """
+Read by FUN_0004FCB8 at callsites 0x4FCD0 and 0x4FCDE through the 16-point \
+uint16 wrapper 0x28510 of the kernel 0x289AC as GBR + 0x20 from the literal \
+0x0001AFEA at 0x4FD84; the primary conversion 0x000156FC goes through the \
+wrapper 0x28320. FUN_0004F3FE is the only caller and the only reader of the \
+float. The two argument words are the measured angles that the deficit \
+monitors FUN_000BF0C0 and FUN_000BF122 subtract from the floor maximum. \
+Stock bytes are identical to the primary table 0x000156FC."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0004fd84"
+value = 32
+mode = "base"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_second_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fcd0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058976"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c7e6"
+
+[[link]]
+type = "reader"
+to = "fervent-walrus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0004fd84"
+value = 32
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "helpful-raccoon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058b04"
+
+[[link]]
+type = "reader"
+to = "venomous-lynx/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c974"

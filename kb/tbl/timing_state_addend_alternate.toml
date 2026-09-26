@@ -1,0 +1,104 @@
+summary = """
+Alternate warm DFCO-transition eight-point timing-state addend. It shares \
+the index byte and the interpolator of the projected default table and is \
+selected when the transition-completion latch is set."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "Timing-state count"
+scale = "x-128"
+to_raw = "x+128"
+scale_level = "code"
+
+[editor]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+static_axis_name = "Engine Speed [RPM]"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013a2e"
+summary = """
+Alternate warm DFCO-transition eight-point timing-state addend. It shares \
+the index byte and the interpolator of the projected default table \
+0x00013A26 and is selected when the transition-completion latch is set."""
+note = """
+Read by the coordinator FUN_0007323E at callsite 0x73378 through the \
+implicit eight-point uint8 leaf 0x2A9F4 with the index byte 0xFFFE8194, the \
+byte that indexes the default table 0x00013A26 at 0x73334, so neither branch \
+carries an engine-bank identity. The selector is the latch 0xFFFEB9A4.bit2: \
+it sets when the progress word 0xFFFEB8DA reaches ROM8[0x854E] * 256 = \
+0x8000 and releases below 0x8000 - ROM8[0x854F] * 256 = 0x7300. Stock bytes \
+are identical to JK78C 0x000137F0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00073404"
+
+[[symbol]]
+layout = "1nd"
+address = "00013c22"
+note = """
+Both eight-point branches read the same index byte, so neither carries an \
+engine-bank identity. The selector is the transition-completion latch: it \
+sets when the normalized transition progress reaches 1.0 (0x8000) and \
+releases below 0.898 (0x7300), and the default arm is the branch taken while \
+the latch is clear."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006f6fc"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137f0"
+note = """
+Both eight-point branches read the same index byte, so neither carries an \
+engine-bank identity. The selector is the transition-completion latch: it \
+sets when the normalized transition progress reaches 1.0 (0x8000) and \
+releases below 0.898 (0x7300), and the default arm is the branch taken while \
+the latch is clear."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006484c"
+
+[[link]]
+type = "reader"
+to = "gray-nightingale/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006f6fc"
+
+[[link]]
+type = "reader"
+to = "paper-dinosaur/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00073404"
+
+[[link]]
+type = "reader"
+to = "remarkable-skunk/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006484c"

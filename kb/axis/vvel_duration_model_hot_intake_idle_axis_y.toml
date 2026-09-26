@@ -1,0 +1,77 @@
+level = "code"
+home = "jk78c"
+quantity = "load"
+points = 8
+storage = "uint16"
+unit = "Normalized BFS [%]"
+scale = "x*0.0030517578125"
+to_raw = "x/0.0030517578125"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+
+[[symbol]]
+layout = "1me3b"
+address = "000173a6"
+note = """
+Second axis of the state-word hot-intake idle surfaces, 6144..20480 = load \
+byte 24..80; the coordinate is the load byte 0xFFFE8034 << 8, the byte that \
+indexes the ignition mode surfaces in FUN_000797CC. The 100/128 percent \
+weight per byte count is the projected scale of the ignition load axis. \
+Stock bytes are identical to JK78C 0x00016CE4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007523c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ce4"
+note = """
+Second axis of the state-word hot-intake idle surfaces, 6144..20480 = load \
+byte 24..80; the coordinate is the load byte 0xFFFF1032 << 8, the byte that \
+indexes the ignition mode surfaces in FUN_00069AB8. The 100/128 percent \
+weight per byte count is the projected scale of the ignition load axis."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006667c"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+FUN_00070514, the state-code dispatcher of this image, reads the resolver \
+surfaces 0x0000E748 and 0x0000E7C8 over the axes 0x000166D8 and 0x000166C8 \
+at these two positions; the image carries no separate pair."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070514"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006667c"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007523c"

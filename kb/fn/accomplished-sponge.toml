@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "000797cc"
+name = "accomplished-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007984a"

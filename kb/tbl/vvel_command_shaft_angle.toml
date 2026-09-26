@@ -1,0 +1,242 @@
+summary = """
+Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
+command-word domain (values). The task reads it in both directions: angle to \
+command for the bound words that form 0xFFFF44AA, and command to angle with \
+the roles of axis and values exchanged."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 1
+storage = "uint16"
+unit = "count"
+scale = "x"
+to_raw = "x"
+scale_level = "code"
+
+[editor]
+name = "VVEL Command Word - Shaft Angle Conversion"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 10
+format = "0"
+fine = 1
+coarse = 64
+
+[[symbol]]
+layout = "1me3b"
+address = "00015a76"
+summary = """
+Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
+command-word domain (values), read in both directions by the task."""
+note = """
+Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the \
+resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and \
+0x58FE8, and by FUN_00066A18 at 0x66A28 and 0x66A44 through the 16-point \
+uint16 leaf 0x2AF88; the call at 0x623DA exchanges the roles of axis and \
+values. JK78C reads the pair for the resolver in the separate function \
+FUN_0005693A. Stock bytes are identical to JK78C 0x000156FC. FUN_0005C7D4 \
+reads a byte-identical second pair 0x0001B738 over 0x0001B718."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00059184"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062504"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000630e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066bd8"
+
+[[symbol]]
+layout = "1nd"
+address = "00015c22"
+summary = """
+Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
+command-word domain (values), read in both directions by the task."""
+note = [
+    """
+1ND0A: Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by \
+the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at \
+0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes \
+are identical to JK78C 0x000156FC.""",
+    """
+1ND3B: Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by \
+the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at \
+0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes \
+are identical to JK78C 0x000156FC. 1ND3B shares the 1ND0A code layout and \
+its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005531c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e9b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f588"
+
+[[symbol]]
+layout = "jk78c"
+address = "000156fc"
+note = """
+Read by the task FUN_00054FD0 at callsites 0x556E2 and 0x55776, by \
+FUN_0005693A at 0x56952 for the filtered actual duration 0xFFFFA180, and by \
+FUN_0004D3CE at 0x4D3F0 and 0x4D40C through the 16-point uint16 wrapper \
+0x28320. FUN_0004D3CE reaches it as GBR + 0x20 from the literal 0x000156DC \
+at 0x4D58C. The command-word unit is stored raw; DID 0x125C publishes the \
+latched command 0xFFFF443E."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0004d58c"
+value = 32
+mode = "base"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055858"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569f4"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d3f0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00055168"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00058fc8"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e9b4"
+
+[[link]]
+type = "reader"
+to = "dangerous-koel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066bd8"
+
+[[link]]
+type = "reader"
+to = "ebony-tamarin/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00059184"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f588"
+
+[[link]]
+type = "reader"
+to = "loud-rottweiler/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0004d58c"
+value = 32
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "lurking-wolverine/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005531c"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062504"
+
+[[link]]
+type = "reader"
+to = "sandy-hare/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000569f4"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055858"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000630e4"

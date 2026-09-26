@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "00063cd4"
+name = "fantastic-chowchow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063d1c"

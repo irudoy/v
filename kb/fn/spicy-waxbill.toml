@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "0005f9f0"
+name = "spicy-waxbill"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005faae"

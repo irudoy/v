@@ -1,0 +1,126 @@
+summary = """
+Mode 3 duration target of the VVEL selector: the cold branch taken while the \
+coolant snapshot 0xFFFFA21A or the selected-temperature snapshot 0xFFFFA219 \
+is below 70 degC. Interpolated by coolant temperature and scaled by 0.05."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Cold"
+category = "Variable Valve Timing / VVEL Duration"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000170f6"
+summary = """
+Mode 3 duration target of the VVEL resolver: the cold pair. Interpolated by \
+a coolant-coded byte and scaled by 0.05."""
+note = """
+Read by the resolver FUN_00062FAC at callsite 0x6320E through the 8-point \
+uint16 leaf 0x2AEAC with its own literal pool words for the curve and the \
+axis; the value goes to pair 2 of the output. JK78C reads its curve in the \
+separate function FUN_00056A14. Stock bytes are identical to JK78C \
+0x00016A54."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063434"
+
+[[symbol]]
+layout = "1nd"
+address = "00017062"
+summary = """
+Mode 3 duration target of the VVEL selector: the cold branch. Interpolated \
+by a coolant-coded byte and scaled by 0.05."""
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F6D2 through the \
+8-point uint16 wrapper 0x28910 with its own literal pool words for the curve \
+and the axis. Stock bytes are identical to JK78C 0x00016A54.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F6D2 through the \
+8-point uint16 wrapper 0x28910 with its own literal pool words for the curve \
+and the axis. Stock bytes are identical to JK78C 0x00016A54. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7b4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016a54"
+note = """
+Read by FUN_00056A14 at callsite 0x56A2A through the 8-point uint16 wrapper \
+0x282F4; the base literal 0x00016A54 at 0x56C88 also reaches the axis at + \
+0x70 and the cold CVTC curve at + 0x40. The coordinate is the coolant byte \
+0xFFFF1069 (degC + 50)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056c88"
+
+[[link]]
+type = "axis"
+to = "vvel_cold_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056a2a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f6d2"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006320e"
+
+[[link]]
+type = "reader"
+to = "dangerous-cow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056c88"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7b4"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063434"

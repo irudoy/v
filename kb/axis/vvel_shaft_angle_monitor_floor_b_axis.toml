@@ -1,0 +1,87 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 8
+storage = "uint16"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "00017416"
+note = """
+Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; stock bytes \
+are identical to JK78C 0x00016D54."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f98"
+
+[[symbol]]
+layout = "1nd"
+address = "00017342"
+note = [
+    """
+1ND0A: Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; \
+stock bytes are identical to JK78C 0x00016D54.""",
+    """
+1ND3B: Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; \
+stock bytes are identical to JK78C 0x00016D54. 1ND3B shares the 1ND0A code \
+layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e598"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d54"
+note = """
+Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; the \
+coordinate is 0xFFFF11A6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552a8"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e598"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061f98"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552a8"

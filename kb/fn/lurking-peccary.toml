@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "0006275c"
+name = "lurking-peccary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062768"

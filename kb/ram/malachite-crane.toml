@@ -1,0 +1,18 @@
+[[symbol]]
+layout = "1nd"
+address = "fffe9492"
+name = "malachite-crane"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076c84"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076c84"

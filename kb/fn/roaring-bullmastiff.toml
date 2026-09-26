@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "00074d98"
+name = "roaring-bullmastiff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074e1a"

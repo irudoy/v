@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "0007b1a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007a8fe"
+value = 1
+note = """
+The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the \
+first Boolean predicate aggregated by the final fuel-mask coordinator behind \
+periodic task-list word 0x00022144. Its 190-byte implementation preserves \
+the 1ND cap, interpolation, activation, release, and hysteresis structure \
+with target-local storage; the compiler packs the active and armed flags of \
+the state byte into bits 3 and 2."""
+
+[[symbol]]
+layout = "1nd"
+address = "00076ad2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007628a"
+value = 1
+note = """
+The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the \
+first Boolean predicate aggregated by the final fuel-mask coordinator. Its \
+190-byte implementation preserves the JK78C cap, interpolation, activation, \
+release, and hysteresis structure with target-local storage and RAM state."""
+
+[[symbol]]
+layout = "jk78c"
+address = "0006aeb8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a9e8"
+value = 3
+note = """
+The BSR at coordinator instruction ordinal 28 targets FUN_0006aeb8, the \
+third Boolean predicate aggregated by the final fuel-mask coordinator. It \
+interpolates the adjacent activation and release curves on the shared \
+eight-point axis, caps both results with the adjacent scalar limits, and \
+compares them with the current native RPM word."""

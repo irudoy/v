@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "0005e2a0"
+name = "alluring-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e350"

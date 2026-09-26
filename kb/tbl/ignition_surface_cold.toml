@@ -1,0 +1,197 @@
+summary = """
+Cold-coolant ignition surface of the mode-selected half of the ignition \
+coordinator FUN_00069AB8, the half that stock ROM8[0x8965] = 0xBA (bit 5 \
+set) executes. The coolant byte 0xFFFF1069 above ROM8[0x8AC1] selects the \
+hot-coolant surface and at or below ROM8[0x8AC2] the cold-coolant surface; \
+between the two thresholds the coordinator interpolates the low-seven fields \
+of both surfaces. Both stock thresholds hold 120 (70 degC), so the stock \
+image has no blend band. The low seven bits carry the timing field and bit 7 \
+passes to the coordinator output beside it."""
+level = "code"
+home = "jk78c"
+cols = 16
+rows = 16
+storage = "uint8"
+unit = "deg"
+scale = "x-64"
+to_raw = "x+64"
+scale_level = "candidate"
+
+[editor]
+name = "Ignition Timing Surface - Cold Coolant"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[symbol]]
+layout = "1me3b"
+address = "0000a444"
+summary = """
+Ignition surface for state code 1, every VVEL mode outside 3, 5, 10, 12, 13, \
+14, and 15, of the mode-selected half of the ignition coordinator \
+FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = \
+0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, \
+which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code \
+2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 \
+code 7, mode 15 code 8, and every other mode code 1. The coordinator takes \
+the low seven bits of the lookup and crossfades the previous and current \
+state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."""
+note = """
+Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words \
+0x7941C, 0x7971C hold the same address; the structure export recovers no \
+instruction that reads them."""
+
+[symbol.editor]
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079ca8"
+
+[[symbol]]
+layout = "1nd"
+address = "0000a510"
+summary = """
+Ignition surface for state code 1, every VVEL mode outside 3, 5, 10, 12, 13, \
+14, and 15, of the mode-selected half of the ignition coordinator \
+FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. \
+Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code \
+byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: \
+mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 \
+code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The \
+coordinator takes the low seven bits of the lookup and crossfades the \
+previous and current state values by the progress word 0xFFFEB6DC, where \
+0x8000 is 1.0."""
+note = """
+Byte-identical to the JK78C cold-coolant surface 0xA20A. The projected JK08A \
+surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the \
+gated half of the same coordinator, which the stock configuration byte \
+leaves unexecuted."""
+
+[symbol.editor]
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fc8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000752b4"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a20a"
+note = """
+Byte-identical to the 1ND0A surface 0xA510 and the 1ME3B surface 0xA444. The \
+projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical \
+copies in the gated half of the same coordinator, which the stock \
+configuration byte leaves unexecuted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a074"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a198"
+
+[[link]]
+type = "axis"
+to = "able-butterfly/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069f46"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074f3a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079a02"
+
+[[link]]
+type = "axis"
+to = "cryptic-bloodhound/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069f46"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074f3a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079a02"
+
+[[link]]
+type = "reader"
+to = "accomplished-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079ca8"
+
+[[link]]
+type = "reader"
+to = "roaring-bullmastiff/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fc8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000752b4"
+
+[[link]]
+type = "reader"
+to = "vivid-weasel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a074"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a198"

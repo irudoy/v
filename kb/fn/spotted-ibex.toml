@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "0007448c"
+name = "spotted-ibex"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074eda"

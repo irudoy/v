@@ -1,0 +1,55 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe819e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b338"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe81b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076b20"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cb0"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11bc"
+former = ["daffy-gopher/ram/7mfk-ffff11bc"]
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff11ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006af24"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076cb0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b338"

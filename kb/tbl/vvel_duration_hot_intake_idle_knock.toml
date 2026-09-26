@@ -1,0 +1,162 @@
+summary = """
+Mode 13 duration surface of the VVEL selector: hot-intake idle with the \
+high-detonation state 0xFFFF23C6.bit6 set. The mode value is the maximum of \
+this surface and the eight-point floor 0x0001601A, scaled by 0.05."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 8
+storage = "uint16"
+unit = "deg"
+scale = "x*0.05"
+to_raw = "x/0.05"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Duration Target - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0000e1fc"
+summary = """
+Mode 13 duration surface of the VVEL resolver: the second hot-intake idle \
+pair, which the JK78C selector takes in the high-detonation state. The pair \
+value is the maximum of this surface and the eight-point floor 0x000165EC, \
+scaled by 0.05. Stock values are 1000 = 50.0 at every cell."""
+note = """
+Read by the resolver FUN_00062FAC at callsite 0x631BE through the 8x8 uint16 \
+leaf 0x29EC0 with the coordinates and axes of the mode 12 surface \
+0x0000E17C; the maximum goes to pair 12 of the output. Stock values are \
+identical to that surface."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006342c"
+
+[[symbol]]
+layout = "1nd"
+address = "0000e7c8"
+summary = """
+Mode 13 duration surface of the VVEL selector: hot-intake idle with the \
+high-detonation state set. Stock values are 1000 = 50.0 at every cell."""
+note = [
+    """
+1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 \
+uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode \
+12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A.""",
+    """
+1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 \
+uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode \
+12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7a8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000712a4"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000e24e"
+note = """
+Read by the resolver FUN_000564A4 at callsite 0x5664A through the 8x8 uint16 \
+wrapper 0x28058 with the same coordinates and axes as the mode 12 surface \
+0x0000E1CE. Stock values are identical to that surface; only the knock state \
+selects between them."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000566ac"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_hot_intake_idle_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005664a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f688"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000631be"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_hot_intake_idle_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005664a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f688"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000631be"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000712a4"
+
+[[link]]
+type = "reader"
+to = "glaring-llama/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005f7a8"
+
+[[link]]
+type = "reader"
+to = "solemn-aardwark/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000566ac"
+
+[[link]]
+type = "reader"
+to = "umber-doberman/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006342c"

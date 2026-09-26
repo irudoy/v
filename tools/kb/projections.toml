@@ -52,6 +52,50 @@ consumers = ["tools/rom_correspondence.py", "tools/tests/test_rom_correspondence
 read = "guarded"
 
 [[projection]]
+path = "defs/vq37-native-tables.toml"
+generator = "kb.adapters.native:tables"
+stage = 3
+inputs = [
+    "kb/tbl/",
+    "kb/axis/",
+    "kb/fn/",
+    "rom-images/roms.csv",
+    "tools/kb/src/kb/adapters/native.py",
+]
+consumers = [
+    "tools/mapkit/vq37_native_tables.py",
+    "tools/mapkit/definition_projections.py",
+    "tools/census_homology.py",
+    "tools/mapkit/tests/",
+]
+read = "guarded"
+
+[[projection]]
+path = "defs/vq37-native-fuel-cut.toml"
+generator = "kb.adapters.native:fuel_cut"
+stage = 3
+inputs = [
+    "kb/fn/",
+    "kb/ram/",
+    "kb/tbl/",
+    "kb/axis/",
+    "kb/const/",
+    "rom-images/roms.csv",
+    "l0/jk78c/",
+    "l0/1nd/",
+    "l0/1me3b/",
+    "tools/kb/src/kb/adapters/native.py",
+]
+consumers = [
+    "tools/mapkit/vq37_native_fuel_cut.py",
+    "tools/mapkit/definition_projections.py",
+    "tools/sh-elf-run/verify_runtime_targets.py",
+    "patches/tests/",
+    "tools/mapkit/tests/",
+]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

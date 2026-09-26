@@ -1,0 +1,124 @@
+summary = """
+Engine-speed curve of the shaft-angle bound applied in the task before the \
+command conversion: the bound word is the curve value minus abs(0xFFFF5E8E). \
+Values are in the shaft-angle domain of axis 0x000156DC."""
+level = "code"
+home = "jk78c"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "candidate"
+
+[editor]
+name = "VVEL Shaft Angle Limit - Engine Speed"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000166ac"
+summary = """
+Engine-speed curve of the shaft-angle bound applied in the task before the \
+command conversion: the bound word is the curve value minus abs(0xFFFED40A), \
+clamped at zero. Values are in the shaft-angle domain of axis 0x00015A56."""
+note = """
+Read by the task FUN_00061D46 at callsite 0x61E2E through the 8-point uint16 \
+leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are \
+identical to JK78C 0x000160BA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061fa4"
+
+[[symbol]]
+layout = "1nd"
+address = "000166b8"
+summary = """
+Engine-speed curve of the shaft-angle bound applied in the task before the \
+command conversion. Values are in the shaft-angle domain of axis \
+0x00015C02."""
+note = [
+    """
+1ND0A: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA.""",
+    """
+1ND3B: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point \
+uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e5a4"
+
+[[symbol]]
+layout = "jk78c"
+address = "000160ba"
+note = """
+Read by the task FUN_00054FD0 at callsite 0x550EC through the 8-point uint16 \
+wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF31BA. The 1/512 degree \
+domain follows from the conversion pair; the bound composition is in \
+JK78C.vvel.md."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552ac"
+
+[[link]]
+type = "axis"
+to = "vvel_shaft_angle_limit_engine_speed_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000550ec"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e378"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061e2e"
+
+[[link]]
+type = "reader"
+to = "alluring-sponge/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005e5a4"
+
+[[link]]
+type = "reader"
+to = "quizzical-donkey/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061fa4"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000552ac"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "00066c18"
+name = "imposing-bat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c24"
