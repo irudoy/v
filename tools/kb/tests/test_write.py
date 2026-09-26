@@ -27,11 +27,16 @@ def bind(meaning, symbol, **keys):
 
 
 class PlanTest(unittest.TestCase):
-    """Operations planned over the working tree with the files in memory."""
+    """Operations planned over the working tree with the files in memory; the
+    base is the tree before the binding of TABLE on JK00C, where the meaning has
+    no file and its 7mfk symbol takes its name from kb/names.csv."""
 
     @classmethod
     def setUpClass(cls):
-        cls.base = compile.build()
+        home = names.Row("7mfk", "tbl", TABLE_HOME, "astute-toad")
+        rows = [row for row in names.read() if row.key != home.key] + [home]
+        cls.base = compile.build(repo.ROOT, {store.path_of("tbl", "astute-toad"): None,
+                                             names.PATH: names.render(rows)})
 
     def plan(self, *ops):
         return write.plan(list(ops), self.base, write.model_resolver(self.base))

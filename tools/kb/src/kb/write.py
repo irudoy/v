@@ -287,6 +287,10 @@ class Change:
         return "".join(out)
 
     def _current(self, path):
+        """The text of a file in the base of the change: the overlay of its
+        model, or else the working tree; None for no file."""
+        if path in self.model.overlay:
+            return self.model.overlay[path]
         target = self.root / path
         return target.read_text(encoding="utf-8") if target.exists() else None
 
@@ -297,12 +301,12 @@ class Change:
                      if owner is meaning), None)
         if path is None:
             path = store.path_of(meaning.kind, meaning.name)
-            if path not in self.documents and (self.root / path).exists():
+            if path not in self.documents and self._current(path) is not None:
                 raise KbError(f"{path.as_posix()} holds another meaning than {meaning.key}",
                               code=3)
         if path not in self.documents:
-            if (self.root / path).exists():
-                self.documents[path] = store.load(self.root, path)
+            if self._current(path) is not None:
+                self.documents[path] = store.load(self.root, path, self.model.overlay)
             else:
                 self.documents[path] = {"symbol": [self._adopt(meaning, meaning.home_symbol)]}
         return path, self.documents[path]
@@ -415,12 +419,12 @@ def refusals(base, result):
 
 def plan(ops, base, resolve, root=repo.ROOT):
     """(change, texts, result) of operations over the model `base` of the
-    working tree; exit code 3 when the result adds an issue."""
+    working tree and its overlay; exit code 3 when the result adds an issue."""
     change = Change(base, resolve, root)
     for number, op in enumerate(ops, 1):
         change.run(op, number if len(ops) > 1 else None)
     texts = change.texts()
-    result = compile.build(root, texts)
+    result = compile.build(root, {**base.overlay, **texts})
     refused = refusals(base, result)
     if refused:
         lines = [f"the change adds {len(refused)} issues; nothing is written"]
