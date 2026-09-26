@@ -2258,17 +2258,19 @@ section 20.1.
 | `address` | Symbol on the layout of `<ROM>` |
 | `width`, `height`, `length`, `storagetype`, and the axis `kind` | `cols`, `rows`, `points`, `storage`, and `quantity` |
 | `mask` | `mask` of `[editor]` |
-| `values_sha256` | Not stored: the image digest fixes the bytes |
-| `pointer_bindings` | Evidence at each site and a `reader` link to each accessor with that evidence: `l0` evidence, or `indirect` evidence with mode `base` and the offset as `value` for a binding whose accessor displaces the literal by `offset` |
-| `axis_x`, `axis_y` | `axis` links |
+| `values_sha256` | Not stored: the image digest fixes the bytes, and the digest of the image block that the geometry and the storage give must equal it |
+| `pointer_bindings` | Evidence at each site and a `reader` link to each accessor with that evidence: `l0` evidence, or `indirect` evidence with mode `base` and the offset as `value` for a binding whose accessor displaces the literal by `offset`; the accessor takes `l0` identity evidence at its first census call that passes an entry bound to it |
+| `axis_x`, `axis_y` | `axis` links with `l0` evidence at the first census call of the layout that passes the entry and the axis |
 | `name`, `category`, `order`, `format`, `fine`, `coarse`, `static_axis`, `static_axis_name` | `[editor]` |
 | `units`, `scale_expr`, `to_byte`, `scale_conf` | `unit`, `scale`, `to_raw`, `scale_level` |
 | `confidence` | `level` |
 | `semantics` | `summary` |
 | `note` | `note` of the symbol |
 
-The images of one layout state one `semantics` text, and a different text is
-an issue. A `note` that the images of one layout state differently enters the
+A census call is a row of the accessor census of the layout; it passes an
+address that one of its operand columns holds, and the first call is the one
+with the lowest call site. The images of one layout state one `semantics`
+text, and a different text is an issue. A `note` that the images of one layout state differently enters the
 note of the symbol once per image, after the image name. `stock_sha256` of a
 target must equal the catalog digest and is not stored.
 `[target.<ROM>.absent]` gives an `absent` status of the meaning each key
@@ -2286,15 +2288,22 @@ status `note`.
   `delay_calibration_address` become `tbl` and `axis` symbols. Each key joins
   its symbols across targets as a registry key.
 - `axis_values`, `caps_values`, `curve_values`, and
-  `delay_calibration_value` are image bytes and become `rom-bytes` evidence
-  where a claim rests on them.
+  `delay_calibration_value` must equal the image bytes and are not stored.
+  Their number gives the geometry: the axis has `points` values, the caps
+  one row of `cols` values, the curves `rows` rows of one column per axis
+  point, and the delay calibration one element; the storage is `uint16`,
+  and `uint8` for the delay calibration.
+- Each `ram`, `tbl`, and `axis` symbol of a target takes `l0` evidence at
+  the first instruction of the function body whose L0 references hold its
+  address.
 - `predicate_call_site` gives the function `l0` evidence with
   `coordinator_predicate_ordinal`, the position of the function among the
   Boolean predicates that the coordinator aggregates, as `value` and
   `evidence` as `note`. The site lies `predicate_instruction_ordinal`
   instructions from the coordinator entry, so the instruction ordinal is not
   stored, and a site elsewhere is an issue. `coordinator_pointer_site` gives
-  the coordinator `l0` evidence at the scheduler word.
+  the coordinator `rom-bytes` evidence at the scheduler word with the
+  coordinator address as `value`.
   `coordinator_predicate_ordinal` is 3 on `jk78c` and 1 on `1nd` and
   `1me3b`, so the call grounds no `call-ordinal` homology.
 - The coordinator bodies are discontiguous Ghidra functions: the stock
@@ -2302,7 +2311,8 @@ status `note`.
   contiguous predicate bind the chain, and no contiguous envelope stands
   for a coordinator body.
 - `axis_address` is the `x` axis of the curves, an `axis` link from the
-  curves symbol with slot `x`.
+  curves symbol with slot `x` and `l0` evidence at the first census call of
+  the layout that passes both.
 - `pointer_bindings` and `ram_pointer_bindings` give the symbol at each
   target `l0` evidence at the site and a `reader` link to the function with
   that evidence.

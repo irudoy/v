@@ -315,6 +315,31 @@ class NativeAdapterTest(unittest.TestCase):
         axes = {link.slot: link.to.key for link in table.links if link.type == "axis"}
         self.assertEqual(sorted(axes), ["x", "y"])
 
+    def test_an_accessor_takes_evidence_at_its_first_census_call_of_a_bound_entry(self):
+        accessor = model().symbols[SymbolKey("jk78c", "fn", 0x00040958)]
+        self.assertFalse(accessor.implicit)
+        self.assertEqual(accessor.evidence,
+                         [{"kind": "l0", "supports": "identity", "at": "jk78c:00040e00"}])
+
+    def test_an_axis_link_takes_evidence_at_the_first_census_call_that_passes_both(self):
+        table = model().meaning_of(SymbolKey("jk78c", "tbl", 0x00009FBA))
+        for link in table.links:
+            if link.type == "axis":
+                with self.subTest(slot=link.slot):
+                    self.assertEqual(sorted(item["at"] for item in link.evidence),
+                                     ["1me3b:00033cec", "1nd:00030f7c", "jk78c:0002fd32"])
+
+    def test_values_sha256_must_equal_the_digest_of_the_image_block(self):
+        catalog = repo.images()
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        entry = {"id": "probe_surface", "address": 0xA000, "width": 2, "height": 1,
+                 "storagetype": "uint8", "values_sha256": "0" * 64}
+        native.declare_tables(b, {"schema_version": 3, "target": {
+            "1ME3B": {"stock_sha256": catalog["1ME3B"].sha256, "table": [entry]}}},
+            "probe.toml", catalog)
+        self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
+                         [("audit", "target.1ME3B.probe_surface")])
+
     def test_text_that_the_images_of_a_layout_state_differently_names_its_image(self):
         meaning = model().meaning_of(SymbolKey("1nd", "tbl", 0x0000E6C8))
         self.assertEqual((meaning.key, meaning.home),
@@ -377,8 +402,40 @@ class NativeAdapterTest(unittest.TestCase):
         m = model()
         curves = m.meaning_of(SymbolKey("jk78c", "tbl", _fuel_cut()["JK78C"]["curves_address"]))
         axis = m.meaning_of(SymbolKey("jk78c", "axis", 0x16A64))
-        self.assertEqual({(link.slot, link.to.key) for link in curves.links if link.type == "axis"},
-                         {("x", axis.key)})
+        links = [link for link in curves.links if link.type == "axis"]
+        self.assertEqual([(link.slot, link.to.key) for link in links], [("x", axis.key)])
+        self.assertEqual(sorted(item["at"] for item in links[0].evidence),
+                         ["1me3b:0007b1bc", "1nd:00076aee", "jk78c:0006aeea"])
+
+    def test_the_scheduler_word_gives_the_coordinator_rom_bytes_evidence(self):
+        coordinator = model().symbols[SymbolKey("jk78c", "fn", 0x0006A9B0)]
+        self.assertIn({"kind": "rom-bytes", "supports": "identity", "at": "jk78c:00021ac8",
+                       "value": "0006a9b0"}, coordinator.evidence)
+
+    def test_the_fuel_cut_values_give_the_geometry_of_their_symbols(self):
+        m = model()
+        target = _fuel_cut()["JK78C"]
+
+        def geometry(kind, key):
+            props = m.meaning_of(SymbolKey("jk78c", kind, target[key])).props
+            return tuple(props.get(name) for name in ("points", "cols", "rows", "storage"))
+
+        self.assertEqual(geometry("axis", "axis_address"), (8, None, None, "uint16"))
+        self.assertEqual(geometry("tbl", "caps_address"), (None, 2, 1, "uint16"))
+        self.assertEqual(geometry("tbl", "curves_address"), (None, 8, 2, "uint16"))
+        self.assertEqual(geometry("tbl", "delay_calibration_address"), (None, 1, 1, "uint8"))
+
+    def test_fuel_cut_values_that_differ_from_the_image_are_an_issue(self):
+        targets = _fuel_cut()
+        targets["1ME3B"]["curve_values"][0] += 1
+        self.assertEqual(_fuel_cut_issues(targets), [("audit", "target.1ME3B.curve_values")])
+
+    def test_each_fuel_cut_datum_takes_evidence_at_its_first_reference_in_the_function(self):
+        m = model()
+        item = lambda at: {"kind": "l0", "supports": "identity", "at": at}
+        self.assertIn(item("jk78c:0006aedc"),
+                      m.symbols[SymbolKey("jk78c", "ram", 0xFFFF10E5)].evidence)
+        self.assertIn(item("1nd:00076b1e"), m.symbols[SymbolKey("1nd", "ram", 0xFFFE94BA)].evidence)
 
     def test_a_call_site_off_its_instruction_ordinal_is_an_issue(self):
         targets = _fuel_cut()

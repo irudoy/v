@@ -11,10 +11,15 @@
   note of the symbol, prefixed with its image where the images of one layout
   state different text. An entry that only some images of a layout carry
   gives the symbol `images`.
+- `values_sha256` must equal the digest of the block of the image that the
+  geometry and the storage of the entry give.
 - A pointer binding gives the symbol `l0` evidence at its site, or `indirect`
   evidence with mode `base` and the offset as `value` where the accessor
   displaces the literal, and a `reader` link to the accessor with the same
-  evidence. `axis_x` and `axis_y` give `axis` links.
+  evidence. The accessor takes `l0` identity evidence at the first census
+  call of its layout that it makes with an entry bound to it as an operand.
+  `axis_x` and `axis_y` give `axis` links with `l0` evidence at the first
+  census call of the layout that passes the entry and the axis.
 - `[target.<ROM>.absent]` gives the meaning of each id the status `absent`
   with `l0` evidence at each function entry of the layout that its text
   names, or else `registry` evidence.
@@ -24,12 +29,17 @@
   call site gives the predicate function `l0` evidence with the ordinal of
   the predicate in the coordinator as `value` and the target's `evidence` as
   `note`; the site lies the instruction ordinal of the call from the
-  coordinator entry. The scheduler word gives the coordinator `l0`
-  evidence, and the curves take the axis as their `x` axis. Each pointer
-  binding gives the symbol at its target `l0` evidence at its site and a
-  `reader` link to the predicate function. The function size and digest
-  must equal L0, and the targets of the images of one layout state one
-  evidence text.
+  coordinator entry. The scheduler word gives the coordinator `rom-bytes`
+  evidence with the coordinator address as `value`. Each datum takes `l0`
+  evidence at the first instruction of the function body whose L0
+  references hold its address. The curves take the axis as their `x` axis,
+  with `l0` evidence at the first census call of the layout that passes
+  both. The values of the axis, the caps, the curves, and the delay
+  calibration must equal the image bytes, and their number gives the
+  geometry of their symbols. Each pointer binding gives the symbol at its
+  target `l0` evidence at its site and a `reader` link to the predicate
+  function. The function size and digest must equal L0, and the targets of
+  the images of one layout state one evidence text.
 - The stock digest of every target must equal the image catalog.
 - `render_tables` and `render_fuel_cut` write a registry document in the
   form of its file: targets, entries, and absent ids in document order, the
@@ -40,11 +50,13 @@
 """
 
 from collections import defaultdict
+from functools import lru_cache
+import hashlib
 from pathlib import Path
 import re
 import tomllib
 
-from kb import repo, store, vocab
+from kb import derive, l0, match, repo, sites, store, vocab
 
 TABLES = Path("defs/vq37-native-tables.toml")
 FUEL_CUT = Path("defs/vq37-native-fuel-cut.toml")
@@ -70,6 +82,11 @@ FUEL_CUT_SYMBOLS = (("function_address", "fn"), ("coordinator_address", "fn"),
                     ("delay_calibration_address", "tbl"), ("caps_address", "tbl"),
                     ("curves_address", "tbl"), ("axis_address", "axis"))
 BITS = (("state_armed_mask", "armed"), ("state_active_mask", "active"))
+# Fuel-cut data with the key of its values and their storage.
+FUEL_CUT_DATA = (("axis_address", "axis_values", "uint16"),
+                 ("caps_address", "caps_values", "uint16"),
+                 ("curves_address", "curve_values", "uint16"),
+                 ("delay_calibration_address", "delay_calibration_value", "uint8"))
 BINDINGS = {"pointer_bindings": ("tbl", "axis", "const"), "ram_pointer_bindings": ("ram", "reg")}
 FUEL_CUT_KEYS = frozenset({
     "stock_sha256", "function_size", "function_sha256", "coordinator_pointer_site",
@@ -99,6 +116,45 @@ def _document(b, root, path):
 
 def _location(layout, address):
     return f"{layout}:{address:08x}"
+
+
+@lru_cache(maxsize=None)
+def _image(path):
+    return path.read_bytes()
+
+
+def _values(data, address, storage, count):
+    """`count` unsigned big-endian elements of `storage` at an address."""
+    width = match.STORAGE_BYTES[storage]
+    return [int.from_bytes(data[address + width * index:address + width * (index + 1)], "big")
+            for index in range(count)]
+
+
+# Operand columns of the accessor census.
+OPERANDS = ("bt_r4", "bt_r5", "bt_r6", "df_r4", "df_r5", "df_r6", "df_r7")
+
+
+@lru_cache(maxsize=None)
+def census(layout, root=repo.ROOT):
+    """(callsite, accessor, operands) of every census call of a layout, by
+    callsite."""
+    base = root / repo.L0 / layout
+    calls = []
+    for kernel in l0.census(layout, root).kernels:
+        for row in derive.read_rows(base / l0.Census.file(kernel)):
+            calls.append((int(row["callsite"], 16), int(row["accessor"], 16),
+                          frozenset(int(row[column], 16) for column in OPERANDS if row[column])))
+    return tuple(sorted(calls))
+
+
+def _call(layout, root, operands, accessor=None):
+    """The `l0` identity item at the first census call of a layout that passes
+    every address of `operands`, or, with `accessor`, that the accessor makes
+    with one of them; None when no call does."""
+    for site, caller, passed in census(layout, root):
+        if accessor is None and operands <= passed or caller == accessor and operands & passed:
+            return {"kind": "l0", "supports": "identity", "at": _location(layout, site)}
+    return None
 
 
 def _targets(b, src, document, catalog, known):
@@ -135,7 +191,7 @@ def declare_tables(b, document, src, catalog):
     for kind, name in found:
         kinds[name].add(kind)
     for (kind, name), entries in found.items():
-        _declare_id(b, src, kind, name, entries, pending)
+        _declare_id(b, src, kind, name, entries, pending, catalog)
     for rom, layout, target in targets:
         for name, text in target.get("absent", {}).items():
             subject = f"target.{rom}.absent.{name}"
@@ -146,7 +202,7 @@ def declare_tables(b, document, src, catalog):
             _declare_absent(b, src, subject, (*kinds[name], "native", name), layout, text)
 
 
-def _declare_id(b, src, kind, name, entries, pending):
+def _declare_id(b, src, kind, name, entries, pending, catalog):
     group = (kind, "native", name)
     _, home, _ = entries[0]
     b.name(group, name, "native", src)
@@ -166,6 +222,10 @@ def _declare_id(b, src, kind, name, entries, pending):
         key = b.symbol(layout, kind, address, src, group=group, props=props, strength="native")
         for rom, entry in images:
             b.keys(key, _keys(kind, entry), src)
+            if ("values_sha256" in entry
+                    and _digest(kind, entry, catalog.get(rom)) != entry["values_sha256"]):
+                b.issue("audit", src, f"target.{rom}.{name}", "values_sha256 differs from the "
+                        "digest of the image block")
             for binding in entry.get("pointer_bindings", ()):
                 item = _binding(layout, binding)
                 b.symbol(layout, kind, address, src, evidence=[item])
@@ -182,6 +242,19 @@ def _keys(kind, entry):
     if editor:
         keys["editor"] = editor
     return {name: value for name, value in keys.items() if value not in (None, "")}
+
+
+def _digest(kind, entry, image):
+    """The digest of the image block of an entry, or None without the image or
+    the geometry."""
+    storage = vocab.storage(entry.get("storagetype"))
+    count = entry.get("length") if kind == "axis" else (
+        entry.get("width") or 0) * (entry.get("height") or 0)
+    if image is None or storage not in match.STORAGE_BYTES or not count:
+        return None
+    start = entry["address"]
+    return hashlib.sha256(
+        _image(image.path)[start:start + count * match.STORAGE_BYTES[storage]]).hexdigest()
 
 
 def _notes(images):
@@ -263,11 +336,30 @@ def declare_fuel_cut(b, root, document, src, catalog):
             "kind": "l0", "supports": "identity", "at": _location(layout, site),
             "value": target["coordinator_predicate_ordinal"], "note": target["evidence"]}])
         b.symbol(layout, "fn", target["coordinator_address"], src, evidence=[{
-            "kind": "l0", "supports": "identity",
-            "at": _location(layout, target["coordinator_pointer_site"])}])
+            "kind": "rom-bytes", "supports": "identity",
+            "at": _location(layout, target["coordinator_pointer_site"]),
+            "value": f"{target['coordinator_address']:08x}"}])
+        _declare_data(b, src, subject, rom, target, keys, catalog)
+        body = sites.bodies(layout, root).get(function.address, ())
+        found = sites.references(layout, root)
+        for name, key in keys.items():
+            if key.kind == "fn":
+                continue
+            reference = next((site for site in body if key.address in found.get(site, ())), None)
+            if reference is None:
+                b.issue("references", src, f"{subject}.{name}", "the function body holds no "
+                        f"reference to {key.address:08x}")
+                continue
+            b.symbol(layout, key.kind, key.address, src, evidence=[{
+                "kind": "l0", "supports": "identity", "at": _location(layout, reference)}])
         if "curves_address" in keys and "axis_address" in keys:
-            b.link(keys["curves_address"], "axis", keys["axis_address"], src,
-                   props={"slot": "x"})
+            curves, axis = keys["curves_address"], keys["axis_address"]
+            item = _call(layout, root, {curves.address, axis.address})
+            if item is None:
+                b.issue("references", src, f"{subject}.axis_address", "no census call of "
+                        f"{layout} passes the curves and the axis")
+            b.link(curves, "axis", axis, src, props={"slot": "x"},
+                   evidence=[item] if item else None)
         for name, kinds in BINDINGS.items():
             for binding in target.get(name, ()):
                 item = {"kind": "l0", "supports": "identity",
@@ -276,10 +368,38 @@ def declare_fuel_cut(b, root, document, src, catalog):
                                 src))
 
 
+def _declare_data(b, src, subject, rom, target, keys, catalog):
+    """The geometry of the fuel-cut data from the number of their values,
+    which must equal the image bytes."""
+    points = len(target["axis_values"])
+    if not points or len(target["curve_values"]) % points:
+        b.issue("schema", src, f"{subject}.curve_values", "the curve values fill no whole "
+                "number of rows over the axis")
+        return
+    geometry = {"axis_address": {"points": points},
+                "caps_address": {"cols": len(target["caps_values"]), "rows": 1},
+                "curves_address": {"cols": points, "rows": len(target["curve_values"]) // points},
+                "delay_calibration_address": {"cols": 1, "rows": 1}}
+    image = catalog.get(rom)
+    for name, values, storage in FUEL_CUT_DATA:
+        stated = target[values] if isinstance(target[values], list) else [target[values]]
+        if image is not None and _values(_image(image.path), target[name], storage,
+                                         len(stated)) != stated:
+            b.issue("audit", src, f"{subject}.{values}", "differs from the image bytes")
+        if name in keys:
+            b.keys(keys[name], {**geometry[name], "storage": storage}, src)
+
+
 # Relations -----------------------------------------------------------------
 
 def relate(b, root):
-    for entry in b.stash.get(__name__, ()):
+    pending = b.stash.get(__name__, ())
+    bound = defaultdict(set)
+    for entry in pending:
+        if entry[0] == "reader":
+            _, key, accessor, _, _ = entry
+            bound[(key.layout, accessor)].add(key.address)
+    for entry in pending:
         if entry[0] == "reader":
             _, key, accessor, item, src = entry
             to = b.resolve(key.layout, accessor, ("fn",), src)
@@ -287,6 +407,11 @@ def relate(b, root):
                 b.issue("references", src, key.key, f"accessor {accessor:08x} is no function "
                         "entry")
                 continue
+            call = _call(key.layout, root, bound[(key.layout, accessor)], accessor)
+            if call is None:
+                b.issue("references", src, to.key, "no census call of the accessor passes an "
+                        "entry bound to it")
+            b.symbol(key.layout, "fn", accessor, src, evidence=[call] if call else None)
             b.link(key, "reader", to, src, props={"role": "accessor"}, evidence=[item])
         elif entry[0] == "axis":
             _, key, slot, address, src = entry
@@ -294,7 +419,11 @@ def relate(b, root):
             if to is None:
                 b.issue("references", src, key.key, f"axis_{slot} {address:08x} is no axis")
                 continue
-            b.link(key, "axis", to, src, props={"slot": slot})
+            call = _call(key.layout, root, {key.address, address})
+            if call is None:
+                b.issue("references", src, key.key, f"no census call of {key.layout} passes "
+                        f"it with axis_{slot} {address:08x}")
+            b.link(key, "axis", to, src, props={"slot": slot}, evidence=[call] if call else None)
         else:
             _, layout, address, kinds, function, item, src = entry
             datum = b.resolve(layout, address, kinds, src)
