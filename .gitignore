@@ -33,6 +33,10 @@ tools/memgraph/data/
 # Per-worktree state of the kb tool: caches, lock, and graph instance.
 .kb/
 
+# The project settings of Claude Code register the kb access guard and are
+# tracked; local settings stay untracked.
+!.claude/settings.json
+
 # Local Memgraph backup destination and state.
 tools/memgraph/backup.local.toml
 tools/memgraph/backup.state.json

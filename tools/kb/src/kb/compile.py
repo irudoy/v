@@ -14,10 +14,11 @@ from kb.model import Builder
 
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
-# Modules of the command line, the read commands, the checks, and the
-# instances. They do not change the graph, so they are no compiler inputs.
-NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "instance.py", "lock.py",
-                          "mcp.py", "read.py", "refs.py", "spec.py"})
+# Modules of the command line, the read commands, the MCP server, the checks,
+# the projections, the guard, and the instances. They do not change the graph,
+# so they are no compiler inputs.
+NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "guard.py", "instance.py",
+                          "lock.py", "mcp.py", "project.py", "read.py", "refs.py", "spec.py"})
 
 
 def spaces(config):

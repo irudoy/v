@@ -1,0 +1,239 @@
+# Projections: the generated files of the repository (tools/kb/SPEC.md,
+# section 14).
+#
+# `path` is a repository path, a pattern whose `*`, `?`, and `[...]` match
+# within one path segment and whose `{a,b}` lists alternatives, or
+# `<file>#<name>` for the section between `<!-- <name>:begin -->` and
+# `<!-- <name>:end -->`. `generator` is a function `kb.<module>:<function>`
+# that `uv run kb project` renders, or the command of the current generator,
+# whose gate compares its files. `stage` is the transition stage from which a
+# projection applies; before it the registry owns the file. `inputs` are the
+# paths whose change requires regeneration, `consumers` the programs that
+# read the files, and `read` states whether agents read the file (`open`) or
+# ask `kb` (`guarded`). `tools/kb/hook.py` refuses edits of every applying
+# projection and reads of the guarded ones; the `projections` check requires
+# each entry to hold and each file whose first lines declare it generated to
+# be registered.
+
+[[projection]]
+path = "AGENTS.md#kb"
+generator = "kb.project:agents"
+stage = 2
+inputs = ["tools/kb/SPEC.md", "tools/kb/bench.toml"]
+consumers = ["Claude Code", "Codex"]
+read = "open"
+
+[[projection]]
+path = "defs/*.{xml,xdf}"
+generator = "uv run python tools/mapkit/emit_def.py all"
+inputs = [
+    "defs/JK08A.overrides.toml",
+    "defs/rom-identities.toml",
+    "defs/rom-inheritance.toml",
+    "defs/definition-projections.toml",
+    "defs/JK08A-*.definition-addresses.csv",
+    "defs/*.dtc.csv",
+    "defs/vq37-native-tables.toml",
+    "defs/vq37-native-fuel-cut.toml",
+    "defs/JK08A.{findings,axes,funcs,vars,interp,diagnostic-bindings}.csv",
+    "patches/map-switching-layout.toml",
+    "patches/rolling-launch-layout.toml",
+    "patches/rom-address-profiles.toml",
+    "rom-images/roms.csv",
+    "tools/mapkit/",
+]
+consumers = [
+    "tools/mapkit/validate_map_switching.py",
+    "tools/mapkit/tests/",
+    "tools/romviz/model.py",
+    "RomRaider",
+    "TunerPro",
+]
+read = "open"
+
+[[projection]]
+path = "defs/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B}.dtc.csv"
+generator = "uv run python tools/mapkit/dtc_projection.py --write"
+inputs = ["defs/JK08A.dtc.csv", "rom-images/roms.csv", "tools/mapkit/dtc_projection.py"]
+consumers = [
+    "tools/mapkit/emit_def.py",
+    "tools/romviz/model.py",
+    "tools/single_source.py",
+    "tools/mapkit/tests/test_dtc_projection.py",
+]
+read = "open"
+
+[[projection]]
+path = "defs/JK08A.maps.csv"
+generator = "uv run python tools/maps/build_tracker.py all"
+inputs = [
+    "defs/JK08A.{findings,axes,interp,funcs,diagnostic-bindings}.csv",
+    "defs/rom-identities.toml",
+    "defs/rom-inheritance.toml",
+    "defs/definition-projections.toml",
+    "tools/maps/build_tracker.py",
+]
+consumers = ["tools/romviz/model.py", "tools/mapkit/tests/"]
+read = "open"
+
+[[projection]]
+path = "defs/1ND0A-1ME3B.census-correspondence.csv"
+generator = "uv run python tools/census_homology.py"
+inputs = [
+    "l0/1nd/",
+    "l0/1me3b/",
+    "defs/{1ND0A,1ME3B}.interp.csv",
+    "defs/vq37-native-tables.toml",
+    "defs/JK08A-{1ND,1ME3B}.definition-addresses.csv",
+    "rom-images/roms.csv",
+    "rom-images/homology.toml",
+    "tools/census_homology.py",
+]
+consumers = ["tools/tests/test_census_homology.py", "defs/README.md"]
+read = "open"
+
+[[projection]]
+path = "rom-images/homology.csv"
+generator = "uv run python tools/rom_homology.py"
+inputs = [
+    "rom-images/roms.csv",
+    "rom-images/homology.toml",
+    "rom-images/README.md",
+    "tools/rom_homology.py",
+]
+consumers = ["tools/tests/test_rom_images_layout.py", "README.md"]
+read = "open"
+
+[[projection]]
+path = "refs/vendor/catalog.csv"
+generator = "uv run python tools/vendor/build_catalog.py"
+inputs = ["refs/vendor/{proecu,uprev}-maps.csv", "tools/vendor/build_catalog.py"]
+consumers = ["tools/memgraph/load_vendor.py", "tools/memgraph/load_a2l.py"]
+read = "open"
+
+[[projection]]
+path = "patches/can-telemetry-{tables.s,schema.json}"
+generator = "uv run python patches/can_telemetry_profile.py"
+inputs = [
+    "patches/can-telemetry-profile.toml",
+    "patches/jk08a-runtime-reservations.toml",
+    "patches/can_telemetry_profile.py",
+    "tools/logs/can_telemetry_schema.py",
+]
+consumers = [
+    "patches/can_telemetry_assembly.py",
+    "patches/runtime_targets.py",
+    "tools/sh-elf-run/verify_can_telemetry.py",
+    "tools/logs/can_telemetry.py",
+    "tools/logs/trc_to_mlg.py",
+    "tools/can_dashboard/",
+]
+read = "open"
+
+[[projection]]
+path = "patches/can-telemetry-payloads.toml"
+generator = "uv run python patches/can_telemetry_assembly.py --update-from <units>"
+inputs = ["patches/can-telemetry-layout.toml", "patches/can-telemetry-*.s"]
+consumers = [
+    "patches/can_telemetry_compose.py",
+    "patches/apply_can_telemetry.py",
+    "patches/build_rom.py",
+    "patches/runtime_targets.py",
+    "tools/sh-elf-run/verify_can_telemetry.py",
+]
+read = "open"
+
+[[projection]]
+path = "patches/runtime-target-payloads.toml"
+generator = "tools/sh-elf-run/generate-targets.sh"
+inputs = [
+    "patches/rom-address-profiles.toml",
+    "patches/*-runtime-correspondence.csv",
+    "patches/*.s",
+    "patches/{map-switching,rolling-launch,can-telemetry}-layout.toml",
+    "patches/checksum-layouts.toml",
+    "rom-images/roms.csv",
+    "rom-images/homology.toml",
+    "patches/runtime_targets.py",
+    "tools/sh-elf-run/generate_runtime_targets.py",
+]
+consumers = [
+    "patches/runtime_targets.py",
+    "patches/build_rom.py",
+    "tools/sh-elf-run/verify_runtime_targets.py",
+    "patches/tests/test_runtime_targets.py",
+]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/nissan-esm-2007-g35-sedan/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/extract_esm.py refs/nissan-esm-2007-g35-sedan"
+inputs = [
+    "refs/nissan-esm-2007-g35-sedan/",
+    "refs/diagnostics/nissan-esm-2007-g35-sedan/source_pack.toml",
+    "tools/diagnostics/extract_esm.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/nissan-esm-2013-g37-sedan/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/extract_esm.py refs/nissan-esm-2013-g37-sedan --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml"
+inputs = [
+    "refs/nissan-esm-2013-g37-sedan/",
+    "refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml",
+    "tools/diagnostics/extract_esm.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/rom-dtc/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/extract_rom_dtc.py"
+inputs = [
+    "refs/diagnostics/rom-dtc/layouts.toml",
+    "rom-images/roms.csv",
+    "tools/diagnostics/extract_rom_dtc.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/public/370z-can-logger/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/import_370z_logger.py <checkout>"
+inputs = [
+    "refs/diagnostics/public/370z-can-logger/source_pack.toml",
+    "tools/diagnostics/import_370z_logger.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/public/obd2tools/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/import_obd2tools.py <checkout>"
+inputs = [
+    "refs/diagnostics/public/obd2tools/source_pack.toml",
+    "tools/diagnostics/import_obd2tools.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/public/ecudocs-p32m/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/import_ecudocs.py <checkout>"
+inputs = [
+    "refs/diagnostics/public/ecudocs-p32m/source_pack.toml",
+    "tools/diagnostics/import_ecudocs.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"
+
+[[projection]]
+path = "refs/diagnostics/public/nissan-datatable/{*.csv,fragments.jsonl}"
+generator = "uv run python tools/diagnostics/import_nissan_datatable.py <pdf>"
+inputs = [
+    "refs/diagnostics/public/nissan-datatable/source_pack.toml",
+    "tools/diagnostics/import_nissan_datatable.py",
+]
+consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
+read = "open"

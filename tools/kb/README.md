@@ -28,11 +28,13 @@ uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
 uv run kb bench                      # the acceptance questions of the current stage
 uv run kb mcp                        # the read commands as MCP tools on stdio
+uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
 ```
 
-- `kb check` runs the active checks, which `make check` includes: `l0`, and
-  the model checks `schema`, `names`, `references`, `symbols`, and `links`
-  over the compiled registries.
+- `kb check` runs the active checks, which `make check` includes: `l0`; the
+  model checks `schema`, `names`, `references`, `symbols`, and `links` over
+  the compiled registries; and `projections` and `guard`
+  ([Projections and the access guard](#projections-and-the-access-guard)).
 - `kb sync` compiles the registries into the model, appends a generated name
   to `kb/names.csv` for every symbol that has neither a semantic name nor a
   row, and loads the graph under `.kb/lock`. The `names` check fails until
@@ -176,8 +178,9 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   `indirect` evidence explains it.
 - The fingerprint covers every input: the model inputs, the compiler
   modules, `l0/`, and the images of the catalog. The modules of the command
-  line, the read commands, the checks, and the instances, which
-  `compile.NOT_COMPILER` lists, are no inputs. `.kb/cache/hashes.json` keeps the git blob hash of each file
+  line, the read commands, the MCP server, the checks, the projections, the
+  guard, and the instances, which `compile.NOT_COMPILER` lists, are no
+  inputs. `.kb/cache/hashes.json` keeps the git blob hash of each file
   by size and modification time. `:Meta` is deleted first and written last.
 - The main working tree uses the compose service of
   [`../memgraph/`](../memgraph/README.md). `kb instance up` in a linked
@@ -186,6 +189,30 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   it in `.kb/instance.toml`; `prune`, which `up` runs first, removes the
   containers of vanished working trees and stops idle ones. `KB_BOLT`
   overrides the Bolt address for tests against a scratch server.
+
+## Projections and the access guard
+
+`projections.toml` registers every generated file of the repository with its
+generator, inputs, consumers, stage, and read mode, as section 14 of the
+specification states. `uv run kb project` renders the projections of `kb`
+functions, such as the `AGENTS.md#kb` section; a projection of another
+generator keeps that generator and its gate. The `projections` check requires
+every entry to match tracked files that no other entry claims and to name
+existing paths, compares each projection of `kb` with its rendering, and
+requires every tracked file whose first lines declare it generated to be
+registered.
+
+`hook.py` is the access guard of section 15. The tracked
+`.claude/settings.json` runs it before `Read`, `Edit`, `Write`, `MultiEdit`,
+`NotebookEdit`, `Grep`, `Glob`, and `Bash` with the Python of `.venv`, or
+`python3` without it. It refuses reads, searches, and edits of `kb/` and
+`l0/`, edits of the projections that apply, and reads of the guarded ones,
+and names the command that answers instead. A shell command passes when it
+changes the directory or runs `kb`, a git subcommand of the allow list,
+`make`, or a script under `tools/` or `patches/`. `KB_GUARD=off` in the
+environment of the session disables the guard for maintenance. The `guard`
+check requires the settings to be tracked and to cover every tool, `.ignore`
+to list the guarded paths, and the hook to refuse a sample call on each.
 
 ## Modules
 
@@ -208,7 +235,10 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 | `kb.refs` | References of the read commands and their resolution |
 | `kb.answer` | Answers, sections, token counts, and budgets |
 | `kb.read` | The read commands |
+| `kb.mcp` | The read commands as MCP tools over JSON-RPC on standard input and output |
 | `kb.spec` | The stages, owners, and acceptance questions of the specification |
+| `kb.project` | `projections.toml`, `kb project`, the `projections` check, and the `AGENTS.md#kb` section |
+| `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
 | `kb.l0` | L0 export, normal form, manifest, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |
 | `kb.derive` | Function bodies and literal pairing over L0 and the layout image |
@@ -236,7 +266,9 @@ stages, and baselines, and the current stage.
 `config.toml` lists the L0 export scripts, the census plan of each layout, the
 instance limits and ports, the lock timeout, the output budgets of the
 commands, the address spaces of each MCU, the manual prefixes of legacy
-`spec:` tokens, the axis quantities, and the attempt limit of generated names. `domain-words.txt` lists the words a generated name must
+`spec:` tokens, the axis quantities, the attempt limit of generated names,
+and the trees and git allow list of the access guard. `projections.toml`
+registers the generated files. `domain-words.txt` lists the words a generated name must
 not contain, beside the words of semantic names, signal labels, and editor
 table names. `.kb/` holds the per-worktree state and is
 ignored by git.

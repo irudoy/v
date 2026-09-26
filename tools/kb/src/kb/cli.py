@@ -12,7 +12,7 @@ import shlex
 import subprocess
 import sys
 
-from kb import answer, checks, compile, graph, instance, l0, read, repo
+from kb import answer, checks, compile, graph, guard, instance, l0, project, read, repo
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -25,7 +25,8 @@ def _model_check(name):
 
 
 # Checks active at the current transition stage, in execution order.
-CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS}}
+CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS},
+          "projections": project.check, "guard": guard.check}
 LOCATION_RE = re.compile(r"(?:(?P<layout>[0-9a-z]{2,8}):)?(?:0x)?(?P<address>[0-9a-fA-F]{1,8})")
 
 
@@ -287,6 +288,12 @@ def command_audit(args, root=repo.ROOT):
     return 0
 
 
+def command_project(args, root=repo.ROOT):
+    for path, changed in project.write(root, args.paths):
+        print(f"{path}: {'written' if changed else 'current'}")
+    return 0
+
+
 def command_mcp(args, root=repo.ROOT):
     from kb import mcp
 
@@ -382,6 +389,10 @@ def build_parser():
     code.add_argument("--budget", type=int)
     code.add_argument("--full", action="store_true")
     code.set_defaults(handler=command_code)
+
+    render = commands.add_parser("project", help="render the projections that kb generates")
+    render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")
+    render.set_defaults(handler=command_project)
 
     serve = commands.add_parser("mcp", help="serve the read commands over MCP on stdio")
     serve.set_defaults(handler=command_mcp)

@@ -5,7 +5,7 @@ import unittest
 from kb import cli, mcp
 
 # Commands that change state or serve, and so are no MCP read tools.
-NOT_READ = {"sync", "instance", "mcp"}
+NOT_READ = {"sync", "instance", "mcp", "project"}
 
 
 class ToolTest(unittest.TestCase):
