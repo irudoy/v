@@ -6,9 +6,10 @@ while reading a registry under the check that owns them.
 """
 
 from collections import Counter, defaultdict
+import re
 
-from kb import names, store, vocab
-from kb.model import Issue, SymbolKey
+from kb import match, names, repo, store, vocab
+from kb.model import MEANING_REF, SYMBOL_REF, Issue, SymbolKey
 
 ROM = ("fn", "tbl", "axis", "const", "hook", "did", "dtc")
 SPACE = {**{kind: "rom" for kind in ROM}, "ram": "ram", "reg": "io"}
@@ -17,10 +18,22 @@ VOCABULARY = {
     "access": vocab.TBL_ACCESS,
     "storage": vocab.STORAGE,
 }
+UNRESOLVED_KEYS = ("method", "target", "count", "l0")
+L0_DIGEST = re.compile(r"[0-9a-f]{16}")
 
 
 def _sources(meaning):
     return ";".join(sorted(meaning.sources)) or "model"
+
+
+def _from_files(sources):
+    """Whether an entity file of `kb/` states the fact. The facts of an
+    unconverted registry join the checks of stage 3 with its conversion."""
+    return any(src.startswith(f"{store.TREE.as_posix()}/") for src in sources)
+
+
+def _files(sources):
+    return ";".join(sorted(src for src in sources if src.startswith(f"{store.TREE.as_posix()}/")))
 
 
 def _subject(meaning):
@@ -219,6 +232,44 @@ def symbols(model):
     return issues
 
 
+def _item(item):
+    where = item.get("at") or item.get("to")
+    if isinstance(where, SymbolKey):
+        where = where.key
+    return f"{item.get('kind')} evidence" + (f" at {where}" if where else "")
+
+
+def homology(model):
+    """Every symbol that a file states is an anchor or reaches one through
+    verified homology evidence, and each of its identity and homology evidence
+    items that L0 or the images decide holds (section 7.3)."""
+    keys = sorted(key for key, symbol in model.symbols.items() if _from_files(symbol.sources))
+    if not keys:
+        return []
+    ranks = match.grounded(model, keys)
+    issues = []
+    for key in keys:
+        symbol = model.symbols[key]
+        path = _files(symbol.sources)
+        for item in symbol.evidence:
+            supports = item.get("supports", "identity")
+            if supports not in ("identity", "homology") or item.get("kind") == "rom-bytes":
+                continue
+            if supports == "homology" and item.get("kind") not in match.HOMOLOGY_KINDS:
+                issues.append(Issue("homology", path, key.key,
+                                    f"{_item(item)} supports no homology"))
+                continue
+            failure = match.verify(model, symbol, item)
+            if failure:
+                issues.append(Issue("homology", path, key.key, f"{_item(item)}: {failure}"))
+        if ranks[key][0] < match.CANDIDATE:
+            issues.append(Issue("homology", path, key.key,
+                                "neither an anchor nor homologous to one: no identity evidence "
+                                "of its layout grounds it, and no verified homology evidence "
+                                "reaches an anchor"))
+    return issues
+
+
 def links(model):
     issues = []
     for link in model.links:
@@ -231,13 +282,174 @@ def links(model):
     return issues
 
 
+def _claimed(link):
+    """The layouts where both ends of a link have symbols, within `layouts`."""
+    allowed = link.props.get("layouts")
+    return [layout for layout in sorted(set(link.owner.symbols) & set(link.to.symbols))
+            if not allowed or layout in allowed]
+
+
+def _hook_words(model, path, symbol, to, offset):
+    props = {**symbol.meaning.props, **symbol.props}
+    width = int(props.get("width") or 32) // 8
+    expected = (to.address + offset) & ((1 << 8 * width) - 1)
+    for rom, data in match.images(model, symbol.layout, symbol.props.get("images")):
+        word = int.from_bytes(data[symbol.address:symbol.address + width], "big")
+        if word != expected:
+            shown = f"{to.key.key}" + (f" + {offset}" if offset else "")
+            yield Issue("image-bytes", path, symbol.key.key,
+                        f"{rom} holds {word:0{2 * width}x} at {symbol.address:08x}; the target "
+                        f"{shown} is {expected:0{2 * width}x}")
+
+
+def _did_sources(path, symbol, to, offset):
+    tables = [item for item in symbol.evidence if item.get("kind") == "did-table"]
+    if not tables:
+        yield Issue("image-bytes", path, symbol.key.key,
+                    f"the source {to.key.key} claims {symbol.layout}, where no did-table "
+                    "evidence states the entry")
+        return
+    words = str(tables[0].get("value", "")).split()
+    expected = f"{to.address:08x}"
+    if offset is None:
+        found = expected in words
+    else:
+        found = offset < len(words) and words[offset] == expected
+    if not found:
+        place = "" if offset is None else f" at position {offset}"
+        yield Issue("image-bytes", path, symbol.key.key,
+                    f"the entry {' '.join(words)} lacks the source {to.key.key}{place}")
+
+
+def image_bytes(model):
+    """Hook target words, DID table entries and the sources they point at, and
+    every typed `rom-bytes` value agree with every image of the layout that
+    the symbol applies to (section 13; the storage and dimensions of the other
+    ROM symbols join at stage 8)."""
+    issues = []
+    for meaning in model.meanings:
+        path = _sources(meaning)
+        for link in meaning.links:
+            if link.owner is not meaning or link.type not in ("target", "source"):
+                continue
+            for layout in _claimed(link):
+                symbol, to = meaning.symbols[layout], link.to.symbols[layout]
+                if link.type == "target" and meaning.kind == "hook":
+                    issues.extend(_hook_words(model, path, symbol, to, link.offset or 0))
+                elif link.type == "source" and meaning.kind == "did":
+                    issues.extend(_did_sources(path, symbol, to, link.offset))
+        for symbol in meaning.symbols.values():
+            for item in symbol.evidence:
+                if item.get("kind") not in ("rom-bytes", "did-table") or "legacy" in item:
+                    continue
+                failure = match.verify(model, symbol, item)
+                if failure:
+                    issues.append(Issue("image-bytes", path, symbol.key.key,
+                                        f"{_item(item)}: {failure}"))
+    return issues
+
+
+def _status_subject(meaning, layout):
+    return f"{_subject(meaning)} on {layout}"
+
+
+def statuses(model):
+    """`absent` carries evidence, and `unresolved` carries the method, the
+    target, the count, and the L0 digest of its search (section 7.4), for the
+    statuses that files state."""
+    issues = []
+    for meaning in model.meanings:
+        for layout, status in sorted(meaning.statuses.items()):
+            if not _from_files(status.sources):
+                continue
+            path, subject = _files(status.sources), _status_subject(meaning, layout)
+            if status.state == "absent" and not status.evidence:
+                issues.append(Issue("statuses", path, subject, "an absent status without evidence"))
+            if status.state != "unresolved":
+                continue
+            props = status.props
+            lacking = [key for key in UNRESOLVED_KEYS if props.get(key) in (None, "")]
+            if lacking:
+                issues.append(Issue("statuses", path, subject,
+                                    f"an unresolved status without {', '.join(lacking)}"))
+                continue
+            if props["method"] not in vocab.EVIDENCE_KINDS:
+                issues.append(Issue("statuses", path, subject,
+                                    f"method {props['method']!r} is no evidence kind"))
+            count = props["count"]
+            if isinstance(count, bool) or not isinstance(count, int) or count < 0 or count == 1:
+                issues.append(Issue("statuses", path, subject,
+                                    f"count {count!r}; a search states 0 or more than 1 match"))
+            if not L0_DIGEST.fullmatch(str(props["l0"])):
+                issues.append(Issue("statuses", path, subject,
+                                    f"l0 {props['l0']!r} is not 16 hexadecimal digits"))
+            target = str(props["target"])
+            if not (match.location(target) or SYMBOL_REF.fullmatch(target)
+                    or MEANING_REF.fullmatch(target)):
+                issues.append(Issue("statuses", path, subject,
+                                    f"target {target!r} is neither a location nor a reference"))
+    return issues
+
+
+def stale(model):
+    """The `unresolved` statuses of files whose search predates the L0 of
+    their layout; staleness is reported and does not fail."""
+    notes, digests = [], {}
+    for meaning in model.meanings:
+        for layout, status in sorted(meaning.statuses.items()):
+            recorded = status.props.get("l0")
+            if status.state != "unresolved" or not recorded or not _from_files(status.sources):
+                continue
+            if layout not in digests:
+                digests[layout] = match.l0_digest(layout, model.root)
+            if recorded != digests[layout]:
+                notes.append(Issue(
+                    "statuses", _files(status.sources), _status_subject(meaning, layout),
+                    f"the search ran on L0 {recorded}, and the L0 of {layout} is "
+                    f"{digests[layout]}; `uv run kb unresolved {meaning.key} --layout {layout}` "
+                    "repeats it"))
+    return notes
+
+
+def writers(model):
+    """Each store of a `ram` or `reg` symbol that aligns on the layout of
+    another symbol of its meaning aligns with a store of that symbol (the
+    writer gate); `[writers] review` of `tools/kb/config.toml` lists the
+    contradictions that await review."""
+    review = set(model.config.get("writers", {}).get("review", ()))
+    issues, seen = [], set()
+    for found in match.writers(model):
+        meaning, symbol = found.meaning, found.symbol
+        subject = f"{meaning.key}/{symbol.layout}" if meaning.name else symbol.key.key
+        entry = f"{subject} {found.site}"
+        seen.add(entry)
+        if entry not in review:
+            issues.append(Issue("writers", ";".join(sorted(symbol.sources)), subject,
+                                f"{found.message}; review the binding, or list `{entry}` in "
+                                f"[writers] review of {repo.CONFIG.as_posix()}"))
+    for entry in sorted(review - seen):
+        issues.append(Issue("writers", repo.CONFIG.as_posix(), entry,
+                            "the contradiction under review no longer reproduces; remove the "
+                            "entry"))
+    return issues
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
     "names": names_check,
     "references": references,
     "symbols": symbols,
+    "homology": homology,
     "links": links,
+    "image-bytes": image_bytes,
+    "statuses": statuses,
+    "writers": writers,
+}
+
+# Reports of a check that do not fail it.
+NOTES = {
+    "statuses": stale,
 }
 
 

@@ -18,16 +18,18 @@ from kb.answer import fit
 from kb.repo import KbError
 
 
-def _model_check(name):
+def _model_check(name, table=checks.CHECKS):
     def run(root):
         return [f"{issue.path}: {issue.subject}: {issue.message}"
-                for issue in checks.CHECKS[name](compile.cached(root))]
+                for issue in table[name](compile.cached(root))]
     return run
 
 
 # Checks active at the current transition stage, in execution order.
 CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS},
           "projections": project.check, "guard": guard.check}
+# Reports of a check that do not fail it.
+NOTES = {name: _model_check(name, checks.NOTES) for name in checks.NOTES}
 LOCATION_RE = re.compile(r"(?:(?P<layout>[0-9a-z]{2,8}):)?(?:0x)?(?P<address>[0-9a-fA-F]{1,8})")
 
 
@@ -99,6 +101,8 @@ def command_check(args, root=repo.ROOT):
         failures = CHECKS[name](root)
         for failure in failures:
             print(f"{name}: {failure}")
+        for note in NOTES[name](root) if name in NOTES else ():
+            print(f"{name}: note: {note}")
         print(f"check {name}: {'FAIL ' + str(len(failures)) if failures else 'PASS'}")
         failed += len(failures)
     return 1 if failed else 0

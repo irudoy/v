@@ -131,3 +131,16 @@ unit = ["cm2", "deg", "degBTDC", "degC", "degCA", "g/s", "ms", "Nm", "percent", 
 
 [names]
 attempts = 1000
+
+# Homology matchers (tools/kb/SPEC.md, section 7.6): the least number of equal
+# masked instruction words of a region that matches.
+[match]
+words = 12
+
+# Contradictions of the writer gate that await review, each the symbol and the
+# store site on its layout. The gate fails on every other contradiction and on
+# an entry that no longer reproduces.
+[writers]
+review = [
+    "ascd_state/ram/jk78c jk78c:0009e026",
+]

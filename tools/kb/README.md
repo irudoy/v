@@ -35,9 +35,11 @@ uv run kb fmt                        # rewrite the entity files of kb/ in canoni
 
 - `kb check` runs the active checks, which `make check` includes: `l0`; the
   model checks `schema`, `canonical`, `names`, `references`, `symbols`, and
-  `links` over the entity files and the compiled registries; and
-  `projections` and `guard`
+  `links` over the entity files and the compiled registries; the matcher
+  checks `homology`, `image-bytes`, `statuses`, and `writers`
+  ([Matchers](#matchers)); and `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
+  A check may print notes, lines marked `note:` that do not fail it.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -172,6 +174,39 @@ dependency token becomes a link stored at the end its type names or `trace`
 evidence, and a token target without a registry row becomes an implicit
 symbol of the kind its role and address admit.
 
+## Matchers
+
+`kb.match` decides evidence on L0 and the images of each layout (sections
+7.3, 7.6, and 13 of the specification). The code of a layout is the masked
+instruction word at every instruction address of its L0 bodies, where masking
+clears the displacements of PC-relative loads, `mova`, branches, and GBR
+accesses. A region is a maximal run of equal masked words that aligns an
+instruction of one layout with one of another; an instruction aligns when a
+region of at least `[match] words` occurs once on each layout and no other
+region of the instruction is as long. Aligned instructions relate two
+addresses in the same way when they load, store, or update them through a
+pool literal, load them as a literal, call them, or pass them as one operand
+of a census call.
+
+| Check | Scope |
+|---|---|
+| `homology` | The symbols of the entity files of `kb/`: each identity and homology evidence item that L0 or the images decide holds, and a chain of verified evidence reaches an anchor |
+| `image-bytes` | Hook `target` words, the sources of DID entries, and each typed `rom-bytes` and `did-table` item, on every image the symbol applies to |
+| `statuses` | The statuses of the entity files: `absent` carries evidence, and `unresolved` states its search; a search older than the L0 of its layout prints a note |
+| `writers` | Every `ram` and `reg` meaning: a store of one symbol that aligns on the layout of another symbol aligns with a store of that symbol |
+
+`[writers] review` of `config.toml` lists the contradictions of the writer
+gate that await review, each as the symbol and the store site on its layout.
+The gate fails on every other contradiction and on an entry that no longer
+reproduces.
+
+`match.search` lists the candidates for the counterpart of a symbol on
+another layout, each with the evidence item that states it and the number of
+aligned sites and function pairs that vote for it. `match.code` keeps the
+index of a layout in `.kb/cache/match/<layout>.pickle`, keyed by the L0
+manifest, the image digest, the census plan, `[match] words`, and the sources
+of the matcher and the derivations; a rebuild takes a few seconds per layout.
+
 ## Graph
 
 `kb sync` loads the model into the Memgraph instance of the working tree.
@@ -263,6 +298,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.sh2` | SH-2E instruction decoding for the derivations |
 | `kb.derive` | Function bodies and literal pairing over L0 and the layout image |
 | `kb.sites` | Reproduction of the `site:` evidence of the ledgers from L0 |
+| `kb.match` | Masked matching, evidence verification, grounding, counterpart search, and the writer gate over L0 |
 | `kb.cli` | The command line |
 
 Literal pairing propagates register values through the control flow of each
@@ -287,7 +323,8 @@ stages, and baselines, and the current stage.
 instance limits and ports, the lock timeout, the output budgets of the
 commands, the address spaces of each MCU, the manual prefixes of legacy
 `spec:` tokens, the axis quantities, the attempt limit of generated names,
-and the trees and git allow list of the access guard. `projections.toml`
+the trees and git allow list of the access guard, the region length of the
+matchers, and the writer contradictions under review. `projections.toml`
 registers the generated files. `domain-words.txt` lists the words a generated name must
 not contain, beside the words of semantic names, signal labels, and editor
 table names. `.kb/` holds the per-worktree state and is

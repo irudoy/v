@@ -540,7 +540,7 @@ A link is stored at one end and read in both directions.
 | `at` | A location, `<layout>:<address>` |
 | `to` | A reference |
 | `relies` | [Levels](#71-levels) |
-| `count` | Number of matches |
+| `count` | Number of matches: for `masked-match` and `function-match`, the occurrences of the words or of the hash on the layout of `at` times those on the layout of `to`; for `call-ordinal`, the addresses that the call at `to` relates in the way that the call at `at` relates the symbol |
 | `value` | The observed value: bytes, a literal, an ordinal, a hash class, or an equation |
 | `sha256` | Digest of compared bytes |
 | `mode` | For `indirect`: `pointer`, `gbr`, `window`, `block-copy`, or `base` |
@@ -551,13 +551,13 @@ A link is stored at one end and read in both directions.
 | Kind | Content | Required keys | Grounds up to |
 |---|---|---|---|
 | `l0` | An access, call, or reference of L0 at `at` | `at` | `code` |
-| `literal-pool` | The pool literal at `at` and the literal at the location `to`, at the same ordinal of homologous code; `value` is the literal at `at` | `at`, `to`, `value` | `code` |
-| `masked-match` | Instruction words at `at` equal to those at the location `to` with PC-relative displacements masked; `value` is the word count | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
-| `function-match` | Equal exact, mnemonic, or shape hash of two functions; `value` names the hash class, and `count` is the number of functions of the layout with that hash | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
-| `call-ordinal` | The call or the call operand at the same ordinal of homologous functions; `count` is the number of candidates at that ordinal | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
-| `interp-contract` | The same interpolation contract and operands | `to`, `key` | `code` |
+| `literal-pool` | The pool literal at `at`, which is `value` and the address of the symbol, and the literal at the location `to`, the address of the counterpart; a load of the pool at `at` aligns with a load of the pool at `to`, or has the ordinal of such a load in a homologous function | `at`, `to`, `value` | `code` |
+| `masked-match` | The `value` masked instruction words from `at` equal those from the location `to`; `value` reaches `[match] words` of `tools/kb/config.toml`, and an instruction at one offset of both runs relates the symbol and its counterpart | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
+| `function-match` | Equal exact, mnemonic, or shape hash of the L0 functions at `at` and `to`; `value` names the hash class. The functions are the symbol and its counterpart, or, for a datum, have one length and an instruction pair at one ordinal that relates the symbol and its counterpart | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
+| `call-ordinal` | The calls at `at` and at the location `to` are the call `value` of homologous functions and relate the symbol and its counterpart in the same way | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
+| `interp-contract` | Two functions with one interpolation contract: `key` is the entry of the counterpart, and the `[interp]` keys `access`, `offset`, `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` agree | `to`, `key` | `code` |
 | `did-table` | The DID's slot in the service pointer table of the image | `at`, `value` | `code` |
-| `byte-identical` | Identical bytes over a range | `at`, `to`, `sha256` | `code` |
+| `byte-identical` | Identical bytes over a range: the exact hash of two functions, or the storage of two data symbols on every image | `at`, `to`, `sha256` | `code` |
 | `rom-bytes` | Bytes of every image of the layout at `at` | `at`, `value` | `code` |
 | `trace` | The claim follows through the contract or behavior of a function | `to`, `relies` | `code` |
 | `indirect` | An access that L0 does not attribute directly | `at`, `mode` | `code` |
@@ -572,6 +572,18 @@ A link is stored at one end and read in both directions.
 
 - Evidence of one layout names locations of that layout; homology evidence
   names the other symbol in `to`.
+- Masking clears the operand bits that encode an address the layouts place
+  differently: the displacements of PC-relative loads, of `mova`, of
+  branches, and of GBR accesses. A region is a maximal run of equal masked
+  words through an instruction of each layout; it matches when its words
+  occur once on each layout, and an instruction aligns when one region of
+  at least `[match] words` matches and no other region of it is as long.
+- Two instructions relate the symbol and its counterpart in the same way when
+  they touch them as the address of a load, a store, or an update through a
+  base register that holds a pool literal on every path, as the literal of a
+  PC-relative load, as the target of a call, or as one operand of a census
+  call. Homologous functions are the symbols of one `fn` meaning or two
+  functions whose hash of one class is unique on both layouts.
 - `kb check` evaluates every `arithmetic` equation and compares every
   `rom-bytes` value with the images of the layout.
 
@@ -1207,12 +1219,13 @@ until the stage that replaces them.
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn | 2 |
 | `references` | Every stored reference and every `[[...]]` citation resolves, and none uses a former name | 2 |
 | `symbols` | At most one symbol per layout, kind, and address; at most one symbol or status per meaning and layout; every address lies in the address space of its kind on the MCU of the layout; every `fn` symbol is a function entry of L0 | 2 |
-| `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)) | 3 |
+| `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)) | 3 |
 | `levels` | No declared level exceeds its effective level; `code` and `silicon` claims carry grounding evidence; every `hardware` key names a passing record; every `arithmetic` equation holds | Reported by `kb audit` from 2; a gate from 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source | Fields from 4; symbols from 8 |
 | `image-bytes` | `rom-bytes` values, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
+| `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
 | `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
 | `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
 | `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol, or a status and an entry in the target's `unavailable` list | 4 |
@@ -1223,8 +1236,13 @@ A write command runs the `schema`, `references`, `names`, `symbols`, and
 `canonical` checks on its result and the other active checks on the entities
 it touches ([Write commands](#123-write-commands)).
 
+The `homology` and `statuses` checks cover the symbols and statuses that the
+entity files of `kb/` state, which the conversion of each registry extends.
+The `image-bytes` and `writers` checks cover the whole model.
+
 An evidence item that an adapter maps from a legacy token keeps the token in
-`legacy`. The `schema` check does not require the keys of its kind; `kb audit`
+`legacy`. The `schema` check does not require the keys of its kind, and the
+`image-bytes` check does not compare it with the images; `kb audit`
 lists every such item that lacks them, under each registry that states it,
 until the conversion of that registry types it.
 
