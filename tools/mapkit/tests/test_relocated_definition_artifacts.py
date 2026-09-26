@@ -41,6 +41,8 @@ JK78C_MAP_ADDRESSES = {
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x137E8",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate": "0x137F0",
     "Rolling Launch Minimum Engine Speed": "0x1E96A",
+    "Target Mixture - Main": "0x0A3CA",
+    "Target Mixture Multiplier - High-Detonation State": "0x13AD8",
 }
 
 ONE_ND_MAP_ADDRESSES = {
@@ -168,8 +170,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 198
-    assert len(tables) == 198
+    assert len(target.findall("table")) == 200
+    assert len(tables) == 200
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
     assert tables["Map 1 - Ignition Timing Surface - Hot Coolant"].get(
@@ -217,7 +219,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 117
+    assert len(root.findall("XDFTABLE")) == 119
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {

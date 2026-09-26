@@ -59,11 +59,12 @@ def test_all_models_build_with_exact_registered_identities():
     # The durable claim is that JK78C carries structure and no review.
     assert by_id["JK78C"]["reviewedFunctions"] == 0
     assert by_id["JK78C"]["structuralFunctions"] > 0
-    # 86 projected and fuel-cut maps, the target-native VVEL tables (twenty-one
-    # on JK78C, eighteen on the 1ND layout), the ten slot tables of the two
-    # executed 16x16 ignition surfaces, and the twenty slot tables of the four
-    # 8x8 state-code ignition surfaces of the 1ND layout.
-    assert by_id["JK78C"]["counts"]["maps"] == 117
+    # The projected and fuel-cut maps (88 on JK78C, 86 on the 1ND layout), the
+    # target-native VVEL tables (twenty-one on JK78C, eighteen on the 1ND
+    # layout), the ten slot tables of the two executed 16x16 ignition surfaces,
+    # and the twenty slot tables of the four 8x8 state-code ignition surfaces of
+    # the 1ND layout.
+    assert by_id["JK78C"]["counts"]["maps"] == 119
     for rom_id in ("1ND0A", "1ND3B"):
         assert by_id[rom_id]["counts"]["maps"] == 134
 

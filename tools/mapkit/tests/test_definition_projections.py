@@ -37,6 +37,9 @@ VQ37_UNSUPPORTED = frozenset({
     "00009a1a",
     "00009b1a",
 })
+# The JK78C mixture stage 00071dfa repeats the source stage; the 1ND and 1ME3B
+# exports have no candidate for it.
+JK78C_UNSUPPORTED = VQ37_UNSUPPORTED - {"0000a9aa", "00012552"}
 
 
 def test_registry_binds_relocated_targets_without_a_default():
@@ -48,9 +51,9 @@ def test_registry_binds_relocated_targets_without_a_default():
         assert projection.source == "JK08A"
     assert projections["JK00C"].unsupported_maps == SH7058_HR_UNSUPPORTED
     assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
-    for rom in ("JK78C", "1ND0A", "1ND3B"):
+    assert projections["JK78C"].unsupported_maps == JK78C_UNSUPPORTED
+    for rom in ("1ND0A", "1ND3B", "1ME3B"):
         assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
-    assert projections["1ME3B"].unsupported_maps == VQ37_UNSUPPORTED
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():
@@ -65,8 +68,8 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["map_families"] == 13
         assert values["native_maps"] == 0
         assert values["rolling_configuration"] == 0xE0660
-    assert stats["JK78C"]["mapped"] == 40
-    assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
+    assert stats["JK78C"]["mapped"] == 45
+    assert stats["JK78C"]["unsupported"] == len(JK78C_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14

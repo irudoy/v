@@ -1,6 +1,9 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
 Axis,00011ebe,000135b8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the load-axis operand and 16-point geometry
 Axis,00011ece,000135c8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the RPM-axis operand and 16-point geometry
+Axis,00011ac7,000132b6,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa passes this load axis at the homologous lookup of map 0000a3ca; its input ffff1032 is the copy of ffff1042 that scheduler 00020f1a makes at 00020f84, and producer 0004068c stores ffff1042 as min(255, BFS ffff102e * 128 / ROM16[0x91ee]), the Q7 normalized load that the source forms from ffff1026 and ROM16[0x9534]"
+Axis,00011cc0,0001340f,,homologous-call,1,instruction-aligned-homolog,target mixture stage 00071dfa passes this RPM axis with RPM word ffff11ac at the homologous lookup of map 0000a3ca
+Axis,00011cd8,00013417,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa passes this RPM axis with RPM/50 snapshot ffff119d at the homologous multiplier lookup; scheduler 00020f1a copies it from ffff11d1, which 0003b87e stores as min(255, ffff11d4 >> 5) like source byte ffff11e6"
 Axis,00011cf0,00013af8,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point X axis
 Axis,00011d4c,00013b18,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point Y axis
 Axis,00011d0c,00013463,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
@@ -24,7 +27,7 @@ Map,0000991a,,,unsupported,0,stock-inert-path,"the homologous surface 000095ca b
 Map,00009a1a,,,unsupported,0,stock-inert-path,"the homologous surface 000096ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000097ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
 Map,00009b1a,,,unsupported,0,stock-inert-path,"the homologous surface 000097ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000096ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
 Map,0000a29a,00009eba,default,homologous-call,1,mutual-best-accessor-pair,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
-Map,0000a9aa,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and neither the map nor its axes 00011cc0 and 00011ac7 recur as exact storage in the target image"
+Map,0000a9aa,0000a3ca,,homologous-call,1,instruction-aligned-homolog,target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and passes this literal with RPM word ffff11ac and normalized-load snapshot ffff1032 to the homologous explicit-axis wrapper 00027f58
 Map,0000ab4a,,,unsupported,0,removed-subsystem,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
 Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
 Map,0000b2fa,,,unsupported,0,removed-subsystem,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
@@ -38,7 +41,7 @@ Map,00012196,000137e0,,homologous-call,1,instruction-aligned-homolog,homologous 
 Map,000121a6,000137f8,,homologous-call,1,instruction-aligned-homolog,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
 Map,0001219e,000137e8,default,homologous-call,1,instruction-aligned-homolog,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
 Map,000124d2,00013a70,,homologous-call,1,unique-same-contract-accessor,unique state-machine accessor preserves the lookup role and geometry
-Map,00012552,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and the multiplier does not recur as exact storage in the target image"
+Map,00012552,00013ad8,,homologous-call,1,instruction-aligned-homolog,"target mixture stage 00071dfa repeats source stage 0005594a instruction for instruction and, while bit 6 of ffff23c6 selects the high-detonation surface, passes this multiplier with RPM/50 snapshot ffff119d to the homologous wrapper 0002829c"
 Map,000126e4,00013c5a,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
 Map,00012718,00013c86,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
 Map,00012818,00013d46,,homologous-call,1,unique-same-contract-accessor;coordinator-call-order,unique accessor and coordinator preserve lookup role and order

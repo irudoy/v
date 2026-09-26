@@ -37,7 +37,7 @@ ROM_BINDINGS = {
     "JK03A": ("exact", 0, 0),
     "JK03B": ("exact", 0, 0),
     "JK08A": ("exact", 0, 0),
-    "JK78C": ("reference", 40, 18),
+    "JK78C": ("reference", 45, 16),
 }
 
 
