@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+import re
 import tomllib
 
 import pytest
@@ -54,6 +55,33 @@ def test_registry_binds_relocated_targets_without_a_default():
     assert projections["JK78C"].unsupported_maps == JK78C_UNSUPPORTED
     for rom in ("1ND0A", "1ND3B", "1ME3B"):
         assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
+
+
+README = DEFS / "README.md"
+README_ROWS = re.compile(
+    r"binds (\d+) source maps and (\d+) axes to (\S+) storage and records "
+    r"(\d+) source maps as unsupported"
+)
+
+
+def test_readme_states_the_rows_of_the_vq37_registries():
+    paragraphs = [
+        " ".join(block.split())
+        for block in README.read_text(encoding="utf-8").split("\n\n")
+    ]
+    for rom, layout in (("JK78C", "JK78C"), ("1ND0A", "1ND"), ("1ME3B", "1ME3B")):
+        projection = definition_projections.projection_for_rom(rom)
+        opening = f"`{projection.address_path.name}`"
+        paragraph = next(text for text in paragraphs if text.startswith(opening))
+        found = README_ROWS.search(paragraph)
+        assert found is not None, opening
+        mapped = [binding for binding in projection.bindings if binding.mapped]
+        assert found.groups() == (
+            str(sum(binding.entity == "Map" for binding in mapped)),
+            str(sum(binding.entity == "Axis" for binding in mapped)),
+            layout,
+            str(len(projection.unsupported_maps)),
+        )
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():

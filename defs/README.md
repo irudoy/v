@@ -155,14 +155,13 @@ its symbol, the accessor bindings from the evidence of its `reader` links,
 its axes from its `axis` links, and the digest of its stock values; an absent
 role is an `absent` status of its meaning on the layout.
 
-`JK08A-JK78C.definition-addresses.csv` binds 27 source maps to JK78C storage
-and records eighteen source maps as unsupported. The unsupported entries cover
-removed dispatcher slots, the three exhaust-cam surfaces and the four
-standstill exhaust-VTC override constants of the removed exhaust valve timing
-subsystem, target algorithms whose table geometry differs, and the three
+`JK08A-JK78C.definition-addresses.csv` binds 29 source maps and 16 axes to
+JK78C storage and records 16 source maps as unsupported. The unsupported
+entries cover removed dispatcher slots, the three exhaust-cam surfaces and the
+four standstill exhaust-VTC override constants of the removed exhaust valve
+timing subsystem, target algorithms whose table geometry differs, and the three
 canonical ignition surfaces, whose homologs sit in the coordinator half that
-the stock configuration leaves unexecuted. Thirteen reviewed axis
-bindings complete the emitted geometry. The JK78C registry enables native
+the stock configuration leaves unexecuted. The JK78C registry enables native
 RomRaider checksum handling, fourteen-family target-specific Map Switching,
 Rolling Launch, and the CAN telemetry startup switch from the validated runtime
 profile. The target-native fuel-cut projection adds the adjacent activation and
@@ -187,9 +186,11 @@ because the low seven bits hold the timing field. The
 XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
-`JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
-set to the SH7059 1ND layout. It records 27 target maps, thirteen axes, and
-eighteen explicitly unsupported source maps. The projection is established from
+`JK08A-1ND.definition-addresses.csv` projects the reviewed VQ37 semantic set
+to the SH7059 1ND layout. It binds 27 source maps and 13 axes to 1ND storage
+and records 18 source maps as unsupported: the unsupported maps of JK78C, the
+target mixture map, and its high-detonation multiplier, whose mixture stage
+has no candidate in the 1ND0A export. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
@@ -222,15 +223,15 @@ canonical trio, `0x009880`, `0x009980`, and `0x009A80`, hold three
 byte-identical copies in the gated half that the stock byte leaves unexecuted;
 the trio is recorded as unsupported.
 
-`JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
-semantic set to the fused-library 1ME3B image. It records 27 target maps,
-thirteen axes, and eighteen explicitly unsupported source maps. No code relocates
+`JK08A-1ME3B.definition-addresses.csv` projects the reviewed 1ND semantic set
+to the fused-library 1ME3B image. It binds 27 source maps and 13 axes to 1ME3B
+storage and records 18 source maps as unsupported. No code relocates
 from any modelled ROM, so every row is established through the 1ND0A
 structural export: exact-bytes or normalized-shape function pairs that read
 the target address at the same call ordinal, target functions that reproduce
 the 1ND0A reader's operand set, selector arms, and call order, the fused leaf
 whose contract equals the 1ND0A wrapper, exact target storage, and target
-literals. The unsupported rows are the eighteen rows of JK78C and 1ND; the three
+literals. The unsupported rows are the eighteen rows of 1ND; the three
 canonical ignition surfaces among them have no homolog at all: the target ignition coordinator `0x0797CC` carries only its
 mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with

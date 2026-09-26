@@ -77,9 +77,9 @@ layout is registered as `sh7059_1me3b`, which projects to a single `alt2`
 handler. Its calibration access library is registered in
 `../defs/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
 457 axes at candidate confidence. `../defs/JK08A-1ME3B.definition-addresses.csv`
-binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
-through `1ND0A` structural correspondence and records the same eighteen source
-maps as unsupported as JK78C and 1ND; the three canonical ignition surfaces
+binds the reviewed `1ND` semantic set to those tables and axes through `1ND0A`
+structural correspondence and records the unsupported source maps of 1ND, as
+`../defs/README.md` states; the three canonical ignition surfaces
 among them have no homolog, because the `1ME3B` ignition coordinator does not
 carry the gated stock-inert selector path. `../defs/vq37-native-tables.toml` registers thirty-one further tables
 and twenty-four axes at code confidence: the two alternate selector arms, the
