@@ -125,11 +125,11 @@ two-byte-aligned stock throttle container with `MOV.W`; using the canonical
 Telemetry uses stock-inactive mailbox 24 and a completion ISR that handles that
 mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR
-boundary. JK00C and JK00D telemetry binds 58 of the 60 ECU-RAM fields. The
-requested-torque column coordinate and the Fuel Compensation Main column
-coordinate are encoded from cleared reserved RAM and remain identified as
-unavailable in metadata, because no target homolog of their JK08A producers
-`0x073948` and `0x03B498` is traced.
+boundary. JK00C and JK00D telemetry binds 60 of the 60 ECU-RAM fields. The
+target producers `0x03C244` and `0x0760E4` align with the JK08A producers
+`0x03B498` and `0x073948` of the Fuel Compensation Main and requested-torque
+column coordinates and store them to `0xFFFF117C` and to `0xFFFF19E6` on JK00C
+or `0xFFFF19EC` on JK00D.
 
 The 1ND runtime uses a uniform ROM relocation of `0x60000` and a RAM relocation
 of `-0x5100`, with explicit nonuniform SH7059 stock hooks and application-RAM
@@ -310,11 +310,15 @@ equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
 belong to no family and pass through the adapter under the same validator
 rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
 path and the gated half only, so every call through them passes through. Custom CAN telemetry
-binds 56 available schema fields. The unavailable signed Q8 knock timing field,
-the normalized load snapshot, whose JK08A producer has no match in the image,
-and the requested-torque and Fuel Compensation Main column coordinates, whose
-target homologs are not traced, are encoded from cleared reserved RAM and
-remain identified as unavailable in metadata. The profile also binds both SUM16 regions and both runtime SUM/XOR
+binds 58 available schema fields. The unavailable signed Q8 knock timing field
+and the Fuel Compensation Main column coordinate are encoded from cleared
+reserved RAM and remain identified as unavailable in metadata: the target Fuel
+Compensation surfaces take their column from the high byte of `0xFFFF22F8`,
+the scheduler snapshot of `0xFFFF238A`, whose producer `0x04726C` is not traced
+to the JK08A coordinate. The normalized load snapshot `0xFFFF1032` and the
+requested-torque column coordinate `0xFFFF1976` come from the target producers
+`0x04068C` and `0x093164`, which compute the values of the JK08A producers
+`0x03BD1C` and `0x073948`. The profile also binds both SUM16 regions and both runtime SUM/XOR
 regions to the independently reproduced stock checksum values.
 
 The complete flash-envelope reference audit found four erased stock targets

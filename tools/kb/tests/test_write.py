@@ -117,12 +117,12 @@ class PlanTest(unittest.TestCase):
 
     def test_a_status_of_a_registry_refuses_a_symbol_on_its_layout(self):
         meaning = next(meaning for meaning in self.base.meanings
-                       if meaning.key == "alpha_n_flow/ram")
-        self.assertEqual(meaning.statuses["jk00c"].state, "unresolved")
-        message = self.refused(bind("alpha_n_flow/ram", "jk00c:ffff2000", evidence=[
+                       if meaning.key == "normalized_load/ram")
+        self.assertEqual(meaning.statuses["1nd"].state, "unresolved")
+        message = self.refused(bind("normalized_load/ram", "1nd:fffec000", evidence=[
             {"kind": "registry", "path": "patches/rom-address-profiles.toml"}]))
-        self.assertIn("symbols: patches/rom-address-profiles.toml: alpha_n_flow/ram: status "
-                      "unresolved on jk00c, where the meaning has jk00c-ffff2000/ram", message)
+        self.assertIn("symbols: patches/1nd-runtime-correspondence.csv: normalized_load/ram: "
+                      "status unresolved on 1nd, where the meaning has 1nd-fffec000/ram", message)
 
     def test_operations_refuse_what_the_model_contradicts(self):
         self.assertIn("finds jk00c:000142d3 on jk00c, not jk00c:000142d4",

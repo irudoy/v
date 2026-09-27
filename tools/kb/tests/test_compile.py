@@ -57,7 +57,8 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual((meaning.key, meaning.tier), ("normalized_load/ram", "field"))
         self.assertEqual(meaning.symbols["7mfk"].address, 0xFFFF102C)
         self.assertEqual({layout: status.state for layout, status in meaning.statuses.items()},
-                         {"1nd": "unresolved", "1me3b": "unresolved", "jk78c": "unresolved"})
+                         {"1nd": "unresolved", "1me3b": "unresolved"})
+        self.assertEqual(meaning.symbols["jk78c"].address, 0xFFFF1032)
 
     def test_an_unavailable_field_states_absent_or_unresolved_by_its_evidence(self):
         knock = model().meaning_of(SymbolKey("7mfk", "ram", 0xFFFF121A))

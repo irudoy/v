@@ -206,8 +206,8 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
         ),
         (
             "patches/rom-builder.md",
-            "JK00C and JK00D telemetry binds 58 of the 60",
             "JK00C and JK00D telemetry binds 60 of the 60",
+            "JK00C and JK00D telemetry binds 58 of the 60",
         ),
         (
             "patches/can-telemetry.md",

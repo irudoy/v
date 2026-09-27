@@ -513,8 +513,7 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
-telemetry_unavailable = ["alpha_n_flow_raw", "request_flow_raw"]
-telemetry_zero_source = 0xFFFF61E0
+telemetry_unavailable = []
 
 [profile.JK00C.capabilities]
 map_switching = true
@@ -642,6 +641,7 @@ stock_isr_helper = 0x000CE646
 stock_sle1_isr = 0x000CF3E8
 
 [profile.JK00C.telemetry_sources]
+request_flow_raw = 0xFFFF19E6
 final_timing_raw = 0xFFFF11E4
 apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF2354
@@ -687,6 +687,7 @@ intake_cvtc_duty_b1_raw = 0xFFFF24C4
 intake_cvtc_duty_b2_raw = 0xFFFF24C5
 ltft_b1_raw = 0xFFFF2376
 ltft_b2_raw = 0xFFFF2378
+alpha_n_flow_raw = 0xFFFF117C
 battery_voltage_raw = 0xFFFF1193
 ltft_learned_b1_raw = 0xFFFF237A
 ltft_adjustment_b1_raw = 0xFFFF56C0
@@ -713,7 +714,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recove
 maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both CVTC target families remain explicit."
 rolling = "Exact JK00D-to-JK00C functions, stock scheduler and UDS tables, and direct RAM references bind all Rolling Launch addresses."
 can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources."
-telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind 58 of the 60 schema-2 ECU sources; the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8."
+telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind all 60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8. The target producer at 0x0003C244 aligns with the JK08A producer at 0x0003B498 and stores the Fuel Compensation Main column coordinate 0xFFFF117C at the site of its store, and the target stage at 0x000760E4 aligns with the JK08A stage at 0x00073948 and stores the requested-torque column coordinate 0xFFFF19E6 at the site of its store. Every other JK08A access of either coordinate aligns with a target access of the same cell, and the third load of the requested-torque coordinator lies at function offset 0x21C in both images."
 
 [profile.JK00D]
 family = "sh7058_8mfk"
@@ -731,8 +732,7 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
-telemetry_unavailable = ["alpha_n_flow_raw", "request_flow_raw"]
-telemetry_zero_source = 0xFFFF61E0
+telemetry_unavailable = []
 
 [profile.JK00D.capabilities]
 map_switching = true
@@ -860,6 +860,7 @@ stock_isr_helper = 0x000CED82
 stock_sle1_isr = 0x000CFB24
 
 [profile.JK00D.telemetry_sources]
+request_flow_raw = 0xFFFF19EC
 final_timing_raw = 0xFFFF11E4
 apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF235C
@@ -905,6 +906,7 @@ intake_cvtc_duty_b1_raw = 0xFFFF24CC
 intake_cvtc_duty_b2_raw = 0xFFFF24CD
 ltft_b1_raw = 0xFFFF237E
 ltft_b2_raw = 0xFFFF2380
+alpha_n_flow_raw = 0xFFFF117C
 battery_voltage_raw = 0xFFFF1193
 ltft_learned_b1_raw = 0xFFFF2382
 ltft_adjustment_b1_raw = 0xFFFF56D4
@@ -931,7 +933,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recove
 maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the intake-cam and exhaust-cam target families switch independently."
 rolling = "Scheduler, startup, ignition, selector, diagnostic pointer, and direct RAM bindings are recovered from exact or normalized homologs and target stock tables."
 can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 24 is stock inactive while mailbox 26 is occupied."
-telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind 58 of the 60 schema-2 ECU sources; the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095F6."
+telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind all 60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095F6. The target producer at 0x0003C244 aligns with the JK08A producer at 0x0003B498 and stores the Fuel Compensation Main column coordinate 0xFFFF117C at the site of its store, and the target stage at 0x000760E4 aligns with the JK08A stage at 0x00073948 and stores the requested-torque column coordinate 0xFFFF19EC at the site of its store. Every other JK08A access of either coordinate aligns with a target access of the same cell, and the third load of the requested-torque coordinator lies at function offset 0x21C in both images."
 
 [profile.JK78C]
 family = "sh7058_jk78c"
@@ -949,12 +951,7 @@ injected_ram_start = 0xFFFF0C00
 injected_ram_end = 0xFFFF0F00
 map_variant = "sh7058-jk78"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = [
-    "alpha_n_flow_raw",
-    "knock_timing_state_raw",
-    "normalized_load_raw",
-    "request_flow_raw",
-]
+telemetry_unavailable = ["alpha_n_flow_raw", "knock_timing_state_raw"]
 telemetry_zero_source = 0xFFFF0DE0
 
 [profile.JK78C.capabilities]
@@ -1087,12 +1084,14 @@ occupied_mailbox_record_stock = 0x04000000
 stock_sle1_isr = 0x000F0410
 
 [profile.JK78C.telemetry_sources]
+request_flow_raw = 0xFFFF1976
 final_timing_raw = 0xFFFF1F45
 apc_command_raw = 0xFFFF11CF
 fuel_inhibit_mask = 0xFFFF223C
 maf_b1_raw = 0xFFFF1024
 maf_b2_raw = 0xFFFF1026
 maf_total_raw = 0xFFFF3A9A
+normalized_load_raw = 0xFFFF1032
 bfs_raw = 0xFFFF102E
 injection_0_raw = 0xFFFF231C
 injection_1_raw = 0xFFFF231E
@@ -1150,4 +1149,4 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recove
 maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "56 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, and the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
+telemetry = "58 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the Fuel Compensation Main column coordinate are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The target Fuel Compensation surfaces 0x00009EBA and 0x00009FBA take their column from the high byte of 0xFFFF22F8, the scheduler snapshot of 0xFFFF238A, whose producer at 0x0004726C is not traced to the JK08A coordinate; the homolog 0xFFFF115C of the JK08A producer at 0x0003B498 indexes the 4x4 surface 0x00009A1A. The producer at 0x0004068C stores min(255, floor(BFS * 128 / ROM16[0x000091EE])) to 0xFFFF1042, the ratio that the JK08A producer at 0x0003BD1C stores to 0xFFFF1048 with the reference ROM16[0x00009534], and the scheduler at 0x00020F84 copies 16 bytes from 0xFFFF1042 to the normalized load snapshot 0xFFFF1032 as the JK08A scheduler copies 0xFFFF1048 to 0xFFFF102C. The stage at 0x00093164 stores the requested-torque column coordinate 0xFFFF1976 with the operations and pool layout of the JK08A stage at 0x00073948 and passes it as the column of surface 0x0000FACE, whose column axis 0x0001552C is the homolog of JK08A axis 0x00014114."

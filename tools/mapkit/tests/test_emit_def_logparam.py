@@ -540,13 +540,19 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             definition_projections.unpublished_operands(
                 "JK00C", self.overrides
             ),
-            {"ffff1170", "ffff1980"},
+            set(),
         )
-        # Normalized load is unavailable on JK78C, so both operands declared
-        # for the engine load parameter lose it as well.
         self.assertEqual(
             definition_projections.unpublished_operands(
                 "JK78C", self.overrides
+            ),
+            {"ffff1170"},
+        )
+        # Normalized load is unavailable on 1ND0A, so both operands declared
+        # for the engine load parameter lose it as well.
+        self.assertEqual(
+            definition_projections.unpublished_operands(
+                "1ND0A", self.overrides
             ),
             {"ffff102c", "ffff15c4", "ffff1170", "ffff1980"},
         )
@@ -563,6 +569,7 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
 
     def test_no_projected_axis_names_an_unpublished_parameter(self):
         checked = 0
+        withheld = 0
         for rom, profile in sorted(self.profiles.items()):
             unavailable = set(profile.telemetry_unavailable)
             missing = {
@@ -577,10 +584,11 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
                 if element.get("logparam")
             }
             with self.subTest(rom=rom):
-                self.assertTrue(missing)
                 self.assertFalse(bound & missing)
             checked += 1
+            withheld += bool(missing)
         self.assertEqual(checked, 6)
+        self.assertEqual(withheld, 4)
 
 
 if __name__ == "__main__":
