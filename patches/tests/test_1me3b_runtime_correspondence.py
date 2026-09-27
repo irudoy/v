@@ -162,26 +162,12 @@ def test_1me3b_correspondence_targets_equal_the_address_profile():
         }
 
     map_hooks = {
-        (row["key"], row["variant"]): (
-            int(row["target"], 16), int(row["stock"], 16)
-        )
+        row["key"]: (int(row["target"], 16), int(row["stock"], 16))
         for row in rows
         if row["domain"] == "map_hook"
     }
-    variants = {
-        "ignition_lookup_1": ("ignition_lookup", "site_1"),
-        "ignition_lookup_2": ("ignition_lookup", "site_2"),
-        "fuel_compensation_lookup_startup": (
-            "fuel_compensation_lookup", "startup"
-        ),
-        "fuel_compensation_lookup_runtime": (
-            "fuel_compensation_lookup", "runtime"
-        ),
-        "idle_ignition_lookup_pool_1": ("idle_ignition_lookup", "pool_1"),
-        "idle_ignition_lookup_pool_2": ("idle_ignition_lookup", "pool_2"),
-    }
     assert map_hooks == {
-        variants.get(key, (key, "")): (hook.address, hook.stock)
+        key: (hook.address, hook.stock)
         for key, hook in profile.map_hook_by_key.items()
     }
 

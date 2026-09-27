@@ -2151,10 +2151,10 @@ symbols. The layouts stay the owners of the patch design.
 
 | Column | Target |
 |---|---|
-| `domain`, `key` | The entry: `telemetry` names a field source, `can_symbol`, `map_symbol`, and `rolling_symbol` a symbol meaning, `map_hook`, `can_hook`, and `rolling_hook` a `hook` meaning, `map` and `map_native` a `tbl` meaning, `allocation` a `runtime` allocation, and `capability` a feature target |
-| `source` | The `7mfk` symbol or allocation |
-| `target` | The symbol or allocation on the target layout |
-| `stock` | The `target` link of a hook, which the `image-bytes` check verifies |
+| `domain`, `key` | The entry: `telemetry` names a field source, `can_symbol`, `map_symbol`, and `rolling_symbol` a symbol meaning, or for `mailbox_index`, `mailbox_mask`, and `feedback_payload_offset` a key of the `can_telemetry` target, `map_hook`, `can_hook`, and `rolling_hook` a `hook` meaning, `map` and `map_native` a `tbl` meaning, `allocation` a `runtime` allocation, and `capability` a feature target |
+| `source` | The `7mfk` symbol, allocation, or key value |
+| `target` | The symbol, allocation, or key value on the target layout |
+| `stock` | The stock word at the target: the `target` link of a hook, or `rom-bytes` evidence of a record or literal symbol; the `image-bytes` check verifies both |
 | `variant` | A key of the feature target |
 | `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; the status of an `unsupported` `map` or `map_native` row gives way to a symbol that another row places in the meaning on the layout. For an allocation or a capability: the `note` of the target key |
 | `evidence` | The `note` of the typed evidence item |
@@ -2173,6 +2173,30 @@ symbol row from L0 with the matchers of the `homology` check: literal pools,
 call ordinals, function hashes, masked matches, and DID tables. A row that no
 matcher reproduces is listed and resolved by review before the conversion
 commit.
+
+Both registries have one canonical text, which `render_profiles` and
+`render_correspondence` of the adapter give and the projection of the stage
+reproduces byte for byte. The address profiles keep their header comment and
+`schema_version` first; the profiles follow their image ids, and a profile
+states its scalars in a fixed order and then its tables: `capabilities` in
+feature order, the keys of a symbol or hook table and the unavailable fields
+by name, `rolling_diagnostics` by DID number, `telemetry_sources` in the field
+order of `patches/can-telemetry-profile.toml`, and the storage tables and the
+`evidence` topics in a fixed order. Addresses, stock words, and non-negative
+deltas take eight uppercase hexadecimal digits, a negative delta is decimal,
+a DID takes four digits, and `rom_size`, the masks, `mailbox_index`, and
+`feedback_payload_offset` keep their own widths. A correspondence file states
+its domains in blocks, `map` and `map_native` in one: the `allocation` rows in
+the order of the `runtime` keys, the `telemetry` rows in field order, the
+`capability` rows in feature order, and the other rows by key and variant. A
+row takes the key of its entry in the address profile: a hook row the key of
+its hook table, with the `7mfk` hook word of its meaning as `source`, or none
+where only the target layout redirects the word, and no `variant`; a `map`
+row the key of `map_families`. The rows of one symbol state one text, that
+of its `telemetry` row, or else of its first row in feature order with the
+hook table before the symbol table; a hook row of a later feature and a role
+keep their own text, and a `map` or `map_native` row states the note of the
+definition row of its symbol.
 
 `defs/JK08A-*.definition-addresses.csv`:
 

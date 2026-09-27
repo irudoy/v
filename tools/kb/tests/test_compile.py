@@ -5,7 +5,7 @@ import unittest
 
 from kb import adapters, checks, compile, match, names, repo
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
-                         signals, telemetry)
+                         profiles, signals, telemetry)
 from kb.model import Builder, SymbolKey
 
 
@@ -143,6 +143,30 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(meaning.symbols["1nd"].address, 0x00009980)
         self.assertNotIn("1nd", meaning.statuses)
         self.assertEqual(meaning.statuses["1me3b"].state, "absent")
+
+    def test_the_registries_are_their_canonical_rendering(self):
+        fields = profiles.telemetry_fields(repo.ROOT)
+        text = (repo.ROOT / profiles.PROFILES).read_text(encoding="utf-8")
+        self.assertEqual(profiles.render_profiles(tomllib.loads(text), fields), text)
+        for path, rows in profiles.correspondence(repo.ROOT).values():
+            with self.subTest(path=path):
+                self.assertEqual(profiles.render_correspondence(rows, fields),
+                                 (repo.ROOT / path).read_text(encoding="utf-8"))
+
+    def test_a_hook_row_names_the_7mfk_word_of_its_meaning(self):
+        m = model()
+        for layout, (path, rows) in profiles.correspondence(repo.ROOT).items():
+            for row in rows:
+                if row["domain"] not in profiles.HOOK_DOMAINS:
+                    continue
+                with self.subTest(path=path, key=row["key"]):
+                    self.assertFalse(row["variant"])
+                    target = m.meaning_of(SymbolKey(layout, "hook", int(row["target"], 16)))
+                    if row["source"]:
+                        self.assertIs(target, m.meaning_of(
+                            SymbolKey("7mfk", "hook", int(row["source"], 16))))
+                    else:
+                        self.assertNotIn("7mfk", target.symbols)
 
     def test_feature_targets_carry_hooks_allocations_and_status(self):
         m = model()

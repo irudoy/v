@@ -20,16 +20,22 @@
   same file places binds a role of its feature: the key and the symbol enter
   `roles` of the feature target of the layout, and neither the row nor the
   profile entry of the key on that layout joins a meaning.
+- `render_profiles` and `render_correspondence` give the canonical text of the
+  address profiles and of a correspondence file.
 """
 
 import ast
 from collections import defaultdict
 import csv
 from dataclasses import dataclass
+import io
 from pathlib import Path
 import re
 import tomllib
 
+from kb import store
+from kb.adapters import telemetry
+from kb.repo import KbError
 from kb.values import hexed
 
 PROFILES = Path("patches/rom-address-profiles.toml")
@@ -601,3 +607,163 @@ def relate(b, root):
                     f"stock {first.base:08x} is no ROM function, table, or constant")
             continue
         b.link(key, "target", to, first.src)
+
+
+# Rendering -----------------------------------------------------------------
+
+HEADER = (
+    "# Exact stock-address and runtime-allocation profiles for near-code ROMs.\n"
+    "#\n"
+    "# JK08A is an explicit coordinate source for the existing runtime layouts. It\n"
+    "# is not a default ROM selector. Every target profile names an exact stock ROM\n"
+    "# and all nonuniform stock addresses remain explicit below.\n")
+# Keys of a profile in the order of the file: the scalars, then the tables.
+SCALAR_ORDER = ("family", "layout_source", "inherits", "rom_size", "rom_delta", "ram_delta",
+                "free_rom_start", "free_rom_end", "injected_rom_start", "injected_rom_end",
+                "free_ram_start", "free_ram_end", "injected_ram_start", "injected_ram_end",
+                "map_variant", "telemetry_completion_variant", "telemetry_unavailable",
+                "telemetry_zero_source", "ascd_enabled_mask")
+TABLE_ORDER = ("capabilities", "map_families", "map_hooks", "map_symbols", "rolling_hooks",
+               "rolling_diagnostics", "rolling_symbols", "can_hooks", "can_symbols",
+               "telemetry_sources", "extra_cvtc_storage", "ignition_state_storage",
+               "ignition_unreferenced_routine", "evidence")
+# Tables whose keys sort by name; the storage tables keep the order of their keys.
+KEY_TABLES = ("map_families", "map_hooks", "map_symbols", "rolling_hooks", "rolling_symbols",
+              "can_hooks", "can_symbols")
+STORAGE_ORDER = ("adapter_start", "adapter_end", "pointer_table", "copies", "start", "end")
+# Numbers that are no 32-bit words; a negative delta is decimal, since TOML
+# has no signed hexadecimal integers.
+NUMBER_FORMAT = {"rom_size": "0x{:X}", "feedback_payload_offset": "0x{:X}",
+                 "ascd_enabled_mask": "0x{:02X}", "mailbox_mask": "0x{:04X}",
+                 "mailbox_index": "{}"}
+# Lists of names that sort by name.
+SORTED = ("telemetry_unavailable",)
+LINE = 79
+CSV_FIELDS = ("domain", "key", "source", "target", "stock", "variant", "status", "evidence")
+# Domains in the order of their blocks; `map_native` rows share the block of `map`.
+DOMAIN_ORDER = ("allocation", "map", "map_hook", "map_symbol", "rolling_hook",
+                "rolling_symbol", "can_hook", "can_symbol", "telemetry", "capability")
+BLOCK = {"map_native": "map"}
+
+
+def telemetry_fields(root):
+    """The `ecu_ram` fields of the CAN telemetry profile in its order: the
+    stream fields, then the fields of each context."""
+    document = tomllib.loads((root / telemetry.PROFILE).read_text(encoding="utf-8"))
+    fields = [*document.get("field", ()),
+              *(field for context in document.get("context", ())
+                for field in context.get("field", ()))]
+    return [field["name"] for field in fields if field.get("kind") == "ecu_ram"]
+
+
+def render_profiles(document, fields):
+    """The text of `patches/rom-address-profiles.toml` from its document: the
+    profiles by image id, the scalars and tables of a profile in the order of
+    the file, the keys of a symbol or hook table and the unavailable fields by
+    name, the diagnostics by DID number, and the telemetry sources in the
+    order of `fields`."""
+    blocks = [HEADER + f"\nschema_version = {document['schema_version']}"]
+    for rom in sorted(document.get("profile", {})):
+        profile = document["profile"][rom]
+        _known(profile, (*SCALAR_ORDER, *TABLE_ORDER), f"profile.{rom}")
+        lines = [f"[profile.{rom}]"]
+        for key in SCALAR_ORDER:
+            if key in profile:
+                value = profile[key]
+                lines += _assignment(key, sorted(value) if key in SORTED else value)
+        blocks.append("\n".join(lines))
+        for table in TABLE_ORDER:
+            if table in profile:
+                blocks += _table(f"profile.{rom}.{table}", table, profile[table], fields)
+    return "\n\n".join(blocks) + "\n"
+
+
+def _table(header, name, table, fields):
+    """The blocks of one table of a profile."""
+    if name == "capabilities":
+        order = [key for key in FEATURES if key in table]
+    elif name in KEY_TABLES:
+        order = sorted(table)
+    elif name == "rolling_diagnostics":
+        order = sorted(table, key=lambda key: (table[key][0], key))
+    elif name == "telemetry_sources":
+        _known(table, fields, header)
+        order = [key for key in fields if key in table]
+    elif name == "evidence":
+        _known(table, EVIDENCE, header)
+        order = [key for key in EVIDENCE if key in table]
+    else:
+        surfaces = sorted(key for key, value in table.items() if isinstance(value, dict))
+        _known(table, (*STORAGE_ORDER, *surfaces), header)
+        lines = [f"[{header}]"]
+        for key in STORAGE_ORDER:
+            if key in table:
+                lines += _assignment(key, table[key])
+        found = ["\n".join(lines)]
+        for surface in surfaces:
+            found += _table(f"{header}.{surface}", "storage", table[surface], fields)
+        return found
+    lines = [f"[{header}]"]
+    for key in order:
+        value = table[key]
+        if name == "rolling_diagnostics":
+            did, pointer, target, width = value
+            lines.append(f"{key} = [0x{did:04X}, 0x{pointer:08X}, 0x{target:08X}, {width}]")
+        else:
+            lines += _assignment(key, value)
+    return ["\n".join(lines)]
+
+
+def _assignment(key, value):
+    if isinstance(value, bool):
+        return [f"{key} = {'true' if value else 'false'}"]
+    if isinstance(value, str):
+        return [f'{key} = "{store.escape(value)}"']
+    if isinstance(value, int):
+        return [f"{key} = {_number(key, value)}"]
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        items = [f'"{store.escape(item)}"' for item in value]
+        inline = f"{key} = [{', '.join(items)}]"
+        if len(inline) <= LINE:
+            return [inline]
+        return [f"{key} = ["] + [f"    {item}," for item in items] + ["]"]
+    if isinstance(value, list) and all(isinstance(item, int) for item in value):
+        return [f"{key} = [{', '.join(f'0x{item:08X}' for item in value)}]"]
+    raise KbError(f"{key}: no rendering of {value!r}", code=3)
+
+
+def _number(key, value):
+    if value < 0:
+        return str(value)
+    return NUMBER_FORMAT.get(key, "0x{:08X}").format(value)
+
+
+def _known(table, order, subject):
+    unknown = sorted(set(table) - set(order))
+    if unknown:
+        raise KbError(f"{subject}: no rendering of {', '.join(unknown)}", code=3)
+
+
+def render_correspondence(rows, fields):
+    """The text of a correspondence file from its rows: the blocks of the
+    domains in order, the allocation rows in the order of the runtime keys,
+    the telemetry rows in the order of `fields`, the capability rows in the
+    order of the features, and the other rows by key and variant."""
+    orders = {"allocation": RUNTIME_KEYS, "telemetry": tuple(fields), "capability": FEATURES}
+
+    def order(row):
+        domain = row["domain"]
+        block = BLOCK.get(domain, domain)
+        if block not in DOMAIN_ORDER:
+            raise KbError(f"{domain}:{row['key']}: an unknown domain", code=3)
+        if domain in orders:
+            if row["key"] not in orders[domain]:
+                raise KbError(f"{domain}:{row['key']}: an unknown key", code=3)
+            return DOMAIN_ORDER.index(block), orders[domain].index(row["key"]), ""
+        return DOMAIN_ORDER.index(block), row["key"], row["variant"]
+
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow(CSV_FIELDS)
+    writer.writerows([row[field] for field in CSV_FIELDS] for row in sorted(rows, key=order))
+    return out.getvalue()
