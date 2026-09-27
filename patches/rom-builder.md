@@ -88,10 +88,9 @@ The common handler performs these operations in one invocation:
    currently registered family has a target-specific Rolling Launch stage.
 8. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
-   disabled-at-startup mode. The SH7058 exact-code, JK78C, SH7059 1ND, and
-   SH7059 1ME3B families use mailbox 26; the 8MFK family uses stock-inactive
-   mailbox 24. All five family layouts use mailbox 31 as the control receiver
-   after each HCAN1 initialization.
+   disabled-at-startup mode. All five family layouts use mailbox 31 as the
+   control receiver after each HCAN1 initialization and stock-inactive mailbox
+   26 for telemetry.
 9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
 10. Require every final difference from the input to be inside the union of the
@@ -122,7 +121,7 @@ the exhaust family adds a second adapter and four map copies at the beginning
 of the former telemetry future reserve. The target limiter copies the
 two-byte-aligned stock throttle container with `MOV.W`; using the canonical
 `MOV.L` loop would fault on SH-2E.
-Telemetry uses stock-inactive mailbox 24 and a completion ISR that handles that
+Telemetry uses stock-inactive mailbox 26 and a completion ISR that handles that
 mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR
 boundary. JK00C and JK00D telemetry binds 60 of the 60 ECU-RAM fields. The
@@ -403,7 +402,7 @@ Every profile changes the selected stock-inactive mailbox record from type 5
 to interrupt-enabled transmit type 4 and encodes the selected data ID as
 `STDID << 5`. The SH7058 exact-code family writes mailbox 26 at `0x000097BE`;
 JK78C writes mailbox 26 at `0x000094AE`; 1ND writes mailbox 26 at `0x0000974C`;
-JK00C and JK00D write mailbox 24 at their profile-specific record address.
+JK00C and JK00D write mailbox 26 at `0x00009882` and `0x00009892`.
 `enabled` controls whether sampling starts
 after reset; an idle type-4 mailbox does not request CAN traffic. A validated
 START command on `can_id + 1` activates streaming until reset even when

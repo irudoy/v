@@ -1,6 +1,8 @@
+from collections import defaultdict
 import csv
 import re
 import tomllib
+from types import SimpleNamespace
 import unittest
 
 from kb import adapters, checks, compile, match, names, repo
@@ -125,14 +127,26 @@ class ProfileAdapterTest(unittest.TestCase):
                          ("ignition_coordinator_config_byte/tbl", ["1me3b"]))
         self.assertFalse([issue for issue in m.issues if "refused join" in issue.message])
 
-    def test_a_register_at_another_address_fills_a_role(self):
-        m = model()
-        data = m.meaning_of(SymbolKey("7mfk", "reg", 0xFFFFDC48))
+    def test_every_layout_writes_the_data_register_of_mailbox_26(self):
+        data = model().meaning_of(SymbolKey("7mfk", "reg", 0xFFFFDC48))
         self.assertEqual((data.key, sorted(data.symbols)),
-                         ("mailbox_data/reg", ["1me3b", "1nd", "7mfk", "jk78c"]))
-        # The profiles of JK00C and JK00D give the key the data register of
-        # mailbox 24, one meaning on both layouts.
-        roles = [m.targets[("can_telemetry", layout)].props["roles"]["mailbox_data"]["symbol"]
+                         ("mailbox_data/reg", ["1me3b", "1nd", "7mfk", "jk00c", "jk00d", "jk78c"]))
+
+    def test_a_register_at_another_address_fills_a_role(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        rows = [("7mfk", 0xFFFFDC48, "can_symbols", "probe.py"),
+                ("jk78c", 0xFFFFDC48, "can_symbols", "probe.toml"),
+                *((layout, 0xFFFFDC08, "can_symbols", "probe.toml")
+                  for layout in ("jk00c", "jk00d"))]
+        facts = SimpleNamespace(roles={}, key_entries=lambda: ({"mailbox_data": rows}, {}))
+        targets = defaultdict(dict)
+        profiles._declare_keys(b, facts, targets)
+        m = b.finish()
+        data = m.meaning_of(SymbolKey("7mfk", "reg", 0xFFFFDC48))
+        self.assertEqual((data.key, sorted(data.symbols)), ("mailbox_data/reg", ["7mfk", "jk78c"]))
+        # The data register of mailbox 24 takes the key on both layouts in
+        # its role, one meaning on both.
+        roles = [targets[("can_telemetry", layout)]["roles"]["mailbox_data"]["symbol"]
                  for layout in ("jk00c", "jk00d")]
         self.assertEqual(roles, [SymbolKey(layout, "reg", 0xFFFFDC08)
                                  for layout in ("jk00c", "jk00d")])

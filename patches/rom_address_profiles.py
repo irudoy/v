@@ -345,9 +345,14 @@ CAN_SYMBOL_KEYS_COMMON = frozenset(
     }
 )
 
+CAN_COMPLETION_VARIANTS = frozenset({"mailbox26-tail-chain"})
+
+# The dual-CVTC profiles also bind the stock mailbox-28 completion helper.
 CAN_SYMBOL_KEYS_BY_VARIANT = {
-    "mailbox24-tail-chain": CAN_SYMBOL_KEYS_COMMON | {"stock_isr_helper"},
-    "mailbox26-tail-chain": CAN_SYMBOL_KEYS_COMMON,
+    "dual-cvtc": CAN_SYMBOL_KEYS_COMMON | {"stock_isr_helper"},
+    "sh7059-1nd": CAN_SYMBOL_KEYS_COMMON,
+    "sh7059-1me3b": CAN_SYMBOL_KEYS_COMMON,
+    "sh7058-jk78": CAN_SYMBOL_KEYS_COMMON,
 }
 
 EVIDENCE_KEYS = frozenset(
@@ -806,7 +811,7 @@ def _parse_profile(rom, row, context):
             f"{context}.map_variant: unsupported value {map_variant!r}"
         )
     completion_variant = row["telemetry_completion_variant"]
-    if completion_variant not in CAN_SYMBOL_KEYS_BY_VARIANT:
+    if completion_variant not in CAN_COMPLETION_VARIANTS:
         raise AddressProfileError(
             f"{context}.telemetry_completion_variant: unsupported value "
             f"{completion_variant!r}"
@@ -945,7 +950,7 @@ def _parse_profile(rom, row, context):
         can_symbols=(
             _address_table(
                 row["can_symbols"],
-                CAN_SYMBOL_KEYS_BY_VARIANT[completion_variant],
+                CAN_SYMBOL_KEYS_BY_VARIANT[map_variant],
                 f"{context}.can_symbols",
             )
             if capabilities.map_switching or capabilities.can_telemetry
@@ -1384,7 +1389,6 @@ def _validate_can_bindings(profile, telemetry_layout):
 
     symbols = profile.can_symbol_by_key
     contracts = {
-        "mailbox24-tail-chain": (24, 0xFFFFDC08, 0x0100),
         "mailbox26-tail-chain": (26, 0xFFFFDC48, 0x0400),
     }
     mailbox_index, mailbox_data, mailbox_mask = contracts[
@@ -1467,7 +1471,7 @@ def _validate_structure(profile):
         "dual-cvtc": (
             "sh7058_8mfk",
             0x100000,
-            "mailbox24-tail-chain",
+            "mailbox26-tail-chain",
             Capabilities(True, True, True),
         ),
         "sh7059-1nd": (

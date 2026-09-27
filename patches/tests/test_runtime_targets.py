@@ -39,7 +39,7 @@ def test_relocated_8mfk_target_has_complete_projected_runtime(rom):
     assert target.map_layout.rom == rom
     assert target.map_layout.variant == "dual-cvtc"
     assert target.rolling_layout.variant == "relocated-8mfk"
-    assert target.telemetry_layout.variant == "mailbox24-tail-chain"
+    assert target.telemetry_layout.variant == "mailbox26-tail-chain"
     assert len(target.map_layout.families) == 13
     assert set(target.map_payloads) == {
         unit.key for unit in target.map_layout.assembly_units

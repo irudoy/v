@@ -76,16 +76,22 @@ def test_dual_cvtc_and_nonuniform_telemetry_bindings_are_explicit(profiles):
     )
 
 
-def test_mailbox_24_is_selected_and_occupied_mailbox_26_is_preserved(profiles):
+def test_mailbox_26_is_selected_and_occupied_mailbox_28_is_preserved(profiles):
     for rom in ("JK00C", "JK00D"):
         profile = profiles[rom]
         symbols = profile.can_symbol_by_key
-        assert symbols["mailbox_index"] == 24
-        assert symbols["mailbox_mask"] == 0x0100
-        assert symbols["mailbox_data"] == 0xFFFFDC08
+        assert symbols["mailbox_index"] == 26
+        assert symbols["mailbox_mask"] == 0x0400
+        assert symbols["mailbox_data"] == 0xFFFFDC48
         assert symbols["mailbox_record_stock"] == 0x05000000
         assert symbols["occupied_mailbox_record_stock"] == 0x04000000
-        assert profile.telemetry_completion_variant == "mailbox24-tail-chain"
+        # Record i of the stock table configures mailbox i + 1: records 25
+        # and 27 are the four-byte records of mailboxes 26 and 28.
+        assert (
+            symbols["occupied_mailbox_record_address"]
+            - symbols["mailbox_record_address"]
+        ) == 8
+        assert profile.telemetry_completion_variant == "mailbox26-tail-chain"
 
 
 def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profiles):
@@ -165,9 +171,10 @@ def test_free_rom_mutation_is_rejected(profiles):
         rom_address_profiles.validate_stock_profile(profile, changed)
 
 
-def test_mailbox_variant_cannot_silently_revert_to_jk08a(tmp_path):
+def test_mailbox_contract_rejects_another_mailbox(tmp_path):
     source = rom_address_profiles.DEFAULT_REGISTRY.read_text(encoding="utf-8")
-    changed = source.replace("mailbox_index = 24", "mailbox_index = 26", 1)
+    changed = source.replace("mailbox_index = 26", "mailbox_index = 24", 1)
+    assert changed != source
     registry = tmp_path / "profiles.toml"
     registry.write_text(changed, encoding="utf-8")
     with pytest.raises(

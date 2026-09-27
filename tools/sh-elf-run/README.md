@@ -44,7 +44,7 @@ The gate performs these checks:
    ACK, abort, preemption, corruption, and ISR path with distinct fixture
    values that expose wrong slots or addresses. The 8MFK cases include both
    CVTC target families, the two-byte-aligned throttle limiter container,
-   mailbox 24, and the stock-ISR tail chain. The 1ND cases include both fuel
+   mailbox 26, and the stock-ISR tail chain. The 1ND cases include both fuel
    banks, both warm-idle banks, the shared cold-idle family, native fuel-cut
    caps and curves, the exact stock fuel-cut state machine, the throttle
    scalar, Rolling Launch final-mask coordination, mailbox 26, and the stock-ISR
@@ -183,8 +183,9 @@ HCAN status registers are write-one-to-clear in silicon but ordinary memory in
 the simulator. Canonical simultaneous mailbox-26/mailbox-28 ISR cases place the
 two flags in independent TXACK1 and ABACK1 words, so both mailbox paths execute
 in one TRAPA exception without modifying instructions under test. The 8MFK
-cases exercise mailbox 24 alone and together with unrelated stock mailbox-28
-flags, then verify the target wrapper's register-preserving stock-ISR boundary.
+and VQ37 tail-chain cases exercise mailbox 26 alone and together with unrelated
+stock mailbox-28 flags, then verify the target wrapper's register-preserving
+stock-ISR boundary.
 Individual ACK and abort cases execute each custom write-one-to-clear
 instruction and boundary path. Mailbox-31 cases likewise execute RXPR1, RFPR1,
 and UMSR1 writes, including data, remote-only, retained-remote, malformed, and

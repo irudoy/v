@@ -248,12 +248,7 @@ class BuildRomTest(unittest.TestCase):
                     ),
                 )
                 self.assertEqual(
-                    target.telemetry_layout.variant,
-                    (
-                        "mailbox26-tail-chain"
-                        if rom in runtime_targets.VQ37_RUNTIME_ROMS
-                        else "mailbox24-tail-chain"
-                    ),
+                    target.telemetry_layout.variant, "mailbox26-tail-chain"
                 )
                 self.assertEqual(
                     result.data[

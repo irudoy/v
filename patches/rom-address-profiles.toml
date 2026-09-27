@@ -512,7 +512,7 @@ free_ram_end = 0xFFFF6600
 injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
-telemetry_completion_variant = "mailbox24-tail-chain"
+telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = []
 
 [profile.JK00C.capabilities]
@@ -630,9 +630,9 @@ knock_mask = 0xFFFF21C0
 knock_metric_base = 0xFFFF2248
 knock_selector_config = 0x00008B70
 knock_threshold_base = 0xFFFF21B4
-mailbox_data = 0xFFFFDC08
-mailbox_index = 24
-mailbox_mask = 0x0100
+mailbox_data = 0xFFFFDC48
+mailbox_index = 26
+mailbox_mask = 0x0400
 mailbox_record_address = 0x00009882
 mailbox_record_stock = 0x05000000
 occupied_mailbox_record_address = 0x0000988A
@@ -713,7 +713,7 @@ free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xf
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both CVTC target families remain explicit."
 rolling = "Exact JK00D-to-JK00C functions, stock scheduler and UDS tables, and direct RAM references bind all Rolling Launch addresses."
-can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources."
+can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources; mailbox 26 is stock inactive while mailbox 28 is occupied."
 telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind all 60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8. The target producer at 0x0003C244 aligns with the JK08A producer at 0x0003B498 and stores the Fuel Compensation Main column coordinate 0xFFFF117C at the site of its store, and the target stage at 0x000760E4 aligns with the JK08A stage at 0x00073948 and stores the requested-torque column coordinate 0xFFFF19E6 at the site of its store. Every other JK08A access of either coordinate aligns with a target access of the same cell, and the third load of the requested-torque coordinator lies at function offset 0x21C in both images."
 
 [profile.JK00D]
@@ -731,7 +731,7 @@ free_ram_end = 0xFFFF6600
 injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
-telemetry_completion_variant = "mailbox24-tail-chain"
+telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = []
 
 [profile.JK00D.capabilities]
@@ -849,9 +849,9 @@ knock_mask = 0xFFFF21C8
 knock_metric_base = 0xFFFF2250
 knock_selector_config = 0x00008B71
 knock_threshold_base = 0xFFFF21BC
-mailbox_data = 0xFFFFDC08
-mailbox_index = 24
-mailbox_mask = 0x0100
+mailbox_data = 0xFFFFDC48
+mailbox_index = 26
+mailbox_mask = 0x0400
 mailbox_record_address = 0x00009892
 mailbox_record_stock = 0x05000000
 occupied_mailbox_record_address = 0x0000989A
@@ -932,7 +932,7 @@ free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xf
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the intake-cam and exhaust-cam target families switch independently."
 rolling = "Scheduler, startup, ignition, selector, diagnostic pointer, and direct RAM bindings are recovered from exact or normalized homologs and target stock tables."
-can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 24 is stock inactive while mailbox 26 is occupied."
+can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 26 is stock inactive while mailbox 28 is occupied."
 telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind all 60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC equal those of the JK08A producer at 0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095F6. The target producer at 0x0003C244 aligns with the JK08A producer at 0x0003B498 and stores the Fuel Compensation Main column coordinate 0xFFFF117C at the site of its store, and the target stage at 0x000760E4 aligns with the JK08A stage at 0x00073948 and stores the requested-torque column coordinate 0xFFFF19EC at the site of its store. Every other JK08A access of either coordinate aligns with a target access of the same cell, and the third load of the requested-torque coordinator lies at function offset 0x21C in both images."
 
 [profile.JK78C]
