@@ -121,6 +121,10 @@ def schema(model):
                     issues.append(Issue("schema", path, subject, f"link {key} {link.props[key]!r}"))
             if link.type == "depends" and not link.roles:
                 issues.append(Issue("schema", path, subject, "a depends link without role"))
+        for layout, status in sorted(meaning.statuses.items()):
+            if _from_files(status.sources):
+                issues.extend(_evidence_issues(status.evidence, _files(status.sources),
+                                               _status_subject(meaning, layout), True))
     for (kind, _), entity in sorted(model.entities.items()):
         path = ";".join(sorted(entity.sources))
         for key, allowed in vocab.ENTITY_VOCABULARY.get(kind, {}).items():
@@ -367,9 +371,10 @@ def _status_subject(meaning, layout):
 
 
 def statuses(model):
-    """`absent` carries evidence, and `unresolved` carries the method, the
-    target, the count, and the L0 digest of its search (section 7.4), for the
-    statuses that files state."""
+    """`absent` carries evidence, `unresolved` carries the method, the target,
+    the count, and the L0 digest of its search (section 7.4), and each `l0`
+    and `rom-bytes` evidence item holds on the L0 and the images of the
+    status's layout, for the statuses that files state."""
     issues = []
     for meaning in model.meanings:
         for layout, status in sorted(meaning.statuses.items()):
@@ -378,6 +383,10 @@ def statuses(model):
             path, subject = _files(status.sources), _status_subject(meaning, layout)
             if status.state == "absent" and not status.evidence:
                 issues.append(Issue("statuses", path, subject, "an absent status without evidence"))
+            for item in status.evidence:
+                failure = match.verify_status(model, layout, item)
+                if failure:
+                    issues.append(Issue("statuses", path, subject, f"{_item(item)}: {failure}"))
             if status.state != "unresolved":
                 continue
             props = status.props

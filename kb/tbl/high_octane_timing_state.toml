@@ -1,0 +1,18 @@
+[[symbol]]
+layout = "7mfk"
+address = "00009a1a"
+former = ["porcelain-cuckoo/tbl/7mfk-00009a1a"]
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+the target ignition coordinator 000797cc has no counterpart of the gated \
+stock-inert trio path of 1ND0A 00074d98; no target function selects three \
+16x16 surfaces through one gate, and the trio bytes do not recur in the \
+target image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000797cc"

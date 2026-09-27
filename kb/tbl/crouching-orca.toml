@@ -1,0 +1,79 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001230a"
+name = "crouching-orca"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+homologous end-of-injection stage 000841b4 keeps the 209-count clamp and the \
+doubled word store at 00084716 but reads the conditional curve as eight \
+uint16 cells at 00016504 through fused explicit-axis leaf 0002aeac at \
+callsite 00084710 with the eight-word axis 000164f4 instead of the source \
+uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084710"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the \
+doubled word store at 0007f972 but reads the conditional curve as eight \
+uint16 cells at 00016560 through explicit-axis wrapper 00028910 at callsite \
+0007f824 with the eight-word axis 00016550 instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f824"
+
+[[status]]
+layout = "jk00c"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the \
+doubled word store at 00058d66 but reads the conditional curve as eight \
+uint16 cells at 0001717c through explicit-axis wrapper 000270d0 at callsite \
+00058bd2 with the eight-word axis 0001716c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058bd2"
+
+[[status]]
+layout = "jk00d"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae0 keeps the 209-count clamp and the \
+doubled word store at 00058d62 but reads the conditional curve as eight \
+uint16 cells at 0001719c through explicit-axis wrapper 000270d0 at callsite \
+00058bce with the eight-word axis 0001718c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058bce"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+homologous end-of-injection stage 000730cc keeps the 209-count clamp and the \
+doubled word store at 000733b8 but reads the conditional curve as eight \
+uint16 cells at 00015f42 through explicit-axis wrapper 000282f4 at callsite \
+000731c0 with the eight-word axis 00015f32 instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000731c0"

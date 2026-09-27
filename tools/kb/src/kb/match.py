@@ -465,6 +465,38 @@ def verify(model, symbol, item):
     return check(found)
 
 
+def verify_status(model, layout, item):
+    """None when an evidence item of a status on `layout` holds on L0 and the
+    images, else what fails: an `l0` item places an instruction of the L0 of
+    the layout at `at`, and a `rom-bytes` item finds `value` at `at` in every
+    image of the layout. Other kinds hold here."""
+    kind = item.get("kind")
+    if kind not in ("l0", "rom-bytes") or "legacy" in item:
+        return None
+    required, _ = vocab.EVIDENCE_KINDS[kind]
+    absent = [key for key in required if item.get(key) in (None, "")]
+    if absent:
+        return f"lacks {', '.join(absent)}"
+    at = location(item["at"])
+    if at is None:
+        return "`at` is no location"
+    if at[0] != layout:
+        return f"`at` lies on {at[0]}, not on {layout}"
+    if kind == "l0":
+        if at[1] in sites.owners(layout, model.root):
+            return None
+        return f"L0 of {layout} holds no instruction at {at[1]:08x}"
+    try:
+        expected = _hex_bytes(item["value"])
+    except ValueError:
+        return f"value {item['value']!r} is no hexadecimal byte string"
+    for rom, data in images(model, layout):
+        found = data[at[1]:at[1] + len(expected)]
+        if found != expected:
+            return f"{rom} holds {found.hex()} at {at[1]:08x}, not {expected.hex()}"
+    return None
+
+
 def _own(ctx):
     if ctx.at is None:
         return "`at` is no location"

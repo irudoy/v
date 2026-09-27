@@ -1,0 +1,51 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000ab5a"
+name = "humongous-skunk"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+the intake CVTC dispatcher 00119b00 calls no counterpart of source target \
+accessor 000bda64; 1ME3B reproduces the 1ND0A interpolation vocabulary \
+without the cam-target contract 000261b8 and the correction bytes do not \
+recur in the target image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119bf6"
+note = """
+the dispatcher calls bank function 0011aa10 and then 0011aaf2, the \
+counterpart of 1ND 0010ecf8, without a call in the slot of source accessor \
+000bda64"""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+the intake CVTC dispatcher 0010dd1c calls no counterpart of source target \
+accessor 000bda64"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dd44"
+note = """
+after its two bank calls of 0010ea78 the dispatcher calls 0010eba4, the \
+counterpart of source 000bdb66; source dispatcher 000bd170 calls target \
+accessor 000bda64 between them"""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = "homologous intake dispatcher slot is a no-op in JK78C"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5942"
+note = """
+dispatcher 000e5930 calls 000e635a, which is rts; nop, where source \
+dispatcher 000bd170 calls target accessor 000bda64"""

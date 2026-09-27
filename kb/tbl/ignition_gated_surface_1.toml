@@ -1,0 +1,19 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000991a"
+former = ["tested-galago/tbl/7mfk-0000991a"]
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+the target ignition coordinator 000797cc reproduces only the mode-selected \
+half of 1ND0A 00074d98 with its own surfaces 0000a344 0000a444 and the 8x8 \
+group; the stock-inert trio path gated by 0x8a2b bit 5 and 0xfffe9488 bit 6 \
+has no counterpart, no target function selects three 16x16 surfaces through \
+one gate, and the trio bytes do not recur in the target image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000797cc"

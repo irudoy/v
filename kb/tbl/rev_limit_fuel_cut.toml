@@ -1,0 +1,42 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000934e"
+former = ["stereotyped-nuthatch/tbl/7mfk-0000934e"]
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+normalized-shape pair 00076ad2/0007b1a0 of 190 bytes keeps the 1ND0A \
+fuel-cut helper structure with interpolated curves and scalar caps instead \
+of the source 2x2 table and the source table bytes do not recur in the \
+target image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1a0"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+homologous fuel-cut helper uses interpolated curves and scalar caps instead \
+of the source 2x2 table"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076ad2"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+homologous fuel-cut helper uses interpolated curves and scalar caps instead \
+of the source 2x2 table"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aeb8"

@@ -1,0 +1,57 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000ab4a"
+name = "righteous-sparrow"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+exhaust-cam correction table is read only by the removed exhaust-target \
+calculator; 1ME3B declares no P0014 and P0024 descriptor records and the \
+table bytes do not recur in the target image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+exhaust-cam correction table is read only by the removed exhaust-target \
+calculator; VQ37 removes exhaust camshaft timing control together with its \
+P0014 and P0024 descriptor records so no target byte is produced for the \
+homologous DID slot"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c754"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+exhaust-cam correction table is read only by the removed exhaust-target \
+calculator; VQ37 removes exhaust camshaft timing control together with its \
+P0014 and P0024 descriptor records so no target byte is produced for the \
+homologous DID slot"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0001c0d0"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""

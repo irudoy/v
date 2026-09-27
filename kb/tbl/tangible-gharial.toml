@@ -1,0 +1,94 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012302"
+name = "tangible-gharial"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+homologous end-of-injection stage 000841b4 keeps the 209-count clamp and the \
+doubled word store at 00084716 but reads the base curve as eight uint16 \
+cells at 000164e4 through fused explicit-axis leaf 0002aeac at callsites \
+00084662 and 000846f0 with the eight-word axis 000164f4 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084662"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000846f0"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the \
+doubled word store at 0007f972 but reads the base curve as eight uint16 \
+cells at 00016540 through explicit-axis wrapper 00028910 at callsites \
+0007f91a and 0007f95c with the eight-word axis 00016550 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f91a"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f95c"
+
+[[status]]
+layout = "jk00c"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the \
+doubled word store at 00058d66 but reads the base curve as eight uint16 \
+cells at 0001715c through explicit-axis wrapper 000270d0 at callsite \
+00058d58 with the eight-word axis 0001716c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d58"
+
+[[status]]
+layout = "jk00d"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae0 keeps the 209-count clamp and the \
+doubled word store at 00058d62 but reads the base curve as eight uint16 \
+cells at 0001717c through explicit-axis wrapper 000270d0 at callsite \
+00058d54 with the eight-word axis 0001718c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d54"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+homologous end-of-injection stage 000730cc keeps the 209-count clamp and the \
+doubled word store at 000733b8 but reads the base curve as eight uint16 \
+cells at 00015f22 through explicit-axis wrapper 000282f4 at callsites \
+0007335e and 000733a2 with the eight-word axis 00015f32 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007335e"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000733a2"

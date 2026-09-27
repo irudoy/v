@@ -1,0 +1,60 @@
+[[symbol]]
+layout = "7mfk"
+address = "00008e3a"
+name = "apricot-carp"
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+standstill exhaust-VTC override RPM ceiling is read only by the removed \
+exhaust-target conditioner; 1ME3B declares no P0014 and P0024 descriptor \
+records and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur \
+in the target image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+standstill exhaust-VTC override RPM ceiling is read only by the removed \
+exhaust-target conditioner; VQ37 removes exhaust camshaft timing control \
+together with its P0014 and P0024 descriptor records so no standstill \
+override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does \
+not recur in the target image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c754"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+standstill exhaust-VTC override RPM ceiling is read only by the removed \
+exhaust-target conditioner; VQ37 removes exhaust camshaft timing control \
+together with its P0014 and P0024 descriptor records so no standstill \
+override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does \
+not recur in the target image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0001c0d0"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""

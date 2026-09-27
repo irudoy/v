@@ -30,11 +30,11 @@ Map,00009b1a,,,unsupported,0,stock-inert-path,"the homologous surface 00009a80 b
 Map,0000a29a,0000a1c0,default,homologous,4,l0,the accessor on the default arm of the target state selector preserves exact geometry and storage
 Map,0000a9aa,,,unsupported,0,unresolved,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and neither the map nor its axes 00011cc0 and 00011ac7 recur as exact storage in the target image"
 Map,0000ab4a,,,unsupported,0,absent,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000ab5a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000ab5a,,,unsupported,0,absent,the intake CVTC dispatcher 0010dd1c calls no counterpart of source target accessor 000bda64
 Map,0000b2fa,,,unsupported,0,absent,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
 Map,0000b33a,,,unsupported,0,absent,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
-Map,0000b43a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
-Map,0000b53a,,,unsupported,0,absent,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000b43a,,,unsupported,0,absent,the intake CVTC dispatcher 0010dd1c calls no counterpart of source target accessor 000bda64
+Map,0000b53a,,,unsupported,0,absent,the intake CVTC dispatcher 0010dd1c calls no counterpart of source target accessor 000bda64
 Map,0000e98e,00010048,,homologous,21,l0,unique structural accessor pair preserves interpolation-call order
 Map,00010b8e,000120c8,,homologous,2,l0,unique engine-torque surface preserves geometry and exact storage
 Map,0001108e,000122c8,,homologous,1,l0,homologous direct-row-major accessor preserves the second torque surface operand

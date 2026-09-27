@@ -367,6 +367,33 @@ class FileChecksTest(unittest.TestCase):
         notes = checks.stale(model)
         self.assertEqual([note.subject for note in notes], ["apc_probe/ram on 1nd"])
 
+    def test_the_evidence_of_a_status_holds_on_l0_and_the_images(self):
+        def absent(layout, *items):
+            return {"layout": layout, "state": "absent",
+                    "evidence": [{"supports": "identity", **item} for item in items]}
+        statuses = [
+            absent("jk78c", {"kind": "rom-bytes", "at": "jk78c:0001c0d0",
+                             "value": "3702000000000021"},
+                   {"kind": "rom-bytes", "at": "jk78c:0001c0d0", "value": "3803"}),
+            absent("1nd", {"kind": "l0", "at": "1nd:0010dd44"}),
+            absent("1me3b", {"kind": "l0", "at": "1me3b:00119bf7"}),
+            absent("jk00c", {"kind": "l0", "at": "jk78c:000e5942"}, {"kind": "rom-bytes",
+                                                                     "at": "jk00c:0001c0d0"}),
+        ]
+        model = self.model({"symbol": self.symbols(APC_JK00D), "status": statuses})
+        messages = sorted(f"{issue.subject}: {issue.message}" for issue in checks.statuses(model))
+        self.assertEqual(messages, [
+            "apc_probe/ram on 1me3b: l0 evidence at 1me3b:00119bf7: L0 of 1me3b holds no "
+            "instruction at 00119bf7",
+            "apc_probe/ram on jk00c: l0 evidence at jk78c:000e5942: `at` lies on jk78c, not "
+            "on jk00c",
+            "apc_probe/ram on jk00c: rom-bytes evidence at jk00c:0001c0d0: lacks value",
+            "apc_probe/ram on jk78c: rom-bytes evidence at jk78c:0001c0d0: JK78C holds 3702 at "
+            "0001c0d0, not 3803",
+        ])
+        self.assertEqual([issue.message for issue in checks.schema(model)],
+                         ["rom-bytes evidence lacks value"])
+
 
 if __name__ == "__main__":
     unittest.main()
