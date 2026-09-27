@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from kb import read, refs
+from kb import graph, read, refs, vocab
 from kb.refs import Ref
 
 
@@ -80,6 +80,12 @@ class PhraseTest(unittest.TestCase):
         self.assertEqual(read.phrase("out", "DEPENDS", ["homolog"]), "homolog of")
         self.assertEqual(read.phrase("out", "READER"), "read by")
         self.assertEqual(read.phrase("in", "READER"), "reads")
+
+    def test_every_relationship_of_an_entity_reads_both_ways(self):
+        types = {kind for kind, _ in graph.ENTITY_LINKS.values()} | {"TARGETS"}
+        types |= {kind.upper() for kind in vocab.LINK_TYPES}
+        for kind in sorted(types - {"DEPENDS"}):
+            self.assertTrue(read.phrase("out", kind) and read.phrase("in", kind), kind)
 
 
 class LinkGraphTest(unittest.TestCase):

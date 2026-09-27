@@ -29,6 +29,7 @@ FORWARD = {
     "MONITOR": "set by", "DEPENDS": "depends on", "CITES": "cites", "OBSERVES": "observes",
     "CARRIES": "carries", "SERVES": "serves", "TARGETS": "targets", "BLOCK": "in block",
     "STAGE": "in stage", "REGISTER": "registers", "FUNCTION": "functions", "OUTPUT": "computes",
+    "REQUIRES": "requires",
 }
 BACKWARD = {
     "WRITER": "writes", "READER": "reads", "INPUT": "input of", "COPY": "copied to",
@@ -37,7 +38,7 @@ BACKWARD = {
     "MONITOR": "sets", "DEPENDS": "needed by", "CITES": "cited by", "OBSERVES": "observed by",
     "CARRIES": "carried by", "SERVES": "served by", "TARGETS": "targeted by", "BLOCK": "holds",
     "STAGE": "holds", "REGISTER": "register of", "FUNCTION": "function of",
-    "OUTPUT": "output of",
+    "OUTPUT": "output of", "REQUIRES": "required by",
 }
 # The `to` end of a reader link depends on its owner; for every other type the
 # owner depends on `to`. A `depends` link takes its direction from its legacy
