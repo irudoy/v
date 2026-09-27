@@ -2209,11 +2209,12 @@ commit.
 
 `defs/definition-projections.toml`: the keys of `[projection.<ROM>]` and
 `[projection.<ROM>.switch]` become the entry of the image in `images` of the
-`definitions` target of its layout, with `comment` as `note` and `evidence`
-as `basis`; the two digests must equal the image catalog, and `addresses`
-names the address file of the layout,
+`definitions` target of its layout, with `comment` as a `note` of one
+paragraph and `evidence` as `basis`; the two digests must equal the image
+catalog, and `addresses` names the address file of the layout,
 `<source>-<LAYOUT>.definition-addresses.csv`. The projections follow the
-order of their ROM keys.
+order of their ROM keys, and a `comment` wraps its note greedily within 79
+columns, the lines of the header comment of the generated XML definition.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
 symbol, with `family` as `access`, `kernel`, `width` and `height` as `cols`

@@ -6,9 +6,10 @@ The registries state:
 - Each `[projection.<ROM>]` of `defs/definition-projections.toml` gives the
   entry of its image in `images` of the `definitions` target of the image's
   layout: the source image, both digests, the checksum and feature switches,
-  the switch addresses of `[projection.<ROM>.switch]`, its `comment` as
-  `note`, and its `evidence` as `basis`. The digests must equal the image
-  catalog, and `addresses` must name the address file of the layout.
+  the switch addresses of `[projection.<ROM>.switch]`, its `comment` as a
+  `note` of one paragraph, and its `evidence` as `basis`. The digests must
+  equal the image catalog, and `addresses` must name the address file of the
+  layout.
 - Each row of the address file that a projection names gives the symbol of
   its entity on the image's layout: `Map` a `tbl` and `Axis` an `axis`
   symbol, so an address that is both a table and an axis operand gives one of
@@ -36,14 +37,16 @@ From their conversion the registries are projections of the files:
   target.
 - `defs/definition-projections.toml` has `[projection.<ROM>]` for each image
   of a `definitions` target in the order of the ROM keys, with the address
-  file of its layout, and its switch addresses in the order of the switches
-  of the feature.
+  file of its layout, its note wrapped greedily within 79 columns as
+  `comment`, and its switch addresses in the order of the switches of the
+  feature.
 """
 
 import csv
 import io
 from pathlib import Path
 import re
+import textwrap
 import tomllib
 
 from kb import match, repo
@@ -73,6 +76,8 @@ IMAGE_KEYS = ("source", "source_sha256", "target_sha256", "checksum", "romraider
 PROJECTION_KEYS = frozenset({*IMAGE_KEYS, "addresses", "comment", "evidence", "switch"})
 FIELDS = ("entity", "source", "target", "variant", "status", "sites", "function_kinds",
           "evidence")
+# The columns within which a projection comment wraps its note.
+COMMENT_WIDTH = 79
 
 
 def inputs(root):
@@ -116,7 +121,7 @@ def declare(b, root):
         files[path] = layout
         entry = {key: projection[key] for key in IMAGE_KEYS if key in projection}
         entry["switch"] = hexed(dict(projection.get("switch", {})))
-        entry["note"] = projection.get("comment", "").strip()
+        entry["note"] = " ".join(projection.get("comment", "").split())
         entry["basis"] = projection.get("evidence")
         images.setdefault(layout, {})[rom] = entry
     for layout in sorted(images):
@@ -193,8 +198,10 @@ def relate(b, root):
 
 
 def _targets(model):
+    """The `definitions` targets of the layouts that relocate a definition;
+    the target of `7mfk` holds the source image."""
     return [(layout, target) for (feature, layout), target in sorted(model.targets.items())
-            if feature == FEATURE]
+            if feature == FEATURE and layout != CANONICAL]
 
 
 def _toward(item):
@@ -310,7 +317,9 @@ def render_projections(model):
             if key in values:
                 lines.append(f"{key} = {_scalar(values[key])}")
         if entry.get("note"):
-            note = entry["note"].replace("\\", "\\\\").replace('"""', '""\\"')
+            note = textwrap.fill(entry["note"], COMMENT_WIDTH, break_long_words=False,
+                                 break_on_hyphens=False)
+            note = note.replace("\\", "\\\\").replace('"""', '""\\"')
             lines += ['comment = """', note, '"""']
         if entry.get("basis"):
             lines.append(f"evidence = {_scalar(entry['basis'])}")

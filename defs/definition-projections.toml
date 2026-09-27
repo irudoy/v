@@ -54,16 +54,15 @@ are downgraded to candidate confidence unless target-specific evidence keeps
 code confidence. Source tables whose VQ37 implementation changes geometry or
 removes the corresponding lookup are omitted explicitly. Exact target-native
 fuel-cut caps and activation/release curves are added from the SHA-bound VQ37
-registry. The project checksum implementation verifies and recalculates all
-six 1ND fields. The native RomRaider alt2 handler maintains the four fields a
+registry. The project checksum implementation verifies and recalculates all six
+1ND fields. The native RomRaider alt2 handler maintains the four fields a
 definition entity can invalidate: both primary SUM16 values and the runtime XOR
 and SUM pair. The boot and vector SUM16 domains end at 0x8200, below every
-published entity, so no editor session can leave them stale. Map
-2 through Map 5 storage, Rolling Launch controls, and the CAN Telemetry at
-Startup control use the validated 1ND runtime allocation in
-patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests
-all-cylinder fuel cut after the stock final-mask coordinator and does not
-reuse the VQ35HR fuel-shadow maps.
+published entity, so no editor session can leave them stale. Map 2 through Map
+5 storage, Rolling Launch controls, and the CAN Telemetry at Startup control
+use the validated 1ND runtime allocation in patches/rom-address-profiles.toml.
+The VQ37 Rolling Launch variant requests all-cylinder fuel cut after the stock
+final-mask coordinator and does not reuse the VQ35HR fuel-shadow maps.
 """
 evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation contracts, exact storage, selector branch order, target literals, and exact-code 1ND family evidence."
 
@@ -91,11 +90,11 @@ confidence. The project checksum implementation verifies and recalculates all
 six 1ND fields, and the native RomRaider alt2 handler maintains the four fields
 a definition entity can invalidate. Exact target-native fuel-cut caps and
 activation/release curves are added from the independently SHA-bound 1ND3B
-image. Map 2 through Map 5 storage, Rolling
-Launch controls, and the CAN Telemetry at Startup control use the validated
-1ND runtime allocation in patches/rom-address-profiles.toml. The VQ37 Rolling
-Launch variant requests all-cylinder fuel cut after the stock final-mask
-coordinator and does not reuse the VQ35HR fuel-shadow maps.
+image. Map 2 through Map 5 storage, Rolling Launch controls, and the CAN
+Telemetry at Startup control use the validated 1ND runtime allocation in
+patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests
+all-cylinder fuel cut after the stock final-mask coordinator and does not reuse
+the VQ35HR fuel-shadow maps.
 """
 evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-to-1ND3B executable ranges, identical address-bearing code, target geometry, and the independent stock-image hash."
 

@@ -18,11 +18,11 @@
      six 1ND fields, and the native RomRaider alt2 handler maintains the four fields
      a definition entity can invalidate. Exact target-native fuel-cut caps and
      activation/release curves are added from the independently SHA-bound 1ND3B
-     image. Map 2 through Map 5 storage, Rolling
-     Launch controls, and the CAN Telemetry at Startup control use the validated
-     1ND runtime allocation in patches/rom-address-profiles.toml. The VQ37 Rolling
-     Launch variant requests all-cylinder fuel cut after the stock final-mask
-     coordinator and does not reuse the VQ35HR fuel-shadow maps. -->
+     image. Map 2 through Map 5 storage, Rolling Launch controls, and the CAN
+     Telemetry at Startup control use the validated 1ND runtime allocation in
+     patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests
+     all-cylinder fuel cut after the stock final-mask coordinator and does not reuse
+     the VQ35HR fuel-shadow maps. -->
 <roms>
   <rom>
     <romid>
