@@ -19,7 +19,10 @@
 - A `target-specific` row whose target a `mapped` row of another key of the
   same file places binds a role of its feature: the key and the symbol enter
   `roles` of the feature target of the layout, and neither the row nor the
-  profile entry of the key on that layout joins a meaning.
+  profile entry of the key on that layout joins a meaning. A `target-specific`
+  telemetry row binds the role of its field in the same way: the telemetry
+  source of the profile is a symbol of another meaning than the source of the
+  field.
 - A register is physical: a `reg` key at another address than on the
   canonical layout binds a role of its feature with the register at that
   address, whose symbols on every layout form one meaning.
@@ -214,10 +217,12 @@ class Profiles:
             hooks.sort(key=lambda hook: FEATURES.index(hook.feature))
 
     def _roles(self):
-        """{(layout, key): (target, row)} of the `target-specific` rows whose
-        target a `mapped` row of another key of the same file places: there
-        the key fills a role of its feature with the symbol of another
-        meaning, as the VQ37 rolling launch drives the final inhibit mask."""
+        """{(layout, key): (target, row)} of the `target-specific` symbol rows
+        whose target a `mapped` row of another key of the same file places,
+        and of the `target-specific` telemetry rows: there the key fills a
+        role of its feature with the symbol of another meaning, as the VQ37
+        rolling launch drives the final inhibit mask and the JK78C telemetry
+        reads the Fuel Compensation Main column that the target maps take."""
         found = {}
         for layout, (path, rows) in self.rows.items():
             placed = defaultdict(set)
@@ -226,7 +231,10 @@ class Profiles:
                     placed[_hex(row["target"])].add(row["key"])
             for row in rows:
                 target = _hex(row["target"])
-                if (row["domain"] in SYMBOL_DOMAINS and row["status"] == "target-specific"
+                if row["status"] != "target-specific":
+                    continue
+                if row["domain"] == "telemetry" or (
+                        row["domain"] in SYMBOL_DOMAINS
                         and placed.get(target, set()) - {row["key"]}):
                     found[(layout, row["key"])] = (target, row)
         return found
@@ -441,6 +449,8 @@ def _declare_keys(b, facts, targets):
 
 
 def _declare_telemetry(b, facts, targets):
+    """Symbols of the telemetry sources: the source meaning of the field, or
+    the symbol that fills the role of the field on the layout."""
     src = PROFILES.as_posix()
     for layout, (rom, profile) in sorted(facts.profiles.items()):
         for field, address in profile.get("telemetry_sources", {}).items():
@@ -448,6 +458,14 @@ def _declare_telemetry(b, facts, targets):
             if kind is None:
                 b.issue("symbols", src, f"{field}@{layout}",
                         "a telemetry source outside RAM and the peripherals")
+                continue
+            role = facts.roles.get((layout, field))
+            if role is not None:
+                if address != role[0]:
+                    b.issue("audit", src, f"{field}@{layout}",
+                            f"address {address:08x} disagrees with the role row {role[0]:08x}")
+                targets[("can_telemetry", layout)].setdefault("roles", {}).setdefault(
+                    field, {})["symbol"] = b.symbol(layout, kind, address, src)
                 continue
             group = (kind, "field", field)
             b.symbol(layout, kind, address, src, group=group, strength="field")
@@ -547,7 +565,10 @@ def _declare_rows(b, facts, keys, targets, notes):
             if facts.roles.get((layout, row["key"]), (None, None))[1] is row:
                 role = entry.setdefault("roles", {}).setdefault(row["key"], {})
                 role.update({"symbol": b.symbol(layout, kind, target, path), "note": text})
-                if source is not None:
+                if source is not None and domain == "telemetry":
+                    b.symbol(CANONICAL, kind, source, path, group=(kind, "field", row["key"]),
+                             strength="field")
+                elif source is not None:
                     b.symbol(CANONICAL, kind, source, path, group=(kind, "key", row["key"]))
                 continue
             if domain == "telemetry":

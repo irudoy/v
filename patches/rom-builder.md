@@ -310,12 +310,13 @@ equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
 belong to no family and pass through the adapter under the same validator
 rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
 path and the gated half only, so every call through them passes through. Custom CAN telemetry
-binds 58 available schema fields. The unavailable signed Q8 knock timing field
-and the Fuel Compensation Main column coordinate are encoded from cleared
-reserved RAM and remain identified as unavailable in metadata: the target Fuel
-Compensation surfaces take their column from the high byte of `0xFFFF22F8`,
-the scheduler snapshot of `0xFFFF238A`, whose producer `0x04726C` is not traced
-to the JK08A coordinate. The normalized load snapshot `0xFFFF1032` and the
+binds 59 available schema fields. The unavailable signed Q8 knock timing field
+is encoded from cleared reserved RAM and remains identified as unavailable in
+metadata. The Fuel Compensation Main column field reads the high byte of
+`0xFFFF22F8`, the column that the target Fuel Compensation surfaces take: the
+scheduler snapshot of `0xFFFF238A`, which the target producer `0x04726C` forms
+on the percent scale of the field. The homolog `0xFFFF115C` of the JK08A
+coordinate indexes only a 4x4 surface. The normalized load snapshot `0xFFFF1032` and the
 requested-torque column coordinate `0xFFFF1976` come from the target producers
 `0x04068C` and `0x093164`, which compute the values of the JK08A producers
 `0x03BD1C` and `0x073948`. The profile also binds both SUM16 regions and both runtime SUM/XOR

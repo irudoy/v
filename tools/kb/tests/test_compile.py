@@ -140,6 +140,19 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertIs(register, m.meaning_of(roles[1]))
         self.assertIsNot(register, data)
 
+    def test_a_target_specific_telemetry_row_fills_the_role_of_its_field(self):
+        m = model()
+        target = m.targets[("can_telemetry", "jk78c")].props
+        role = target["roles"]["alpha_n_flow_raw"]
+        self.assertEqual(role["symbol"], SymbolKey("jk78c", "ram", 0xFFFF22F8))
+        self.assertIn("column of the target Fuel Compensation surfaces", role["note"])
+        self.assertEqual(sorted(m.meaning_of(role["symbol"]).symbols), ["jk78c"])
+        self.assertNotIn("alpha_n_flow_raw", target["unavailable"])
+        # The source meaning of the field keeps the homolog of its producer.
+        flow = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1170))
+        self.assertEqual((flow.key, flow.symbols["jk78c"].address),
+                         ("alpha_n_flow/ram", 0xFFFF115C))
+
     def test_a_record_of_the_image_byte_keys_is_one_32_bit_word(self):
         m = model()
         for layout, address in (("7mfk", 0x9766), ("7mfk", 0x97BE), ("7mfk", 0x97C6),

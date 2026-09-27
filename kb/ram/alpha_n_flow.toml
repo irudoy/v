@@ -1,0 +1,22 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1170"
+former = ["military-puffin/ram/7mfk-ffff1170"]
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff115c"
+level = "code"
+note = """
+Producer 0003fca4 repeats the operations of the JK08A producer 0003b498 and \
+stores the high byte of the curve lookup at this cell, which indexes only \
+4x4 surface 00009a1a; the target Fuel Compensation surfaces take their \
+column from ffff22f8 in the role of the telemetry field"""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003c8e0"
+to = "7mfk:000392b2"
+count = 1
+value = 49

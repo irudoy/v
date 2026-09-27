@@ -951,7 +951,7 @@ injected_ram_start = 0xFFFF0C00
 injected_ram_end = 0xFFFF0F00
 map_variant = "sh7058-jk78"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = ["alpha_n_flow_raw", "knock_timing_state_raw"]
+telemetry_unavailable = ["knock_timing_state_raw"]
 telemetry_zero_source = 0xFFFF0DE0
 
 [profile.JK78C.capabilities]
@@ -1129,6 +1129,7 @@ intake_cvtc_duty_b1_raw = 0xFFFF239A
 intake_cvtc_duty_b2_raw = 0xFFFF239B
 ltft_b1_raw = 0xFFFF225A
 ltft_b2_raw = 0xFFFF225C
+alpha_n_flow_raw = 0xFFFF22F8
 battery_voltage_raw = 0xFFFF1174
 ltft_learned_b1_raw = 0xFFFF225E
 ltft_adjustment_b1_raw = 0xFFFF5BE0
@@ -1149,4 +1150,4 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recove
 maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "58 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the Fuel Compensation Main column coordinate are encoded from cleared reserved RAM and remain explicitly unavailable in metadata. The target Fuel Compensation surfaces 0x00009EBA and 0x00009FBA take their column from the high byte of 0xFFFF22F8, the scheduler snapshot of 0xFFFF238A, whose producer at 0x0004726C is not traced to the JK08A coordinate; the homolog 0xFFFF115C of the JK08A producer at 0x0003B498 indexes the 4x4 surface 0x00009A1A. The producer at 0x0004068C stores min(255, floor(BFS * 128 / ROM16[0x000091EE])) to 0xFFFF1042, the ratio that the JK08A producer at 0x0003BD1C stores to 0xFFFF1048 with the reference ROM16[0x00009534], and the scheduler at 0x00020F84 copies 16 bytes from 0xFFFF1042 to the normalized load snapshot 0xFFFF1032 as the JK08A scheduler copies 0xFFFF1048 to 0xFFFF102C. The stage at 0x00093164 stores the requested-torque column coordinate 0xFFFF1976 with the operations and pool layout of the JK08A stage at 0x00073948 and passes it as the column of surface 0x0000FACE, whose column axis 0x0001552C is the homolog of JK08A axis 0x00014114."
+telemetry = "59 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state is encoded from cleared reserved RAM and remains explicitly unavailable in metadata. The Fuel Compensation Main column field reads the high byte of 0xFFFF22F8, the column of the target Fuel Compensation surfaces 0x00009EBA and 0x00009FBA: the scheduler snapshot of 0xFFFF238A, which the producer at 0x0004726C forms on the percent scale of the field. The producer at 0x0003FCA4 repeats the operations of the JK08A producer at 0x0003B498 and stores the JK08A coordinate as 0xFFFF115C, which indexes only the 4x4 surface 0x00009A1A. The producer at 0x0004068C stores min(255, floor(BFS * 128 / ROM16[0x000091EE])) to 0xFFFF1042, the ratio that the JK08A producer at 0x0003BD1C stores to 0xFFFF1048 with the reference ROM16[0x00009534], and the scheduler at 0x00020F84 copies 16 bytes from 0xFFFF1042 to the normalized load snapshot 0xFFFF1032 as the JK08A scheduler copies 0xFFFF1048 to 0xFFFF102C. The stage at 0x00093164 stores the requested-torque column coordinate 0xFFFF1976 with the operations and pool layout of the JK08A stage at 0x00073948 and passes it as the column of surface 0x0000FACE, whose column axis 0x0001552C is the homolog of JK08A axis 0x00014114."

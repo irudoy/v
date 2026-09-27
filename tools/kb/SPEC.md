@@ -738,7 +738,12 @@ Features:
   six-cylinder inhibit mask, a meaning of its own, in the role that the fuel
   inhibit state byte fills on the dual-CVTC layouts. A register is physical:
   a key whose register lies at another address on a layout than on `7mfk`
-  takes there the meaning of that register in its role.
+  takes there the meaning of that register in its role. A telemetry field
+  reads on a layout the cell that the consumers there take: a cell of another
+  meaning than the source of the field fills the role of the field, as the
+  `jk78c` Fuel Compensation surfaces take their column from a snapshot of a
+  producer of their own while the homolog of the `7mfk` coordinate indexes
+  another surface.
 - An address in a target key takes the form of a symbol address; sizes,
   deltas, masks, and indices stay numbers.
 
@@ -2176,11 +2181,13 @@ symbol at the target and the evidence as `note`, and neither the row nor the
 address profile entry of the key on that layout joins the meaning of the key.
 The address of that entry must equal the target of the row; a different
 address goes to the audit. The source of the row still gives the `7mfk`
-symbol of the key. A `reg` key of an address profile whose address differs
-from the address of its `7mfk` symbol fills a role in the same way; the
-registers at one address form one meaning on every layout that states them.
-The records at the addresses of the image-byte keys of `can_symbols` are one
-`uint32` word each.
+symbol of the key. A `target-specific` `telemetry` row fills the role of its
+field in the same way: the telemetry source of the field on that layout must
+equal its target, and neither joins the source meaning of the field. A `reg`
+key of an address profile whose address differs from the address of its `7mfk`
+symbol fills a role in the same way; the registers at one address form one
+meaning on every layout that states them. The records at the addresses of the
+image-byte keys of `can_symbols` are one `uint32` word each.
 
 The conversion types the evidence of every `mapped` and `target-specific`
 symbol row from L0 with the matchers of the `homology` check: literal pools,

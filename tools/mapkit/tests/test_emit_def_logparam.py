@@ -546,7 +546,7 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             definition_projections.unpublished_operands(
                 "JK78C", self.overrides
             ),
-            {"ffff1170"},
+            set(),
         )
         # Normalized load is unavailable on 1ND0A, so both operands declared
         # for the engine load parameter lose it as well.
@@ -588,7 +588,7 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             checked += 1
             withheld += bool(missing)
         self.assertEqual(checked, 6)
-        self.assertEqual(withheld, 4)
+        self.assertEqual(withheld, 3)
 
 
 if __name__ == "__main__":

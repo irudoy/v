@@ -583,7 +583,7 @@ def published_facts(sources=None):
             Fact(
                 matrix,
                 rf"\| {label} \|(?: [^|]+ \|){{3}} Schema 2, mailbox \d+; "
-                r"{n} fields unavailable \|",
+                r"{n} fields? unavailable \|",
                 (s.unavailable(roms),),
             )
             for label, roms in (
