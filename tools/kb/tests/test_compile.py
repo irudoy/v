@@ -124,6 +124,29 @@ class ProfileAdapterTest(unittest.TestCase):
                          ("ignition_coordinator_config_byte/tbl", ["1me3b"]))
         self.assertFalse([issue for issue in m.issues if "refused join" in issue.message])
 
+    def test_a_register_at_another_address_fills_a_role(self):
+        m = model()
+        data = m.meaning_of(SymbolKey("7mfk", "reg", 0xFFFFDC48))
+        self.assertEqual((data.key, sorted(data.symbols)),
+                         ("mailbox_data/reg", ["1me3b", "1nd", "7mfk", "jk78c"]))
+        # The profiles of JK00C and JK00D give the key the data register of
+        # mailbox 24, one meaning on both layouts.
+        roles = [m.targets[("can_telemetry", layout)].props["roles"]["mailbox_data"]["symbol"]
+                 for layout in ("jk00c", "jk00d")]
+        self.assertEqual(roles, [SymbolKey(layout, "reg", 0xFFFFDC08)
+                                 for layout in ("jk00c", "jk00d")])
+        register = m.meaning_of(roles[0])
+        self.assertIs(register, m.meaning_of(roles[1]))
+        self.assertIsNot(register, data)
+
+    def test_a_record_of_the_image_byte_keys_is_one_32_bit_word(self):
+        m = model()
+        for layout, address in (("7mfk", 0x9766), ("7mfk", 0x97BE), ("7mfk", 0x97C6),
+                                ("jk78c", 0x945A)):
+            with self.subTest(layout=layout, address=f"{address:08x}"):
+                symbol = m.symbols[SymbolKey(layout, "tbl", address)]
+                self.assertEqual(match.storage_size(symbol), 4)
+
     def test_untyped_legacy_evidence_goes_to_the_audit_under_its_registry(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
         item = {"kind": "rom-bytes", "supports": "identity", "value": 1,

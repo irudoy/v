@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kb import checks, compile, derive, match, names, repo, store
+from kb import checks, compile, derive, match, names, repo, store, vocab
 from kb.adapters import files
 from kb.model import Builder, SymbolKey
 
@@ -10,6 +10,12 @@ APC_7MFK, APC_JK00D, APC_FORMER = 0xFFFF2022, 0xFFFF11F5, 0xFFFF206C
 APC_STORE, APC_REGION, APC_MATCH = 0x4E070, 0x4E066, 0x4F9B0
 HOOK, HOOK_TARGET = 0x203A0, 0xC7914
 DID, DID_WORDS = 0x229E8, "ffff3346 00011e45"
+LATCH, INJECTION = 0x21A70, 0xFFFF23CA
+MAILBOX_DATA, MAILBOX_KEY = 0xFFFFDC48, "SH7058S-HW-17.3.3"
+ROUTINE = 0x791A4
+ROUTINE_TEST = ("patches/tests/test_rom_address_profiles.py",
+                "test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image")
+CODE = vocab.LEVEL_RANK["code"]
 
 
 def code_of(program, pools, layout="a", gram=4):
@@ -261,6 +267,108 @@ class InterpContractTest(unittest.TestCase):
         self.assertIsNone(self.verify("jk00d", 0x27664, "7mfk:00026a60", "00026a84"))
         self.assertIn("no wrapper of one meaning on jk00d and 7mfk calls the kernel entry "
                       "00026a90", self.verify("jk00d", 0x27664, "7mfk:00026a60", "00026a90"))
+
+
+class IndirectBaseTest(unittest.TestCase):
+    """`indirect` base items of 7MFK: the SLE1 slot lies 0x39c above VBR,
+    which the boot code loads at 00002688 for `ldc r2,vbr`; the knock latch
+    slot lies 0x104 above the periodic task list, whose base the dispatcher
+    loads at 000212ee; and the second word of the injection-pulse array lies 2
+    above the word that 0004ec9e stores."""
+
+    def model(self):
+        def declare(b):
+            b.symbol("7mfk", "hook", HOOK, "test", group=("hook", "vector"))
+            b.symbol("7mfk", "hook", LATCH, "test", group=("hook", "latch"))
+            b.symbol("7mfk", "ram", INJECTION, "test", group=("ram", "injection"))
+        return model_of(declare)
+
+    def check(self, kind, address, site, offset):
+        m = self.model()
+        symbol = m.symbols[SymbolKey("7mfk", kind, address)]
+        self.assertEqual(match.touching(m, symbol), [])
+        item = match.base_item(m, symbol)
+        self.assertEqual(item, {"kind": "indirect", "supports": "identity",
+                                "at": f"7mfk:{site:08x}", "mode": "base", "value": offset})
+        self.assertIsNone(match.verify(m, symbol, item))
+        base = address - offset - 4
+        self.assertEqual(match.verify(m, symbol, {**item, "value": offset + 4}),
+                         f"L0 of 7mfk holds no reference to the base {base:08x} at {site:08x}")
+
+    def test_the_base_of_a_vector_slot_is_the_first_load_of_vbr(self):
+        self.assertEqual(match.vector_bases(match.code("7mfk")),
+                         {0x2688: 0x20004, 0x21BA8: 0x20004})
+        self.check("hook", HOOK, 0x2688, 0x39C)
+
+    def test_the_base_of_a_table_slot_is_the_literal_that_the_dispatcher_loads(self):
+        self.check("hook", LATCH, 0x212EE, 0x104)
+
+    def test_the_base_of_an_array_word_is_the_nearest_touched_word_below(self):
+        self.check("ram", INJECTION, 0x4EC9E, 2)
+
+    def test_other_modes_hold_here(self):
+        m = self.model()
+        symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+        self.assertIsNone(match.verify(m, symbol, {"kind": "indirect", "supports": "identity",
+                                                   "at": "7mfk:00000000", "mode": "gbr"}))
+
+
+class ManualTest(unittest.TestCase):
+    """`manual` evidence: the MCU places the data register of HCAN1 mailbox
+    26 at ffffdc48 on every layout."""
+
+    def model(self, address=MAILBOX_DATA, key=MAILBOX_KEY):
+        def declare(b):
+            b.symbol("7mfk", "reg", MAILBOX_DATA, "test", group=("reg", "data"), evidence=[
+                {"kind": "manual", "supports": "identity", "key": MAILBOX_KEY}])
+            b.symbol("jk78c", "reg", address, "test", group=("reg", "data"), evidence=[
+                {"kind": "manual", "supports": "homology", "key": key,
+                 "to": f"7mfk:{MAILBOX_DATA:08x}"}])
+        return model_of(declare)
+
+    def verify(self, m, address):
+        symbol = m.symbols[SymbolKey("jk78c", "reg", address)]
+        return match.verify(m, symbol, symbol.evidence[0])
+
+    def test_one_register_of_the_mcu_manual_is_homologous(self):
+        m = self.model()
+        self.assertIsNone(self.verify(m, MAILBOX_DATA))
+        home, other = SymbolKey("7mfk", "reg", MAILBOX_DATA), SymbolKey("jk78c", "reg",
+                                                                          MAILBOX_DATA)
+        ranks = match.grounded(m, [other])
+        # The hardware manual grounds the register at `code`; manual homology
+        # reaches it at `candidate`.
+        self.assertEqual((ranks[home][0], ranks[other][0]), (CODE, match.CANDIDATE))
+
+    def test_another_address_or_key_refutes_the_homology(self):
+        self.assertEqual(self.verify(self.model(address=0xFFFFDC08), 0xFFFFDC08),
+                         "7mfk-ffffdc48/reg lies at ffffdc48, not at ffffdc08")
+        self.assertEqual(self.verify(self.model(key="SH7058S-HW-17.3.1"), MAILBOX_DATA),
+                         "7mfk-ffffdc48/reg cites no SH7058S-HW-17.3.1 as identity evidence")
+        self.assertEqual(self.verify(self.model(key="esm-ec163"), MAILBOX_DATA),
+                         "key esm-ec163 cites no hardware manual of the MCU")
+
+    def test_a_manual_grounds_code_only_for_the_identity_of_a_register(self):
+        m = self.model()
+        register = m.symbols[SymbolKey("7mfk", "reg", MAILBOX_DATA)]
+        item = register.evidence[0]
+        self.assertEqual(match.rank(item, register, m), CODE)
+        self.assertEqual(match.rank({**item, "key": "esm-ec163"}, register, m), match.CANDIDATE)
+        self.assertEqual(match.rank(item), match.CANDIDATE)
+
+
+class TestEvidenceTest(unittest.TestCase):
+    def test_a_test_item_names_a_test_function_of_the_repository(self):
+        m = model_of(lambda b: b.symbol("1me3b", "const", ROUTINE, "test",
+                                        group=("const", "routine")))
+        symbol = m.symbols[SymbolKey("1me3b", "const", ROUTINE)]
+        item = {"kind": "test", "supports": "identity", "path": ROUTINE_TEST[0],
+                "key": ROUTINE_TEST[1]}
+        self.assertIsNone(match.verify(m, symbol, item))
+        self.assertEqual(match.verify(m, symbol, {**item, "key": "test_missing"}),
+                         f"{ROUTINE_TEST[0]} defines no function test_missing")
+        self.assertEqual(match.verify(m, symbol, {**item, "path": "patches/tests/missing.py"}),
+                         "patches/tests/missing.py is no Python file of the repository")
 
 
 class ImageBytesTest(unittest.TestCase):

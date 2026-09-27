@@ -447,11 +447,14 @@ because both differ by layout.
   an anchor.
 - Homology evidence is `masked-match`, `literal-pool`, `function-match`,
   `call-ordinal`, `interp-contract`, `did-table`, or `byte-identical`
-  evidence, or `l0` evidence of the symbol's own layout. The same kinds apply
-  inside a family and across families, and a match that is not unique grounds
-  no more than `candidate`. `vendor`, `registry`, and `diagnostic` evidence
-  never supports homology, and name, neighbourhood, or graph similarity is
-  not evidence.
+  evidence, `l0` evidence of the symbol's own layout, or `manual` evidence
+  for a place that the MCU sets, such as a register or a slot of the vector
+  table: the symbol and its counterpart lie at one address, and the
+  counterpart cites the same key of the MCU hardware manual as identity
+  evidence. The same kinds apply inside a family and across families, and a
+  match that is not unique grounds no more than `candidate`. `vendor`,
+  `registry`, and `diagnostic` evidence never supports homology, and name,
+  neighbourhood, or graph similarity is not evidence.
 - A symbol stores no calibration values. The image catalog fixes the bytes of
   every image, and `kb show` reads the values from them.
 
@@ -560,11 +563,11 @@ A link is stored at one end and read in both directions.
 | `byte-identical` | Identical bytes over a range: the exact hash of two functions, or the storage of two data symbols on every image | `at`, `to`, `sha256` | `code` |
 | `rom-bytes` | Bytes of every image of the layout at `at` | `at`, `value` | `code` |
 | `trace` | The claim follows through the contract or behavior of a function | `to`, `relies` | `code` |
-| `indirect` | An access that L0 does not attribute directly | `at`, `mode` | `code` |
+| `indirect` | An access that L0 does not attribute directly; with mode `base`, the instruction or pool literal at `at` references the base, the address of the symbol minus `value` | `at`, `mode` | `code` |
 | `spec` | A narrow specification of the repository, a decoding rule, or a published standard | `path` or `key` | `code` |
 | `arithmetic` | An equation that `kb check` evaluates | `value` | `code` |
-| `test` | An executable test of the repository | `path`, `key` | `code` |
-| `manual` | A vehicle or MCU manual of the source packs | `key` | `candidate`; `code` for the identity of a `reg` meaning from the MCU hardware manual |
+| `test` | An executable test of the repository: the Python file `path` defines the test function `key` | `path`, `key` | `code` |
+| `manual` | A vehicle or MCU manual of the source packs; a key with a prefix of `[manual] mcu` of `tools/kb/config.toml` cites the MCU hardware manual | `key` | `candidate`; `code` for the identity of a `reg` meaning from the MCU hardware manual |
 | `diagnostic` | A record of the diagnostic corpora | `key` | `candidate` |
 | `registry` | A legacy or vendor definition entry | `value` or `path` | `candidate` |
 | `vendor` | A competitor product or catalog | `key` | `candidate` |
@@ -586,6 +589,11 @@ A link is stored at one end and read in both directions.
   functions whose hash of one class is unique on both layouts.
 - `kb check` evaluates every `arithmetic` equation and compares every
   `rom-bytes` value with the images of the layout.
+- An `indirect` base item places a datum or a slot that no instruction
+  touches: at the first load of VBR when the symbol lies in the vector table
+  that VBR bases, else at the first instruction that touches the nearest
+  address below the symbol, within `[match] base` bytes, as a literal, an
+  access, or a census operand.
 
 ### 7.7 Analogs
 
@@ -728,7 +736,9 @@ Features:
   `symbol` and a `note`; the symbol keeps its own meaning, and the key names
   no symbol on that layout. The VQ37VHR rolling launch drives the final
   six-cylinder inhibit mask, a meaning of its own, in the role that the fuel
-  inhibit state byte fills on the dual-CVTC layouts.
+  inhibit state byte fills on the dual-CVTC layouts. A register is physical:
+  a key whose register lies at another address on a layout than on `7mfk`
+  takes there the meaning of that register in its role.
 - An address in a target key takes the form of a symbol address; sizes,
   deltas, masks, and indices stay numbers.
 
@@ -2166,7 +2176,11 @@ symbol at the target and the evidence as `note`, and neither the row nor the
 address profile entry of the key on that layout joins the meaning of the key.
 The address of that entry must equal the target of the row; a different
 address goes to the audit. The source of the row still gives the `7mfk`
-symbol of the key.
+symbol of the key. A `reg` key of an address profile whose address differs
+from the address of its `7mfk` symbol fills a role in the same way; the
+registers at one address form one meaning on every layout that states them.
+The records at the addresses of the image-byte keys of `can_symbols` are one
+`uint32` word each.
 
 The conversion types the evidence of every `mapped` and `target-specific`
 symbol row from L0 with the matchers of the `homology` check: literal pools,

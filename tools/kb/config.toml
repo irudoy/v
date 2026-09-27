@@ -85,6 +85,11 @@ io = ["ffffc000", "100000000"]
 [tokens]
 manual = ["esm-", "sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
 
+# Keys of `manual` evidence that start with one of these prefixes cite the
+# SH7059/SH7058S hardware manual (tools/kb/SPEC.md, section 7.6).
+[manual]
+mcu = ["sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
+
 [vocab]
 quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "speed",
             "temp", "time", "voltage"]
@@ -96,9 +101,11 @@ unit = ["cm2", "deg", "degBTDC", "degC", "degCA", "g/s", "ms", "Nm", "percent", 
 attempts = 1000
 
 # Homology matchers (tools/kb/SPEC.md, section 7.6): the least number of equal
-# masked instruction words of a region that matches.
+# masked instruction words of a region that matches, and the most bytes below
+# a symbol that the placement of an `indirect` base item searches for its base.
 [match]
 words = 12
+base = 1024
 
 # Contradictions of the writer gate that await review, each the symbol and the
 # store site on its layout. The gate fails on every other contradiction and on

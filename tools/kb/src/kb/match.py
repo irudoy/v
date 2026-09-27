@@ -29,6 +29,7 @@ the L0 manifest, the image digest, the census plan, and the sources of this
 module and of the derivations.
 """
 
+import ast
 import bisect
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -43,6 +44,11 @@ from kb import derive, l0, repo, sh2, sites, vocab
 from kb.model import SymbolKey
 
 DEFAULT_WORDS = 12
+DEFAULT_BASE = 1024
+# `ldc Rm,VBR` with the register field clear, and the 256 exception vectors
+# of four bytes from VBR (SH7059/SH7058S hardware manual, section 7.2.6).
+LDC_VBR = 0x402E
+VECTOR_TABLE = 0x400
 GBR_DISPLACEMENT = frozenset({0xC0, 0xC1, 0xC2, 0xC4, 0xC5, 0xC6})
 CONDITIONAL = frozenset({0x89, 0x8B, 0x8D, 0x8F})
 MOVA = 0xC7
@@ -52,7 +58,8 @@ HASHES = ("exact", "mnemonic", "shape")
 STORES = frozenset({"store", "update"})
 STORAGE_BYTES = {**sites.STORAGE_BYTES, "float32": 4}
 HOMOLOGY_KINDS = frozenset({"masked-match", "literal-pool", "function-match", "call-ordinal",
-                            "interp-contract", "did-table", "byte-identical", "l0"})
+                            "interp-contract", "did-table", "byte-identical", "l0",
+                            "manual"})
 COUNTED = frozenset({"masked-match", "function-match", "call-ordinal"})
 # Interpolation keys that two layouts share under one contract; `kernel` names
 # a function of each layout.
@@ -840,6 +847,72 @@ def _verify_interp_contract(ctx):
             f"entry {ctx.item['key']} of {other.key.key}")
 
 
+def mcu_manual(model, key):
+    """Whether a `manual` key cites the hardware manual of the MCU: it starts
+    with a prefix of `[manual] mcu` of tools/kb/config.toml."""
+    prefixes = tuple(model.config.get("manual", {}).get("mcu", ()))
+    return bool(prefixes) and str(key or "").startswith(prefixes)
+
+
+def _verify_indirect(ctx):
+    """A `base` item: the instruction or pool literal at `at` references the
+    base, the address of the symbol minus `value`. Other modes hold here."""
+    if ctx.item["mode"] != "base":
+        return None
+    failure = _own(ctx)
+    if failure:
+        return failure
+    offset = _int(ctx.item.get("value"))
+    if offset is None:
+        return "a base item states the offset of the symbol from its base as `value`"
+    layout, site = ctx.at
+    base = (ctx.symbol.address - offset) & sh2.MASK
+    if base in sites.references(layout, ctx.model.root).get(site, ()):
+        return None
+    return f"L0 of {layout} holds no reference to the base {base:08x} at {site:08x}"
+
+
+def _verify_manual(ctx):
+    """A homology item: the symbol and its counterpart lie at one address, and
+    the counterpart cites the same key of the hardware manual of the MCU as
+    identity evidence. Identity items hold here."""
+    if ctx.item.get("supports", "identity") != "homology":
+        return None
+    failure = _counterpart(ctx)
+    if failure:
+        return failure
+    key = ctx.item["key"]
+    if not mcu_manual(ctx.model, key):
+        return f"key {key} cites no hardware manual of the MCU"
+    if ctx.other.address != ctx.symbol.address:
+        return (f"{ctx.other.key.key} lies at {ctx.other.address:08x}, "
+                f"not at {ctx.symbol.address:08x}")
+    if not any(item.get("kind") == "manual" and item.get("key") == key
+               and item.get("supports", "identity") == "identity"
+               for item in ctx.other.evidence):
+        return f"{ctx.other.key.key} cites no {key} as identity evidence"
+    return None
+
+
+@lru_cache(maxsize=None)
+def _functions_of(path):
+    """The names of the functions that a Python file defines."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    return frozenset(node.name for node in ast.walk(tree)
+                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)))
+
+
+def _verify_test(ctx):
+    """`path` is a Python file of the repository that defines the test
+    function `key`."""
+    path = ctx.model.root / str(ctx.item["path"])
+    if path.suffix != ".py" or not path.is_file():
+        return f"{ctx.item['path']} is no Python file of the repository"
+    if ctx.item["key"] not in _functions_of(path):
+        return f"{ctx.item['path']} defines no function {ctx.item['key']}"
+    return None
+
+
 VERIFIERS = {
     "l0": _verify_l0,
     "rom-bytes": _verify_rom_bytes,
@@ -850,19 +923,29 @@ VERIFIERS = {
     "literal-pool": _verify_literal_pool,
     "call-ordinal": _verify_call_ordinal,
     "interp-contract": _verify_interp_contract,
+    "indirect": _verify_indirect,
+    "manual": _verify_manual,
+    "test": _verify_test,
 }
 
 
 # Grounding.
 
-def rank(item):
-    """The level rank that an evidence item grounds: its kind's level, and at
-    most `candidate` for a counted match whose count is not 1."""
-    _, level = vocab.EVIDENCE_KINDS.get(item.get("kind"), ((), None))
+def rank(item, symbol=None, model=None):
+    """The level rank that an evidence item of `symbol` grounds: its kind's
+    level, `code` for `manual` identity evidence of a `reg` symbol from the
+    hardware manual of the MCU, and at most `candidate` for a counted match
+    whose count is not 1."""
+    kind = item.get("kind")
+    _, level = vocab.EVIDENCE_KINDS.get(kind, ((), None))
     if level is None:
         return -1
     found = vocab.LEVEL_RANK[level]
-    if item.get("kind") in COUNTED and _int(item.get("count")) != 1:
+    if (kind == "manual" and symbol is not None and symbol.kind == "reg"
+            and item.get("supports", "identity") == "identity"
+            and mcu_manual(model, item.get("key"))):
+        found = vocab.LEVEL_RANK["code"]
+    if kind in COUNTED and _int(item.get("count")) != 1:
         found = min(found, CANDIDATE)
     return found
 
@@ -877,7 +960,8 @@ def _anchor(model, symbol, failures):
     or a `relies` link of its meaning with evidence of that layout."""
     best = -1
     for item in symbol.evidence:
-        if item.get("supports", "identity") != "identity" or rank(item) <= best:
+        if (item.get("supports", "identity") != "identity"
+                or rank(item, symbol, model) <= best):
             continue
         at = location(item.get("at"))
         if at is not None and at[0] != symbol.layout:
@@ -888,7 +972,7 @@ def _anchor(model, symbol, failures):
         if failure is not None:
             failures.append((item, failure))
             continue
-        best = rank(item)
+        best = rank(item, symbol, model)
     meaning = symbol.meaning
     for link in meaning.links if meaning is not None else ():
         if (link.owner is not meaning or not link.props.get("relies")
@@ -929,7 +1013,7 @@ def grounded(model, keys):
                 continue
             other = context(model, symbol, item).other
             if other is not None and other.key != key:
-                edges[key].append((other.key, rank(item)))
+                edges[key].append((other.key, rank(item, symbol, model)))
                 pending.append(other.key)
     level = dict(anchors)
     changed = True
@@ -1069,6 +1153,44 @@ def touching(model, symbol):
     here = code(symbol.layout, model.root)
     return sorted({site for address in range(symbol.address, symbol.address + _span(symbol))
                    for site, _ in here.sites_of(address)})
+
+
+def vector_bases(found):
+    """{site: base} of the PC-relative loads of `found`, a `Code`, whose
+    register the next instruction moves into VBR."""
+    bases = {}
+    for site, (_, value) in found.literals.items():
+        word = found.raw(site)
+        if (word & 0xF000 == 0xD000 and site + 2 in found.owner
+                and found.raw(site + 2) == LDC_VBR | word & 0x0F00):
+            bases[site] = value
+    return bases
+
+
+def base_item(model, symbol):
+    """The `indirect` base item of a symbol that no instruction of L0 touches:
+    at the first load of VBR when the symbol lies in the vector table that VBR
+    bases, else at the first instruction that touches the nearest address
+    below the symbol, within `[match] base` bytes, as a literal, an access,
+    or a census operand and references it in L0. None when neither holds."""
+    layout = symbol.layout
+    found = code(layout, model.root)
+    references = sites.references(layout, model.root)
+    for site, base in sorted(vector_bases(found).items()):
+        if 0 <= symbol.address - base < VECTOR_TABLE:
+            return _base_item(layout, site, symbol.address - base)
+    limit = int(model.config.get("match", {}).get("base", DEFAULT_BASE))
+    for base in range(symbol.address - 1, max(symbol.address - limit, 0) - 1, -1):
+        held = sorted(site for site, relation in found.sites_of(base)
+                      if relation != "call" and base in references.get(site, ()))
+        if held:
+            return _base_item(layout, held[0], symbol.address - base)
+    return None
+
+
+def _base_item(layout, site, offset):
+    return {"kind": "indirect", "supports": "identity", "at": f"{layout}:{site:08x}",
+            "mode": "base", "value": offset}
 
 
 def _call_ordinals(model, symbol, other):

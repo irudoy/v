@@ -20,6 +20,11 @@
   same file places binds a role of its feature: the key and the symbol enter
   `roles` of the feature target of the layout, and neither the row nor the
   profile entry of the key on that layout joins a meaning.
+- A register is physical: a `reg` key at another address than on the
+  canonical layout binds a role of its feature with the register at that
+  address, whose symbols on every layout form one meaning.
+- The records that the image-byte keys of `can_symbols` state are one 32-bit
+  word each.
 - `render_profiles` and `render_correspondence` give the canonical text of the
   address profiles and of a correspondence file.
 """
@@ -67,6 +72,10 @@ ROM_BYTES = {"feedback_config_record_value": "feedback_config_record_address",
              "mailbox_record_stock": "mailbox_record_address",
              "occupied_mailbox_record_stock": "occupied_mailbox_record_address"}
 CAN_KEYS = ("mailbox_index", "mailbox_mask", "feedback_payload_offset")
+# The keys whose records the image-byte keys state: one four-byte record each,
+# as one 32-bit word.
+RECORDS = frozenset(ROM_BYTES.values())
+RECORD_STORAGE = "uint32"
 RUNTIME_KEYS = ("rom_size", "rom_delta", "ram_delta", "free_rom_start", "free_rom_end",
                 "injected_rom_start", "injected_rom_end", "free_ram_start", "free_ram_end",
                 "injected_ram_start", "injected_ram_end", "map_variant",
@@ -392,8 +401,17 @@ def _declare_keys(b, facts, targets):
                     "the addresses of the key lie in different spaces")
             continue
         group = (kind, "key", name)
+        if name in RECORDS:
+            b.props(group, {"storage": RECORD_STORAGE}, rows[0][3])
+        home = {address for layout, address, _, _ in rows if layout == CANONICAL}
         for layout, address, table, src in rows:
             role = facts.roles.get((layout, name))
+            if role is None and kind == "reg" and home and address not in home:
+                found[(layout, name)] = key = b.symbol(
+                    layout, kind, address, src, group=(kind, "register", address))
+                targets[(TABLE_FEATURE[table], layout)].setdefault("roles", {}).setdefault(
+                    name, {})["symbol"] = key
+                continue
             if role is None:
                 found[(layout, name)] = b.symbol(layout, kind, address, src, group=group)
                 continue
