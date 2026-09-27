@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013a26"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073334"
+to = "7mfk:0001219e"
+note = """
+the target coordinator 0007323e reads the exact table at ordinal 120 on the \
+default arm and 00013a2e at ordinal 154 on the alternate arm exactly as \
+1ND0A 0006f37a reads 00013c1a and 00013c22"""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c1a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f470"
+to = "7mfk:0001219e"
+note = """
+the branch on the default arm of the target state selector preserves the \
+source warm-transition table role"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001219e"
+former = ["congenial-spoonbill/tbl/7mfk-0001219e"]
+
+[[symbol]]
+layout = "jk00c"
+address = "0001448b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004c0f0"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001449b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004c0f4"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006462a"
+to = "7mfk:0001219e"
+note = """
+instruction-aligned branch preserves the source warm-transition table role \
+on the default arm of the target state selector"""

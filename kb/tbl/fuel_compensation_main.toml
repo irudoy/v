@@ -1,0 +1,65 @@
+[[symbol]]
+layout = "1me3b"
+address = "0000a0f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00033cca"
+to = "7mfk:0000a29a"
+note = """
+both target compensation accessors 0003357c and 000486e0 read the exact \
+surface on the first selector arm and 0000a1f4 on the second with the exact \
+axes 00013d06 and 00013d26 through the 16x16 uint8 leaf 000298b4 as 1ND0A \
+00030810 and 00044f1c read 0000a1c0 and 0000a2c0 through 000285f4"""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a1c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00030f5a"
+to = "7mfk:0000a29a"
+note = """
+the accessor on the default arm of the target state selector preserves exact \
+geometry and storage"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0000a29a"
+former = ["ambitious-coot/tbl/7mfk-0000a29a"]
+
+[[symbol]]
+layout = "jk00c"
+address = "0000a3de"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002d90a"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "0000a3ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002d90a"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009eba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0002fcf8"
+to = "7mfk:0000a29a"
+note = """
+mutual-best accessor preserves geometry axes and lookup role on the default \
+arm of the target state selector"""

@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011a55"
+name = "savvy-bobcat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00065a46"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013cda"
+name = "miniature-shark"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067d06"
+to = "7mfk:00065a46"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013cea"
+name = "authentic-wolverine"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067d06"
+to = "7mfk:00065a46"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

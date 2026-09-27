@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014c9a"
+name = "lumpy-weasel"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001708c"
+name = "cyan-firefly"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00061f2c"
+to = "7mfk:0005fea0"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000170ac"
+name = "daffodil-gharial"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00061f28"
+to = "7mfk:0005fea0"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

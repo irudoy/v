@@ -1,0 +1,83 @@
+[[symbol]]
+layout = "1me3b"
+address = "00016e86"
+name = "speedy-nightingale"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004775c"
+to = "7mfk:000155a0"
+note = """
+the exact 32-word axis pairs with the exact table 00014832 in 000473ec \
+0004b5a0 and 0004b688 through the 32-point uint16 leaf 0002b0d4 in the \
+alternating operand order of the 1ND0A readers 00043dc8 0004808c and \
+00048174"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016e02"
+name = "evasive-seagull"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044134"
+to = "7mfk:000155a0"
+note = "unique structural axis pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "000155a0"
+name = "orange-elephant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003b6c2"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017aa2"
+name = "enlightened-cougar"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003f33e"
+to = "7mfk:0003e5e6"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017ac2"
+name = "weightless-jellyfish"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003f33e"
+to = "7mfk:0003e5e6"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000167e4"
+name = "benign-camel"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:0008dbc0"
+to = "7mfk:0006f47c"
+count = 1
+value = 0
+note = "unique structural axis pair preserves interpolation-call order"

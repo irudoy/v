@@ -29,8 +29,8 @@ presentation and generated output.
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
-| `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
-| `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
+| `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | no, `kb` projection |
+| `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | no, `kb` projection |
 | `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | no, `kb` projection |
 | `vq37-native-tables.toml` | Exact VQ37 calibration tables and axes that have no canonical source, with stock value and accessor bindings and declared absent roles | no, `kb` projection |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
@@ -64,6 +64,10 @@ JK08A wrapper and permits target-only JK00D wrappers. Pair validation requires
 equal geometry, storage type, axis types, and interpolation family outside the
 addresses.
 
+`definition-projections.toml` and the `JK08A-*.definition-addresses.csv`
+files are projections of the `definitions` targets of
+`kb/feature/definitions.toml` and of the `tbl` and `axis` meanings in `kb/`
+(stage 3 of `tools/kb/SPEC.md`), and `uv run kb project` regenerates them.
 `definition-projections.toml` binds JK00C and JK00D to exact source and target
 image hashes. Its per-target correspondence CSV relocates every visible stock
 map and required axis with explicit status and evidence; `status`,

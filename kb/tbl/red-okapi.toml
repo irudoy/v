@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012472"
+name = "red-okapi"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001476f"
+name = "natural-manatee"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cda6"
+to = "7mfk:0004bcb2"
+count = 1
+value = 3
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001478f"
+name = "fuzzy-salmon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cdaa"
+to = "7mfk:0004bcb2"
+count = 1
+value = 3
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

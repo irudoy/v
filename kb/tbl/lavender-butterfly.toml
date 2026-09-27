@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000131a2"
+name = "lavender-butterfly"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015534"
+name = "archetypal-toad"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00064930"
+to = "7mfk:000626c0"
+count = 1
+value = 10
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015554"
+name = "gifted-cicada"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0006492c"
+to = "7mfk:000626c0"
+count = 1
+value = 10
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000154b0"
+name = "solemn-monkey"
+
+[[symbol]]
+layout = "jk00c"
+address = "000179b2"
+name = "optimal-catfish"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000574a8"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000179d2"
+name = "optimistic-buzzard"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000574a4"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

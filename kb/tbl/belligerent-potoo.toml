@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "000123ea"
+name = "belligerent-potoo"
+
+[[symbol]]
+layout = "jk00c"
+address = "000146e7"
+name = "therapeutic-dinosaur"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c4038"
+to = "7mfk:000be4bc"
+value = "000146e7"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014707"
+name = "sapphire-lyrebird"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c4044"
+to = "7mfk:000be4bc"
+value = "00014707"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

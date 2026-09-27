@@ -3,6 +3,30 @@ layout = "7mfk"
 address = "0000b43a"
 former = ["visionary-coyote/tbl/7mfk-0000b43a"]
 
+[[symbol]]
+layout = "jk00c"
+address = "0000b7be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c3670"
+note = """
+warm intake-cam target in the stock intake CVTC descriptor block at \
+0x000C386C beside the cold intake target and the intake correction table"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000b7ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c3674"
+note = """
+warm intake-cam target in the stock intake CVTC descriptor block at \
+0x000C3870 beside the cold intake target and the intake correction table"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

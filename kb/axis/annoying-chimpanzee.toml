@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018e46"
+name = "annoying-chimpanzee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00072f62"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001bea4"
+name = "juicy-grouse"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00076014"
+to = "7mfk:00073878"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001bec6"
+name = "nocturnal-ringtail"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00076014"
+to = "7mfk:00073878"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

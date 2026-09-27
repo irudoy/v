@@ -1,0 +1,77 @@
+[[symbol]]
+layout = "1me3b"
+address = "00011bfc"
+name = "snobbish-binturong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00098258"
+to = "7mfk:00010b8e"
+note = """
+the target torque coordinator 000980fe reads the exact engine-torque surface \
+with the exact axis 000162b4 through the 16x16 uint16 leaf 0002a0b4 with the \
+operand set of 1ND0A 00092456"""
+
+[[symbol]]
+layout = "1nd"
+address = "000120c8"
+name = "ruby-tiger"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000925ac"
+to = "7mfk:00010b8e"
+note = "unique engine-torque surface preserves geometry and exact storage"
+
+[[symbol]]
+layout = "7mfk"
+address = "00010b8e"
+name = "lyrical-dragon"
+
+[[symbol]]
+layout = "jk00c"
+address = "00012912"
+name = "feathered-rat"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067c4e"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00012922"
+name = "sweet-chachalaca"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067c4e"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00011d4e"
+name = "tomato-bullfinch"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00083b34"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = "unique structural map pair preserves normalized geometry"

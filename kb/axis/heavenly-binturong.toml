@@ -1,0 +1,81 @@
+[[symbol]]
+layout = "1me3b"
+address = "0001b018"
+name = "bald-lionfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac542"
+to = "7mfk:00018716"
+note = """
+exact-bytes pair 000b1688/000b9088 reads the exact axis at the same call \
+ordinal through the mixed-axis 16x16 leaf 0002b878"""
+
+[[symbol]]
+layout = "1nd"
+address = "0001af3e"
+name = "discerning-wolverine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5f8a"
+to = "7mfk:00018716"
+note = "unique structural axis pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018716"
+name = "heavenly-binturong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00073ade"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001b694"
+name = "notorious-marmoset"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007627a"
+to = "7mfk:00073ade"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001b6b6"
+name = "cream-cassowary"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007627a"
+to = "7mfk:00073ade"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001a8ea"
+name = "singing-skink"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00093c90"
+to = "7mfk:00074778"
+count = 1
+value = 3
+note = "unique structural axis pair preserves interpolation-call order"

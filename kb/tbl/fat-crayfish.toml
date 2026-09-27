@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000126a0"
+name = "fat-crayfish"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014a0d"
+name = "ginger-rook"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cbe4"
+to = "7mfk:0004bade"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014a2d"
+name = "helpful-partridge"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cbe8"
+to = "7mfk:0004bade"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

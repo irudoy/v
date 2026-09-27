@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013fc4"
+name = "tunneling-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007aba2"
+
+[[symbol]]
+layout = "jk00c"
+address = "000163d6"
+name = "idealistic-panda"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007da82"
+to = "7mfk:0007aba2"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000163f6"
+name = "smart-dormouse"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007da82"
+to = "7mfk:0007aba2"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

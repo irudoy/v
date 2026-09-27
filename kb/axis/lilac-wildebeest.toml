@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018886"
+name = "lilac-wildebeest"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b462"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001b814"
+name = "meaty-puffin"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007e342"
+to = "7mfk:0007b462"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001b836"
+name = "precise-moose"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007e342"
+to = "7mfk:0007b462"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

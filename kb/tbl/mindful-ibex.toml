@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015042"
+name = "mindful-ibex"
+
+[[symbol]]
+layout = "jk00c"
+address = "000174e4"
+name = "ludicrous-woodlouse"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:0003c430"
+to = "7mfk:0003b684"
+value = "000174e4"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017504"
+name = "enthusiastic-coua"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0003c430"
+to = "7mfk:0003b684"
+value = "00017504"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

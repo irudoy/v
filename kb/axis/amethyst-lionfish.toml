@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00008000"
+name = "amethyst-lionfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000735ac"
+
+[[symbol]]
+layout = "jk00c"
+address = "00008000"
+name = "great-squid"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00075d48"
+to = "7mfk:000735ac"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00008000"
+name = "stereotyped-viper"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00075d48"
+to = "7mfk:000735ac"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014304"
+name = "enchanted-tuatara"
+
+[[symbol]]
+layout = "jk00c"
+address = "000166f6"
+name = "provocative-cockle"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00077764"
+to = "7mfk:00074fc0"
+value = "000166f6"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016716"
+name = "awesome-rhino"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00077764"
+to = "7mfk:00074fc0"
+value = "00016716"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

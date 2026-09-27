@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012e82"
+name = "winged-quail"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001520f"
+name = "cerulean-goat"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c42a6"
+to = "7mfk:000be72a"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001522f"
+name = "nonchalant-frigatebird"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c42b2"
+to = "7mfk:000be72a"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

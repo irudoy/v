@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000121ae"
+name = "monumental-cockle"
+
+[[symbol]]
+layout = "jk00c"
+address = "000144a3"
+name = "stoic-weasel"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00053190"
+to = "7mfk:00051738"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000144b3"
+name = "organic-gopher"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0005318c"
+to = "7mfk:00051738"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

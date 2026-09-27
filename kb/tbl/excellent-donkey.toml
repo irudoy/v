@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012efe"
+name = "excellent-donkey"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001528b"
+name = "cyan-kangaroo"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c38b4"
+to = "7mfk:000bdd4c"
+value = "0001528b"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000152ab"
+name = "friendly-pheasant"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c38b8"
+to = "7mfk:000bdd4c"
+value = "000152ab"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

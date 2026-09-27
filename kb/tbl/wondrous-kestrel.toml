@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001220e"
+name = "wondrous-kestrel"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014503"
+name = "wine-raccoon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000532d0"
+to = "7mfk:00051878"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014513"
+name = "precious-beluga"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000532cc"
+to = "7mfk:00051878"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

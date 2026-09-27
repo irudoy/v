@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011b7b"
+name = "overjoyed-markhor"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b998c"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013e20"
+name = "capable-oxpecker"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000beab0"
+to = "7mfk:000b998c"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013e30"
+name = "notorious-zebra"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000bea90"
+to = "7mfk:000b998c"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

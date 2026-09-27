@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00023dd4"
+name = "cyber-capuchin"
+
+[[symbol]]
+layout = "jk00c"
+address = "00023ecc"
+name = "able-goshawk"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000ac886"
+to = "7mfk:000a725a"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00023ecc"
+name = "resolute-boa"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000ac872"
+to = "7mfk:000a725a"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1me3b"
+address = "0000935e"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:0000935e"
+to = "7mfk:0000942c"
+sha256 = "87e224612b3bed2bb45fa679efde5d32fa8aa81480174feaf1304a38e882fe68"
+note = """
+00030810/0003357c read the 0x2580 limiter scalar beside the shared \
+compensation surface at call ordinals 887 and 890 and 000a8f02/000afe8c read \
+it at ordinals 14 and 139 against 12 and 140"""
+
+[[symbol]]
+layout = "1nd"
+address = "000092c2"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:000092c2"
+to = "7mfk:0000942c"
+sha256 = "87e224612b3bed2bb45fa679efde5d32fa8aa81480174feaf1304a38e882fe68"
+note = "multiple homologous consumers preserve the 0x2580 limiter scalar role"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000942c"
+former = ["rough-falcon/tbl/7mfk-0000942c"]
+
+[[symbol]]
+layout = "jk00c"
+address = "000094d6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002dad6"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "000094e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002dad6"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000911e"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00030254"
+to = "7mfk:0002cf9c"
+value = "0000911e"
+note = """
+two homologous consumers preserve the limiter scalar role and stock value"""

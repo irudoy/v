@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000e98e"
+name = "banana-tody"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070328"
+
+[[symbol]]
+layout = "jk00c"
+address = "00010492"
+name = "jasmine-emu"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000104a2"
+name = "singing-hyena"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

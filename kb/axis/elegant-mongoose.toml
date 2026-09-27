@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001302e"
+name = "elegant-mongoose"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c0ddc"
+
+[[symbol]]
+layout = "jk00c"
+address = "000153bf"
+name = "careful-badger"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c6aa0"
+to = "7mfk:000c0ddc"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000153df"
+name = "keen-turtle"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c704e"
+to = "7mfk:000c0ddc"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

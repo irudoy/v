@@ -3,6 +3,38 @@ layout = "7mfk"
 address = "00008e36"
 name = "umber-bull"
 
+[[symbol]]
+layout = "jk00c"
+address = "00008e74"
+name = "giga-smilodon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ba8"
+note = """
+unique 8-byte constant block 28 14 00 00 50 24 02 02 at 0x008E74 referenced \
+as literal 0x00008E74 by the target exhaust CVTC conditioner 000c5b64 that \
+follows the target exhaust accessor 000c5a44; byte 0 is read at 000c5e46 \
+through the pool slot 000c5fd4 as the source conditioner 000bfe88 reads byte \
+0 at 000c01a4 through 000c0290"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00008e83"
+name = "pistachio-raven"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5be4"
+note = """
+unique 8-byte constant block 28 14 00 00 50 24 02 02 at 0x008E83 referenced \
+as literal 0x00008E83 by the target exhaust CVTC conditioner 000c5ba0 that \
+follows the target exhaust accessor 000c5a80; byte 0 is read at 000c5eae \
+through the pool slot 000c6054 as the source conditioner 000bfe88 reads byte \
+0 at 000c01a4 through 000c0290"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

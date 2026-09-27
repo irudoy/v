@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015ad0"
+name = "tangerine-beetle"
+
+[[symbol]]
+layout = "jk00c"
+address = "00018012"
+name = "magic-sawfish"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c6e84"
+to = "7mfk:000c11c0"
+value = "00018012"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00018032"
+name = "sweet-cockatoo"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c7438"
+to = "7mfk:000c11c0"
+value = "00018032"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

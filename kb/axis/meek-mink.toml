@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "000145ea"
+name = "meek-mink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007abb8"
+
+[[symbol]]
+layout = "jk00c"
+address = "000169ec"
+name = "holistic-catfish"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007da98"
+to = "7mfk:0007abb8"
+count = 1
+value = 3
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016a0c"
+name = "aloof-tuatara"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007da98"
+to = "7mfk:0007abb8"
+count = 1
+value = 3
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

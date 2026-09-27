@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015b10"
+name = "refreshing-ibex"
+
+[[symbol]]
+layout = "jk00c"
+address = "00018052"
+name = "skilled-duck"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c6e88"
+to = "7mfk:000c11c4"
+value = "00018052"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00018072"
+name = "rustling-pudu"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c743c"
+to = "7mfk:000c11c4"
+value = "00018072"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

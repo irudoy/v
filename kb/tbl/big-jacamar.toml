@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014de2"
+name = "big-jacamar"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017224"
+name = "manipulative-stallion"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00064cbc"
+to = "7mfk:00062a4c"
+count = 1
+value = 26
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017244"
+name = "cornflower-whale"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00064cb8"
+to = "7mfk:00062a4c"
+count = 1
+value = 26
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

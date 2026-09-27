@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011fb6"
+name = "aromatic-kagu"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014293"
+name = "victorious-crane"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000a8206"
+to = "7mfk:000a2f04"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000142a3"
+name = "glossy-jackal"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000a81f2"
+to = "7mfk:000a2f04"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

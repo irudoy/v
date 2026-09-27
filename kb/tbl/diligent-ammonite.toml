@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012a62"
+name = "diligent-ammonite"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014def"
+name = "classic-caterpillar"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000aa6d8"
+to = "7mfk:000a54ae"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014e0f"
+name = "huge-wildebeest"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000aa6c4"
+to = "7mfk:000a54ae"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

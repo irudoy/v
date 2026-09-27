@@ -3,6 +3,32 @@ layout = "7mfk"
 address = "0000b53a"
 name = "cunning-jackrabbit"
 
+[[symbol]]
+layout = "jk00c"
+address = "0000b8be"
+name = "wandering-cockatoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c364e"
+note = """
+cold intake-cam target in the stock intake CVTC descriptor block at \
+0x000C386C"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000b8ce"
+name = "watchful-kangaroo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c3652"
+note = """
+cold intake-cam target in the stock intake CVTC descriptor block at \
+0x000C3870"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

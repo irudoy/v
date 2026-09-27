@@ -96,6 +96,55 @@ consumers = [
 read = "guarded"
 
 [[projection]]
+path = "defs/JK08A-*.definition-addresses.csv"
+generator = "kb.adapters.definitions:addresses"
+stage = 3
+inputs = [
+    "kb/tbl/",
+    "kb/axis/",
+    "kb/feature/",
+    "l0/jk00c/",
+    "l0/jk00d/",
+    "l0/jk78c/",
+    "l0/1nd/",
+    "l0/1me3b/",
+    "tools/kb/src/kb/adapters/definitions.py",
+    "tools/kb/src/kb/match.py",
+]
+consumers = [
+    "tools/mapkit/definition_projections.py",
+    "tools/mapkit/definition_targets.py",
+    "tools/mapkit/emit_def.py",
+    "tools/mapkit/validate_map_switching.py",
+    "tools/maps/build_tracker.py",
+    "tools/romviz/model.py",
+    "tools/census_homology.py",
+    "tools/mapkit/tests/",
+]
+read = "guarded"
+
+[[projection]]
+path = "defs/definition-projections.toml"
+generator = "kb.adapters.definitions:projections"
+stage = 3
+inputs = [
+    "kb/feature/",
+    "defs/JK08A.overrides.toml",
+    "tools/mapkit/definition_projections.py",
+    "tools/kb/src/kb/adapters/definitions.py",
+]
+consumers = [
+    "tools/mapkit/definition_projections.py",
+    "tools/mapkit/definition_targets.py",
+    "tools/mapkit/emit_def.py",
+    "tools/mapkit/validate_map_switching.py",
+    "tools/maps/build_tracker.py",
+    "tools/romviz/model.py",
+    "tools/mapkit/tests/",
+]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

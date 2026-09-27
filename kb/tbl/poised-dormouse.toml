@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015182"
+name = "poised-dormouse"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017674"
+name = "fair-kudu"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000a2840"
+to = "7mfk:0009d5a4"
+count = 1
+value = 5
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017694"
+name = "majestic-mole"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000a282c"
+to = "7mfk:0009d5a4"
+count = 1
+value = 5
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

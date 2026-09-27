@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014e02"
+name = "giga-pigeon"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017244"
+name = "lurking-hyrax"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00064cca"
+to = "7mfk:00062a5a"
+count = 1
+value = 27
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017264"
+name = "precise-smilodon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00064cc6"
+to = "7mfk:00062a5a"
+count = 1
+value = 27
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,76 @@
+[[symbol]]
+layout = "1me3b"
+address = "00019c34"
+name = "bipedal-mosquito"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac542"
+to = "7mfk:000175c8"
+note = """
+exact-bytes pair 000b1688/000b9088 reads the exact surface with its exact \
+axes 0001b018 and 0001b588 at the same call ordinal through 0002b878"""
+
+[[symbol]]
+layout = "1nd"
+address = "00019b5c"
+name = "impossible-nuthatch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5f8a"
+to = "7mfk:000175c8"
+note = "unique structural pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "000175c8"
+name = "horned-hedgehog"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001a2b8"
+name = "nimble-bug"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007627a"
+to = "7mfk:00073ade"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001a2d8"
+name = "free-uakari"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007627a"
+to = "7mfk:00073ade"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001950c"
+name = "wondrous-lizard"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00093c90"
+to = "7mfk:00074778"
+count = 1
+value = 3
+note = "unique structural pair preserves interpolation-call order"

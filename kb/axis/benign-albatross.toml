@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012ec2"
+name = "benign-albatross"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe00"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001524f"
+name = "accomplished-myna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5a92"
+note = """
+engine-speed axis operand at the cold exhaust-target interpolation callsite"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001526f"
+name = "augmented-panda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5ace"
+note = """
+engine-speed axis operand at the cold exhaust-target interpolation callsite"""

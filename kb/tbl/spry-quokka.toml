@@ -1,0 +1,73 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012552"
+name = "spry-quokka"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001487f"
+name = "dancing-silkworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0005790a"
+note = """
+coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 \
+is the target mixture stage and carries this literal at the homologous \
+lookup site; storage contents equal the JK00D target"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001489f"
+name = "radical-baboon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00057906"
+note = """
+coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 \
+is the target mixture stage, equal to the JK00C stage 00057884 except one \
+displacement word, and carries this literal at the homologous lookup site"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013ad8"
+name = "successful-doberman"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00071fc0"
+to = "7mfk:00055b10"
+value = "00013ad8"
+note = """
+target mixture stage 00071dfa repeats source stage 0005594a instruction for \
+instruction and, while bit 6 of ffff23c6 selects the high-detonation \
+surface, passes this multiplier with RPM/50 snapshot ffff119d to the \
+homologous wrapper 0002829c"""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:00012552"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
+normalized-shape candidate in the 1ND0A export, and the multiplier does not \
+recur as exact storage in the 1ME3B image"""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:00012552"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
+normalized-shape candidate in the target export, and the multiplier does not \
+recur as exact storage in the target image"""

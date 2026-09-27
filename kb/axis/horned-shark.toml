@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012fd6"
+name = "horned-shark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005fe52"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015367"
+name = "onyx-cuttlefish"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00061ede"
+to = "7mfk:0005fe52"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015387"
+name = "elated-moth"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00061eda"
+to = "7mfk:0005fe52"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

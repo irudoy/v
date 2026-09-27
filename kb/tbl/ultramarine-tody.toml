@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0000f38e"
+name = "ultramarine-tody"
+
+[[symbol]]
+layout = "jk00c"
+address = "00010e92"
+name = "adaptable-curassow"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c6d36"
+to = "7mfk:000c1072"
+count = 1
+value = 7
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00010ea2"
+name = "purple-anaconda"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c72ea"
+to = "7mfk:000c1072"
+count = 1
+value = 7
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

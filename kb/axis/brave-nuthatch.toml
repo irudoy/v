@@ -1,0 +1,39 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011bd3"
+name = "brave-nuthatch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bcdca"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013e80"
+name = "tricky-quetzal"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c2c24"
+to = "7mfk:000bd0ec"
+value = "00013e80"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013e90"
+name = "fanatic-cuckoo"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c2bf4"
+to = "7mfk:000bd0ec"
+value = "00013e90"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

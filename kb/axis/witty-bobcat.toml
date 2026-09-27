@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f1e"
+name = "witty-bobcat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdb08"
+
+[[symbol]]
+layout = "jk00c"
+address = "000152ab"
+name = "ethereal-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c3670"
+note = "load axis operand at the warm intake-target interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "000152cb"
+name = "judicious-coati"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c3674"
+note = "load axis operand at the warm intake-target interpolation callsite"

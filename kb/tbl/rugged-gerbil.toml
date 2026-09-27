@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015022"
+name = "rugged-gerbil"
+
+[[symbol]]
+layout = "jk00c"
+address = "000174c4"
+name = "warping-bird"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:0003c434"
+to = "7mfk:0003b688"
+value = "000174c4"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000174e4"
+name = "tuscan-degu"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0003c434"
+to = "7mfk:0003b688"
+value = "000174e4"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

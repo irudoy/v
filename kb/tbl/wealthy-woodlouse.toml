@@ -1,0 +1,75 @@
+[[symbol]]
+layout = "1me3b"
+address = "00015996"
+name = "radical-oryx"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000465f6"
+to = "7mfk:00014274"
+note = """
+the target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact 64-point \
+table second after 00015916 through the 64-point implicit leaf 0002abec"""
+
+[[symbol]]
+layout = "1nd"
+address = "00015b42"
+name = "nippy-porcupine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00042fdc"
+to = "7mfk:00014274"
+note = "unique structural pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014274"
+name = "wealthy-woodlouse"
+
+[[symbol]]
+layout = "jk00c"
+address = "00016656"
+name = "purple-tortoise"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003b6e4"
+to = "7mfk:0003a930"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016676"
+name = "imaginary-nautilus"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003b6e4"
+to = "7mfk:0003a930"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001561c"
+name = "passionate-coot"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0003f0dc"
+to = "7mfk:0003ab60"
+value = "0001561c"
+note = "unique structural pair preserves interpolation-call order"

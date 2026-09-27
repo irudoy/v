@@ -1,0 +1,77 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008538"
+name = "important-quetzal"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00008538"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+normalized-shape pair 00076b90/0007b25e reads the exact 36 and 30 activation \
+and release threshold pair at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008524"
+name = "solemn-emu"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00008524"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+homologous state machine preserves the 36 and 30 activation and release \
+thresholds"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000085d9"
+name = "gifted-jackrabbit"
+
+[[symbol]]
+layout = "jk00c"
+address = "000085e4"
+name = "spectacular-prawn"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00050dda"
+note = """
+stationary rev-limiter activation and release thresholds read at both \
+comparison sites of target function 00050c9a which is the reviewed homolog \
+of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000085e4"
+name = "poised-vicugna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00050dd6"
+note = """
+stationary rev-limiter activation and release thresholds read at both \
+comparison sites of target function 00050c96 which is the reviewed homolog \
+of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000084ed"
+name = "rough-jackrabbit"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:000084ed"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+aligned activation and release threshold loads preserve the state-machine \
+role and stock values"""

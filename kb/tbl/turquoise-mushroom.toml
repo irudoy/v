@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001202e"
+name = "turquoise-mushroom"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001430b"
+name = "amazing-magpie"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003f02a"
+to = "7mfk:0003e2d2"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001431b"
+name = "quiet-baboon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003f02a"
+to = "7mfk:0003e2d2"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

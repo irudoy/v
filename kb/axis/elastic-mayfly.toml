@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014f82"
+name = "elastic-mayfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a568"
+
+[[symbol]]
+layout = "jk00c"
+address = "000173d4"
+name = "gregarious-flamingo"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007d2d8"
+to = "7mfk:0007a568"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000173f4"
+name = "mutant-goose"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007d2d8"
+to = "7mfk:0007a568"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

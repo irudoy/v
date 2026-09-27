@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012eaa"
+name = "strange-pogona"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdae6"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015237"
+name = "hypnotic-partridge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c364e"
+note = "load axis operand at the cold intake-target interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "00015257"
+name = "khaki-capybara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c3652"
+note = "load axis operand at the cold intake-target interpolation callsite"

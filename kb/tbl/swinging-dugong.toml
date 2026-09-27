@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012d22"
+name = "swinging-dugong"
+
+[[symbol]]
+layout = "jk00c"
+address = "000150af"
+name = "heretic-centipede"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000589b0"
+to = "7mfk:00056a98"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000150cf"
+name = "maroon-nyala"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000589ac"
+to = "7mfk:00056a98"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

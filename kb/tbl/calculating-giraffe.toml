@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011e46"
+name = "calculating-giraffe"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014123"
+name = "massive-buffalo"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cafa"
+to = "7mfk:0004b9f4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014133"
+name = "majestic-peccary"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cafe"
+to = "7mfk:0004b9f4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

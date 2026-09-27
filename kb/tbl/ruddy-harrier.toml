@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015082"
+name = "ruddy-harrier"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017524"
+name = "juicy-malkoha"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007594e"
+to = "7mfk:000731b2"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017544"
+name = "complex-lizard"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007594e"
+to = "7mfk:000731b2"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

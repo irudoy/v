@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012fb6"
+name = "cryptic-ara"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015347"
+name = "marigold-goat"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000ab8ac"
+to = "7mfk:000a6670"
+value = "00015347"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015367"
+name = "charming-chowchow"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000ab898"
+to = "7mfk:000a6670"
+value = "00015367"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

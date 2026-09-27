@@ -1,0 +1,81 @@
+[[symbol]]
+layout = "1me3b"
+address = "000158a6"
+name = "smiling-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a6660"
+to = "7mfk:00014114"
+note = """
+the same four normalized-shape pairs read the exact 16-word axis as the \
+second-axis operand at the same call ordinal through 0002a388"""
+
+[[symbol]]
+layout = "1nd"
+address = "00015a52"
+name = "liberal-chinchilla"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a068a"
+to = "7mfk:00014114"
+note = "unique structural axis pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014114"
+name = "rampant-poodle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070328"
+
+[[symbol]]
+layout = "jk00c"
+address = "000164e6"
+name = "persimmon-squid"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016506"
+name = "mini-boar"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001552c"
+name = "brawny-jerboa"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:000949c8"
+to = "7mfk:000754ac"
+count = 1
+value = 4
+note = "unique structural axis pair preserves interpolation-call order"

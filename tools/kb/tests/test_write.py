@@ -67,7 +67,7 @@ class PlanTest(unittest.TestCase):
         key = SymbolKey("jk00c", "tbl", TABLE_JK00C)
         meaning = result.meaning_of(key)
         self.assertEqual(meaning.key, TABLE)
-        self.assertEqual(sorted(meaning.symbols), ["7mfk", "jk00c", "jk00d"])
+        self.assertEqual(sorted(meaning.symbols), ["7mfk", "jk00c"])
         self.assertEqual(result.symbols[key].generated, bound["name"])
         self.assertIn(key, result.file_evidence)
         self.assertEqual(change.lines, [
@@ -129,8 +129,8 @@ class PlanTest(unittest.TestCase):
                       self.refused(bind(TABLE, "jk00c:000142d4")))
         self.assertIn("jk00c:0004b27c is vivid-capuchin/fn/jk00c-0004b27c; `kb merge`",
                       self.refused(bind("adaptable-fulmar/fn", "jk00c:0004b27c")))
-        self.assertIn(f"{TABLE} has sensible-muskox/tbl/jk00d-000142e3 on jk00d",
-                      self.refused(bind(TABLE, "jk00d:000142e4")))
+        self.assertIn(f"{THROTTLE} has {THROTTLE}/jk00d-ffff17ec on jk00d",
+                      self.refused(bind(THROTTLE, "jk00d:ffff17ee")))
         self.assertIn(f"`kb bind {THROTTLE} jk78c:{THROTTLE_JK78C:08x}` records it",
                       self.refused({"cmd": "unresolved", "meaning": THROTTLE, "layout": "jk78c"}))
 

@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012c4a"
+name = "fluorescent-jellyfish"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014fd7"
+name = "jasmine-ostrich"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003bb12"
+to = "7mfk:0003ad5e"
+count = 1
+value = 3
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014ff7"
+name = "magenta-mastodon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003bb12"
+to = "7mfk:0003ad5e"
+count = 1
+value = 3
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

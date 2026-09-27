@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012a32"
+name = "dark-sawfish"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014db7"
+name = "acrid-muskox"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0005230c"
+to = "7mfk:0005088a"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014dd7"
+name = "gleaming-carp"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00052308"
+to = "7mfk:0005088a"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

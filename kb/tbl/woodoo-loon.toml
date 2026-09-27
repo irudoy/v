@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012126"
+name = "woodoo-loon"
+
+[[symbol]]
+layout = "jk00c"
+address = "000143fb"
+name = "arcane-ringtail"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003d2d0"
+to = "7mfk:0003c51c"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001440b"
+name = "shaggy-hyena"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003d2d0"
+to = "7mfk:0003c51c"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

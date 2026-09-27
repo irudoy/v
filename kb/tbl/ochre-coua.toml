@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013182"
+name = "ochre-coua"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015514"
+name = "almond-caterpillar"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00064926"
+to = "7mfk:000626b6"
+count = 1
+value = 9
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015534"
+name = "discreet-spider"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00064922"
+to = "7mfk:000626b6"
+count = 1
+value = 9
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

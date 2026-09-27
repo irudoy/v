@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014fa2"
+name = "petite-cobra"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017404"
+name = "portable-toad"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007d2d8"
+to = "7mfk:0007a568"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017424"
+name = "maroon-rooster"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007d2d8"
+to = "7mfk:0007a568"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -170,9 +170,10 @@ class DefinitionAdapterTest(unittest.TestCase):
     def test_the_function_kind_is_the_kind_of_the_row_evidence(self):
         m = model()
         symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x000104A2)]
-        found = [(item["kind"], item["to"]) for item in symbol.evidence
-                 if item.get("supports") == "homology"]
-        self.assertEqual(found, [("call-ordinal", SymbolKey("7mfk", "tbl", 0x0000E98E))])
+        state, item = definitions.row_item(symbol)
+        self.assertEqual((state, item["kind"], item["to"]),
+                         (definitions.HOMOLOGOUS, "call-ordinal", "7mfk:000734d4"))
+        self.assertIsNone(match.verify(m, symbol, item))
 
     def test_a_reviewed_target_is_an_anchor_of_the_source_meaning(self):
         m = model()

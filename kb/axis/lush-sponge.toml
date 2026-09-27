@@ -1,0 +1,54 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011cd8"
+name = "lush-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000559d0"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013f9d"
+name = "feathered-sparrow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0005790a"
+note = """
+coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 \
+is the target mixture stage and carries this literal at the homologous \
+lookup site; storage contents equal the JK00D target"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013fad"
+name = "granite-mosquito"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00057906"
+note = """
+coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 \
+is the target mixture stage, equal to the JK00C stage 00057884 except one \
+displacement word, and carries this literal at the homologous lookup site"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013417"
+name = "gray-dragonfly"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00071fc4"
+to = "7mfk:00055b14"
+value = "00013417"
+note = """
+target mixture stage 00071dfa passes this RPM axis with RPM/50 snapshot \
+ffff119d at the homologous multiplier lookup; scheduler 00020f1a copies it \
+from ffff11d1, which 0003b87e stores as min(255, ffff11d4 >> 5) like source \
+byte ffff11e6"""

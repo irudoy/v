@@ -1,0 +1,62 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013ed8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007bd4a"
+to = "7mfk:000126e4"
+note = """
+the target DFCO coordinator 0007bb36 reads the exact held-request table and \
+the exact rising-edge table 00013f38 as an adjacent pair with one RAM \
+operand through 0002aa48 as 1ND0A 00077464 reads 000140c4 and 00014104"""
+
+[[symbol]]
+layout = "1nd"
+address = "000140c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00077480"
+to = "7mfk:000126e4"
+note = """
+homologous DFCO coordinator preserves the held-request table role and \
+near-exact calibration shape"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000126e4"
+former = ["huge-buzzard/tbl/7mfk-000126e4"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014a51"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000515b6"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014a71"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000515b2"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013c5a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006bb52"
+to = "7mfk:000126e4"
+note = "homologous coordinator preserves lookup order and exact map bytes"

@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012e3a"
+name = "foamy-rhino"
+
+[[symbol]]
+layout = "jk00c"
+address = "000151c7"
+name = "thick-tapir"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c2c20"
+to = "7mfk:000bd0e8"
+value = "000151c7"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000151e7"
+name = "quantum-lizard"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c2bf0"
+to = "7mfk:000bd0e8"
+value = "000151e7"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

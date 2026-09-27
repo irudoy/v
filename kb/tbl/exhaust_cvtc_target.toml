@@ -3,6 +3,30 @@ layout = "7mfk"
 address = "0000b33a"
 former = ["daffy-urchin/tbl/7mfk-0000b33a"]
 
+[[symbol]]
+layout = "jk00c"
+address = "0000b6be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ab4"
+note = """
+warm exhaust-cam target in the stock exhaust CVTC descriptor block at \
+0x000C5B4C beside the cold exhaust target and the exhaust correction table"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000b6ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5af0"
+note = """
+warm exhaust-cam target in the stock exhaust CVTC descriptor block at \
+0x000C5B88 beside the cold exhaust target and the exhaust correction table"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

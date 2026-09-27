@@ -3,6 +3,36 @@ layout = "7mfk"
 address = "00008e3c"
 name = "imported-civet"
 
+[[symbol]]
+layout = "jk00c"
+address = "00008e7a"
+name = "tough-kiwi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5bfa"
+note = """
+byte 6 of the unique 8-byte constant block at 0x008E74; read by the target \
+exhaust CVTC conditioner 000c5b64 at 000c5bfa through the pool slot 000c5d94 \
+as the source conditioner 000bfe88 reads byte 6 at 000bff1e through \
+000c0034"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00008e89"
+name = "powerful-loon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5c32"
+note = """
+byte 6 of the unique 8-byte constant block at 0x008E83; read by the target \
+exhaust CVTC conditioner 000c5ba0 at 000c5c32 through the pool slot 000c5df0 \
+as the source conditioner 000bfe88 reads byte 6 at 000bff1e through \
+000c0034"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

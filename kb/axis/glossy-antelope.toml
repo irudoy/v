@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f9a"
+name = "glossy-antelope"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdb32"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015327"
+name = "olivine-emu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c369a"
+note = """
+engine-speed axis operand at the intake-correction interpolation callsite"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015347"
+name = "lavender-dachshund"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c369e"
+note = """
+engine-speed axis operand at the intake-correction interpolation callsite"""

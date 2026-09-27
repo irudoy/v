@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012d42"
+name = "elastic-goldfish"
+
+[[symbol]]
+layout = "jk00c"
+address = "000150cf"
+name = "vigilant-capybara"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00058a06"
+to = "7mfk:00056aee"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000150ef"
+name = "violet-nautilus"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00058a02"
+to = "7mfk:00056aee"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

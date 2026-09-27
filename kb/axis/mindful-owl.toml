@@ -1,0 +1,52 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011cc0"
+name = "mindful-owl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000559b6"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013f85"
+name = "realistic-ara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000578f0"
+note = """
+coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 \
+is the target mixture stage and carries this literal at the homologous \
+lookup site; storage contents equal the JK00D target"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013f95"
+name = "marigold-cricket"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000578ec"
+note = """
+coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 \
+is the target mixture stage, equal to the JK00C stage 00057884 except one \
+displacement word, and carries this literal at the homologous lookup site"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001340f"
+name = "utopian-taipan"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00071fb4"
+to = "7mfk:00055b04"
+value = "0001340f"
+note = """
+target mixture stage 00071dfa passes this RPM axis with RPM word ffff11ac at \
+the homologous lookup of map 0000a3ca"""

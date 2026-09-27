@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018de6"
+name = "vagabond-seagull"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001be44"
+name = "tentacled-marmoset"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007dfd4"
+to = "7mfk:0007b0f4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001be66"
+name = "unnatural-eagle"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007dfd4"
+to = "7mfk:0007b0f4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

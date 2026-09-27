@@ -1,0 +1,72 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013c7e"
+name = "vagabond-hummingbird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007b2c4"
+to = "7mfk:000124d2"
+note = """
+normalized-shape pair 00076b90/0007b25e reads the exact table at the same \
+call ordinal through the 16-point implicit leaf 0002aa48"""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ea2"
+name = "ultraviolet-crocodile"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00076bf6"
+to = "7mfk:000124d2"
+note = """
+homologous state-machine accessor preserves geometry and exact table bytes"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000124d2"
+name = "wooden-moose"
+
+[[symbol]]
+layout = "jk00c"
+address = "000147cf"
+name = "vanilla-warthog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00050d1c"
+note = """
+stationary rev-limiter step table literal preceding reviewed interpolation \
+entry 00026f8c in target function 00050c9a which is the reviewed homolog of \
+JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000147ef"
+name = "rampant-cormorant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00050d18"
+note = """
+stationary rev-limiter step table literal preceding reviewed interpolation \
+entry 00026f8c in target function 00050c96 which is the reviewed homolog of \
+JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013a70"
+name = "esoteric-lori"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0006b088"
+to = "7mfk:0004f478"
+value = "00013a70"
+note = "unique state-machine accessor preserves the lookup role and geometry"

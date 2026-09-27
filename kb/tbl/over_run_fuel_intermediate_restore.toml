@@ -1,0 +1,62 @@
+[[symbol]]
+layout = "1me3b"
+address = "00014174"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c242"
+to = "7mfk:0001298c"
+note = """
+the target restore coordinator 0007c1b0 reads the upper table second through \
+0002aa48 as 1ND0A 00077888 reads 00014308; the calibration differs only in \
+the four trailing cells"""
+
+[[symbol]]
+layout = "1nd"
+address = "00014308"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007791a"
+to = "7mfk:0001298c"
+note = """
+homologous restore coordinator preserves the upper table role and \
+calibration shape"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001298c"
+former = ["cooperative-spider/tbl/7mfk-0001298c"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014d11"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00051aec"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014d31"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00051ae8"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013e72"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006c13c"
+to = "7mfk:0001298c"
+note = "unique accessor and coordinator preserve lookup role and order"

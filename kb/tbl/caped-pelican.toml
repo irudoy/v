@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018f96"
+name = "caped-pelican"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001bff4"
+name = "copper-turaco"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00076014"
+to = "7mfk:00073878"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c016"
+name = "independent-bulldog"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00076014"
+to = "7mfk:00073878"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

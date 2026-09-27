@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000131c2"
+name = "enigmatic-silkworm"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015554"
+name = "funny-alpaca"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00064978"
+to = "7mfk:00062708"
+count = 1
+value = 12
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015574"
+name = "adaptable-pillbug"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00064974"
+to = "7mfk:00062708"
+count = 1
+value = 12
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -3,6 +3,32 @@ layout = "7mfk"
 address = "0000ab5a"
 name = "humongous-skunk"
 
+[[symbol]]
+layout = "jk00c"
+address = "0000aede"
+name = "didactic-cricket"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c369a"
+note = """
+intake-cam correction table in the stock intake CVTC descriptor block at \
+0x000C386C"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000aeee"
+name = "realistic-quail"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c369e"
+note = """
+intake-cam correction table in the stock intake CVTC descriptor block at \
+0x000C3870"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

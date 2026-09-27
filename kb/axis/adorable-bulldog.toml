@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f92"
+name = "adorable-bulldog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdb32"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001531f"
+name = "invisible-alpaca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c369a"
+note = "load axis operand at the intake-correction interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001533f"
+name = "private-dachshund"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c369e"
+note = "load axis operand at the intake-correction interpolation callsite"

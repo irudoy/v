@@ -1,0 +1,78 @@
+[[symbol]]
+layout = "1me3b"
+address = "00014832"
+name = "soft-pig"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004775c"
+to = "7mfk:00013202"
+note = """
+eight function pairs 000523cc 00052884 000530e6 00053154 00053d90 00053e02 \
+00053e72 and 00054b6c against 1ND0A 0004e578 0004ea2c 0004f28e 0004f2fc \
+0004ff38 0004ffaa 0005001a and 00050d10 read the exact 32-word table at the \
+same call ordinals through 0002b0d4"""
+
+[[symbol]]
+layout = "1nd"
+address = "000149ee"
+name = "cute-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044134"
+to = "7mfk:00013202"
+note = "unique structural pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "00013202"
+name = "muscular-leech"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015594"
+name = "papaya-degu"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003f33e"
+to = "7mfk:0003e5e6"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000155b4"
+name = "uptight-rooster"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003f33e"
+to = "7mfk:0003e5e6"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00014538"
+name = "cherry-gerbil"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:0008dbc0"
+to = "7mfk:0006f47c"
+count = 1
+value = 0
+note = "unique structural pair preserves interpolation-call order"

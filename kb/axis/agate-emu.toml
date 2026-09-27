@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f96"
+name = "agate-emu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe4c"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015323"
+name = "victorious-cicada"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ade"
+note = """
+engine-speed axis operand at the exhaust-correction interpolation callsite"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015343"
+name = "curious-dolphin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5b1a"
+note = """
+engine-speed axis operand at the exhaust-correction interpolation callsite"""

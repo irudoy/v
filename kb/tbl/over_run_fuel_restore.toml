@@ -1,0 +1,62 @@
+[[symbol]]
+layout = "1me3b"
+address = "00014008"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c250"
+to = "7mfk:00012818"
+note = """
+the target restore coordinator 0007c1b0 of 564 bytes reproduces the \
+instruction structure of 1ND0A 00077888 and reads the lower table first \
+through 0002aa48; the calibration differs only in the four trailing cells"""
+
+[[symbol]]
+layout = "1nd"
+address = "000141d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00077928"
+to = "7mfk:00012818"
+note = """
+homologous restore coordinator preserves the lower table role and exact \
+table bytes"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012818"
+former = ["futuristic-mammoth/tbl/7mfk-00012818"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014b85"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00051afc"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014ba5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00051af8"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013d46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006c14c"
+to = "7mfk:00012818"
+note = "unique accessor and coordinator preserve lookup role and order"

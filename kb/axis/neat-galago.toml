@@ -1,0 +1,81 @@
+[[symbol]]
+layout = "1me3b"
+address = "0001bc58"
+name = "adamant-pelican"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a9f28"
+to = "7mfk:000190d0"
+note = """
+exact-bytes pair 000b1688/000b9088 reads the exact 32-word axis at the same \
+call ordinal through the 32-point uint16 leaf 0002be20"""
+
+[[symbol]]
+layout = "1nd"
+address = "0001bafe"
+name = "blond-peccary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a3a98"
+to = "7mfk:000190d0"
+note = "unique structural axis pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "000190d0"
+name = "neat-galago"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007241e"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001c1de"
+name = "tentacled-turtle"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000746be"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c200"
+name = "daft-dinosaur"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000746be"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b4aa"
+name = "russet-wapiti"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:000917fe"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = "unique structural axis pair preserves interpolation-call order"

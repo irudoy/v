@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001243a"
+name = "cerise-sturgeon"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014737"
+name = "apricot-manatee"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cd5e"
+to = "7mfk:0004bc14"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014757"
+name = "misty-antelope"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cd62"
+to = "7mfk:0004bc14"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

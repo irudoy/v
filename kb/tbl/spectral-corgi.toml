@@ -1,0 +1,69 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008965"
+name = "precise-caribou"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004566e"
+to = "7mfk:00008a27"
+note = """
+the value-133 factor is read by 00045634 0004570a and 00048298 and 00048298 \
+combines it with the K-value 00009170 the 0x9f38 reference 000094d4 and the \
+value-3 scalar 0000885c exactly as the 1ND0A consumer 000c188c combines \
+00008939 with 00009106 0000940a and 00008838"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008939"
+name = "festive-porpoise"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00042176"
+to = "7mfk:00008a27"
+note = """
+target Base Fuel Schedule consumer uses the independently recorded value \
+133"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00008a27"
+name = "spectral-corgi"
+
+[[symbol]]
+layout = "jk00c"
+address = "00008a4c"
+name = "smart-mastiff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003c5d0"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00008a4d"
+name = "benevolent-muskox"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003c5d0"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008896"
+name = "shapeless-tortoise"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0004091c"
+to = "7mfk:0003b9ac"
+value = "00008896"
+note = "normalized homologous consumers reference the target MAF factor scalar"

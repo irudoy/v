@@ -1,0 +1,78 @@
+[[symbol]]
+layout = "1me3b"
+address = "00016d06"
+name = "mellow-crayfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00097df2"
+to = "7mfk:000154a0"
+note = """
+normalized-shape pair 000920fa/00097d8c reads the exact eight-word base \
+table at the same call ordinal through 0002aeac"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c82"
+name = "uber-skylark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00092160"
+to = "7mfk:000154a0"
+note = """
+shared torque interpolation contract preserves the exact eight-word base \
+table"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000154a0"
+name = "pristine-deer"
+
+[[symbol]]
+layout = "jk00c"
+address = "000179a2"
+name = "vigorous-dinosaur"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067f5e"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000179c2"
+name = "rustling-moose"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067f5e"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00016664"
+name = "vagabond-scorpion"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00083e62"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = "unique structural pair preserves normalized geometry"

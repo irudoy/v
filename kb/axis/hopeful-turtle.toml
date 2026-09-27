@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012778"
+name = "hopeful-turtle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000456f4"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014ae5"
+name = "robust-marmot"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00046678"
+to = "7mfk:000456f4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014b05"
+name = "horned-binturong"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004667c"
+to = "7mfk:000456f4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

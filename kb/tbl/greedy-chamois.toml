@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "000123fa"
+name = "greedy-chamois"
+
+[[symbol]]
+layout = "jk00c"
+address = "000146f7"
+name = "cute-bustard"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c6e58"
+to = "7mfk:000c1194"
+value = "000146f7"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014717"
+name = "quizzical-raven"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c740c"
+to = "7mfk:000c1194"
+value = "00014717"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,70 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013d06"
+name = "mini-impala"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00033cca"
+to = "7mfk:00011cf0"
+note = """
+both target compensation accessors 0003357c and 000486e0 read the exact \
+16-point X axis with the exact surface 0000a0f4 through the 16x16 uint8 leaf \
+000298b4"""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f2a"
+name = "prudent-urchin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00030f5a"
+to = "7mfk:00011cf0"
+note = "both target compensation accessors share the exact 16-point X axis"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011cf0"
+name = "fascinating-hog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002cc9c"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013fb5"
+name = "flashy-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002d90a"
+note = "target-specific interpolation operands and bank topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00013fc5"
+name = "fiery-cuscus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002d90a"
+note = "target-specific interpolation operands and bank topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013af8"
+name = "prophetic-doberman"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0002fcf8"
+to = "7mfk:00011cf0"
+note = "both target compensation accessors share the reviewed 16-point X axis"

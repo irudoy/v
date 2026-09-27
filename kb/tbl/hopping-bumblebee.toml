@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014bfa"
+name = "hopping-bumblebee"
+
+[[symbol]]
+layout = "jk00c"
+address = "00016fec"
+name = "complex-bobcat"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004d1e8"
+to = "7mfk:0004c0ea"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001700c"
+name = "burgundy-smilodon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004d1ec"
+to = "7mfk:0004c0ea"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

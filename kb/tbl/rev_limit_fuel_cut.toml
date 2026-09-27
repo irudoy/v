@@ -3,6 +3,26 @@ layout = "7mfk"
 address = "0000934e"
 former = ["stereotyped-nuthatch/tbl/7mfk-0000934e"]
 
+[[symbol]]
+layout = "jk00c"
+address = "000093e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00050c26"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "000093f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00050c22"
+note = "target literals and reviewed homologous consumer topology"
+
 [[status]]
 layout = "1me3b"
 state = "absent"

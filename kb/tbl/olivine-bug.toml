@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012e32"
+name = "olivine-bug"
+
+[[symbol]]
+layout = "jk00c"
+address = "000151bf"
+name = "beige-trogon"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c2c10"
+to = "7mfk:000bd0d8"
+value = "000151bf"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000151df"
+name = "arcane-tiger"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c2be0"
+to = "7mfk:000bd0d8"
+value = "000151df"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

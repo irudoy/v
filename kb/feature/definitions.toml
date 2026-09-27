@@ -1,0 +1,1036 @@
+[[target]]
+layout = "1me3b"
+status = "supported"
+requires = [
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "aloof-swine/tbl",
+    "amorphous-bird/tbl",
+    "apricot-carp/tbl",
+    "arcane-griffin/tbl",
+    "capable-buffalo/axis",
+    "cold_idle_ignition_timing/tbl",
+    "crouching-orca/tbl",
+    "cryptic-bloodhound/axis",
+    "cunning-jackrabbit/tbl",
+    "dangerous-sawfish/axis",
+    "discreet-mayfly/tbl",
+    "exhaust_cvtc_target/tbl",
+    "fascinating-hog/axis",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "gifted-jackrabbit/tbl",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "horned-hedgehog/tbl",
+    "humongous-skunk/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imported-civet/tbl",
+    "intake_cvtc_target/tbl",
+    "intelligent-chipmunk/tbl",
+    "ivory-gecko/tbl",
+    "lyrical-dragon/tbl",
+    "meaty-guillemot/tbl",
+    "mellow-turtle/axis",
+    "muscular-leech/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "orange-elephant/axis",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "precise-nuthatch/tbl",
+    "pretty-numbat/axis",
+    "pristine-deer/tbl",
+    "prudent-numbat/tbl",
+    "rampant-poodle/axis",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "robust-meerkat/tbl",
+    "sincere-millipede/tbl",
+    "slim-gharial/axis",
+    "spectral-corgi/tbl",
+    "spry-quokka/tbl",
+    "tangible-gharial/tbl",
+    "umber-bull/tbl",
+    "wealthy-woodlouse/tbl",
+    "wooden-moose/tbl",
+]
+
+[target.images.1ME3B]
+basis = """
+Reviewed structural function correspondence against 1ND0A, \
+interpolation-call order, contract-equal fused leaves, exact storage \
+anchors, target literals, target axis geometry, checksum code, and \
+independently reproduced stock checksum values."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis is relocated through the SHA-bound reviewed \
+correspondence in defs/JK08A-1ME3B.definition-addresses.csv, which is \
+established through the 1ND0A structural export: matched consumer functions, \
+interpolation-call ordinals, contract-equal fused leaves, exact target \
+storage, selector branches, and target literals. No code relocates from any \
+modelled ROM. Homologous claims are downgraded to candidate confidence \
+unless target-specific evidence keeps code confidence. Source tables whose \
+1ME3B implementation changes geometry, removes the subsystem, or keeps no \
+gated selector path are omitted explicitly; the three canonical ignition \
+surfaces are among them because the target coordinator carries only its \
+mode-selected surfaces. The project and native RomRaider checksum contracts \
+cover all six 1ME3B checksum fields. The Developer Immobilizer control \
+addresses the configuration byte that the eleven target consumers of the \
+1ND0A flag read. Exact target-native fuel-cut caps and activation/release \
+curves are added from the SHA-bound VQ37 registry. Map 2 through Map 5 \
+storage, Rolling Launch controls, and the CAN Telemetry at Startup control \
+use the validated 1ME3B runtime allocation in \
+patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests \
+all-cylinder fuel cut after the stock final-mask coordinator and does not \
+reuse the VQ35HR fuel-shadow maps."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+
+[target.images.1ME3B.switch]
+can_telemetry_startup = "0013de03"
+developer_immobilizer = "00008671"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target]]
+layout = "1nd"
+status = "supported"
+requires = [
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "aloof-swine/tbl",
+    "amorphous-bird/tbl",
+    "apricot-carp/tbl",
+    "arcane-griffin/tbl",
+    "capable-buffalo/axis",
+    "cold_idle_ignition_timing/tbl",
+    "crouching-orca/tbl",
+    "cryptic-bloodhound/axis",
+    "cunning-jackrabbit/tbl",
+    "dangerous-sawfish/axis",
+    "discreet-mayfly/tbl",
+    "exhaust_cvtc_target/tbl",
+    "fascinating-hog/axis",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "gifted-jackrabbit/tbl",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "horned-hedgehog/tbl",
+    "humongous-skunk/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imported-civet/tbl",
+    "intake_cvtc_target/tbl",
+    "intelligent-chipmunk/tbl",
+    "ivory-gecko/tbl",
+    "lyrical-dragon/tbl",
+    "meaty-guillemot/tbl",
+    "mellow-turtle/axis",
+    "muscular-leech/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "orange-elephant/axis",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "precise-nuthatch/tbl",
+    "pretty-numbat/axis",
+    "pristine-deer/tbl",
+    "prudent-numbat/tbl",
+    "rampant-poodle/axis",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "robust-meerkat/tbl",
+    "sincere-millipede/tbl",
+    "slim-gharial/axis",
+    "spectral-corgi/tbl",
+    "spry-quokka/tbl",
+    "tangible-gharial/tbl",
+    "umber-bull/tbl",
+    "wealthy-woodlouse/tbl",
+    "wooden-moose/tbl",
+]
+
+[target.images.1ND0A]
+basis = """
+Reviewed JK78C-to-1ND0A structural functions, shared interpolation \
+contracts, exact storage, selector branch order, target literals, and \
+exact-code 1ND family evidence."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis is relocated through the SHA-bound reviewed \
+correspondence in defs/JK08A-1ND.definition-addresses.csv. Homologous claims \
+are downgraded to candidate confidence unless target-specific evidence keeps \
+code confidence. Source tables whose VQ37 implementation changes geometry or \
+removes the corresponding lookup are omitted explicitly. Exact target-native \
+fuel-cut caps and activation/release curves are added from the SHA-bound \
+VQ37 registry. The project checksum implementation verifies and recalculates \
+all six 1ND fields. The native RomRaider alt2 handler maintains the four \
+fields a definition entity can invalidate: both primary SUM16 values and the \
+runtime XOR and SUM pair. The boot and vector SUM16 domains end at 0x8200, \
+below every published entity, so no editor session can leave them stale. Map \
+2 through Map 5 storage, Rolling Launch controls, and the CAN Telemetry at \
+Startup control use the validated 1ND runtime allocation in \
+patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests \
+all-cylinder fuel cut after the stock final-mask coordinator and does not \
+reuse the VQ35HR fuel-shadow maps."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+
+[target.images.1ND0A.switch]
+can_telemetry_startup = "00134e03"
+developer_immobilizer = "00008668"
+
+[target.images.1ND3B]
+basis = """
+Reviewed 1ND0A address projection composed only through exact 1ND0A-to-1ND3B \
+executable ranges, identical address-bearing code, target geometry, and the \
+independent stock-image hash."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis uses the reviewed 1ND address layout in \
+defs/JK08A-1ND.definition-addresses.csv. The 1ND3B executable ranges and all \
+address-bearing consumers are byte-identical to 1ND0A; the exact target \
+image retains independent calibration values and SHA binding. Homologous \
+claims are downgraded to candidate confidence unless target-specific \
+evidence keeps code confidence. The project checksum implementation verifies \
+and recalculates all six 1ND fields, and the native RomRaider alt2 handler \
+maintains the four fields a definition entity can invalidate. Exact \
+target-native fuel-cut caps and activation/release curves are added from the \
+independently SHA-bound 1ND3B image. Map 2 through Map 5 storage, Rolling \
+Launch controls, and the CAN Telemetry at Startup control use the validated \
+1ND runtime allocation in patches/rom-address-profiles.toml. The VQ37 \
+Rolling Launch variant requests all-cylinder fuel cut after the stock \
+final-mask coordinator and does not reuse the VQ35HR fuel-shadow maps."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
+
+[target.images.1ND3B.switch]
+can_telemetry_startup = "00134e03"
+developer_immobilizer = "00008668"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "ignition_gated_surface_1/tbl"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "high_octane_timing_state/tbl"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "high_detonation_timing_state/tbl"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target]]
+layout = "jk00c"
+status = "supported"
+requires = [
+    "able-bison/tbl",
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "adorable-bulldog/axis",
+    "adorable-llama/tbl",
+    "agate-emu/axis",
+    "agile-seal/axis",
+    "airborne-malamute/tbl",
+    "aloof-porcupine/axis",
+    "aloof-swine/tbl",
+    "amethyst-lionfish/axis",
+    "amorphous-bird/tbl",
+    "amusing-boobook/axis",
+    "annoying-chimpanzee/axis",
+    "apricot-angelfish/tbl",
+    "apricot-carp/tbl",
+    "arboreal-cormorant/axis",
+    "arcane-griffin/tbl",
+    "arcane-jackrabbit/tbl",
+    "aromatic-kagu/tbl",
+    "arrogant-beetle/tbl",
+    "arrogant-catfish/tbl",
+    "athletic-jackal/axis",
+    "athletic-swallow/tbl",
+    "azure-deer/tbl",
+    "banana-tody/axis",
+    "belligerent-armadillo/tbl",
+    "belligerent-potoo/tbl",
+    "benign-albatross/axis",
+    "big-jacamar/tbl",
+    "bold-tamarin/axis",
+    "brave-nuthatch/axis",
+    "bright-axolotl/tbl",
+    "brown-jackrabbit/tbl",
+    "calculating-giraffe/tbl",
+    "camouflaged-stallion/tbl",
+    "capable-buffalo/axis",
+    "caped-mammoth/tbl",
+    "caped-pelican/tbl",
+    "carmine-potoo/tbl",
+    "cautious-iguana/tbl",
+    "celadon-dalmatian/tbl",
+    "cerise-spaniel/axis",
+    "cerise-sturgeon/tbl",
+    "chestnut-wapiti/tbl",
+    "classic-unicorn/axis",
+    "cobalt-poodle/tbl",
+    "cold_idle_ignition_timing/tbl",
+    "colorful-dogfish/tbl",
+    "complex-condor/tbl",
+    "conscious-groundhog/axis",
+    "cooperative-elk/tbl",
+    "copper-hawk/tbl",
+    "courageous-puma/axis",
+    "crimson-chinchilla/tbl",
+    "crouching-orca/tbl",
+    "cryptic-ara/tbl",
+    "cryptic-bloodhound/axis",
+    "cunning-goldfish/tbl",
+    "cunning-jackrabbit/tbl",
+    "cyber-bat/axis",
+    "cyber-capuchin/tbl",
+    "daffy-skua/tbl",
+    "dangerous-sawfish/axis",
+    "dark-sawfish/tbl",
+    "dashing-mongrel/tbl",
+    "delectable-echidna/axis",
+    "delicate-pogona/tbl",
+    "delightful-sponge/axis",
+    "demonic-hound/tbl",
+    "demonic-wrasse/axis",
+    "devious-kangaroo/tbl",
+    "devout-sloth/axis",
+    "dexterous-caribou/axis",
+    "diligent-ammonite/tbl",
+    "discreet-mayfly/tbl",
+    "dramatic-foxhound/tbl",
+    "eager-pelican/axis",
+    "ebony-polecat/axis",
+    "efficient-jackdaw/tbl",
+    "elastic-goldfish/tbl",
+    "elastic-mayfly/axis",
+    "elegant-mongoose/axis",
+    "elite-turaco/tbl",
+    "enchanted-tuatara/tbl",
+    "encouraging-buzzard/tbl",
+    "enigmatic-silkworm/tbl",
+    "enthusiastic-pudu/tbl",
+    "esoteric-salmon/tbl",
+    "evasive-caracara/axis",
+    "evasive-quetzal/axis",
+    "excellent-donkey/tbl",
+    "exhaust_cvtc_target/tbl",
+    "exotic-aardwolf/tbl",
+    "fascinating-hog/axis",
+    "fat-crayfish/tbl",
+    "fine-finch/tbl",
+    "flat-caracal/axis",
+    "flawless-dragon/tbl",
+    "fluffy-bison/tbl",
+    "fluorescent-jellyfish/tbl",
+    "flying-ladybug/tbl",
+    "foamy-cuckoo/tbl",
+    "foamy-rhino/tbl",
+    "fractal-mussel/tbl",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "furry-chupacabra/axis",
+    "gainful-orangutan/tbl",
+    "garrulous-civet/tbl",
+    "garrulous-nautilus/axis",
+    "gentle-macaque/tbl",
+    "gifted-jackrabbit/tbl",
+    "gifted-millipede/axis",
+    "gifted-turtle/axis",
+    "giga-pigeon/tbl",
+    "glaring-chachalaca/tbl",
+    "glorious-grasshopper/axis",
+    "glossy-antelope/axis",
+    "granite-aardwolf/axis",
+    "greedy-chamois/tbl",
+    "groovy-clam/tbl",
+    "hallowed-cicada/axis",
+    "hallowed-spider/tbl",
+    "happy-anteater/axis",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "holistic-dragonfly/tbl",
+    "honest-cuttlefish/tbl",
+    "hopeful-caracara/tbl",
+    "hopeful-turtle/axis",
+    "hopping-bumblebee/tbl",
+    "hopping-chachalaca/tbl",
+    "hopping-nyala/axis",
+    "horned-hedgehog/tbl",
+    "horned-shark/axis",
+    "humongous-skunk/tbl",
+    "hysterical-bear/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imaginary-kakapo/tbl",
+    "imported-civet/tbl",
+    "incredible-tortoise/tbl",
+    "independent-boar/tbl",
+    "independent-gazelle/axis",
+    "inescapable-wren/axis",
+    "innocent-oryx/tbl",
+    "intake_cvtc_target/tbl",
+    "intelligent-chipmunk/tbl",
+    "ivory-dormouse/tbl",
+    "ivory-gecko/tbl",
+    "jade-reindeer/axis",
+    "kind-kittiwake/tbl",
+    "laughing-caterpillar/axis",
+    "lavender-butterfly/tbl",
+    "lilac-wildebeest/axis",
+    "loose-termite/axis",
+    "loud-squid/tbl",
+    "lumpy-weasel/tbl",
+    "lurking-pronghorn/axis",
+    "lush-sponge/axis",
+    "lyrical-dragon/tbl",
+    "magnificent-jaybird/axis",
+    "marigold-buffalo/axis",
+    "meaty-guillemot/tbl",
+    "meek-mink/axis",
+    "mellow-deer/tbl",
+    "mellow-turtle/axis",
+    "micro-penguin/tbl",
+    "mighty-earthworm/tbl",
+    "mindful-ibex/tbl",
+    "mindful-owl/axis",
+    "mini-starfish/tbl",
+    "misty-gerbil/tbl",
+    "monumental-cockle/tbl",
+    "monumental-snake/tbl",
+    "muscular-leech/tbl",
+    "mustard-mastiff/tbl",
+    "myrtle-shrimp/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "nimble-mouflon/tbl",
+    "ochre-coua/tbl",
+    "olivine-bug/tbl",
+    "opal-camel/tbl",
+    "orange-elephant/axis",
+    "organic-inchworm/tbl",
+    "organic-markhor/tbl",
+    "origami-kangaroo/tbl",
+    "outrageous-lynx/tbl",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "overjoyed-markhor/axis",
+    "passionate-junglefowl/tbl",
+    "petite-cobra/tbl",
+    "pink-sloth/tbl",
+    "placid-mastiff/tbl",
+    "poised-dormouse/tbl",
+    "porcelain-crane/tbl",
+    "precise-nuthatch/tbl",
+    "pretty-numbat/axis",
+    "pristine-deer/tbl",
+    "prompt-hummingbird/axis",
+    "prudent-numbat/tbl",
+    "quartz-aardwolf/axis",
+    "radiant-gerbil/tbl",
+    "radiant-robin/axis",
+    "rampant-poodle/axis",
+    "rare-snail/axis",
+    "rational-inchworm/tbl",
+    "red-bullmastiff/tbl",
+    "red-okapi/tbl",
+    "refreshing-ibex/tbl",
+    "resilient-mongoose/axis",
+    "resourceful-muskrat/tbl",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "righteous-tuna/axis",
+    "robust-mantis/tbl",
+    "robust-meerkat/tbl",
+    "ruddy-harrier/tbl",
+    "rugged-gerbil/tbl",
+    "sandy-chicken/axis",
+    "sapphire-fossa/axis",
+    "savvy-bobcat/axis",
+    "scarlet-macaque/axis",
+    "scrupulous-ladybug/axis",
+    "scrupulous-yak/tbl",
+    "sensible-ringtail/tbl",
+    "sepia-crocodile/axis",
+    "serious-heron/axis",
+    "serious-warthog/tbl",
+    "sexy-avocet/axis",
+    "silver-dachshund/tbl",
+    "skinny-wallaby/axis",
+    "slim-gharial/axis",
+    "snobbish-swan/tbl",
+    "soft-rooster/tbl",
+    "solemn-monkey/tbl",
+    "spectral-corgi/tbl",
+    "spicy-marmoset/tbl",
+    "spry-quokka/tbl",
+    "statuesque-binturong/tbl",
+    "steady-turtle/tbl",
+    "sticky-chameleon/tbl",
+    "stoic-ladybug/tbl",
+    "stoic-moth/tbl",
+    "strange-pogona/axis",
+    "strange-salmon/tbl",
+    "sturdy-worm/tbl",
+    "stylish-buffalo/axis",
+    "subtle-kingfisher/tbl",
+    "super-chinchilla/tbl",
+    "swinging-dugong/tbl",
+    "tan-toucan/axis",
+    "tangerine-beetle/tbl",
+    "tangible-gharial/tbl",
+    "terrestrial-sparrow/tbl",
+    "tested-dragon/tbl",
+    "thankful-woodlouse/tbl",
+    "tomato-hippo/axis",
+    "towering-newt/tbl",
+    "translucent-aardwolf/axis",
+    "translucent-cormorant/tbl",
+    "tunneling-dragon/axis",
+    "tunneling-fennec/tbl",
+    "turquoise-mushroom/tbl",
+    "uber-turtle/tbl",
+    "ultramarine-tody/tbl",
+    "umber-bull/tbl",
+    "umber-coyote/axis",
+    "uncovered-mongoose/axis",
+    "uppish-dragon/tbl",
+    "uptight-tanuki/axis",
+    "vagabond-seagull/tbl",
+    "vegan-bittern/tbl",
+    "vermilion-boar/tbl",
+    "vigilant-rat/tbl",
+    "visionary-centipede/axis",
+    "vivacious-sawfish/tbl",
+    "wealthy-woodlouse/tbl",
+    "winged-quail/tbl",
+    "witty-bobcat/axis",
+    "witty-panther/tbl",
+    "wondrous-kestrel/tbl",
+    "wooden-moose/tbl",
+    "woodoo-loon/tbl",
+    "xanthic-cricket/axis",
+    "xanthic-dogfish/axis",
+    "zircon-copperhead/tbl",
+]
+
+[target.images.JK00C]
+basis = """
+Reviewed JK08A-to-JK00D correspondence composed with exact or normalized \
+JK00D-to-JK00C functions, target references, stock bytes, and target axis \
+geometry."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis is relocated through the SHA-bound reviewed \
+correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous \
+claims are downgraded to candidate confidence unless target-specific \
+evidence keeps code confidence. Maps without a unique target homolog are \
+omitted explicitly. Map 2 through Map 5 storage and Rolling Launch controls \
+use the validated JK00C runtime allocation in \
+patches/rom-address-profiles.toml."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
+
+[target.images.JK00C.switch]
+can_telemetry_startup = "000e1503"
+developer_immobilizer = "0000873f"
+
+[[target]]
+layout = "jk00d"
+status = "supported"
+requires = [
+    "able-bison/tbl",
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "adorable-bulldog/axis",
+    "adorable-llama/tbl",
+    "agate-emu/axis",
+    "agile-seal/axis",
+    "airborne-malamute/tbl",
+    "aloof-porcupine/axis",
+    "aloof-swine/tbl",
+    "amethyst-lionfish/axis",
+    "amorphous-bird/tbl",
+    "amusing-boobook/axis",
+    "annoying-chimpanzee/axis",
+    "apricot-angelfish/tbl",
+    "apricot-carp/tbl",
+    "arboreal-cormorant/axis",
+    "arcane-griffin/tbl",
+    "arcane-jackrabbit/tbl",
+    "aromatic-kagu/tbl",
+    "arrogant-beetle/tbl",
+    "arrogant-catfish/tbl",
+    "astute-toad/tbl",
+    "athletic-jackal/axis",
+    "athletic-swallow/tbl",
+    "azure-deer/tbl",
+    "banana-tody/axis",
+    "belligerent-armadillo/tbl",
+    "belligerent-potoo/tbl",
+    "benign-albatross/axis",
+    "big-jacamar/tbl",
+    "bold-tamarin/axis",
+    "brave-nuthatch/axis",
+    "bright-axolotl/tbl",
+    "brown-jackrabbit/tbl",
+    "calculating-giraffe/tbl",
+    "camouflaged-stallion/tbl",
+    "capable-buffalo/axis",
+    "caped-mammoth/tbl",
+    "caped-pelican/tbl",
+    "carmine-potoo/tbl",
+    "cautious-iguana/tbl",
+    "celadon-dalmatian/tbl",
+    "cerise-spaniel/axis",
+    "cerise-sturgeon/tbl",
+    "chestnut-wapiti/tbl",
+    "classic-unicorn/axis",
+    "cobalt-poodle/tbl",
+    "cold_idle_ignition_timing/tbl",
+    "colorful-dogfish/tbl",
+    "complex-condor/tbl",
+    "conscious-groundhog/axis",
+    "cooperative-elk/tbl",
+    "copper-hawk/tbl",
+    "courageous-puma/axis",
+    "crimson-chinchilla/tbl",
+    "crouching-orca/tbl",
+    "cryptic-ara/tbl",
+    "cryptic-bloodhound/axis",
+    "cunning-goldfish/tbl",
+    "cunning-jackrabbit/tbl",
+    "cyber-bat/axis",
+    "cyber-capuchin/tbl",
+    "daffy-skua/tbl",
+    "dangerous-sawfish/axis",
+    "dark-sawfish/tbl",
+    "dashing-mongrel/tbl",
+    "delectable-echidna/axis",
+    "delicate-pogona/tbl",
+    "delightful-sponge/axis",
+    "demonic-hound/tbl",
+    "demonic-wrasse/axis",
+    "devious-kangaroo/tbl",
+    "devout-sloth/axis",
+    "dexterous-caribou/axis",
+    "diligent-ammonite/tbl",
+    "discreet-mayfly/tbl",
+    "dramatic-foxhound/tbl",
+    "eager-pelican/axis",
+    "ebony-polecat/axis",
+    "efficient-jackdaw/tbl",
+    "elastic-goldfish/tbl",
+    "elastic-mayfly/axis",
+    "elegant-mongoose/axis",
+    "elite-turaco/tbl",
+    "enchanted-tuatara/tbl",
+    "encouraging-buzzard/tbl",
+    "enigmatic-silkworm/tbl",
+    "enthusiastic-pudu/tbl",
+    "esoteric-salmon/tbl",
+    "evasive-caracara/axis",
+    "evasive-quetzal/axis",
+    "excellent-donkey/tbl",
+    "exhaust_cvtc_target/tbl",
+    "exotic-aardwolf/tbl",
+    "fascinating-hog/axis",
+    "fat-crayfish/tbl",
+    "fine-finch/tbl",
+    "flat-caracal/axis",
+    "flawless-dragon/tbl",
+    "fluffy-bison/tbl",
+    "fluorescent-jellyfish/tbl",
+    "flying-ladybug/tbl",
+    "foamy-cuckoo/tbl",
+    "foamy-rhino/tbl",
+    "fractal-mussel/tbl",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "furry-chupacabra/axis",
+    "gainful-orangutan/tbl",
+    "garrulous-civet/tbl",
+    "garrulous-nautilus/axis",
+    "gentle-macaque/tbl",
+    "gifted-jackrabbit/tbl",
+    "gifted-millipede/axis",
+    "gifted-turtle/axis",
+    "giga-pigeon/tbl",
+    "glaring-chachalaca/tbl",
+    "glorious-grasshopper/axis",
+    "glossy-antelope/axis",
+    "granite-aardwolf/axis",
+    "greedy-chamois/tbl",
+    "groovy-clam/tbl",
+    "hallowed-cicada/axis",
+    "hallowed-spider/tbl",
+    "happy-anteater/axis",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "holistic-dragonfly/tbl",
+    "honest-cuttlefish/tbl",
+    "hopeful-caracara/tbl",
+    "hopeful-turtle/axis",
+    "hopping-bumblebee/tbl",
+    "hopping-chachalaca/tbl",
+    "hopping-nyala/axis",
+    "horned-hedgehog/tbl",
+    "horned-shark/axis",
+    "humongous-skunk/tbl",
+    "hysterical-bear/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imaginary-kakapo/tbl",
+    "imported-civet/tbl",
+    "incredible-tortoise/tbl",
+    "independent-boar/tbl",
+    "independent-gazelle/axis",
+    "inescapable-wren/axis",
+    "innocent-oryx/tbl",
+    "intake_cvtc_target/tbl",
+    "intelligent-chipmunk/tbl",
+    "ivory-dormouse/tbl",
+    "ivory-gecko/tbl",
+    "jade-reindeer/axis",
+    "kind-kittiwake/tbl",
+    "laughing-caterpillar/axis",
+    "lavender-butterfly/tbl",
+    "lilac-wildebeest/axis",
+    "loose-termite/axis",
+    "loud-squid/tbl",
+    "lumpy-weasel/tbl",
+    "lurking-pronghorn/axis",
+    "lush-sponge/axis",
+    "lyrical-dragon/tbl",
+    "magnificent-jaybird/axis",
+    "marigold-buffalo/axis",
+    "meaty-guillemot/tbl",
+    "meek-mink/axis",
+    "mellow-deer/tbl",
+    "mellow-turtle/axis",
+    "micro-penguin/tbl",
+    "mighty-earthworm/tbl",
+    "mindful-ibex/tbl",
+    "mindful-owl/axis",
+    "mini-starfish/tbl",
+    "misty-gerbil/tbl",
+    "monumental-cockle/tbl",
+    "monumental-snake/tbl",
+    "muscular-leech/tbl",
+    "mustard-mastiff/tbl",
+    "myrtle-shrimp/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "nimble-mouflon/tbl",
+    "ochre-coua/tbl",
+    "olivine-bug/tbl",
+    "opal-camel/tbl",
+    "orange-elephant/axis",
+    "organic-inchworm/tbl",
+    "organic-markhor/tbl",
+    "origami-kangaroo/tbl",
+    "outrageous-lynx/tbl",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "overjoyed-markhor/axis",
+    "passionate-junglefowl/tbl",
+    "petite-cobra/tbl",
+    "pink-sloth/tbl",
+    "placid-mastiff/tbl",
+    "poised-dormouse/tbl",
+    "porcelain-crane/tbl",
+    "precise-nuthatch/tbl",
+    "pretty-numbat/axis",
+    "pristine-deer/tbl",
+    "prompt-hummingbird/axis",
+    "prudent-numbat/tbl",
+    "quartz-aardwolf/axis",
+    "radiant-gerbil/tbl",
+    "radiant-robin/axis",
+    "rampant-poodle/axis",
+    "rare-snail/axis",
+    "rational-inchworm/tbl",
+    "red-bullmastiff/tbl",
+    "red-okapi/tbl",
+    "refreshing-ibex/tbl",
+    "resilient-mongoose/axis",
+    "resourceful-muskrat/tbl",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "righteous-tuna/axis",
+    "robust-mantis/tbl",
+    "robust-meerkat/tbl",
+    "ruddy-harrier/tbl",
+    "rugged-gerbil/tbl",
+    "sandy-chicken/axis",
+    "sapphire-fossa/axis",
+    "savvy-bobcat/axis",
+    "scarlet-macaque/axis",
+    "scrupulous-ladybug/axis",
+    "scrupulous-yak/tbl",
+    "sensible-ringtail/tbl",
+    "sepia-crocodile/axis",
+    "serious-heron/axis",
+    "serious-warthog/tbl",
+    "sexy-avocet/axis",
+    "silver-dachshund/tbl",
+    "skinny-wallaby/axis",
+    "slim-gharial/axis",
+    "snobbish-swan/tbl",
+    "soft-rooster/tbl",
+    "solemn-monkey/tbl",
+    "spectral-corgi/tbl",
+    "spicy-marmoset/tbl",
+    "spry-quokka/tbl",
+    "statuesque-binturong/tbl",
+    "steady-turtle/tbl",
+    "sticky-chameleon/tbl",
+    "stoic-ladybug/tbl",
+    "stoic-moth/tbl",
+    "strange-pogona/axis",
+    "strange-salmon/tbl",
+    "sturdy-worm/tbl",
+    "stylish-buffalo/axis",
+    "subtle-kingfisher/tbl",
+    "super-chinchilla/tbl",
+    "swinging-dugong/tbl",
+    "tan-toucan/axis",
+    "tangerine-beetle/tbl",
+    "tangible-gharial/tbl",
+    "terrestrial-sparrow/tbl",
+    "tested-dragon/tbl",
+    "thankful-woodlouse/tbl",
+    "tomato-hippo/axis",
+    "towering-newt/tbl",
+    "translucent-aardwolf/axis",
+    "translucent-cormorant/tbl",
+    "tunneling-dragon/axis",
+    "tunneling-fennec/tbl",
+    "turquoise-mushroom/tbl",
+    "uber-turtle/tbl",
+    "ultramarine-tody/tbl",
+    "umber-bull/tbl",
+    "umber-coyote/axis",
+    "uncovered-mongoose/axis",
+    "uppish-dragon/tbl",
+    "uptight-tanuki/axis",
+    "vagabond-seagull/tbl",
+    "vegan-bittern/tbl",
+    "vermilion-boar/tbl",
+    "vigilant-rat/tbl",
+    "visionary-centipede/axis",
+    "vivacious-sawfish/tbl",
+    "wealthy-woodlouse/tbl",
+    "winged-quail/tbl",
+    "witty-bobcat/axis",
+    "witty-panther/tbl",
+    "wondrous-kestrel/tbl",
+    "wooden-moose/tbl",
+    "woodoo-loon/tbl",
+    "xanthic-cricket/axis",
+    "xanthic-dogfish/axis",
+    "zircon-copperhead/tbl",
+]
+
+[target.images.JK00D]
+basis = """
+Reviewed interpolation operands, matched function references, \
+target-specific patch profiles, exact stock bytes, and target axis \
+geometry."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis is relocated through the SHA-bound reviewed \
+correspondence in defs/JK08A-JK00D.definition-addresses.csv. Homologous \
+claims are downgraded to candidate confidence unless target-specific \
+evidence keeps code confidence. Maps without a unique target homolog are \
+omitted explicitly. Map 2 through Map 5 storage and Rolling Launch controls \
+use the validated JK00D runtime allocation in \
+patches/rom-address-profiles.toml."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
+
+[target.images.JK00D.switch]
+can_telemetry_startup = "000e1503"
+developer_immobilizer = "00008740"
+
+[[target]]
+layout = "jk78c"
+status = "supported"
+requires = [
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "aloof-swine/tbl",
+    "amorphous-bird/tbl",
+    "apricot-carp/tbl",
+    "arcane-griffin/tbl",
+    "capable-buffalo/axis",
+    "cold_idle_ignition_timing/tbl",
+    "crouching-orca/tbl",
+    "cryptic-bloodhound/axis",
+    "cunning-jackrabbit/tbl",
+    "dangerous-sawfish/axis",
+    "discreet-mayfly/tbl",
+    "exhaust_cvtc_target/tbl",
+    "fascinating-hog/axis",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "gifted-jackrabbit/tbl",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "horned-hedgehog/tbl",
+    "humongous-skunk/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imported-civet/tbl",
+    "intake_cvtc_target/tbl",
+    "intelligent-chipmunk/tbl",
+    "ivory-gecko/tbl",
+    "lush-sponge/axis",
+    "lyrical-dragon/tbl",
+    "meaty-guillemot/tbl",
+    "mellow-turtle/axis",
+    "mindful-owl/axis",
+    "muscular-leech/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "orange-elephant/axis",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "precise-nuthatch/tbl",
+    "pretty-numbat/axis",
+    "pristine-deer/tbl",
+    "prudent-numbat/tbl",
+    "rampant-poodle/axis",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "robust-meerkat/tbl",
+    "sincere-millipede/tbl",
+    "slim-gharial/axis",
+    "spectral-corgi/tbl",
+    "spry-quokka/tbl",
+    "tangible-gharial/tbl",
+    "umber-bull/tbl",
+    "uptight-tanuki/axis",
+    "wealthy-woodlouse/tbl",
+    "wooden-moose/tbl",
+]
+
+[target.images.JK78C]
+basis = """
+Reviewed structural function correspondence, interpolation-call order, exact \
+storage anchors, target literals, target axis geometry, checksum code, \
+runtime correspondence, and independently reproduced stock checksum values."""
+checksum = true
+map_switching = true
+note = """
+The definition uses JK08A as the canonical semantic and presentation source. \
+Every emitted stock map and axis is relocated through the SHA-bound reviewed \
+correspondence in defs/JK08A-JK78C.definition-addresses.csv. Homologous \
+claims are downgraded to candidate confidence unless target-specific \
+evidence keeps code confidence. Source tables whose JK78C implementation \
+changes geometry or removes the corresponding lookup are omitted explicitly. \
+Exact target-native fuel-cut caps and activation/release curves are added \
+from the SHA-bound VQ37 registry. The project and native RomRaider checksum \
+contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage, \
+Rolling Launch controls, and the CAN Telemetry at Startup control use the \
+validated JK78C runtime allocation in patches/rom-address-profiles.toml. The \
+VQ37 Rolling Launch variant requests all-cylinder fuel cut after the stock \
+final-mask coordinator and does not reuse the VQ35HR fuel-shadow maps."""
+rolling_launch = true
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
+
+[target.images.JK78C.switch]
+can_telemetry_startup = "0001f803"
+developer_immobilizer = "0000861c"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "ignition_gated_surface_1/tbl"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "high_octane_timing_state/tbl"
+
+[[target.omitted]]
+reason = "stock-inert-path"
+symbol = "high_detonation_timing_state/tbl"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"

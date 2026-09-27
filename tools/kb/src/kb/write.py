@@ -311,6 +311,15 @@ class Change:
                 self.documents[path] = {"symbol": [self.adopt(meaning, meaning.home_symbol)]}
         return path, self.documents[path]
 
+    def designed(self, kind, slug):
+        """(path, document) of the file of a designed entity; an entity without
+        one starts an empty file."""
+        path = store.path_of(kind, slug)
+        if path not in self.documents:
+            self.documents[path] = ({} if self._current(path) is None
+                                    else store.load(self.root, path, self.model.overlay))
+        return path, self.documents[path]
+
     def adopt(self, meaning, symbol):
         """The entry of a symbol that a registry states; its row of
         `kb/names.csv` moves into the entry."""

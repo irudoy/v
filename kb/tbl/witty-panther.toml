@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000126a8"
+name = "witty-panther"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014a15"
+name = "banana-jackal"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cbe4"
+to = "7mfk:0004bade"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014a35"
+name = "enormous-hamster"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cbe8"
+to = "7mfk:0004bade"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012ffe"
+name = "tomato-hippo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00060324"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001538f"
+name = "majestic-chinchilla"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000623b0"
+to = "7mfk:00060324"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000153af"
+name = "loutish-jaybird"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000623ac"
+to = "7mfk:00060324"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

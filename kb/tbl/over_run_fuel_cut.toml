@@ -1,0 +1,61 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013f38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007bd56"
+to = "7mfk:00012718"
+note = """
+the target DFCO coordinator 0007bb36 reads the exact rising-edge table \
+second in the same adjacent pair as 1ND0A 00077464 reads 00014104"""
+
+[[symbol]]
+layout = "1nd"
+address = "00014104"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00077490"
+to = "7mfk:00012718"
+note = """
+homologous DFCO coordinator preserves the rising-edge table role and \
+near-exact calibration shape"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012718"
+former = ["sandy-swift/tbl/7mfk-00012718"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014a85"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000515c4"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014aa5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000515c0"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013c86"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006bb60"
+to = "7mfk:00012718"
+note = "homologous coordinator preserves lookup order and exact map bytes"

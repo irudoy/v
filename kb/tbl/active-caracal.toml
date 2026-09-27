@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "00009170"
+name = "sceptical-sambar"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00009170"
+to = "7mfk:00009284"
+sha256 = "e9a3919b0a99cfad0dfb2e5797ebef91b8bf86b8e669a46adba618e11c236eaa"
+note = """
+exact-bytes pair 00044370/00047998 and normalized-shape pair \
+00089450/0008dd34 read the K-value operand 0x68b6 at the same call ordinals \
+and 00048298 reads it together with the MAF factor"""
+
+[[symbol]]
+layout = "1nd"
+address = "00009106"
+name = "hissing-seagull"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00009106"
+to = "7mfk:00009284"
+sha256 = "e9a3919b0a99cfad0dfb2e5797ebef91b8bf86b8e669a46adba618e11c236eaa"
+note = "homologous Base Fuel Schedule consumers preserve the K-value operand"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009284"
+name = "active-caracal"
+
+[[symbol]]
+layout = "jk00c"
+address = "0000930e"
+name = "tangerine-binturong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003c5be"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "0000931c"
+name = "glossy-ferret"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003c5be"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008f80"
+name = "raspberry-mamba"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00040918"
+to = "7mfk:0003b9a8"
+value = "00008f80"
+note = "normalized homologous consumers preserve the K-value operand role"

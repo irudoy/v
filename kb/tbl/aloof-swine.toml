@@ -1,0 +1,75 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008e9a"
+name = "violet-teal"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00008e9a"
+to = "7mfk:00008fdc"
+sha256 = "9213332e146a45544809f633ec8919d8b43c16dd01f07b329ca514495620bf17"
+note = """
+normalized-shape pair 0006bcfe/0007010a reads the exact 610 and 528 \
+threshold pair at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008e50"
+name = "neon-moose"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00008e50"
+to = "7mfk:00008fdc"
+sha256 = "9213332e146a45544809f633ec8919d8b43c16dd01f07b329ca514495620bf17"
+note = "homologous pedal-state consumer preserves the 610 and 528 threshold pair"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008fdc"
+name = "aloof-swine"
+
+[[symbol]]
+layout = "jk00c"
+address = "00009030"
+name = "sweet-galago"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00048bc8"
+note = """
+accelerator-pedal activation and release thresholds read at both comparison \
+sites of target function 00048adc which is the reviewed homolog of JK08A FUN \
+00047a56"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000903e"
+name = "stalwart-cheetah"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00048bcc"
+note = """
+accelerator-pedal activation and release thresholds read at both comparison \
+sites of target function 00048ae0 which is the reviewed homolog of JK08A FUN \
+00047a56"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00008d28"
+name = "tan-poodle"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000610f4"
+to = "7mfk:00047d48"
+value = "00008d28"
+note = """
+aligned homologous consumer preserves the scalar operand role and stock \
+value"""

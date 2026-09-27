@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "000156d0"
+name = "happy-anteater"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003b59c"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017bd2"
+name = "resilient-fennec"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00075a52"
+to = "7mfk:000732b6"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017bf2"
+name = "practical-smilodon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00075a52"
+to = "7mfk:000732b6"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

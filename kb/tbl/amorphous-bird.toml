@@ -1,0 +1,69 @@
+[[symbol]]
+layout = "1me3b"
+address = "00011dfc"
+name = "infrared-coyote"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072786"
+to = "7mfk:0001108e"
+note = """
+normalized-shape pair 0006e854/0007275c of 76 bytes loads the exact \
+direct-row-major second torque surface at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "000122c8"
+name = "energetic-lion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e87e"
+to = "7mfk:0001108e"
+note = """
+homologous direct-row-major accessor preserves the second torque surface \
+operand"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001108e"
+name = "amorphous-bird"
+
+[[symbol]]
+layout = "jk00c"
+address = "00012e12"
+name = "towering-pronghorn"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004b058"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00012e22"
+name = "wine-fossa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004b05c"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00011f4e"
+name = "dark-boa"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00063a94"
+to = "7mfk:0004a204"
+value = "00011f4e"
+note = """
+exact normalized accessor shape preserves the direct-row-major table \
+operand"""

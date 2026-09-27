@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008fdc"
+name = "jolly-ringtail"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007b368"
+to = "7mfk:0000911c"
+note = """
+normalized-shape pair 00076b90/0007b25e reads the 0x04b0 readiness threshold \
+at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008f74"
+name = "secret-boa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00076c38"
+to = "7mfk:0000911c"
+note = "homologous readiness state machine preserves the 0x04b0 threshold role"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000911c"
+name = "robust-meerkat"
+
+[[symbol]]
+layout = "jk00c"
+address = "00009174"
+name = "vegan-lizard"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00050d58"
+note = """
+stationary rev-limiter readiness threshold literal in target function \
+00050c9a which is the reviewed homolog of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00009182"
+name = "phenomenal-mustang"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00050d54"
+note = """
+stationary rev-limiter readiness threshold literal in target function \
+00050c96 which is the reviewed homolog of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00008e2a"
+name = "strong-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006b036"
+to = "7mfk:0000911c"
+note = "aligned readiness state machine preserves the threshold role"

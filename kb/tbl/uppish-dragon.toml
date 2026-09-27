@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001221e"
+name = "uppish-dragon"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014513"
+name = "mauve-impala"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00061ed0"
+to = "7mfk:0005fe44"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014523"
+name = "tested-hawk"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00061ecc"
+to = "7mfk:0005fe44"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

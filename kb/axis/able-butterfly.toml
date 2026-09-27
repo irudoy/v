@@ -1,0 +1,83 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013726"
+name = "slick-junglefowl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00071ffe"
+to = "7mfk:00011ece"
+note = """
+exact 16-byte ignition RPM axis is the first-axis operand of the same two \
+target coordinators"""
+
+[[symbol]]
+layout = "1nd"
+address = "0001399a"
+name = "celadon-shark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006dcda"
+to = "7mfk:00011ece"
+note = """
+homologous ignition selector preserves the 16-point RPM axis and branch \
+order"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00011ece"
+name = "able-butterfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000495fa"
+
+[[symbol]]
+layout = "jk00c"
+address = "000141ab"
+name = "intelligent-armadillo"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004a63e"
+to = "7mfk:000495fa"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000141bb"
+name = "complex-caracal"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004a642"
+to = "7mfk:000495fa"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000135c8"
+name = "authentic-hyrax"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00062e4a"
+to = "7mfk:00011ece"
+note = """
+target ignition accessor preserves the RPM-axis operand and 16-point \
+geometry"""

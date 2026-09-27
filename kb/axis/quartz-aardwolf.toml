@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001304e"
+name = "quartz-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000be39a"
+
+[[symbol]]
+layout = "jk00c"
+address = "000153df"
+name = "ruddy-silkworm"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c3f10"
+to = "7mfk:000be394"
+count = 1
+value = 51
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000153ff"
+name = "azure-gerbil"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c3f1c"
+to = "7mfk:000be394"
+count = 1
+value = 51
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

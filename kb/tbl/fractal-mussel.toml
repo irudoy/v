@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00014314"
+name = "fractal-mussel"
+
+[[symbol]]
+layout = "jk00c"
+address = "00016706"
+name = "electric-shellfish"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016726"
+name = "mahogany-bulldog"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

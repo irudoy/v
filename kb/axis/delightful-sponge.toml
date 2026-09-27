@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f8e"
+name = "delightful-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe4c"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001531b"
+name = "turquoise-goshawk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ade"
+note = "load axis operand at the exhaust-correction interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001533b"
+name = "stereotyped-toucan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5b1a"
+note = "load axis operand at the exhaust-correction interpolation callsite"

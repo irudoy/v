@@ -1,0 +1,77 @@
+[[symbol]]
+layout = "1me3b"
+address = "0001b078"
+name = "steadfast-seahorse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000553c6"
+to = "7mfk:00018766"
+note = """
+eight exact-bytes pairs 0005533e 00055826 00055f64 00055fd2 000569e8 \
+00056a5a 00056acc and 000b9088 against their 1ND0A sources read the exact \
+32-word table at the same call ordinals through 0002be20"""
+
+[[symbol]]
+layout = "1nd"
+address = "0001af9e"
+name = "conscious-crane"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00051566"
+to = "7mfk:00018766"
+note = "unique structural pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018766"
+name = "discreet-mayfly"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001b6f4"
+name = "glorious-otter"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000746be"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001b716"
+name = "imposing-gecko"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000746be"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001a94a"
+name = "godlike-tuna"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:000917fe"
+to = "7mfk:0007241e"
+count = 1
+value = 0
+note = "unique structural pair preserves interpolation-call order"

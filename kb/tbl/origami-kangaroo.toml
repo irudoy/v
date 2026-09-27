@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000153b0"
+name = "origami-kangaroo"
+
+[[symbol]]
+layout = "jk00c"
+address = "000178b2"
+name = "real-chihuahua"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00077488"
+to = "7mfk:00074ce4"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000178d2"
+name = "infrared-malamute"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00077488"
+to = "7mfk:00074ce4"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

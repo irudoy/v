@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011beb"
+name = "garrulous-nautilus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c0f0a"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013e98"
+name = "wooden-serval"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c6bce"
+to = "7mfk:000c0f0a"
+count = 1
+value = 3
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013ea8"
+name = "proud-dragon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c7182"
+to = "7mfk:000c0f0a"
+count = 1
+value = 3
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

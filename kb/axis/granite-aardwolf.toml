@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013c88"
+name = "granite-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009d570"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001604a"
+name = "jasmine-ibex"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000a280c"
+to = "7mfk:0009d570"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001606a"
+name = "woodoo-seagull"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000a27f8"
+to = "7mfk:0009d570"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

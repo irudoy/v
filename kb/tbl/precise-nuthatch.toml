@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "000094d4"
+name = "hopeful-stingray"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048536"
+to = "7mfk:00009534"
+note = """
+normalized-shape pair 000920fa/00097d8c reads the 0x9f38 normalization \
+reference at the same call ordinal and 00048298 reads it together with the \
+K-value and the MAF factor"""
+
+[[symbol]]
+layout = "1nd"
+address = "0000940a"
+name = "massive-iguana"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044e94"
+to = "7mfk:00009534"
+note = """
+homologous fuel and torque consumers preserve the 0x9f38 normalization \
+reference"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00009534"
+name = "precise-nuthatch"
+
+[[symbol]]
+layout = "jk00c"
+address = "000095e8"
+name = "amusing-wapiti"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003cacc"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "000095f6"
+name = "clever-griffin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003cacc"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "000091ee"
+name = "camouflaged-starling"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00083cac"
+to = "7mfk:00065ad0"
+value = "000091ee"
+note = "normalized homologous consumers preserve the primary limiter scalar role"

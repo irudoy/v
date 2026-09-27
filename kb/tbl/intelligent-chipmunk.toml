@@ -1,0 +1,77 @@
+[[symbol]]
+layout = "1me3b"
+address = "000163b4"
+name = "brave-otter"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000979da"
+to = "7mfk:00014c1a"
+note = """
+exact-bytes pair 00091d2c/000979cc reads the exact eight-word coefficient \
+table at the same call ordinal through 0002aeac"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016410"
+name = "masterful-ape"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00091d3a"
+to = "7mfk:00014c1a"
+note = """
+shared torque interpolation contract preserves the exact eight-word \
+coefficient table"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00014c1a"
+name = "intelligent-chipmunk"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001700c"
+name = "honored-bull"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067b78"
+to = "7mfk:000658b8"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001702c"
+name = "kind-pegasus"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067b78"
+to = "7mfk:000658b8"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015e12"
+name = "infrared-heron"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00083c80"
+to = "7mfk:00065aa4"
+value = "00015e12"
+note = "unique structural pair preserves mapped neighbors"

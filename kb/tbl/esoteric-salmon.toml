@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00010b0e"
+name = "esoteric-salmon"
+
+[[symbol]]
+layout = "jk00c"
+address = "00012892"
+name = "beryl-impala"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00077c78"
+to = "7mfk:000754d8"
+count = 1
+value = 5
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000128a2"
+name = "determined-leech"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00077c78"
+to = "7mfk:000754d8"
+count = 1
+value = 5
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

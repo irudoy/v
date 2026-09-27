@@ -1,0 +1,79 @@
+[[symbol]]
+layout = "1me3b"
+address = "0000fa7c"
+name = "glistening-tamarin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a6660"
+to = "7mfk:0000e98e"
+note = """
+normalized-shape pairs 000a76d6/000adcea 000a936e/000b0330 000a9554/000b04de \
+and 000b14b8/000b8f34 read the exact surface with its exact axes 00013561 \
+and 000158a6 at the same call ordinal through 0002a388"""
+
+[[symbol]]
+layout = "1nd"
+address = "00010048"
+name = "outgoing-bumblebee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a068a"
+to = "7mfk:0000e98e"
+note = "unique structural accessor pair preserves interpolation-call order"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000e98e"
+name = "arcane-griffin"
+
+[[symbol]]
+layout = "jk00c"
+address = "00010492"
+name = "colossal-kingfisher"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000104a2"
+name = "belligerent-ladybug"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00075c70"
+to = "7mfk:000734d4"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0000face"
+name = "vague-termite"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:000949c8"
+to = "7mfk:000754ac"
+count = 1
+value = 4
+note = """
+unique structural accessor pair and exact storage anchor preserve \
+interpolation-call order"""

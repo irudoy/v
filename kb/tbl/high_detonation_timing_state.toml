@@ -1,7 +1,68 @@
 [[symbol]]
+layout = "1nd"
+address = "00009a80"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006dcf4"
+to = "7mfk:00009b1a"
+note = """
+the homologous surface 00009a80 belongs to the gated half of the ignition \
+coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves \
+unexecuted; it holds the same bytes as 00009880 and 00009980, and the \
+executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native \
+tables"""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009b1a"
 former = ["bizarre-harrier/tbl/7mfk-00009b1a"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00009bde"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004a654"
+to = "7mfk:00049610"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00009bee"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004a658"
+to = "7mfk:00049610"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000097ca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00062e64"
+to = "7mfk:00009b1a"
+note = """
+the homologous surface 000097ca belongs to the gated half of the ignition \
+coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves \
+unexecuted; it holds the same bytes as 000095ca and 000096ca, and the \
+executed surfaces 0000a10a and 0000a20a are target-native tables"""
 
 [[status]]
 layout = "1me3b"

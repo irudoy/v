@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012ea2"
+name = "serious-heron"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe00"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001522f"
+name = "blond-duck"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5a92"
+note = "load axis operand at the cold exhaust-target interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001524f"
+name = "sly-sawfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5ace"
+note = "load axis operand at the cold exhaust-target interpolation callsite"

@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011be3"
+name = "radiant-robin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000be402"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013e90"
+name = "strange-wrasse"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c3f7e"
+to = "7mfk:000be402"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013ea0"
+name = "shapeless-chihuahua"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c3f8a"
+to = "7mfk:000be402"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

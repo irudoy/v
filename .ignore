@@ -6,3 +6,5 @@
 /defs/JK08A-*.interp-correspondence.csv
 /defs/vq37-native-tables.toml
 /defs/vq37-native-fuel-cut.toml
+/defs/JK08A-*.definition-addresses.csv
+/defs/definition-projections.toml

@@ -1,0 +1,60 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013a1e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073412"
+to = "7mfk:00012196"
+note = """
+the target coordinator 0007323e of 1450 bytes reads the exact table at \
+ordinal 186 on the fallback arm of the selector that 1ND0A 0006f37a of 1454 \
+bytes resolves at the same ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f55c"
+to = "7mfk:00012196"
+note = "homologous fallback branch preserves the default table role"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012196"
+former = ["hulking-chicken/tbl/7mfk-00012196"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014483"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004c0f0"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014493"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004c0f4"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064782"
+to = "7mfk:00012196"
+note = "homologous fallback branch preserves the default table role"

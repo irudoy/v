@@ -37,6 +37,27 @@ The native registries (section 20.4):
 - Each link takes an entry with its slot, its role, and the evidence of every
   symbol that states it, and each `absent` status an entry with its note and
   evidence; a status that cites the registry as its evidence is refused.
+
+The definition registries (section 20.3):
+
+- Each target symbol of a row takes its row item first in its entry, with the
+  prose of the row as its note: the item toward the `7mfk` symbol that
+  `kb.match.typed` gives, whose kind must be the kind of the row; for an `l0`
+  row, `l0` homology evidence toward the `7mfk` symbol; for a
+  `reviewed-target` row, `l0` identity evidence; and for a `stock-inert-path`
+  row, `l0` homology evidence toward the `7mfk` symbol. An `l0` item lies at
+  the first census operand of the storage of its symbol, or else at the first
+  instruction that touches the storage, where it verifies.
+- A `7mfk` symbol that only the registries and the entity files state takes an
+  entry, and `l0` identity evidence of the same placement when its entry
+  states no evidence.
+- An `absent` status is one that the file of its meaning states with its
+  evidence; an `unresolved` status takes the search of the `7mfk` symbol on
+  its layout with the L0 digest of the layout and the prose of the row as its
+  note. The registry evidence of a status is dropped.
+- `feature/definitions.toml` takes a `[[target]]` for each layout that a
+  projection targets, with its images, the meanings that its rows require,
+  its variants, and its omitted surfaces.
 """
 
 import argparse
@@ -44,12 +65,14 @@ from collections import defaultdict
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import interp, native
+from kb.adapters import definitions, interp, native
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
 # Differences that a refusal lists.
 SHOWN = 20
+# The keys of an unresolved status that a conversion states.
+UNRESOLVED = ("method", "target", "count", "l0", "note")
 
 
 def _location(item):
@@ -103,10 +126,13 @@ class Conversion:
         self.facts = compile.builder_of(root, before.overlay)
         adapter.declare(self.facts, root)
         adapter.relate(self.facts, root)
-        if self.facts.issues:
-            lines = [f"the registry has {len(self.facts.issues)} issues; nothing is written"]
+        # Legacy evidence without the keys of its kind is what a conversion
+        # types.
+        issues = [issue for issue in self.facts.issues if issue.check != "untyped"]
+        if issues:
+            lines = [f"the registry has {len(issues)} issues; nothing is written"]
             lines += [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
-                      for issue in self.facts.issues[:SHOWN]]
+                      for issue in issues[:SHOWN]]
             raise KbError("\n".join(lines), code=3)
         self.change = write.Change(before, None, root)
         # {symbol key: (converted items, raw items)}, {(meaning id, layout):
@@ -261,6 +287,154 @@ class Conversion:
         found += [_location(item) for item in fact.evidence if _location(item) not in found]
         entry["evidence"] = found
 
+    def definitions(self):
+        before, facts = self.before, self.facts
+        self.added = UNRESOLVED
+        documents = {}
+
+        def document(meaning):
+            if id(meaning) not in documents:
+                _, found = self.change.document(meaning)
+                documents[id(meaning)] = found
+            return documents[id(meaning)]
+
+        ranks = match.grounded(before, sorted(
+            key for key in facts.symbols if key.layout == definitions.CANONICAL))
+        for key, fact in sorted(facts.symbols.items()):
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f"{key.key} has no meaning in the model", code=3)
+            if key.layout == definitions.CANONICAL:
+                grounded = ranks[key][0] >= match.CANDIDATE
+                if grounded and not _alone(symbol, self.inputs):
+                    continue
+                entry = self._entry(document(symbol.meaning), symbol)
+                if grounded:
+                    continue
+                items = [self._placed(symbol, {"kind": "l0", "supports": "identity"})]
+            else:
+                items = [self._row_item(symbol, fact.evidence)]
+                entry = self._entry(document(symbol.meaning), symbol)
+            entry["evidence"] = items + [item for item in entry.get("evidence", ())
+                                         if item not in items]
+            self.evidence[key] = (items, fact.evidence)
+        for anchor, layout, state, props, evidence, _, _ in facts.status_facts:
+            meaning = before.meaning_of(anchor)
+            if meaning is None:
+                raise KbError(f"the status of {anchor.key} on {layout} has no meaning", code=3)
+            found = document(meaning)
+            held = next((entry for entry in found.get("status", ())
+                         if entry.get("layout") == layout), None)
+            if held is not None:
+                if held.get("state") != state:
+                    raise KbError(f"{meaning.key} is {state} on {layout} in the registries and "
+                                  f"{held.get('state')} in its file", code=3)
+                self.statuses[(id(meaning), layout)] = ({"layout": layout, "state": state},
+                                                        evidence)
+                continue
+            if state != "unresolved":
+                raise KbError(f"the {state} status of {meaning.key} on {layout} has no entry "
+                              "with its evidence in the file of its meaning", code=3)
+            origin = meaning.symbols.get(definitions.CANONICAL)
+            if origin is None:
+                raise KbError(f"{meaning.key} has no {definitions.CANONICAL} symbol to search "
+                              "from", code=3)
+            search = match.search(before, origin, layout)
+            if search.count == 1:
+                [address] = search.candidates
+                raise KbError(f"the {search.method} search from {search.target} finds one "
+                              f"candidate on {layout}, {address:08x}, for the unresolved "
+                              f"status of {meaning.key}", code=3)
+            status = {"layout": layout, "state": state, "method": search.method,
+                      "target": search.target, "count": search.count,
+                      "l0": match.l0_digest(layout, self.root), "note": props.get("note")}
+            found["status"] = [*found.get("status", ()), status]
+            self.statuses[(id(meaning), layout)] = (status, evidence)
+        _, feature = self.change.designed("feature", definitions.FEATURE)
+        targets = {entry.get("layout"): entry for entry in feature.get("target", ())}
+        for (slug, layout), target in sorted(facts.targets.items()):
+            if slug == definitions.FEATURE:
+                targets[layout] = self._target(layout, target)
+        feature["target"] = [targets[layout] for layout in sorted(targets)]
+
+    def _entry(self, document, symbol):
+        """The entry of a symbol in the document of its meaning; a document
+        without one adopts the symbol."""
+        address = f"{symbol.address:08x}"
+        entry = next((item for item in document.get("symbol", ())
+                      if (item.get("layout"), item.get("address")) == (symbol.layout, address)),
+                     None)
+        if entry is None:
+            entry = self.change.adopt(symbol.meaning, symbol)
+            document["symbol"] = [*document.get("symbol", ()), entry]
+        return entry
+
+    def _placed(self, symbol, item):
+        """`item` at the first census operand of the symbol's storage, or else
+        at the first instruction that touches the storage, where it verifies."""
+        here = match.code(symbol.layout, self.root)
+        span = range(symbol.address, symbol.address + (match.storage_size(symbol) or 1))
+        sites = match.touching(self.before, symbol)
+        operands = [site for site in sites
+                    if any(address in span and relation.startswith("operand:")
+                           for address, relation in here.touches(site))]
+        for site in operands + [site for site in sites if site not in operands]:
+            found = {**item, "at": f"{symbol.layout}:{site:08x}"}
+            if match.verify(self.before, symbol, found) is None:
+                return found
+        raise KbError(f"{symbol.key.key}: no instruction of the L0 of {symbol.layout} that "
+                      "touches its storage places its l0 evidence", code=3)
+
+    def _row_item(self, symbol, raw):
+        """The row item of a target symbol from the registry item of its row."""
+        rows = [item for item in raw if item.get("legacy")]
+        if len(rows) != 1:
+            raise KbError(f"{symbol.key.key}: the registries state {len(rows)} rows of the "
+                          "symbol", code=3)
+        [row] = rows
+        marker, note = row["legacy"], row.get("note")
+        if marker == definitions.REVIEWED:
+            return self._placed(symbol, {"kind": "l0", "supports": "identity", "note": note})
+        origin = self.before.symbols.get(row.get("to"))
+        if origin is None:
+            raise KbError(f"{symbol.key.key}: the row names no {definitions.CANONICAL} symbol",
+                          code=3)
+        kind = "l0" if marker == definitions.INERT else marker.partition(":")[2]
+        if marker != definitions.INERT:
+            found = match.typed(self.before, symbol, origin)
+            if found is not None:
+                if found["kind"] != kind:
+                    raise KbError(f"{symbol.key.key}: the row states {kind}, and the first typed "
+                                  f"item toward {origin.key.location} is {found['kind']}",
+                                  code=3)
+                return {**_location(found), "note": note}
+        if kind != "l0":
+            raise KbError(f"{symbol.key.key}: the row states {kind}, and no typed item toward "
+                          f"{origin.key.location} verifies", code=3)
+        return self._placed(symbol, {"kind": "l0", "supports": "homology",
+                                     "to": origin.key.location, "note": note})
+
+    def _target(self, layout, target):
+        """The `[[target]]` entry of the definitions of a layout."""
+        props = target.props
+
+        def meaning(key):
+            held = self.before.meaning_of(key)
+            if held is None:
+                raise KbError(f"the {definitions.FEATURE} target of {layout} names "
+                              f"{key.key}, which has no meaning", code=3)
+            return held.key
+
+        return {
+            "layout": layout, "status": target.status,
+            "requires": sorted({meaning(key) for key in props.get("requires", ())}),
+            "images": props.get("images", {}),
+            "variants": [{"symbol": meaning(item["symbol"]), "variant": item["variant"]}
+                         for item in props.get("variants", ())],
+            "omitted": [{"symbol": meaning(item["symbol"]), "reason": item["reason"]}
+                        for item in props.get("omitted", ())],
+        }
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -297,7 +471,8 @@ class Conversion:
             entry = found["meanings"][meaning.key]
             listed = dict(entry["statuses"])
             state, props, evidence = listed[layout]
-            props = _value(before, {**dict(props), **{name: status[name] for name in self.added}})
+            props = _value(before, {**dict(props), **{name: status[name] for name in self.added
+                                                      if name in status}})
             evidence = frozenset((set(evidence) - {_value(before, item) for item in raw})
                                  | {_value(before, item) for item in status.get("evidence", ())})
             listed[layout] = (state, props, evidence)
@@ -349,11 +524,23 @@ def dump(model):
         links[link.owner.key, link.type, link.to.key, link.slot, link.offset] = (
             _value(model, link.props), frozenset(_value(model, item) for item in link.evidence),
             tuple(sorted(link.stated)), tuple(sorted(link.roles)))
-    targets = {key: (target.status, _value(model, target.props))
+    targets = {key: (target.status, _value(model, _target_props(model, target.props)))
                for key, target in model.targets.items()}
     entities = {key: _value(model, entity.props) for key, entity in model.entities.items()}
     return {"symbols": symbols, "meanings": meanings, "links": links, "targets": targets,
             "entities": entities}
+
+
+def _target_props(model, props):
+    """The keys of a target with `requires` as the set of its meanings, which
+    a registry states by their symbols and a file by their references."""
+    if "requires" not in props:
+        return props
+    found = set()
+    for key in props["requires"]:
+        meaning = model.meaning_of(key) if isinstance(key, SymbolKey) else None
+        found.add(meaning.key if meaning is not None else key)
+    return {**props, "requires": frozenset(found)}
 
 
 def differences(expected, found):
@@ -409,6 +596,9 @@ def projections(adapter, model):
         return {native.TABLES.as_posix(): native.render_tables(native.tables_document(model)),
                 native.FUEL_CUT.as_posix(): native.render_fuel_cut(
                     native.fuel_cut_document(model))}
+    if adapter is definitions:
+        return {**definitions.render_addresses(model),
+                definitions.PROJECTIONS.as_posix(): definitions.render_projections(model)}
     return {}
 
 

@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012fce"
+name = "agile-seal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005fe44"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001535f"
+name = "dynamic-gibbon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00061ed0"
+to = "7mfk:0005fe44"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001537f"
+name = "thick-unicorn"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00061ecc"
+to = "7mfk:0005fe44"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013b28"
+name = "prompt-hummingbird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00055576"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015eea"
+name = "vengeful-ermine"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000574a8"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015f0a"
+name = "wealthy-whale"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000574a4"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

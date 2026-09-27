@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012798"
+name = "loud-squid"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014b05"
+name = "therapeutic-swan"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00046688"
+to = "7mfk:00045704"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014b25"
+name = "greedy-grasshopper"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004668c"
+to = "7mfk:00045704"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

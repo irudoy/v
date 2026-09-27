@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012d32"
+name = "fluffy-bison"
+
+[[symbol]]
+layout = "jk00c"
+address = "000150bf"
+name = "cherubic-sawfly"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000589dc"
+to = "7mfk:00056ac4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000150df"
+name = "piquant-adder"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000589d8"
+to = "7mfk:00056ac4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

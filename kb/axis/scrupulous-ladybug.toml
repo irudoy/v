@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f3e"
+name = "scrupulous-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdb08"
+
+[[symbol]]
+layout = "jk00c"
+address = "000152cb"
+name = "crimson-stallion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c3670"
+note = """
+engine-speed axis operand at the warm intake-target interpolation callsite"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000152eb"
+name = "marigold-gibbon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c3674"
+note = """
+engine-speed axis operand at the warm intake-target interpolation callsite"""

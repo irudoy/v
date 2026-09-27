@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018846"
+name = "umber-coyote"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b444"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001b7d4"
+name = "quirky-aardwark"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007e324"
+to = "7mfk:0007b444"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001b7f6"
+name = "fancy-ara"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007e324"
+to = "7mfk:0007b444"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

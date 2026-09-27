@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f0e"
+name = "athletic-jackal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe22"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001529b"
+name = "sophisticated-orca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ab4"
+note = "load axis operand at the warm exhaust-target interpolation callsite"
+
+[[symbol]]
+layout = "jk00d"
+address = "000152bb"
+name = "accelerated-hawk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5af0"
+note = "load axis operand at the warm exhaust-target interpolation callsite"

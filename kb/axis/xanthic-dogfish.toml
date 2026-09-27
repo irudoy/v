@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00018fd6"
+name = "xanthic-dogfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00072f40"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001c034"
+name = "ginger-hyena"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00076008"
+to = "7mfk:0007386c"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c056"
+name = "indigo-trout"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00076008"
+to = "7mfk:0007386c"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

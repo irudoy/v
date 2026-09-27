@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "00014190"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00014190"
+to = "7mfk:000129c0"
+sha256 = "574df3078d1c457541ac14e7c0410f2922a7fbda27c044379d4feb91f73361d7"
+note = """
+exact-bytes pair 00075dda/0007a44e reads the six exact unity-multiplier \
+bytes at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00014324"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00014324"
+to = "7mfk:000129c0"
+sha256 = "574df3078d1c457541ac14e7c0410f2922a7fbda27c044379d4feb91f73361d7"
+note = """
+homologous channel accessor preserves the six exact unity-multiplier bytes"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000129c0"
+former = ["glittering-skunk/tbl/7mfk-000129c0"]
+
+[[symbol]]
+layout = "jk00c"
+address = "00014d45"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000505b8"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "00014d65"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000505b4"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013e86"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0006a9a0"
+to = "7mfk:0004ed78"
+value = "00013e86"
+note = "near-exact homologous accessor preserves the operand and six exact bytes"

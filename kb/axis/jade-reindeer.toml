@@ -1,0 +1,41 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f66"
+name = "jade-reindeer"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdb80"
+
+[[symbol]]
+layout = "jk00c"
+address = "000152f3"
+name = "classic-mastiff"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000c36e8"
+to = "7mfk:000bdb80"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015313"
+name = "shaggy-caracal"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000c36ec"
+to = "7mfk:000bdb80"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

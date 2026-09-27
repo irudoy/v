@@ -1,0 +1,34 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001459a"
+name = "brown-jackrabbit"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001699c"
+name = "meek-urchin"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00064a9c"
+to = "7mfk:0006282c"
+value = "0001699c"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000169bc"
+name = "tentacled-boar"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00064a98"
+to = "7mfk:0006282c"
+value = "000169bc"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

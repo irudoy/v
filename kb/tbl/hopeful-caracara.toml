@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000133d2"
+name = "hopeful-caracara"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015784"
+name = "funky-limpet"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0006493e"
+to = "7mfk:000626ce"
+count = 1
+value = 11
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000157a4"
+name = "vehement-gaur"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0006493a"
+to = "7mfk:000626ce"
+count = 1
+value = 11
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

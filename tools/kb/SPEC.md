@@ -1952,7 +1952,7 @@ that applies registers every tracked file that its row names.
 | `patches/rom-address-profiles.toml` | Target symbols, hooks, DIDs, telemetry sources and their unavailability, runtime allocations and variants, and their evidence | 3 | Meanings and statuses; targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` | Projection |
 | `patches/*-runtime-correspondence.csv` | Correspondence of source and target symbols by feature domain | 3 | Symbols and statuses | Projection |
 | Symbol and hook-key tables of `patches/runtime_targets.py` | `7mfk` symbols of the feature meanings and the per-layout hook keys | 3 | Symbols and feature targets | The module reads them through the `kb` API |
-| `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | Relocated definition settings and table addresses | 3 | Target of `definitions`; `tbl` and `axis` symbols | Projection |
+| `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | Relocated definition settings and table addresses | 3 | Targets of `definitions`; `tbl` and `axis` meanings and their statuses | Projection |
 | `defs/*.interp.csv`, `defs/*.interp-correspondence.csv` | Interpolation kernels and wrappers | 3 | `fn` meanings with `[interp]` | Projection |
 | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | Native tables and the fuel-cut mechanism of the VQ37VHR layouts | 3 | Meanings with symbols on `jk78c`, `1nd`, and `1me3b` | Projection |
 | `tools/diagnostics/sid22_inventory.py` | The decoder of the JK08A service 0x22 tables | not converted | itself; the `did` symbols of `7mfk` and their `source` links derive from it and the image bytes | |
@@ -2192,8 +2192,9 @@ commit.
   then by `at` and `to`, and the first item that verifies and grounds
   `code` types the row. A row that no matcher reproduces toward `7mfk`, such
   as a row of 1ND or 1ME3B whose matches reach only the other of these two
-  layouts, has `l0` evidence at the first instruction that touches the
-  target, with `to` naming the `7mfk` symbol.
+  layouts, has `l0` evidence with `to` naming the `7mfk` symbol. An `l0`
+  item of a row lies at the first census operand of the target storage, or
+  else at the first instruction that touches it, where it verifies.
 - A `reviewed-target` row gives an anchor symbol with `l0` evidence, and its
   `function_kinds` is `l0`; the definition projection keeps the code
   confidence of such a row.
@@ -2215,6 +2216,29 @@ catalog, and `addresses` names the address file of the layout,
 `<source>-<LAYOUT>.definition-addresses.csv`. The projections follow the
 order of their ROM keys, and a `comment` wraps its note greedily within 79
 columns, the lines of the header comment of the generated XML definition.
+
+The conversion of stage 3 writes these facts into the files of the `tbl` and
+`axis` meanings and into `kb/feature/definitions.toml`. Each target symbol of
+a row takes the item of its row first in its entry, with the prose of the
+row as `note`: the item toward the `7mfk` symbol that `kb.match.typed` gives,
+whose kind must be `function_kinds`, or the `l0` item of an `l0`, a
+`reviewed-target`, or a `stock-inert-path` row. A `7mfk` symbol of a row that
+no evidence grounds, as an axis that `defs/JK08A.axes.csv` states with scale
+evidence only, takes `l0` identity evidence of the same placement, and one
+that only the registries state takes an entry. An `absent` status is the one
+that the file of its meaning states with its evidence; an `unresolved` status
+takes the search of the `7mfk` symbol on its layout with the L0 digest of the
+layout and the prose of the row as `note`; the registry evidence of both is
+dropped. `kb/feature/definitions.toml` takes a `[[target]]` for each layout
+that a projection targets, with its `images`, `requires`, `variants`, and
+`omitted`. From the conversion the registries are projections of the files:
+the address file of a `definitions` target has a row for each meaning that
+the target requires, whose row item is the first evidence item of its symbol
+that is homology evidence toward the `7mfk` symbol, a `homologous` row, or
+`l0` identity evidence of its own layout, a `reviewed-target` row; a symbol
+that `omitted` lists and a status give `unsupported` rows.
+`defs/definition-projections.toml` has `[projection.<ROM>]` for each image of
+a `definitions` target other than that of `7mfk`.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
 symbol, with `family` as `access`, `kernel`, `width` and `height` as `cols`

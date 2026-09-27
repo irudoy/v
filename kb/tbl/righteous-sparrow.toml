@@ -3,6 +3,34 @@ layout = "7mfk"
 address = "0000ab4a"
 name = "righteous-sparrow"
 
+[[symbol]]
+layout = "jk00c"
+address = "0000aece"
+name = "ambitious-bumblebee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ade"
+note = """
+exhaust-cam correction table in the stock exhaust CVTC descriptor block at \
+0x000C5B4C; 4x4 operand of target exhaust accessor 000c5a44 at callsite \
+000c5ade"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000aede"
+name = "miniature-warthog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5b1a"
+note = """
+exhaust-cam correction table in the stock exhaust CVTC descriptor block at \
+0x000C5B88; 4x4 operand of target exhaust accessor 000c5a80 at callsite \
+000c5b1a"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

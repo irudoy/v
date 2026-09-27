@@ -3,6 +3,34 @@ layout = "7mfk"
 address = "0000b2fa"
 name = "meaty-guillemot"
 
+[[symbol]]
+layout = "jk00c"
+address = "0000b67e"
+name = "camouflaged-quail"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5a92"
+note = """
+cold exhaust-cam target in the stock exhaust CVTC descriptor block at \
+0x000C5B4C; 8x8 operand of target exhaust accessor 000c5a44 at callsite \
+000c5a92"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0000b68e"
+name = "nimble-binturong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5ace"
+note = """
+cold exhaust-cam target in the stock exhaust CVTC descriptor block at \
+0x000C5B88; 8x8 operand of target exhaust accessor 000c5a80 at callsite \
+000c5ace"""
+
 [[status]]
 layout = "1me3b"
 state = "absent"

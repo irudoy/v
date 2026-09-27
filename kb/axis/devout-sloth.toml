@@ -1,0 +1,39 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013046"
+name = "devout-sloth"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000be39a"
+
+[[symbol]]
+layout = "jk00c"
+address = "000153d7"
+name = "angelic-chameleon"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c4018"
+to = "7mfk:000be49c"
+value = "000153d7"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000153f7"
+name = "steadfast-uakari"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000c4024"
+to = "7mfk:000be49c"
+value = "000153f7"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "0001244a"
+name = "arrogant-catfish"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014747"
+name = "sly-rook"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cd94"
+to = "7mfk:0004bca0"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014767"
+name = "spiffy-serval"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cd98"
+to = "7mfk:0004bca0"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

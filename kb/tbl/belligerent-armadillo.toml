@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015306"
+name = "belligerent-armadillo"
+
+[[symbol]]
+layout = "jk00c"
+address = "000177f8"
+name = "spectral-porpoise"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000623d4"
+to = "7mfk:00060348"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017818"
+name = "slim-limpet"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000623d0"
+to = "7mfk:00060348"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

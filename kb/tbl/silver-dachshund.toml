@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012016"
+name = "silver-dachshund"
+
+[[symbol]]
+layout = "jk00c"
+address = "000142f3"
+name = "daft-gharial"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00057006"
+to = "7mfk:000550d2"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014303"
+name = "accelerated-pudu"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00057002"
+to = "7mfk:000550d2"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

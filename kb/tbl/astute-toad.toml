@@ -15,3 +15,19 @@ at = "jk00c:0004820a"
 to = "7mfk:00047282"
 count = 1
 value = 40
+
+[[symbol]]
+layout = "jk00d"
+address = "000142e3"
+name = "sensible-muskox"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00048232"
+to = "7mfk:000472a6"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

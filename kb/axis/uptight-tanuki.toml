@@ -1,0 +1,55 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011ac7"
+name = "uptight-tanuki"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000559b6"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013d64"
+name = "tacky-narwhal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000578f0"
+note = """
+coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 \
+is the target mixture stage and carries this literal at the homologous \
+lookup site; storage contents equal the JK00D target"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013d74"
+name = "crouching-degu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000578ec"
+note = """
+coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 \
+is the target mixture stage, equal to the JK00C stage 00057884 except one \
+displacement word, and carries this literal at the homologous lookup site"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000132b6"
+name = "devout-lizard"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00071fb8"
+to = "7mfk:00055b08"
+value = "000132b6"
+note = """
+target mixture stage 00071dfa passes this load axis at the homologous lookup \
+of map 0000a3ca; its input ffff1032 is the copy of ffff1042 that scheduler \
+00020f1a makes at 00020f84, and producer 0004068c stores ffff1042 as \
+min(255, BFS ffff102e * 128 / ROM16[0x91ee]), the Q7 normalized load that \
+the source forms from ffff1026 and ROM16[0x9534]"""

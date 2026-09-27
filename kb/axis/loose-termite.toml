@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f2e"
+name = "loose-termite"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe22"
+
+[[symbol]]
+layout = "jk00c"
+address = "000152bb"
+name = "zircon-avocet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5ab4"
+note = """
+engine-speed axis operand at the warm exhaust-target interpolation callsite"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000152db"
+name = "determined-lion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5af0"
+note = """
+engine-speed axis operand at the warm exhaust-target interpolation callsite"""

@@ -1,0 +1,83 @@
+[[symbol]]
+layout = "1me3b"
+address = "000162b4"
+name = "energetic-puffin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00098258"
+to = "7mfk:00014b4a"
+note = """
+the target torque coordinator 000980fe reads the exact 16-point RPM axis \
+with the exact surface 00011bfc and the exact normalized-load axis 00024da8 \
+through the 16x16 uint16 leaf 0002a0b4 with the operand set of 1ND0A \
+00092456"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016310"
+name = "umber-toad"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000925ac"
+to = "7mfk:00014b4a"
+note = "homologous torque accessor preserves the exact 16-point RPM axis"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014b4a"
+name = "functional-jackrabbit"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006598e"
+
+[[symbol]]
+layout = "jk00c"
+address = "00016f1c"
+name = "maroon-peccary"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067c4e"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00016f3c"
+name = "tested-boar"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067c4e"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015d42"
+name = "pristine-swine"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00083b34"
+to = "7mfk:0006598e"
+count = 1
+value = 2
+note = "unique structural axis pair preserves normalized geometry"

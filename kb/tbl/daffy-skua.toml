@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012f06"
+name = "daffy-skua"
+
+[[symbol]]
+layout = "jk00c"
+address = "00015293"
+name = "nifty-vicugna"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c36ce"
+to = "7mfk:000bdb66"
+count = 1
+value = "mnemonic"
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000152b3"
+name = "impossible-sambar"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c36d2"
+to = "7mfk:000bdb66"
+count = 1
+value = "mnemonic"
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

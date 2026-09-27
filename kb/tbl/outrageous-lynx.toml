@@ -1,0 +1,36 @@
+[[symbol]]
+layout = "7mfk"
+address = "000121de"
+name = "outrageous-lynx"
+
+[[symbol]]
+layout = "jk00c"
+address = "000144d3"
+name = "radical-trogon"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00053438"
+to = "7mfk:000519e0"
+count = 1
+value = 8
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000144e3"
+name = "pistachio-wapiti"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00053434"
+to = "7mfk:000519e0"
+count = 1
+value = 8
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""

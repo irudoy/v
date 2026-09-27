@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013a36"
+name = "daffodil-dugong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000732ea"
+to = "7mfk:000121a6"
+note = """
+the target coordinator 0007323e reads the exact stock-inert table at ordinal \
+83 on the early arm guarded by the same 0x3fff comparison at which 1ND0A \
+0006f37a reads 00013c2a"""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c2a"
+name = "rugged-hawk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f426"
+to = "7mfk:000121a6"
+note = """
+homologous early branch guarded by the same 0x4000 comparison preserves the \
+stock-inert table role"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000121a6"
+name = "sincere-millipede"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137f8"
+name = "interesting-rabbit"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064586"
+to = "7mfk:000121a6"
+note = """
+homologous early branch guarded by the same 0x4000 comparison preserves the \
+stock-inert table role"""
