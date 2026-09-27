@@ -305,10 +305,22 @@ def claim_rows(model):
                 entity_links[(kind, "Step", "Meaning")].extend(
                     {"from": key, "to": meaning, "props": claim}
                     for meaning in _named_keys(model, refs))
-    targets = [{"from": f"{feature}/feature", "to": layout, "props": properties({
-                   **_referenced(model, target.props), "status": target.status,
-                   "producer": "claim", "src": _src(target.sources)})}
-               for (feature, layout), target in sorted(model.targets.items())]
+    targets, required = [], defaultdict(lambda: (set(), set()))
+    for (feature, layout), target in sorted(model.targets.items()):
+        props = {key: value for key, value in target.props.items() if key != "requires"}
+        targets.append({"from": f"{feature}/feature", "to": layout, "props": properties({
+            **_referenced(model, props), "status": target.status,
+            "producer": "claim", "src": _src(target.sources)})})
+        for key in _named_keys(model, target.props.get("requires", ())):
+            layouts, sources = required[(feature, key)]
+            layouts.add(layout)
+            sources.update(target.sources)
+    # The meanings that the targets of a feature require: REQUIRES with the
+    # layouts of those targets.
+    for (feature, key), (layouts, sources) in sorted(required.items()):
+        entity_links[("REQUIRES", "Entity", "Meaning")].append({
+            "from": f"{feature}/feature", "to": key, "props": {
+                "layouts": sorted(layouts), "producer": "claim", "src": _src(sources)}})
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
             "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites),
             "entities": entities, "steps": steps, "entity_links": dict(entity_links),

@@ -83,6 +83,16 @@ class ClaimRowsTest(unittest.TestCase):
         self.assertIn({"from": "can_telemetry/feature", "to": "normalized_load_raw/field"},
                       [{"from": row["from"], "to": row["to"]} for row in requires])
 
+    def test_the_requires_of_targets_reach_their_meanings_with_their_layouts(self):
+        rows = graph.claim_rows(model())
+        requires = {row["to"]: row["props"]["layouts"]
+                    for row in rows["entity_links"][("REQUIRES", "Entity", "Meaning")]
+                    if row["from"] == "definitions/feature"}
+        self.assertEqual(requires["intake_cvtc_target/tbl"],
+                         ["1me3b", "1nd", "jk00c", "jk00d", "jk78c"])
+        targets = [row for row in rows["targets"] if row["from"] == "definitions/feature"]
+        self.assertTrue(targets and all("requires" not in row["props"] for row in targets))
+
     def test_values_become_storable(self):
         stored = graph.properties({"to": SymbolKey("7mfk", "fn", 0x26740), "empty": [],
                                    "none": None, "set": {"b", "a"}, "nested": [{"x": None}]})

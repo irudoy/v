@@ -834,8 +834,9 @@ class Model:
         required on a layout where they have no symbol (section 7.4). A
         requirement is `family` when the meaning has a symbol on another layout
         of the family, `<feature>` when a feature that targets the layout
-        requires it, and `<feature> via <field>/field` when the feature requires
-        a field whose `source` it is."""
+        requires it or its target on the layout lists it in `requires`, and
+        `<feature> via <field>/field` when the feature requires a field whose
+        `source` it is."""
         family = {layout.id: layout.family for layout in self.layouts.values()}
         found = defaultdict(set)
         for meaning in self.meanings:
@@ -865,4 +866,9 @@ class Model:
                     for layout in targeted[slug]:
                         if layout not in meaning.symbols:
                             found[(meaning.key, layout)].add(requirement)
+        for (feature, layout), target in sorted(self.targets.items()):
+            for ref in target.props.get("requires", ()):
+                meaning = self.meaning_of(ref)
+                if meaning is not None and meaning.name and layout not in meaning.symbols:
+                    found[(meaning.key, layout)].add(feature)
         return dict(found)

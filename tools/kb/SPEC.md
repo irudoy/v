@@ -693,16 +693,23 @@ Features:
   target layout; `vendor` lists the competitor products that offer it, for
   the parity catalog.
 - `[[target]]` keys: `layout`, `status` (`supported`, `planned`, or
-  `unsupported`), `note`, and the keys of the feature. An `unsupported`
-  target names in `note` the meanings whose status blocks it.
+  `unsupported`), `note`, `requires`, and the keys of the feature. An
+  `unsupported` target names in `note` the meanings whose status blocks it.
+  `requires` of a target lists the meanings that the feature needs on its
+  layout alone; `REQUIRES` carries them with the layouts of the targets
+  that list them, and `kb gaps` reports those without a symbol there.
 - The `runtime` feature holds the runtime allocation of each layout, its
   ROM and RAM relocation, and the build variants. `can_telemetry` holds the
   wire constants, profiles, and contexts, and each of its targets lists in
   `unavailable` the fields whose source meaning has a status on the layout.
   `definitions` holds `default_emit` and the switches of the editor
   definitions, and each of its targets holds in `images` the header metadata,
-  checksums, switch addresses, and exposed features of each image with a
-  definition.
+  checksums, switch addresses, exposed features, prose (`note`), and the
+  basis of the review (`basis`) of each image with a definition, in
+  `requires` the meanings whose tables and axes the definition of the layout
+  relocates, in `variants` the symbols that a variant of the definition
+  selects with the variant, and in `omitted` the symbols that the definition
+  leaves out with the reason.
 - `map_switching`, `rolling_launch`, and `can_telemetry` hold their layout
   keys and, under their own hook keys, the `hook` meanings they redirect with
   the replacement of each. The build applies them in that order, so the value
@@ -1003,8 +1010,8 @@ writes carries the label `:Kb` in addition to its own label.
 | `OBSERVES` | `Entity` (signal) | `Meaning` | | `claim` |
 | `SERVES` | `Entity` (field) | `Entity` (signal) | | `claim` |
 | `CARRIES` | `Entity` (field) | `Meaning` | | `claim` |
-| `REQUIRES` | `Entity` (feature) | `Meaning`, `Entity` | | `claim` |
-| `TARGETS` | `Entity` (feature) | `Layout` | `status` and the keys of the target, `allocations` among them | `claim` |
+| `REQUIRES` | `Entity` (feature) | `Meaning`, `Entity` | `layouts` for the `requires` of targets | `claim` |
+| `TARGETS` | `Entity` (feature) | `Layout` | `status` and the keys of the target except `requires`, `allocations` among them | `claim` |
 | `PROPOSES` | `Candidate` | any node | `score` | `candidate` |
 
 - A link declared on a meaning is a relationship between meanings. The
@@ -2172,10 +2179,11 @@ commit.
 - `entity` is the operand role of the interpolation call and gives the kind,
   `Map` for `tbl` and `Axis` for `axis`: an address that is both a table and
   an axis operand has a row of each entity and gives a symbol of each kind.
-  `source` and `target` give the symbols; `variant` gives an entry of
-  `variants` of the `definitions` target; `evidence` becomes the `note` of
-  the row's evidence item. Rows follow the order of entity, source, variant,
-  and target.
+  `source` and `target` give the symbols, and the meaning of `source`
+  enters `requires` of the `definitions` target of the layout; `variant`
+  gives an entry of `variants` of the target; `evidence` becomes the `note`
+  of the row's evidence item. Rows follow the order of entity, source,
+  variant, and target.
 - A `homologous` row gives homology evidence toward the `7mfk` symbol of the
   kind that `function_kinds` names. The kind is that of the first evidence
   item that `kb.match.typed` finds: the matchers of the `homology` check
@@ -2201,9 +2209,11 @@ commit.
 
 `defs/definition-projections.toml`: the keys of `[projection.<ROM>]` and
 `[projection.<ROM>.switch]` become the entry of the image in `images` of the
-`definitions` target of its layout, with `comment` as `note`; the two digests
-must equal the image catalog, and `addresses` is derived from the symbols.
-The projections follow the order of their ROM keys.
+`definitions` target of its layout, with `comment` as `note` and `evidence`
+as `basis`; the two digests must equal the image catalog, and `addresses`
+names the address file of the layout,
+`<source>-<LAYOUT>.definition-addresses.csv`. The projections follow the
+order of their ROM keys.
 
 `defs/*.interp.csv`: each row becomes `[interp]` of the wrapper's `fn`
 symbol, with `family` as `access`, `kernel`, `width` and `height` as `cols`

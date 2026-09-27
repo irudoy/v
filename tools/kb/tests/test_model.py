@@ -158,6 +158,20 @@ class RequiredTest(unittest.TestCase):
             ("normalized_load/ram", "jk78c"): {through},
             ("normalized_load/ram", "jk00c"): {"family"}})
 
+    def test_a_target_requires_the_meanings_of_its_requires_on_its_layout(self):
+        b = builder()
+        group = ("tbl", "file", "fuel_map")
+        home = b.symbol("7mfk", "tbl", 0xA29A, "f.toml", group=group)
+        b.symbol("jk00d", "tbl", 0xA2BA, "f.toml", group=group)
+        b.name(group, "fuel_map", "file", "f.toml")
+        b.entity("feature", "definitions", "d.toml")
+        for layout in ("jk00d", "jk78c"):
+            b.target("definitions", layout, "d.toml", status="supported",
+                     props={"requires": [home]})
+        b.target("definitions", "1nd", "d.toml", status="supported")
+        self.assertEqual(b.finish().required(), {("fuel_map/tbl", "jk78c"): {"definitions"},
+                                                 ("fuel_map/tbl", "jk00c"): {"family"}})
+
 
 if __name__ == "__main__":
     unittest.main()

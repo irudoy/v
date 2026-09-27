@@ -1308,14 +1308,15 @@ FAMILY = "family"
 
 def gap_rows(graph, feature=None, layout=None):
     """[{feature, layout, field, meaning, status, current}] of the required
-    meanings without a symbol on a layout: those a feature requires directly or
-    through the source of a field, and without `feature`, those a symbol on
-    another layout of the family requires. `current` is the L0 digest of the
+    meanings without a symbol on a layout: those a feature requires directly,
+    through the source of a field, or through the `requires` of its target on
+    the layout, and without `feature`, those a symbol on another layout of the
+    family requires. `current` is the L0 digest of the
     layout, which a stale search does not match."""
     rows = graph.run(
         "MATCH (f:Kb:Entity {kind: 'feature'})-[:TARGETS]->(l:Kb:Layout) "
         "WHERE ($feature IS NULL OR f.slug = $feature) AND ($layout IS NULL OR l.key = $layout) "
-        "MATCH (f)-[:REQUIRES]->(x) "
+        "MATCH (f)-[q:REQUIRES]->(x) WHERE q.layouts IS NULL OR l.key IN q.layouts "
         "OPTIONAL MATCH (x)-[:CARRIES]->(c:Kb:Meaning) "
         "WITH f, l, x, CASE WHEN x:Meaning THEN x ELSE c END AS m WHERE m IS NOT NULL "
         "OPTIONAL MATCH (m)-[:HAS]->(s:Kb:Symbol) WHERE s.layout = l.key "

@@ -312,7 +312,7 @@ class GapStore:
         if "slug: $feature" in query:
             return [{"key": "can_telemetry/feature"}] if params["feature"] == "can_telemetry" \
                 else []
-        rows = self.FEATURE if "[:REQUIRES]" in query else self.FAMILY
+        rows = self.FEATURE if ":REQUIRES]" in query else self.FAMILY
         return [dict(row) for row in rows if params.get("layout") in (None, row["layout"])
                 and params.get("feature") in (None, row["feature"])]
 

@@ -120,9 +120,10 @@ name resolves with a note that names the current reference.
   manifest of the layout changed since, and `absent` with its first typed
   evidence. A meaning is required on the layouts that a feature targets when
   the feature requires it directly or through the `source` of a field it
-  requires, and on the layouts of a family where another layout has its
-  symbol; `--feature` lists the requirements of one feature, `--layout` one
-  layout.
+  requires, on the layout of a target that lists it in `requires`, as the
+  `definitions` targets list the tables and axes of their definitions, and
+  on the layouts of a family where another layout has its symbol;
+  `--feature` lists the requirements of one feature, `--layout` one layout.
 - `kb bench` answers every question of `bench.toml` that the current stage
   activates, with `--full`, and passes a question when its answer exits with
   0, fits its budget, and stays below its baseline: the output of the `rg`
