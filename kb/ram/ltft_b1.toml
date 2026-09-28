@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe92cc"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe92cc"
+to = "7mfk:ffff2302"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9302"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe9302"
+to = "7mfk:ffff2302"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table and direct references agree"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2302"
+former = ["omniscient-kakapo/ram/7mfk-ffff2302"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2376"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00059d64"
+to = "7mfk:00057e44"
+value = "ffff2376"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff237e"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00059d60"
+to = "7mfk:00057e44"
+value = "ffff237e"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff225a"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000ac8b8"
+to = "7mfk:0008a594"
+value = "ffff225a"
+note = "Aligned diagnostic pointer table and direct references agree"

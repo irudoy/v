@@ -1,0 +1,96 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00079e24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079cf4"
+note = "Coordinator literal reads the hot 16x16 surface"
+
+[[symbol]]
+layout = "1nd"
+address = "00075290"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074fe6"
+note = "Literal of the executed coordinator half reads the hot and cold surfaces"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e474"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e21c"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004fdcc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004fb74"
+to = "7mfk:0004e474"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fdc8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004fb70"
+to = "7mfk:0004e474"
+
+[[symbol]]
+layout = "jk78c"
+address = "00069db0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069b36"
+note = """
+Literal of the gated coordinator half calls the common ignition lookup and \
+every call passes through the adapter"""
+
+[[link]]
+type = "target"
+to = "ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079e24"
+value = "00029ba8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00075290"
+value = "00028634"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fdcc"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fdc8"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00069db0"
+value = "00028018"

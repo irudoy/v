@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "001344c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0013446e"
+to = "7mfk:000ce8dc"
+note = "Literal call target identifies the exact selector host"
+
+[[symbol]]
+layout = "1nd"
+address = "00127158"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001270fe"
+to = "7mfk:000ce8dc"
+note = "Literal call target identifies the exact selector host"
+
+[[symbol]]
+layout = "7mfk"
+address = "000ce8dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000ce872"
+
+[[symbol]]
+layout = "jk00c"
+address = "000da548"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000da4e0"
+to = "7mfk:000ce8dc"
+
+[[symbol]]
+layout = "jk00d"
+address = "000dac84"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000dac1c"
+to = "7mfk:000ce8dc"
+
+[[symbol]]
+layout = "jk78c"
+address = "000fb260"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000fb1f6"
+to = "7mfk:000ce8dc"
+note = "Literal call target identifies the exact selector host"
+
+[[link]]
+type = "target"
+to = "selector_function/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:001344c8"
+value = "001370dc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00127158"
+value = "00129cbc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000da548"
+value = "000dc868"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000dac84"
+value = "000dcfa4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000fb260"
+value = "000fd40c"

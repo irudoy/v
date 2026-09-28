@@ -4,6 +4,7 @@ the index byte and the interpolator of the projected default table and is \
 selected when the transition-completion latch is set."""
 level = "code"
 home = "jk78c"
+former = ["idle_ignition_timing_alternate"]
 cols = 8
 rows = 1
 storage = "uint8"
@@ -42,6 +43,9 @@ are identical to JK78C 0x000137F0."""
 kind = "l0"
 supports = "identity"
 at = "1me3b:00073404"
+note = """
+Alternate arm of the target state selector shares the index byte and \
+interpolator of the default table and has no source counterpart"""
 
 [[symbol]]
 layout = "1nd"
@@ -57,6 +61,9 @@ the latch is clear."""
 kind = "l0"
 supports = "identity"
 at = "1nd:0006f6fc"
+note = """
+Alternate arm of the target state selector shares the index byte and \
+interpolator of the default table and has no source counterpart"""
 
 [[symbol]]
 layout = "jk78c"
@@ -72,6 +79,9 @@ the latch is clear."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006484c"
+note = """
+Alternate arm of the target state selector shares the index byte and \
+interpolator of the default table and has no source counterpart"""
 
 [[link]]
 type = "reader"

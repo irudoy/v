@@ -2162,9 +2162,6 @@ Stage 3. `patches/rom-address-profiles.toml`, per image profile:
 | `extra_cvtc_storage`, `ignition_state_storage` | ROM allocations of the `map_switching` target |
 | `evidence.<topic>` | `basis.<topic>` of the target of the topic's feature: `free_rom` and `free_ram` of `runtime`, `maps` of `map_switching`, `rolling` of `rolling_launch`, and `can` and `telemetry` of `can_telemetry` |
 
-The conversion adds typed evidence to the symbols and statuses whose
-locations the evidence text states and lists the text it cannot type.
-
 The canonical feature layouts give the `7mfk` side of the same tables: the
 `[[hook]]` entries of `patches/map-switching-layout.toml`,
 `patches/rolling-launch-layout.toml`, and `patches/can-telemetry-layout.toml`
@@ -2203,11 +2200,54 @@ symbol fills a role in the same way; the registers at one address form one
 meaning on every layout that states them. The records at the addresses of the
 image-byte keys of `can_symbols` are one `uint32` word each.
 
-The conversion types the evidence of every `mapped` and `target-specific`
-symbol row from L0 with the matchers of the `homology` check: literal pools,
-call ordinals, function hashes, masked matches, and DID tables. A row that no
-matcher reproduces is listed and resolved by review before the conversion
-commit.
+The conversion of stage 3 writes these facts into the files of their
+meanings and into `kb/feature/runtime.toml`, `map_switching.toml`,
+`rolling_launch.toml`, and `can_telemetry.toml`. Each symbol that a
+correspondence row states takes its row item first in its entry, with the
+text of the row as `note`: an item of its entry that states the row, or else
+the homology item toward the `7mfk` symbol of its meaning for a `mapped` row
+and the identity item of its own layout for a `target-specific` row. The
+homology item is the item that `kb.match.typed` gives, a `manual` item where
+the hardware manual of the MCU, or its vector table, places the symbol at
+the address of its origin, or an `l0` item. The identity item is a `test`
+item for a row whose symbol no instruction reaches, `l0` at the entry of a
+function, the `did-table` item of a DID slot, an `l0` item, or the `indirect`
+base item of a hook with the `rom-bytes` item of its stock word. An `l0` item
+of another symbol than a function lies at the first census operand of its
+storage, the first instruction that touches the storage, the first load of
+a word of the storage from a literal pool, or else the first place whose L0
+references name the storage, where it verifies. A symbol that only the
+registries state and no row states takes the same homology item, or else the
+identity item, and a `7mfk` symbol that a homology item of the conversion
+reaches and no evidence grounds takes its identity item. A wrapper with
+`[interp]` that only the registries state takes the `l0` identity item of the
+interpolation conversion, at the first call of its kernel entry. The
+`rom-bytes` items of the image-byte keys stay, the `target` link of a hook word of
+another layout than `7mfk` takes the `rom-bytes` item of the word, a note
+that only the registries state for a symbol is dropped, and the names that
+only the registries state become `former` names. A status that the file of
+its meaning states keeps its entry; an `unresolved` status takes the search
+of the `7mfk` symbol on its layout with the L0 digest of the layout and the
+text of its row as `note`. Each feature file takes a `[[target]]` for each
+layout with the keys of its target.
+
+From the conversion both registries are projections of the files. The
+address profiles have a profile for the image of each layout other than
+`7mfk` with a `runtime` target and an `inherits` profile for each other
+image of the layout; a hook key states the stock word that the `target` link
+of its meaning reaches and, for a later feature than map switching, the
+replacement of the previous feature that redirects the word, or else the
+stock word, as `base`; a field whose source meaning has a status on the
+layout is unavailable. A correspondence file exists for each layout whose
+`runtime` target states `notes`. The row item of a symbol is the first
+evidence item of its entry that is homology evidence toward `7mfk`, which
+gives a `mapped` row, or identity evidence of its own layout other than
+image bytes, which gives a `target-specific` row; the row states the note of
+its row item. A role gives a `target-specific` row with its note, an
+`unsupported` entry and a status give `unsupported` rows with their notes,
+an allocation is `mapped` where its target is the `7mfk` bound plus the
+relocation of the profile, and a number where it equals the `7mfk` value. A
+`target-specific` map row takes the domain `map_native`.
 
 Both registries have one canonical text, which `render_profiles` and
 `render_correspondence` of the adapter give and the projection of the stage
@@ -2324,8 +2364,10 @@ meanings. The meaning takes `[interp]`, and each symbol an entry with the
 override of its layout and the typed evidence, whose `to` becomes a
 location. A wrapper symbol that no other registry states takes `l0`
 identity evidence at the first instruction of its body that calls its
-kernel entry, or at its entry when it is its own kernel. An `unresolved`
-status takes the L0 digest of its layout and leaves the registry evidence.
+kernel entry, or at its entry when it is its own kernel. An item of an
+entry states an item of the registries when it equals the item or adds only
+the note of a correspondence row to it. An `unresolved` status takes the L0
+digest of its layout and leaves the registry evidence.
 From the conversion the registries are projections of the files:
 `defs/<ROM>.interp.csv` lists, by wrapper address, the `fn` symbols with
 `[interp]` on the layout of its image, each with the entry of its kernel;
@@ -2440,7 +2482,9 @@ those keys, its `images`, its notes, and its evidence; each link takes an
 entry with its slot, its role, and the evidence of every symbol that states
 it; and each `absent` status takes an entry with its note and evidence. An
 axis that the registries only name is a symbol that another registry
-declares. The notes of a file precede those of the registries in the note
+declares. An item of an entry states an evidence item of the registries
+when it equals the item or adds only the note of a correspondence row to
+it. The notes of a file precede those of the registries in the note
 of its symbol. From the conversion the registries are projections of the
 files. `defs/vq37-native-tables.toml` lists for each target an entry of
 every `tbl` and `axis` meaning with `[editor]` whose home is the layout of a

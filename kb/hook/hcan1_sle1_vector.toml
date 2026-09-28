@@ -1,0 +1,200 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:000203a0"
+key = "SH7058S-HW-7.2.6"
+note = "SLE1 vector stores the complete stock ISR entry"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1me3b:00002680"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000203a0"
+value = "00127910"
+
+[[symbol]]
+layout = "1nd"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:000203a0"
+key = "SH7058S-HW-7.2.6"
+note = "SLE1 vector stores the complete stock ISR entry"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1nd:00002680"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000203a0"
+value = "0011b334"
+
+[[symbol]]
+layout = "7mfk"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00002688"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000203a0"
+value = "000c7914"
+
+[[symbol]]
+layout = "jk00c"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk00c:00002688"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000203a0"
+value = "000cf3e8"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:000203a0"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol]]
+layout = "jk00d"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk00d:00002688"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000203a0"
+value = "000cfb24"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:000203a0"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol]]
+layout = "jk78c"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:000203a0"
+key = "SH7058S-HW-7.2.6"
+note = "SLE1 vector stores the complete stock ISR entry"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-7.2.6"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00002688"
+value = 924
+mode = "base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000203a0"
+value = "000f0410"
+
+[[link]]
+type = "target"
+to = "stock_sle1_isr/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000203a0"
+value = "00127910"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000203a0"
+value = "0011b334"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000203a0"
+value = "000cf3e8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000203a0"
+value = "000cfb24"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000203a0"
+value = "000f0410"

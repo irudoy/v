@@ -1,0 +1,59 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00073624"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007340e"
+note = """
+Second literal-pool copy of the common idle lookup pointer serves the \
+alternate and fallback branches"""
+
+[[symbol]]
+layout = "1nd"
+address = "0006f700"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006f518"
+note = """
+Second literal-pool copy of the common idle lookup pointer serves the \
+alternate and fallback branches"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00064834"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00064624"
+note = """
+Second literal-pool copy of the exact idle lookup pointer serves the default \
+and alternate and fallback branches"""
+
+[[link]]
+type = "target"
+to = "idle_ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00073624"
+value = "0002a9f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0006f700"
+value = "000287b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00064834"
+value = "00028198"

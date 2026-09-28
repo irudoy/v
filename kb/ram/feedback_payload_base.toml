@@ -1,0 +1,56 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeb0ef"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ddae8"
+note = "Target serializer uses payload offset 0x142"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeafab"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d3522"
+note = "Target serializer uses payload offset 0x142"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3ab5"
+former = ["wandering-macaw/ram/7mfk-ffff3ab5"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3be7"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00098520"
+to = "7mfk:000933c0"
+value = "ffff3be7"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3bfb"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0009850c"
+to = "7mfk:000933c0"
+value = "ffff3bfb"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3d33"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000b2e44"
+note = "Target serializer uses payload offset 0x2a"

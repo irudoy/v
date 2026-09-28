@@ -1155,6 +1155,35 @@ def touching(model, symbol):
                    for site, _ in here.sites_of(address)})
 
 
+@lru_cache(maxsize=None)
+def _named(layout_id, root):
+    """{address: places of L0 whose references name it}."""
+    found = defaultdict(set)
+    for site, addresses in sites.references(layout_id, root).items():
+        for address in addresses:
+            found[address].add(site)
+    return found
+
+
+def referencing(model, symbol):
+    """Places of the symbol's layout whose L0 references name an address of
+    its storage, or its entry for a function: the instructions in address
+    order, then the pool words."""
+    here = code(symbol.layout, model.root)
+    named = _named(symbol.layout, model.root)
+    found = {site for address in range(symbol.address, symbol.address + _span(symbol))
+             for site in named.get(address, ())}
+    return sorted(found, key=lambda site: (site not in here.owner, site))
+
+
+def loads(model, symbol):
+    """Sorted instructions of the symbol's layout that load a word of its
+    storage from a literal pool."""
+    here = code(symbol.layout, model.root)
+    return sorted({site for address in range(symbol.address, symbol.address + _span(symbol))
+                   for site in here.pooled.get(address, ())})
+
+
 def vector_bases(found):
     """{site: base} of the PC-relative loads of `found`, a `Code`, whose
     register the next instruction moves into VBR."""
@@ -1167,18 +1196,28 @@ def vector_bases(found):
     return bases
 
 
+def vector_item(model, symbol):
+    """The `indirect` base item of a symbol in the vector table that VBR
+    bases, at the first load of VBR; None outside the table."""
+    found = code(symbol.layout, model.root)
+    for site, base in sorted(vector_bases(found).items()):
+        if 0 <= symbol.address - base < VECTOR_TABLE:
+            return _base_item(symbol.layout, site, symbol.address - base)
+    return None
+
+
 def base_item(model, symbol):
     """The `indirect` base item of a symbol that no instruction of L0 touches:
-    at the first load of VBR when the symbol lies in the vector table that VBR
-    bases, else at the first instruction that touches the nearest address
-    below the symbol, within `[match] base` bytes, as a literal, an access,
-    or a census operand and references it in L0. None when neither holds."""
+    `vector_item` when the symbol lies in the vector table that VBR bases,
+    else at the first instruction that touches the nearest address below the
+    symbol, within `[match] base` bytes, as a literal, an access, or a census
+    operand and references it in L0. None when neither holds."""
+    vector = vector_item(model, symbol)
+    if vector is not None:
+        return vector
     layout = symbol.layout
     found = code(layout, model.root)
     references = sites.references(layout, model.root)
-    for site, base in sorted(vector_bases(found).items()):
-        if 0 <= symbol.address - base < VECTOR_TABLE:
-            return _base_item(layout, site, symbol.address - base)
     limit = int(model.config.get("match", {}).get("base", DEFAULT_BASE))
     for base in range(symbol.address - 1, max(symbol.address - limit, 0) - 1, -1):
         held = sorted(site for site, relation in found.sites_of(base)

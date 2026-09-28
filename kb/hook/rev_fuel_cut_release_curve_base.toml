@@ -1,0 +1,43 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007b334"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1c4"
+note = """
+Native state-machine literal selects the adjacent eight-point release curve"""
+
+[[symbol]]
+layout = "1nd"
+address = "00076cac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076af6"
+note = """
+Native state-machine literal selects the adjacent eight-point release curve"""
+
+[[link]]
+type = "target"
+to = "archetypal-coati/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00076cac"
+value = "00017212"
+
+[[link]]
+type = "target"
+to = "ninja-beagle/const"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007b334"
+value = "000172c6"

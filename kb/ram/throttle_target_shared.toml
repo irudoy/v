@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeaa58"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffeaa58"
+to = "7mfk:ffff19b2"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffea944"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffea944"
+to = "7mfk:ffff19b2"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Producer limiter and external consumer bind the shared target"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19b2"
+former = ["small-sloth/ram/7mfk-ffff19b2"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1a10"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1a16"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff199e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008db9a"
+to = "7mfk:0006f456"
+count = 1
+value = 31
+note = "Producer limiter and external consumer bind the shared target"

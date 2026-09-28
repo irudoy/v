@@ -1,0 +1,47 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00079994"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079848"
+note = """
+Single literal through which the coordinator 000797cc calls the 8x8 lookup \
+for the four state-code surfaces; the second live literal 00079e40 of that \
+lookup serves only the reference surface 0000a584"""
+
+[[symbol]]
+layout = "1nd"
+address = "00074fb0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074e18"
+note = """
+Single literal through which the executed coordinator half calls the 8x8 \
+lookup for the four state-code surfaces; the second literal 00075570 of that \
+lookup serves only the reference surface 0000a650 of the stock-inert path"""
+
+[[link]]
+type = "target"
+to = "determined-gaur/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079994"
+value = "000293d8"
+
+[[link]]
+type = "target"
+to = "industrious-aardwark/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00074fb0"
+value = "000285b4"

@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe994a"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe994a"
+to = "7mfk:ffff285c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe98cc"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe98cc"
+to = "7mfk:ffff285c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the bank-relative field"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff285c"
+former = ["spotted-herring/ram/7mfk-ffff285c"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff28fa"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:ffff28fa"
+to = "7mfk:ffff285c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff290e"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00d:ffff290e"
+to = "7mfk:ffff285c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff27ac"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff27ac"
+to = "7mfk:ffff285c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the bank-relative field"

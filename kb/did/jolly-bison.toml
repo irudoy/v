@@ -1,0 +1,61 @@
+number = 0x1224
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d74"
+name = "gregarious-nightingale"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d74"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022d00"
+name = "heavy-waxbill"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022d00"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002292c"
+name = "jolly-bison"
+
+[[symbol]]
+layout = "jk00c"
+address = "000229c8"
+name = "meek-cobra"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:000229c8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "000229c8"
+name = "coral-python"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:000229c8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "000229a8"
+name = "notorious-mole"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:000229a8"
+value = "ffffffff"

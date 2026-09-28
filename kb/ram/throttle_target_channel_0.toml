@@ -1,0 +1,66 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeb80c"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffeb80c"
+to = "7mfk:ffff28bc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb6c4"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffeb6c4"
+to = "7mfk:ffff28bc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Homologous channel limiter writes channel zero with a two-byte stride"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff28bc"
+former = ["smiling-bat/ram/7mfk-ffff28bc"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff422a"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000d6e54"
+to = "7mfk:000cb1d2"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff423e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000d7590"
+to = "7mfk:000cb1d2"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff43d8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff43d8"
+to = "7mfk:ffff28bc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Homologous channel limiter writes channel zero with a two-byte stride"

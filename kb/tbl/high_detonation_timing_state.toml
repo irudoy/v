@@ -1,3 +1,5 @@
+former = ["ignition_gated_surface_3"]
+
 [[symbol]]
 layout = "1nd"
 address = "00009a80"

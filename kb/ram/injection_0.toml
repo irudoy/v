@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe93a6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe93a6"
+to = "7mfk:ffff23c8"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe93d6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe93d6"
+to = "7mfk:ffff23c8"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table and channel-array producer agree"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23c8"
+former = ["chocolate-hound/ram/7mfk-ffff23c8"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2444"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005057c"
+to = "7mfk:0004ec24"
+count = 1
+value = 89
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff244c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050578"
+to = "7mfk:0004ec24"
+count = 1
+value = 89
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff231c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a8c8"
+to = "7mfk:0004ec9c"
+count = 1
+value = 79
+note = "Aligned diagnostic pointer table and channel-array producer agree"

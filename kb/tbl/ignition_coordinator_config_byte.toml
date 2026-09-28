@@ -1,0 +1,12 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008a7d"
+former = ["thundering-mandrill/tbl/1me3b-00008a7d"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033c66"
+note = """
+Stock value 0x1c sets bit 3 and the ignition coordinator 0x797cc selects \
+every surface by the state code alone"""

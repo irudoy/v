@@ -1,0 +1,66 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9100"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007279c"
+to = "7mfk:ffff2144"
+note = """
+Target threshold lookup stores the threshold of channel n at base plus 2 * \
+(n - 1)"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9138"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e894"
+to = "7mfk:ffff2144"
+note = """
+Target threshold lookup stores the threshold of channel n at base plus 2 * \
+(n - 1)"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2144"
+former = ["thoughtful-civet/ram/7mfk-ffff2144"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff21b4"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:0004b258"
+to = "7mfk:0004a214"
+value = "ffff21b4"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff21bc"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0004b25c"
+to = "7mfk:0004a214"
+value = "ffff21bc"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2098"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00063aa4"
+to = "7mfk:0004a214"
+value = "ffff2098"
+note = """
+Target threshold lookup stores the threshold of channel n at base plus 2 * \
+(n - 1)"""

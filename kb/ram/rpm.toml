@@ -4,6 +4,13 @@ address = "fffe819e"
 
 [[symbol.evidence]]
 kind = "l0"
+supports = "homology"
+at = "1me3b:0004cba6"
+to = "7mfk:ffff11bc"
+note = "Direct target consumers use the native RPM word"
+
+[[symbol.evidence]]
+kind = "l0"
 supports = "identity"
 at = "1me3b:0007b1ee"
 
@@ -15,6 +22,13 @@ at = "1me3b:0007b338"
 [[symbol]]
 layout = "1nd"
 address = "fffe81b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004915c"
+to = "7mfk:ffff11bc"
+note = "Direct target consumers use the native RPM word"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,8 +46,41 @@ address = "ffff11bc"
 former = ["daffy-gopher/ram/7mfk-ffff11bc"]
 
 [[symbol]]
+layout = "jk00c"
+address = "ffff11ca"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003fb34"
+to = "7mfk:0003edd8"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff11ca"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003fb34"
+to = "7mfk:0003edd8"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "jk78c"
 address = "ffff11ac"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000444b8"
+to = "7mfk:0003f18c"
+count = 1
+value = 59
+note = "Direct target consumers use the native RPM word"
 
 [[symbol.evidence]]
 kind = "l0"

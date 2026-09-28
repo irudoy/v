@@ -1,0 +1,61 @@
+number = 0x1212
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d2c"
+name = "qualified-kakapo"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d2c"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022cb8"
+name = "tangible-panda"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022cb8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228e4"
+name = "ninja-shrimp"
+
+[[symbol]]
+layout = "jk00c"
+address = "00022980"
+name = "ninja-bullmastiff"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:00022980"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "00022980"
+name = "meticulous-bloodhound"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:00022980"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "00022960"
+name = "blue-boa"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:00022960"
+value = "ffffffff"

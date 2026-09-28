@@ -1,0 +1,94 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "000b31d0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b3140"
+note = "Target consumer owns one scalar instead of the source container"
+
+[[symbol]]
+layout = "1nd"
+address = "000ac024"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000abebc"
+note = "Target consumer owns one scalar instead of the source container"
+
+[[symbol]]
+layout = "7mfk"
+address = "00077bac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00077ac0"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007a6e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0007a51a"
+to = "7mfk:00077bac"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007a6e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0007a51a"
+to = "7mfk:00077bac"
+
+[[symbol]]
+layout = "jk78c"
+address = "00097170"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096fae"
+note = "Target consumer owns one scalar instead of the source container"
+
+[[link]]
+type = "target"
+to = "rev_limit_throttle_cut/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000b31d0"
+value = "0000935e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000ac024"
+value = "000092c2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0007a6e8"
+value = "000094d6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0007a6e8"
+value = "000094e4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00097170"
+value = "0000911e"

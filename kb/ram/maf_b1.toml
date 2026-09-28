@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe8024"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe8024"
+to = "7mfk:ffff101c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8024"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe8024"
+to = "7mfk:ffff101c"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table and direct references agree"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff101c"
+former = ["intelligent-mouflon/ram/7mfk-ffff101c"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1024"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003b800"
+to = "7mfk:0003aa4c"
+count = 1
+value = 65
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1024"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003b800"
+to = "7mfk:0003aa4c"
+count = 1
+value = 65
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1024"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003f1b6"
+to = "7mfk:0003aa4c"
+count = 1
+value = 65
+note = "Aligned diagnostic pointer table and direct references agree"

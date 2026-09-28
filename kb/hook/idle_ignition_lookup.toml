@@ -1,0 +1,100 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "000733fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000732e8"
+note = """
+First literal-pool copy of the common idle lookup pointer serves the \
+stock-inert and default branches"""
+
+[[symbol]]
+layout = "1nd"
+address = "0006f4e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006f424"
+note = """
+First literal-pool copy of the common idle lookup pointer serves the \
+stock-inert and default branches"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0004b224"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b056"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004c25c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004c09a"
+to = "7mfk:0004b224"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004c260"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004c09e"
+to = "7mfk:0004b224"
+
+[[symbol]]
+layout = "jk78c"
+address = "000645e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00064584"
+note = """
+First literal-pool copy of the exact idle lookup pointer serves the \
+stock-inert branch"""
+
+[[link]]
+type = "target"
+to = "idle_ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000733fc"
+value = "0002a9f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0006f4e8"
+value = "000287b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004c25c"
+value = "00026f74"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004c260"
+value = "00026f74"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000645e8"
+value = "00028198"

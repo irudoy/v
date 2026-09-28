@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "0011f2ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011f2ec"
+to = "7mfk:000c338a"
+note = "Primary and recovery callers share this initializer"
+
+[[symbol]]
+layout = "1nd"
+address = "0011363c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011363c"
+to = "7mfk:000c338a"
+note = "Primary and recovery callers share this initializer"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c338a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c338a"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c9092"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c9080"
+to = "7mfk:000c3378"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk00d"
+address = "000c97ce"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c97bc"
+to = "7mfk:000c3378"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk78c"
+address = "000ea582"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ea570"
+to = "7mfk:000c3378"
+count = 1
+value = 34
+note = "Initializer writes the HCAN1 register window at 0xffffd800"

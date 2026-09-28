@@ -23,6 +23,11 @@ at = "jk00c:00026d7c"
 to = "jk00d:00026d7c"
 sha256 = "abc367c96be1b198ca2bf39faa9a60506937d15533cd66b3810a3410d56b8321"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026d86"
+
 [[symbol]]
 layout = "jk00d"
 address = "00026d7c"
@@ -33,6 +38,11 @@ supports = "homology"
 to = "7mfk:000261b8"
 value = "normalized-wrapper-shape-and-call-topology"
 key = "000261b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026d86"
 
 [[status]]
 layout = "1nd"

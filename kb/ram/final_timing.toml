@@ -1,0 +1,70 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe81b4"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe81b4"
+to = "7mfk:ffff11d4"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe81cc"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe81cc"
+to = "7mfk:ffff11d4"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Target command builder subtracts this byte from 110 before the primary \
+consumer"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11d4"
+former = ["axiomatic-copperhead/ram/7mfk-ffff11d4"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff11e4"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004b070"
+to = "7mfk:0004a02c"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff11e4"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004b074"
+to = "7mfk:0004a02c"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1f45"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff1f45"
+to = "7mfk:ffff11d4"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Exact-size homologous command builder binds the final timing byte at equal \
+instruction ordinal"""

@@ -145,6 +145,61 @@ consumers = [
 read = "guarded"
 
 [[projection]]
+path = "patches/rom-address-profiles.toml"
+generator = "kb.adapters.profiles:address_profiles"
+stage = 3
+inputs = [
+    "kb/feature/",
+    "kb/hook/",
+    "kb/fn/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/tbl/",
+    "kb/const/",
+    "kb/did/",
+    "patches/can-telemetry-profile.toml",
+    "rom-images/homology.toml",
+    "tools/kb/src/kb/adapters/profiles.py",
+]
+consumers = [
+    "patches/rom_address_profiles.py",
+    "patches/runtime_targets.py",
+    "tools/mapkit/definition_projections.py",
+    "tools/mapkit/emit_def.py",
+    "tools/romviz/model.py",
+    "tools/single_source.py",
+    "tools/sh-elf-run/verify_runtime_targets.py",
+    "patches/tests/",
+    "tools/mapkit/tests/",
+    "tools/memgraph/tests/test_periodic_scheduler_table.py",
+    "tools/tests/test_single_source.py",
+]
+read = "guarded"
+
+[[projection]]
+path = "patches/*-runtime-correspondence.csv"
+generator = "kb.adapters.profiles:correspondences"
+stage = 3
+inputs = [
+    "kb/feature/",
+    "kb/hook/",
+    "kb/fn/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/tbl/",
+    "kb/const/",
+    "kb/did/",
+    "patches/can-telemetry-profile.toml",
+    "tools/kb/src/kb/adapters/profiles.py",
+]
+consumers = [
+    "tools/single_source.py",
+    "patches/tests/",
+    "tools/memgraph/tests/test_periodic_scheduler_table.py",
+]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

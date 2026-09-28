@@ -1,0 +1,85 @@
+storage = "uint32"
+
+[[symbol]]
+layout = "1me3b"
+address = "00009830"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00009830"
+to = "7mfk:000097be"
+sha256 = "2594b6a92ebfb1c3312deb7d01c015fb95e9fbe9bd7bc6b527af07813ec7b910"
+note = "Physical mailbox 26 is stock inactive"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00009830"
+value = "05000000"
+
+[[symbol]]
+layout = "1nd"
+address = "0000974c"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:0000974c"
+to = "7mfk:000097be"
+sha256 = "2594b6a92ebfb1c3312deb7d01c015fb95e9fbe9bd7bc6b527af07813ec7b910"
+note = "Physical mailbox 26 is stock inactive"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0000974c"
+value = "05000000"
+
+[[symbol]]
+layout = "7mfk"
+address = "000097be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000097be"
+value = "05000000"
+
+[[symbol]]
+layout = "jk00c"
+address = "00009882"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00009882"
+value = "05000000"
+
+[[symbol]]
+layout = "jk00d"
+address = "00009892"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00009892"
+value = "05000000"
+
+[[symbol]]
+layout = "jk78c"
+address = "000094ae"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:000094ae"
+to = "7mfk:000097be"
+sha256 = "2594b6a92ebfb1c3312deb7d01c015fb95e9fbe9bd7bc6b527af07813ec7b910"
+note = "Physical mailbox 26 is stock inactive"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000094ae"
+value = "05000000"

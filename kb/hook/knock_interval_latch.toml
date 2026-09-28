@@ -1,0 +1,131 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "000221f0"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1me3b:00021756"
+value = 300
+mode = "base"
+note = """
+Entry 75 of the periodic task list at 0x220c4 points to the target knock \
+coordinator that consumes and clears the event count"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000221f0"
+value = "00071d64"
+
+[[symbol]]
+layout = "1nd"
+address = "00022184"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1nd:00021708"
+value = 300
+mode = "base"
+note = """
+Entry 75 of the periodic task list at 0x22058 is the only literal of the \
+target knock coordinator that consumes and clears the event count"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00022184"
+value = "0006d948"
+
+[[symbol]]
+layout = "7mfk"
+address = "00021a70"
+
+[[symbol]]
+layout = "jk00c"
+address = "00021af8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021af8"
+value = "0004a42c"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk00c:00021362"
+value = 268
+mode = "base"
+
+[[symbol]]
+layout = "jk00d"
+address = "00021af8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021af8"
+value = "0004a430"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk00d:00021362"
+value = 268
+mode = "base"
+
+[[symbol]]
+layout = "jk78c"
+address = "00021b70"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000212fe"
+value = 292
+mode = "base"
+note = "Unique scheduler word binds the target knock-event function"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00021b70"
+value = "00062780"
+
+[[link]]
+type = "target"
+to = "knock_function/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:000221f0"
+value = "00071d64"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00022184"
+value = "0006d948"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021af8"
+value = "0004a42c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021af8"
+value = "0004a430"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00021b70"
+value = "00062780"

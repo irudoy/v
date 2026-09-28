@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007bf08"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007bd48"
+to = "7mfk:0004fdd0"
+note = "Target literal calls the DFCO lookup"
+
+[[symbol]]
+layout = "1nd"
+address = "00077624"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007747c"
+to = "7mfk:0004fdd0"
+note = "Target literal calls the DFCO lookup"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004fdd0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004fc06"
+
+[[symbol]]
+layout = "jk00c"
+address = "00051718"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000515b2"
+to = "7mfk:0004fdd0"
+
+[[symbol]]
+layout = "jk00d"
+address = "00051714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000515ae"
+to = "7mfk:0004fdd0"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006bbfc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006bb4a"
+to = "7mfk:0004fdd0"
+note = "Target cut-request literal calls the exact DFCO lookup"
+
+[[link]]
+type = "target"
+to = "dfco_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007bf08"
+value = "0002aa48"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00077624"
+value = "000287cc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00051718"
+value = "00026f8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00051714"
+value = "00026f8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006bbfc"
+value = "000281b0"

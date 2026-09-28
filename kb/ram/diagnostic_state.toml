@@ -1,0 +1,57 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9b8e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:001362b4"
+to = "7mfk:ffff2a84"
+note = "Selector reads this adjacent diagnostic byte"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9ad2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00128eee"
+to = "7mfk:ffff2a84"
+note = "Selector reads this adjacent diagnostic byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a84"
+former = ["mega-skunk/ram/7mfk-ffff2a84"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2b36"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000dc14a"
+to = "7mfk:ffff2a84"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2b4a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000dc886"
+to = "7mfk:ffff2a84"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff29a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000fcc8a"
+to = "7mfk:ffff2a84"
+note = "Selector reads this adjacent diagnostic byte"

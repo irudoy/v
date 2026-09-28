@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "00022394"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00022394"
+to = "7mfk:00021ce0"
+note = "Exact unsigned division helper is recovered from target callers"
+
+[[symbol]]
+layout = "1nd"
+address = "00022318"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00022318"
+to = "7mfk:00021ce0"
+note = "Exact unsigned division helper is recovered from target callers"
+
+[[symbol]]
+layout = "7mfk"
+address = "00021ce0"
+former = ["zircon-zebu/fn/7mfk-00021ce0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021ce0"
+
+[[symbol]]
+layout = "jk00c"
+address = "00021d6c"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000216e4"
+to = "7mfk:00021668"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "00021d6c"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000216e4"
+to = "7mfk:00021668"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk78c"
+address = "00021e0c"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00021750"
+to = "7mfk:00021668"
+count = 1
+value = 0
+note = "Exact unsigned division helper is recovered from target callers"

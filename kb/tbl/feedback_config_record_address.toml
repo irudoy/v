@@ -1,0 +1,85 @@
+storage = "uint32"
+
+[[symbol]]
+layout = "1me3b"
+address = "0000984c"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1me3b:001259a4"
+value = 5
+mode = "base"
+note = "Type A3 record selects the 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0000984c"
+value = "a308aa20"
+
+[[symbol]]
+layout = "1nd"
+address = "00009768"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1nd:0011943c"
+value = 5
+mode = "base"
+note = "Type A3 record selects the 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00009768"
+value = "a308aa20"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009766"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009766"
+value = "0308aa20"
+
+[[symbol]]
+layout = "jk00c"
+address = "0000982e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0000982e"
+value = "0308aa20"
+
+[[symbol]]
+layout = "jk00d"
+address = "0000983e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0000983e"
+value = "0308aa20"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000945a"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:0000945a"
+to = "7mfk:00009766"
+sha256 = "a470155caed336e87d1b5388fcb002ff7bff1de4251c5afacd3437f65a76cbde"
+note = "Type 03 record selects the exact 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0000945a"
+value = "0308aa20"

@@ -1,0 +1,28 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1796"
+former = ["lilac-peccary/ram/7mfk-ffff1796"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff17e8"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000780a0"
+to = "7mfk:00075900"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff17ec"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000780a0"
+to = "7mfk:00075900"
+count = 1
+value = 28

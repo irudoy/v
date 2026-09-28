@@ -1,0 +1,61 @@
+number = 0x1213
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d30"
+name = "bald-pig"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d30"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022cbc"
+name = "cerulean-pug"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022cbc"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228e8"
+name = "copper-kiwi"
+
+[[symbol]]
+layout = "jk00c"
+address = "00022984"
+name = "viridian-scallop"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:00022984"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "00022984"
+name = "fascinating-alpaca"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:00022984"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "00022964"
+name = "original-capuchin"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:00022964"
+value = "ffffffff"

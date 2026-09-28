@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe92d0"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe92d0"
+to = "7mfk:ffff2306"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim \
+block whose offsets 4 and 6 are the diagnostic long-term trim words"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9306"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe9306"
+to = "7mfk:ffff2306"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+The target long-term trim publisher reads this base with the doubled bank \
+index as the first summand"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2306"
+former = ["agile-bandicoot/ram/7mfk-ffff2306"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff237a"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00059ae0"
+to = "7mfk:00057bc0"
+value = "ffff237a"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2382"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00059adc"
+to = "7mfk:00057bc0"
+value = "ffff2382"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff225e"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000740e4"
+to = "7mfk:00057bc0"
+value = "ffff225e"
+note = """
+The target long-term trim publisher reads this base with the doubled bank \
+index as the first summand"""

@@ -1,0 +1,65 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9b8f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00135ab2"
+to = "7mfk:ffff2a85"
+note = """
+Selector reads this button byte and the target keeps the 1ND explicit-mask \
+layout"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9ad3"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001286bc"
+to = "7mfk:ffff2a85"
+note = "Selector reads this button byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a85"
+former = ["orthodox-ostrich/ram/7mfk-ffff2a85"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2b37"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000daf18"
+to = "7mfk:000cf1d8"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2b4b"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000db654"
+to = "7mfk:000cf1d8"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff29a1"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fbb6c"
+to = "7mfk:000cf1e4"
+count = 1
+value = 16
+note = "Selector reads this button byte"

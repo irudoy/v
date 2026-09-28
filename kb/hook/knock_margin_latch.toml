@@ -1,0 +1,119 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007308c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073054"
+to = "7mfk:0004a9c0"
+note = """
+Literal 0x7308c is the only reference of the target slice evaluator and the \
+caller instruction words around the call equal the 1ND caller"""
+
+[[symbol]]
+layout = "1nd"
+address = "0006f17c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f144"
+to = "7mfk:0004a9c0"
+note = """
+Literal 0x6f17c is the only reference of the target slice evaluator and its \
+caller sets every register it reads after the call"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0004a9c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004a954"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004ba04"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004b998"
+to = "7mfk:0004a9c0"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004ba08"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004b99c"
+to = "7mfk:0004a9c0"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006429c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006422a"
+to = "7mfk:0004a9c0"
+note = """
+Literal 0x6429c is the only reference of the target slice evaluator and its \
+caller sets every register it reads after the call"""
+
+[[link]]
+type = "target"
+to = "adaptable-fulmar/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004ba08"
+value = "0004b280"
+
+[[link]]
+type = "target"
+to = "flying-llama/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006429c"
+value = "00063ac8"
+
+[[link]]
+type = "target"
+to = "heavenly-fox/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007308c"
+value = "00072920"
+
+[[link]]
+type = "target"
+to = "ruby-boobook/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0006f17c"
+value = "0006ea18"
+
+[[link]]
+type = "target"
+to = "vivid-capuchin/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004ba04"
+value = "0004b27c"

@@ -1,0 +1,66 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff102c"
+former = ["inquisitive-spoonbill/ram/7mfk-ffff102c"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1034"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004bcae"
+to = "7mfk:0004ac6a"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1034"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004bcb2"
+to = "7mfk:0004ac6a"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1032"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00071a8c"
+to = "7mfk:000555cc"
+value = "ffff1032"
+note = """
+Homologous producer 0004068c writes the Q7 ratio to ffff1042, and the \
+scheduler copy at 00020f84 snapshots it into this byte"""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff102c"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+No normalized load snapshot is established because the 32-instruction JK08A \
+producer at 0003bd1c has no match in the target with PC-relative \
+displacements masked"""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff102c"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+No normalized load snapshot is established because the 32-instruction JK08A \
+producer at 0003bd1c has no match in the target with PC-relative \
+displacements masked"""

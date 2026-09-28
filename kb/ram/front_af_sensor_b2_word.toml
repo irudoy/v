@@ -1,0 +1,69 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9812"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00088d90"
+to = "7mfk:0005ac34"
+count = 1
+value = 25
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe97e8"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00084484"
+to = "7mfk:0005ac34"
+count = 1
+value = 25
+note = "Aligned diagnostic pointer table preserves the adjacent word"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2782"
+former = ["tomato-mussel/ram/7mfk-ffff2782"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff281a"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005beee"
+to = "7mfk:00059f34"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff282e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005beea"
+to = "7mfk:00059f34"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff26da"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000763ce"
+to = "7mfk:00059f34"
+count = 1
+value = 26
+note = "Aligned diagnostic pointer table preserves the adjacent word"

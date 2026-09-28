@@ -3,6 +3,30 @@ layout = "7mfk"
 address = "ffff121a"
 former = ["vegan-zebra/ram/7mfk-ffff121a"]
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff122e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004a680"
+to = "7mfk:0004963c"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff122e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004a684"
+to = "7mfk:0004963c"
+count = 1
+value = 14
+
 [[status]]
 layout = "1me3b"
 state = "absent"
@@ -42,3 +66,27 @@ supports = "identity"
 at = "1me3b:00008a7d"
 value = "0x1c"
 note = "Bit 3 set enables the state-code selection of 000797cc"
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff121a"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+The JK08A accesses of ffff121a have no match in the target; the knock \
+function 0006d948 stores the signed Q8 state fffe8214 at 0006dd78 only while \
+bit 5 of 00008a2b is clear and the stock byte 0xba sets it"""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff121a"
+count = 0
+l0 = "72887cc9cc504d1b"
+note = """
+The JK08A accesses of ffff121a have no match in the target; the knock \
+function 00062780 stores the signed Q8 state ffff1204 at 00062e9e only while \
+bit 5 of 00008965 is clear and the stock byte 0xba sets it"""

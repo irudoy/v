@@ -1,0 +1,69 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeb80e"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffeb80e"
+to = "7mfk:ffff28be"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb6c6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffeb6c6"
+to = "7mfk:ffff28be"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Homologous channel limiter writes channel one with a two-byte stride"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff28be"
+former = ["mustard-coot/ram/7mfk-ffff28be"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006fd5a"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff422c"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:ffff422c"
+to = "7mfk:ffff28be"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff4240"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00d:ffff4240"
+to = "7mfk:ffff28be"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff43da"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff43da"
+to = "7mfk:ffff28be"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Homologous channel limiter writes channel one with a two-byte stride"

@@ -1,0 +1,61 @@
+[[symbol]]
+layout = "1me3b"
+address = "00020d04"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00020d04"
+to = "7mfk:00020dfe"
+note = "Exact target snapshot function is bound by its caller"
+
+[[symbol]]
+layout = "1nd"
+address = "00020cf4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00020cf4"
+to = "7mfk:00020dfe"
+note = "Exact target snapshot function is bound by its caller"
+
+[[symbol]]
+layout = "7mfk"
+address = "00020dfe"
+
+[[symbol]]
+layout = "jk00c"
+address = "00020e30"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00028b6c"
+to = "7mfk:00027f04"
+count = 1
+value = 9
+
+[[symbol]]
+layout = "jk00d"
+address = "00020e30"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00028b6c"
+to = "7mfk:00027f04"
+count = 1
+value = 9
+
+[[symbol]]
+layout = "jk78c"
+address = "00020f1a"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0002aa7c"
+to = "7mfk:00028090"
+value = "00020f1a"
+note = "Unique mapped-neighbor fingerprint and aligned caller agree"

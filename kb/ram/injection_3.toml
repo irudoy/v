@@ -1,0 +1,70 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe93ac"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe93ac"
+to = "7mfk:ffff23ce"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Contiguous six-word channel array continues the diagnostic-bound words 0 and \
+1 with the two-byte stride of the 1ND array"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe93dc"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe93dc"
+to = "7mfk:ffff23ce"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Channel-indexed producer preserves the two-byte stride"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23ce"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0004ec9e"
+value = 6
+mode = "base"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff244a"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:ffff244a"
+to = "7mfk:ffff23ce"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2452"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00d:ffff2452"
+to = "7mfk:ffff23ce"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2322"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff2322"
+to = "7mfk:ffff23ce"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Channel-indexed producer preserves the two-byte stride"

@@ -1,0 +1,62 @@
+[[symbol]]
+layout = "1me3b"
+address = "000311b2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000311b2"
+to = "7mfk:0002a892"
+note = "Final ignition command builder calls this consumer"
+
+[[symbol]]
+layout = "1nd"
+address = "0002e464"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0002e450"
+to = "7mfk:0002a87e"
+count = 1
+value = 13
+note = "Final ignition command builder calls this consumer"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002a892"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002b51a"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:0004faec"
+to = "7mfk:0004e198"
+value = "0002b51a"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002b51a"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0004fae8"
+to = "7mfk:0004e198"
+value = "0002b51a"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002d6f6"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002d6dc"
+to = "7mfk:0002a878"
+count = 1
+value = 64
+note = "Final ignition command builder calls this consumer"

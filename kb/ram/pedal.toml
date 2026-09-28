@@ -1,0 +1,60 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe96a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00020b30"
+to = "7mfk:ffff2672"
+note = "Pedal activation source is recovered from target consumers"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe96c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00020b12"
+to = "7mfk:ffff2672"
+note = "Pedal activation source is recovered from target consumers"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2672"
+former = ["abiding-cheetah/ram/7mfk-ffff2672"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2702"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000211d0"
+to = "7mfk:000211a0"
+value = "ffff2702"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2716"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000211d0"
+to = "7mfk:000211a0"
+value = "ffff2716"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff25d0"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0003d410"
+to = "7mfk:00039cc4"
+value = "ffff25d0"
+note = "Pedal activation source is recovered from target consumers"

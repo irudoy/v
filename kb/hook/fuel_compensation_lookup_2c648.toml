@@ -1,0 +1,94 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00033ed0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cc6"
+note = "Startup initializer literal calls the common lookup"
+
+[[symbol]]
+layout = "1nd"
+address = "0003115c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f56"
+note = "Startup initializer literal calls the common lookup"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002cf1c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002cc9a"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002db84"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0002d908"
+to = "7mfk:0002cf1c"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002db84"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0002d908"
+to = "7mfk:0002cf1c"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002feb4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002fcf4"
+note = "Startup initializer literal calls the common lookup"
+
+[[link]]
+type = "target"
+to = "fuel_compensation_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00033ed0"
+value = "000298b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0003115c"
+value = "000285f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0002db84"
+value = "00026db4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0002db84"
+value = "00026db4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0002feb4"
+value = "00027fd8"

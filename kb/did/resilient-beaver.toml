@@ -1,0 +1,61 @@
+number = 0x1211
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d28"
+name = "marvellous-chameleon"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d28"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022cb4"
+name = "antique-mussel"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022cb4"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228e0"
+name = "resilient-beaver"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002297c"
+name = "aquamarine-nightingale"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:0002297c"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002297c"
+name = "visionary-agama"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:0002297c"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002295c"
+name = "wakeful-oriole"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:0002295c"
+value = "ffffffff"

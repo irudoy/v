@@ -1,0 +1,39 @@
+width = 32
+
+[[symbol]]
+layout = "1nd"
+address = "000757b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000755d4"
+note = """
+Literal of the gated coordinator half calls the common lookup and every call \
+passes through the adapter"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a1ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a0ae"
+note = "Literal of the executed coordinator half reads the hot and cold surfaces"
+
+[[link]]
+type = "target"
+to = "ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000757b8"
+value = "00028634"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006a1ac"
+value = "00028018"

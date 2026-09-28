@@ -6,6 +6,9 @@ address = "fffe94e2"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b21c"
+note = """
+RAM delay state is governed by the exact zero-valued ROM8 calibration at \
+00008b40"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -20,6 +23,9 @@ address = "fffe950e"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076b4e"
+note = """
+RAM delay state is governed by the exact zero-valued ROM8 calibration at \
+00008af3"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -34,6 +40,9 @@ address = "ffff2449"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006af42"
+note = """
+RAM delay state is governed by the exact zero-valued ROM8 calibration at \
+00008a1f"""
 
 [[link]]
 type = "reader"

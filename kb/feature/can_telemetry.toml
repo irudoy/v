@@ -1,0 +1,451 @@
+[[target]]
+layout = "1me3b"
+status = "supported"
+note = """
+Mailbox 26 tail-chain type A3 feedback record and five unavailable fields \
+require explicit variants"""
+feedback_payload_offset = 322
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
+payload binding, and knock-event path bind the transport runtime."""
+telemetry = """
+53 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic \
+tables and reviewed producer-consumer evidence; the absent knock timing \
+state, the normalized load snapshot, whose 32-instruction JK08A producer at \
+0x0003BD1C has no match in the image with PC-relative displacements masked, \
+the two intake solenoid duty command cells 0xFFFE938F and 0xFFFE9390, which \
+hold the high bytes of the 16-bit duty words 0xFFFE9692 and 0xFFFE9694 after \
+two scheduler copies while bit 2 of ROM8[0x00008576] selects the 16-bit \
+scheme, the knock surface state, whose flag occupies bit 7 of 0xFFFE945B \
+outside the wire contract, and the requested-torque column coordinate \
+0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, \
+whose target homologs are not traced, are encoded from cleared reserved RAM \
+and remain explicitly unavailable in metadata."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "0013d280"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "0013de10"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "0013de10"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "0013d800"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "0013d2b0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "0013d600"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+note = "Telemetry clear can chain from the startup literal"
+replacement = "0013d2f0"
+
+[target.notes]
+feedback_payload_offset = "Target serializer writes the eight payload bytes at base plus 0x142"
+mailbox_index = "Target uses physical mailbox 26"
+mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
+layout = "1nd"
+status = "supported"
+note = """
+Mailbox 26 tail-chain type A3 feedback record and one unavailable Q8 field \
+require explicit variants"""
+feedback_payload_offset = 322
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
+payload binding, and knock-event path bind the transport runtime."""
+telemetry = """
+54 of the 60 ECU-RAM fields bind to 1ND0A sources through aligned diagnostic \
+tables and reviewed producer-consumer evidence; the knock timing state, \
+whose signed Q8 word 0xFFFE8214 the knock function 0x0006D948 stores only \
+while bit 5 of ROM8[0x00008A2B] is clear, the normalized load snapshot, \
+whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image \
+with PC-relative displacements masked, the two intake solenoid duty command \
+cells 0xFFFE93BF and 0xFFFE93C0, which hold the high bytes of the 16-bit \
+duty words 0xFFFE96BC and 0xFFFE96BE after two scheduler copies while bit 2 \
+of ROM8[0x00008561] selects the 16-bit scheme, and the requested-torque \
+column coordinate 0xFFFF1980 and the Fuel Compensation Main column \
+coordinate 0xFFFF1170, whose target homologs are not traced, are encoded \
+from cleared reserved RAM and remain explicitly unavailable in metadata."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "00134280"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "00134e10"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "00134e10"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "00134800"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "001342b0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "00134600"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+note = "Telemetry clear can chain from the startup literal"
+replacement = "001342f0"
+
+[target.notes]
+feedback_payload_offset = "Target serializer writes the eight payload bytes at base plus 0x142"
+mailbox_index = "Target uses physical mailbox 26"
+mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
+layout = "7mfk"
+status = "supported"
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_isr_helper = "stock_isr_helper/fn"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
+layout = "jk00c"
+status = "supported"
+feedback_payload_offset = 32
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+Exact or directly corresponding HCAN functions and literals bind the vector, \
+initialization paths, payload, mailbox table, and knock sources; mailbox 26 \
+is stock inactive while mailbox 28 is occupied."""
+telemetry = """
+The aligned target UDS table, direct RAM references, and exact target \
+producer-consumer functions bind all 60 schema-2 ECU sources. The normalized \
+load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from \
+0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words \
+of its producer at 0x0003CACC equal those of the JK08A producer at \
+0x0003BD1C; the JK08A literals 0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the \
+Base Fuel Schedule reference 0x00009534 correspond to 0xFFFF102C, the \
+byte-identical divider 0x00021D6C, 0xFFFF1050, and 0x000095E8. The target \
+producer at 0x0003C244 aligns with the JK08A producer at 0x0003B498 and \
+stores the Fuel Compensation Main column coordinate 0xFFFF117C at the site \
+of its store, and the target stage at 0x000760E4 aligns with the JK08A stage \
+at 0x00073948 and stores the requested-torque column coordinate 0xFFFF19E6 \
+at the site of its store. Every other JK08A access of either coordinate \
+aligns with a target access of the same cell, and the third load of the \
+requested-torque coordinator lies at function offset 0x21C in both images."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "000e0980"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "000e1510"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "000e1510"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "000e0f00"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "000e09b0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "000e0d00"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+replacement = "000e09f0"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_isr_helper = "stock_isr_helper/fn"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
+layout = "jk00d"
+status = "supported"
+feedback_payload_offset = 32
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+HCAN initialization, vector, serializer, payload, mailbox table, and knock \
+bindings are recovered from target call topology and literal references; \
+mailbox 26 is stock inactive while mailbox 28 is occupied."""
+telemetry = """
+Direct RAM-reference pairs, exact UDS pointer-table positions, \
+producer-consumer topology, and reviewed target function listings bind all \
+60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the \
+destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler \
+calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC \
+equal those of the JK08A producer at 0x0003BD1C; the JK08A literals \
+0xFFFF1024, 0x00021CE0, 0xFFFF1048, and the Base Fuel Schedule reference \
+0x00009534 correspond to 0xFFFF102C, the byte-identical divider 0x00021D6C, \
+0xFFFF1050, and 0x000095F6. The target producer at 0x0003C244 aligns with \
+the JK08A producer at 0x0003B498 and stores the Fuel Compensation Main \
+column coordinate 0xFFFF117C at the site of its store, and the target stage \
+at 0x000760E4 aligns with the JK08A stage at 0x00073948 and stores the \
+requested-torque column coordinate 0xFFFF19EC at the site of its store. \
+Every other JK08A access of either coordinate aligns with a target access of \
+the same cell, and the third load of the requested-torque coordinator lies \
+at function offset 0x21C in both images."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "000e0980"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "000e1510"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "000e1510"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "000e0f00"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "000e09b0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "000e0d00"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+replacement = "000e09f0"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_isr_helper = "stock_isr_helper/fn"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
+layout = "jk78c"
+status = "supported"
+note = """
+Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field \
+require explicit target bindings"""
+feedback_payload_offset = 42
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox \
+records, payload binding, and knock-event path bind the transport runtime."""
+telemetry = """
+59 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic \
+tables and reviewed producer-consumer evidence; the knock timing state, \
+whose signed Q8 word 0xFFFF1204 the knock function 0x00062780 stores only \
+while bit 5 of ROM8[0x00008965] is clear, is encoded from cleared reserved \
+RAM and remains explicitly unavailable in metadata. The Fuel Compensation \
+Main column field reads the high byte of 0xFFFF22F8, the column of the \
+target Fuel Compensation surfaces 0x00009EBA and 0x00009FBA: the scheduler \
+snapshot of 0xFFFF238A, which the producer at 0x0004726C forms on the \
+percent scale of the field. The producer at 0x0003FCA4 repeats the \
+operations of the JK08A producer at 0x0003B498 and stores the JK08A \
+coordinate as 0xFFFF115C, which indexes only the 4x4 surface 0x00009A1A. The \
+producer at 0x0004068C stores min(255, floor(BFS * 128 / ROM16[0x000091EE])) \
+to 0xFFFF1042, the ratio that the JK08A producer at 0x0003BD1C stores to \
+0xFFFF1048 with the reference ROM16[0x00009534], and the scheduler at \
+0x00020F84 copies 16 bytes from 0xFFFF1042 to the normalized load snapshot \
+0xFFFF1032 as the JK08A scheduler copies 0xFFFF1048 to 0xFFFF102C. The stage \
+at 0x00093164 stores the requested-torque column coordinate 0xFFFF1976 with \
+the operations and pool layout of the JK08A stage at 0x00073948 and passes \
+it as the column of surface 0x0000FACE, whose column axis 0x0001552C is the \
+homolog of JK08A axis 0x00014114."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "0001ec80"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "0001f810"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "0001f810"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "0001f200"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "0001ecb0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "0001f000"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+note = "Telemetry clear chains from the map startup literal"
+replacement = "0001ecf0"
+
+[target.notes]
+feedback_payload_offset = "Target serializer writes the eight payload bytes at base plus 0x2a"
+mailbox_index = "Target uses physical mailbox 26"
+mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
+
+[target.roles.alpha_n_flow_raw]
+note = """
+The high byte of ffff22f8, the scheduler snapshot of ffff238a that producer \
+0004726c forms, is the column of the target Fuel Compensation surfaces \
+00009eba and 00009fba on the percent scale of the field; producer 0003fca4 \
+stores the JK08A coordinate as ffff115c, which indexes only 4x4 surface \
+00009a1a"""
+symbol = "diamond-macaque/ram"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_sle1_isr = "stock_sle1_isr/fn"

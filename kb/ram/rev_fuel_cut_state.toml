@@ -14,6 +14,7 @@ address = "fffe948a"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b1ec"
+note = "Bits 0x04 and 0x08 retain the armed and active hysteresis state"
 
 [[symbol]]
 layout = "1nd"
@@ -31,6 +32,7 @@ name = "active"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076b1e"
+note = "Bits 0x10 and 0x20 retain the armed and active hysteresis state"
 
 [[symbol]]
 layout = "jk78c"
@@ -48,3 +50,4 @@ name = "active"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006af04"
+note = "Bits 0x08 and 0x10 retain the armed and active hysteresis state"

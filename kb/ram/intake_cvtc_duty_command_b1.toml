@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff23b4"
+former = ["mahogany-raven/ram/7mfk-ffff23b4"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2430"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c4696"
+to = "7mfk:000beb1a"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2438"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c46a2"
+to = "7mfk:000beb1a"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2308"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff2308"
+to = "7mfk:ffff23b4"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Target ATU-II channel-7 duty programming reads this cell before writing \
+buffer register fffff592"""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff23b4"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of \
+00008576 set in the stock image the BFR programmer 0011c3a6 writes BFR7B \
+from the word fffe9692 and fffe938f holds its high byte after two scheduler \
+copies"""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff23b4"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of \
+00008561 set in both stock images the BFR programmer 001108d0 writes BFR7B \
+from the word fffe96bc and fffe93bf holds its high byte after two scheduler \
+copies"""

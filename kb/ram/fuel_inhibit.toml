@@ -1,0 +1,28 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2497"
+former = ["tomato-vulture/ram/7mfk-ffff2497"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff251f"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00050bf4"
+to = "7mfk:0004f27e"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2527"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050bf0"
+to = "7mfk:0004f27e"
+count = 1
+value = 17

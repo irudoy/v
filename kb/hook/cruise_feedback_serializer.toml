@@ -1,0 +1,116 @@
+former = ["feedback_dispatch_literal"]
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "001216e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0012163e"
+to = "7mfk:000c3fa4"
+note = "Dispatcher literal resolves the exact 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:001216e4"
+value = "00123264"
+
+[[symbol]]
+layout = "1nd"
+address = "00115490"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00115444"
+to = "7mfk:000c3fa4"
+note = "Dispatcher literal resolves the exact 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00115490"
+value = "00116e4c"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3fa4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c3f3a"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c9fc4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000c9e2a"
+to = "7mfk:000c3fa4"
+
+[[symbol]]
+layout = "jk00d"
+address = "000ca700"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000ca566"
+to = "7mfk:000c3fa4"
+
+[[symbol]]
+layout = "jk78c"
+address = "000eba3c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000eb9b0"
+to = "7mfk:000c3fa4"
+note = "Dispatcher literal resolves the exact 0x551 serializer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000eba3c"
+value = "000ed03c"
+
+[[link]]
+type = "target"
+to = "feedback_serializer/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:001216e4"
+value = "00123264"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00115490"
+value = "00116e4c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c9fc4"
+value = "000ccb32"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000ca700"
+value = "000cd26e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000eba3c"
+value = "000ed03c"

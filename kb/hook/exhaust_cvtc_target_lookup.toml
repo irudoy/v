@@ -1,0 +1,46 @@
+width = 32
+
+[[symbol]]
+layout = "7mfk"
+address = "000c0020"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfe18"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c387c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000c3666"
+to = "7mfk:000c0020"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c3880"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000c366a"
+to = "7mfk:000c0020"
+
+[[link]]
+type = "target"
+to = "exhaust_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c387c"
+value = "00026d7c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000c3880"
+value = "00026d7c"

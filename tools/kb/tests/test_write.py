@@ -6,7 +6,8 @@ import tomllib
 import unittest
 from unittest import mock
 
-from kb import checks, cli, compile, match, names, repo, store, vocab, write
+from kb import adapters, checks, cli, compile, match, names, repo, store, vocab, write
+from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
 from kb.repo import KbError
 
@@ -15,10 +16,13 @@ from kb.repo import KbError
 TABLE, TABLE_HOME, TABLE_JK00C = "astute-toad/tbl", 0x11FF6, 0x142D3
 TABLE_EVIDENCE = {"kind": "masked-match", "supports": "homology", "at": "jk00c:0004820a",
                   "to": "7mfk:00047282", "count": 1, "value": 40}
-# Named data whose symbols on 7mfk have rows of kb/names.csv: the search of the
-# first finds one counterpart on JK78C and that of the second none on 1ND.
+# Named data with files: the search of the first finds one counterpart on
+# JK78C and that of the second none on 1ND.
 THROTTLE, THROTTLE_HOME, THROTTLE_JK78C = "throttle_runtime/ram", 0xFFFF1796, 0xFFFF17A4
 INHIBIT, INHIBIT_HOME = "fuel_inhibit/ram", 0xFFFF2497
+# A curated function without a file, whose symbol on 7mfk the base gives a row
+# of kb/names.csv: the search from it finds one counterpart on JK78C.
+SELECTOR, SELECTOR_HOME, SELECTOR_JK78C = "accelerator_pedal_pair_selector/fn", 0x6EC68, 0x8D384
 SPEC = {"kind": "spec", "path": "tools/kb/SPEC.md", "note": "section 7.4"}
 
 
@@ -29,12 +33,15 @@ def bind(meaning, symbol, **keys):
 class PlanTest(unittest.TestCase):
     """Operations planned over the working tree with the files in memory; the
     base is the tree before the binding of TABLE on JK00C, where the meaning has
-    no file and its 7mfk symbol takes its name from kb/names.csv."""
+    no file and its 7mfk symbol takes its name from kb/names.csv, and the 7mfk
+    symbol of SELECTOR has a row of kb/names.csv."""
 
     @classmethod
     def setUpClass(cls):
         home = names.Row("7mfk", "tbl", TABLE_HOME, "astute-toad")
-        rows = [row for row in names.read() if row.key != home.key] + [home]
+        selector = names.Row("7mfk", "fn", SELECTOR_HOME, "probe-heron", ("probe-otter",))
+        rows = [row for row in names.read() if row.key not in (home.key, selector.key)]
+        rows += [home, selector]
         cls.base = compile.build(repo.ROOT, {store.path_of("tbl", "astute-toad"): None,
                                              names.PATH: names.render(rows)})
 
@@ -75,18 +82,18 @@ class PlanTest(unittest.TestCase):
             "to 7mfk:00047282 count 1 value 40"])
 
     def test_bind_of_a_named_meaning_keeps_the_row_names_as_former_references(self):
-        row = self.row("7mfk", "ram", THROTTLE_HOME)
-        _, texts, result = self.plan(bind(THROTTLE, f"jk78c:{THROTTLE_JK78C:08x}", note="probe",
+        row = self.row("7mfk", "fn", SELECTOR_HOME)
+        _, texts, result = self.plan(bind(SELECTOR, f"jk78c:{SELECTOR_JK78C:08x}", note="probe",
                                           level="candidate"))
-        document = tomllib.loads(texts[Path("kb/ram/throttle_runtime.toml")])
+        document = tomllib.loads(texts[store.path_of("fn", "accelerator_pedal_pair_selector")])
         home, bound = document["symbol"]
-        self.assertEqual(home, {"layout": "7mfk", "address": f"{THROTTLE_HOME:08x}", "former": [
-            f"{name}/ram/7mfk-{THROTTLE_HOME:08x}" for name in (row.name, *row.former)]})
+        self.assertEqual(home, {"layout": "7mfk", "address": f"{SELECTOR_HOME:08x}", "former": [
+            f"{name}/fn/7mfk-{SELECTOR_HOME:08x}" for name in (row.name, *row.former)]})
         self.assertEqual((bound["level"], bound["note"]), ("candidate", "probe"))
         self.assertNotIn("name", bound)
-        symbol = result.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
+        symbol = result.symbols[SymbolKey("7mfk", "fn", SELECTOR_HOME)]
         self.assertEqual(symbol.former, (row.name, *row.former))
-        self.assertEqual(symbol.meaning.key, THROTTLE)
+        self.assertEqual(symbol.meaning.key, SELECTOR)
 
     def test_a_batch_writes_the_statuses_of_one_meaning_into_its_file(self):
         change, texts, result = self.plan(
@@ -116,11 +123,21 @@ class PlanTest(unittest.TestCase):
         self.assertIn("which stores ffff17a4, not ffff17a6", message)
 
     def test_a_status_of_a_registry_refuses_a_symbol_on_its_layout(self):
-        meaning = next(meaning for meaning in self.base.meanings
-                       if meaning.key == "normalized_load/ram")
-        self.assertEqual(meaning.statuses["1nd"].state, "unresolved")
-        message = self.refused(bind("normalized_load/ram", "1nd:fffec000", evidence=[
-            {"kind": "registry", "path": "patches/rom-address-profiles.toml"}]))
+        # The compiler with the adapter of the address profiles, whose
+        # correspondence rows state the statuses of the telemetry sources.
+        order = tuple(adapter for adapter in adapters.ORDER
+                      if adapter not in adapters.CONVERTED or adapter is profiles)
+        with mock.patch.object(adapters, "ADAPTERS", order):
+            base = compile.build(repo.ROOT)
+            meaning = next(meaning for meaning in base.meanings
+                           if meaning.key == "normalized_load/ram")
+            self.assertEqual(meaning.statuses["1nd"].state, "unresolved")
+            with self.assertRaises(KbError) as caught:
+                write.plan([bind("normalized_load/ram", "1nd:fffec000", evidence=[
+                    {"kind": "registry", "path": "patches/rom-address-profiles.toml"}])],
+                    base, write.model_resolver(base))
+        self.assertEqual(caught.exception.code, 3, str(caught.exception))
+        message = str(caught.exception)
         self.assertIn("symbols: patches/1nd-runtime-correspondence.csv: normalized_load/ram: "
                       "status unresolved on 1nd, where the meaning has 1nd-fffec000/ram", message)
 

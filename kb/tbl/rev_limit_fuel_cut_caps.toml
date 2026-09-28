@@ -10,6 +10,8 @@ address = "00009266"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b1aa"
+note = """
+Adjacent uint16 caps limit the activation and release interpolation results"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -24,6 +26,8 @@ address = "000091d2"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076adc"
+note = """
+Adjacent uint16 caps limit the activation and release interpolation results"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -38,6 +42,8 @@ address = "00009040"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006aecc"
+note = """
+Adjacent uint16 caps limit the activation and release interpolation results"""
 
 [[symbol.evidence]]
 kind = "l0"

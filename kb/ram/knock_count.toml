@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe90fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072142"
+to = "7mfk:ffff2142"
+note = "Target knock event function updates this saturating counter"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9136"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006dbde"
+to = "7mfk:ffff2142"
+note = "Target knock event function updates this saturating counter"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2142"
+former = ["russet-swift/ram/7mfk-ffff2142"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff21b2"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004b062"
+to = "7mfk:0004a01e"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff21ba"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004b066"
+to = "7mfk:0004a01e"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2096"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006389c"
+to = "7mfk:0004a010"
+count = 1
+value = 26
+note = "Target knock event function updates this saturating counter"

@@ -1,0 +1,46 @@
+width = 32
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f468"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004f2b0"
+
+[[symbol]]
+layout = "jk00c"
+address = "00050d90"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00050c26"
+to = "7mfk:0004f468"
+
+[[symbol]]
+layout = "jk00d"
+address = "00050d8c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00050c22"
+to = "7mfk:0004f468"
+
+[[link]]
+type = "target"
+to = "rev_limit_fuel_cut/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00050d90"
+value = "000093e6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00050d8c"
+value = "000093f4"

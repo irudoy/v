@@ -1,3 +1,5 @@
+former = ["fuel_compensation_main_default"]
+
 [[symbol]]
 layout = "1me3b"
 address = "0000a0f4"

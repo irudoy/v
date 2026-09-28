@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe941e"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe941e"
+to = "7mfk:ffff19c6"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe944e"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe944e"
+to = "7mfk:ffff19c6"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Three-generation homologous fail-safe branch reads this bounded request"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19c6"
+former = ["cherry-goat/ram/7mfk-ffff19c6"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1a24"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00075b2c"
+to = "7mfk:00073390"
+count = 1
+value = 153
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1a2a"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00075b2c"
+to = "7mfk:00073390"
+count = 1
+value = 153
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff19b0"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092faa"
+to = "7mfk:0007378a"
+count = 1
+value = 52
+note = "Three-generation homologous fail-safe branch reads this bounded request"

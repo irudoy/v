@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe88b6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe88b6"
+to = "7mfk:ffff18cc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Three accessor functions 000975b4 00097ae8 00097bd2 repeat the five 1ND \
+access sites including the writer in the return delay slot"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8936"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe8936"
+to = "7mfk:ffff18cc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Three-generation homologous torque function writes this state"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18cc"
+former = ["monumental-bison/ram/7mfk-ffff18cc"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff192c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000678d8"
+to = "7mfk:00065618"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1930"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000678d8"
+to = "7mfk:00065618"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff18d0"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083bd6"
+to = "7mfk:00065a2e"
+count = 1
+value = 50
+note = "Homologous torque functions write this state at aligned call order"

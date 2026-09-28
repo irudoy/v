@@ -50,6 +50,9 @@ reads them."""
 kind = "l0"
 supports = "identity"
 at = "1me3b:000799d8"
+note = """
+Coordinator reads this 8x8 surface for state code 3 through the hooked 8x8 \
+lookup literal and has no source counterpart"""
 
 [[symbol]]
 layout = "1nd"
@@ -62,6 +65,9 @@ the four state-code surfaces of this coordinator."""
 kind = "l0"
 supports = "identity"
 at = "1nd:00074fbc"
+note = """
+Executed coordinator half reads this 8x8 surface for state code 3 through \
+the hooked 8x8 lookup literal and has no source counterpart"""
 
 [[status]]
 layout = "jk78c"

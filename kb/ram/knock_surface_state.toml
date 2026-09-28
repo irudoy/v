@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1nd"
+address = "fffe9488"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe9488"
+to = "7mfk:ffff2466"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Ignition and correction consumers test bit 0x40 to select the surface"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2466"
+former = ["liberal-trout/ram/7mfk-ffff2466"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff24ea"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cd5e"
+to = "7mfk:0004bc14"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff24f2"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cd62"
+to = "7mfk:0004bc14"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23c6"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000657c0"
+to = "7mfk:0004bc84"
+value = "ffff23c6"
+note = "Ignition and correction consumers test bit 0x40 to select the surface"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff2466"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+The JK08A accesses of ffff2466 have no match in the target; the knock \
+function 00071d64 sets bit 7 of fffe945b at 000721a4 and 000721b4 and clears \
+it at 000721b0 while the wire contract decodes bit 6"""

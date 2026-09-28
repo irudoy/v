@@ -1,0 +1,12 @@
+[[symbol]]
+layout = "1me3b"
+address = "000791a4"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "patches/tests/test_rom_address_profiles.py"
+key = "test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image"
+note = """
+Second coordinator copy 000791a4..000797cb has no inbound pointer or branch \
+in the occupied image and keeps its private lookup literals stock"""

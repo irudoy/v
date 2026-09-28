@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe8077"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00042df4"
+to = "7mfk:ffff1077"
+note = "Coolant activation index is recovered from target consumers"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8077"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0003fc78"
+to = "7mfk:ffff1077"
+note = "Coolant activation index is recovered from target consumers"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1077"
+former = ["fiery-wombat/ram/7mfk-ffff1077"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff107d"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a026"
+to = "7mfk:000394f6"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff107d"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a026"
+to = "7mfk:000394f6"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff106d"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0002f4e8"
+to = "7mfk:0002c59c"
+count = 1
+value = "mnemonic"
+note = "Coolant activation index is recovered from target consumers"

@@ -1,0 +1,61 @@
+number = 0x1228
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d84"
+name = "marvellous-booby"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d84"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022d10"
+name = "outgoing-bullmastiff"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022d10"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002293c"
+name = "sly-ferret"
+
+[[symbol]]
+layout = "jk00c"
+address = "000229d8"
+name = "tentacled-koel"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:000229d8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "000229d8"
+name = "celadon-nyala"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:000229d8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "000229b8"
+name = "invisible-jaybird"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:000229b8"
+value = "ffffffff"

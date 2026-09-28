@@ -1,0 +1,70 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9194"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007271e"
+to = "7mfk:ffff21d8"
+note = """
+Target evaluator stores the offset-binary metric of channel n at base plus 4 \
+* (n - 1)"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe91cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e816"
+to = "7mfk:ffff21d8"
+note = """
+Target evaluator stores the offset-binary metric of channel n at base plus 4 \
+* (n - 1)"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff21d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00049f44"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2248"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:0004b038"
+to = "7mfk:00049ff4"
+value = "ffff2248"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2250"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:0004b03c"
+to = "7mfk:00049ff4"
+value = "ffff2250"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff212c"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00063880"
+to = "7mfk:00049ff4"
+value = "ffff212c"
+note = """
+Target evaluator stores the offset-binary metric of channel n at base plus 4 \
+* (n - 1)"""

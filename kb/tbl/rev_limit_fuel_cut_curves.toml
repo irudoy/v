@@ -10,6 +10,9 @@ address = "000172b6"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b1b4"
+note = """
+Adjacent eight-point uint16 curves share the axis at 00017106 and retain \
+independent activation and release rows"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -24,6 +27,9 @@ address = "00017202"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076ae6"
+note = """
+Adjacent eight-point uint16 curves share the axis at 00017072 and retain \
+independent activation and release rows"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -38,6 +44,9 @@ address = "00016bf4"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006aed8"
+note = """
+Adjacent eight-point uint16 curves share the axis at 00016a64 and retain \
+independent activation and release rows"""
 
 [[symbol.evidence]]
 kind = "l0"

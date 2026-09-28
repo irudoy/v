@@ -1,0 +1,96 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00079cac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079a00"
+note = "Coordinator literal reads the hot and cold 16x16 surfaces"
+
+[[symbol]]
+layout = "1nd"
+address = "00074fcc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074f38"
+note = "Literal of the executed coordinator half reads the hot and cold surfaces"
+
+[[symbol]]
+layout = "7mfk"
+address = "000496c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000495f6"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004a708"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004a63a"
+to = "7mfk:000496c0"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004a70c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004a63e"
+to = "7mfk:000496c0"
+
+[[symbol]]
+layout = "jk78c"
+address = "00062f10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062e48"
+note = """
+Knock path literal calls the common ignition lookup with the gated-half \
+surfaces 0x96ca and 0x97ca only and every call passes through the adapter"""
+
+[[link]]
+type = "target"
+to = "ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079cac"
+value = "00029ba8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00074fcc"
+value = "00028634"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004a708"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004a70c"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00062f10"
+value = "00028018"

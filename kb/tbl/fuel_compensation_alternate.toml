@@ -5,6 +5,7 @@ default surface, and the downstream state selector reads it in place of that \
 surface."""
 level = "code"
 home = "jk78c"
+former = ["fuel_compensation_main_alternate"]
 cols = 16
 rows = 16
 storage = "uint8"
@@ -51,6 +52,9 @@ Thirteen of the 256 stock cells differ from the JK78C surface 0x00009FBA."""
 kind = "l0"
 supports = "identity"
 at = "1me3b:00033ed8"
+note = """
+Alternate compensation channel shares the index byte and both axes and the \
+interpolator of the default surface and has no source counterpart"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -74,6 +78,9 @@ arm the state code selects instead."""
 kind = "l0"
 supports = "identity"
 at = "1nd:00031164"
+note = """
+Alternate compensation channel shares the index byte and both axes and the \
+interpolator of the default surface and has no source counterpart"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -97,6 +104,9 @@ arm the state code selects instead."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002febc"
+note = """
+Alternate compensation channel shares the index byte and both axes and the \
+interpolator of the default surface and has no source counterpart"""
 
 [[symbol.evidence]]
 kind = "l0"

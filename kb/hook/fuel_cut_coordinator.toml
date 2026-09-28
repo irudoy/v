@@ -1,0 +1,83 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00022144"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1me3b:00021756"
+value = 128
+mode = "base"
+note = """
+Entry 32 points to the sole writer of the final six-cylinder fuel inhibit \
+mask"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00022144"
+value = "0007a740"
+
+[[symbol]]
+layout = "1nd"
+address = "000220d8"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1nd:00021708"
+value = 128
+mode = "base"
+note = """
+Entry 32 points to the sole writer of the final six-cylinder fuel inhibit \
+mask"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000220d8"
+value = "000760cc"
+
+[[symbol]]
+layout = "jk78c"
+address = "00021ac8"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000212fe"
+value = 124
+mode = "base"
+note = """
+Index 31 points to the sole writer of the final six-cylinder fuel inhibit \
+mask"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00021ac8"
+value = "0006a9b0"
+
+[[link]]
+type = "target"
+to = "fuel_cut_coordinator/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00022144"
+value = "0007a740"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000220d8"
+value = "000760cc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00021ac8"
+value = "0006a9b0"

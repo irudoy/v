@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "001207b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0012076c"
+to = "7mfk:000c3b10"
+note = "Recovery HCAN1 jump literal binds the initializer"
+
+[[symbol]]
+layout = "1nd"
+address = "00114ad8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00114a38"
+to = "7mfk:000c3b10"
+note = "Recovery HCAN1 jump literal binds the initializer"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3b10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c3adc"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c9818"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000c97e4"
+to = "7mfk:000c3b10"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c9f54"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000c9f20"
+to = "7mfk:000c3b10"
+
+[[symbol]]
+layout = "jk78c"
+address = "000eb584"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000eb494"
+to = "7mfk:000c3b10"
+note = "Recovery path literal binds the same D800 HCAN initializer"
+
+[[link]]
+type = "target"
+to = "hcan1_init/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:001207b8"
+value = "0011f2ec"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00114ad8"
+value = "0011363c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c9818"
+value = "000c9092"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000c9f54"
+value = "000c97ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000eb584"
+value = "000ea582"

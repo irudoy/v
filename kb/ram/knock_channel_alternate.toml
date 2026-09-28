@@ -1,0 +1,61 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe90ff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072d94"
+to = "7mfk:ffff2143"
+note = "Target evaluator reads this channel byte while selector bit 3 is set"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9137"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006ee84"
+to = "7mfk:ffff2143"
+note = "Target evaluator reads this channel byte while selector bit 3 is set"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2143"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00049e5c"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff21b3"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004aea0"
+to = "7mfk:ffff2143"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff21bb"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004aea4"
+to = "7mfk:ffff2143"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2097"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000636e8"
+to = "7mfk:ffff2143"
+note = "Target evaluator reads this channel byte while selector bit 3 is set"

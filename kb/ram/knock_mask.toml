@@ -1,0 +1,59 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe910c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072cd0"
+to = "7mfk:ffff2150"
+note = """
+Target knock event function sets and clears this channel mask at the 1ND \
+offset from the counter"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9144"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006edc8"
+to = "7mfk:ffff2150"
+note = "Target knock event function sets and clears this channel mask"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2150"
+former = ["vanilla-moth/ram/7mfk-ffff2150"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff21c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004b392"
+to = "7mfk:ffff2150"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff21c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004b396"
+to = "7mfk:ffff2150"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff20a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00063bde"
+to = "7mfk:ffff2150"
+note = "Target knock event function sets and clears this channel mask"

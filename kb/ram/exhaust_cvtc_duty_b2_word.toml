@@ -1,0 +1,66 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe8aa6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe8aa6"
+to = "7mfk:ffff1aae"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8b12"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe8b12"
+to = "7mfk:ffff1aae"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the adjacent word"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1aae"
+former = ["conscious-mayfly/ram/7mfk-ffff1aae"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1b06"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c56d6"
+to = "7mfk:000bfa3e"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1b0e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c5710"
+to = "7mfk:000bfa3c"
+count = 1
+value = 20
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1a8a"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff1a8a"
+to = "7mfk:ffff1aae"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the adjacent word"

@@ -45,9 +45,11 @@ class LedgerAdapterTest(unittest.TestCase):
         meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x2040C))
         self.assertEqual((meaning.key, meaning.tier), ("periodic_tick_isr/fn", "curated"))
 
-    def test_a_symbol_key_wins_over_a_curated_name(self):
+    def test_the_file_of_a_meaning_wins_over_a_curated_name(self):
+        # The conversion of the address profiles named the file by the symbol
+        # key, which wins over the curated name.
         meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x20DFE))
-        self.assertEqual((meaning.key, meaning.tier), ("coherent_snapshot/fn", "symbol_key"))
+        self.assertEqual((meaning.key, meaning.tier), ("coherent_snapshot/fn", "file"))
         self.assertIn(("periodic_snapshot_dispatch", "curated", "tools/ghidra/symbols/7mfk.csv"),
                       meaning.other_names)
         self.assertEqual(model().meaning_of(SymbolKey("1nd", "fn", 0x11363C)).name, "hcan1_init")
@@ -56,7 +58,7 @@ class LedgerAdapterTest(unittest.TestCase):
 class ProfileAdapterTest(unittest.TestCase):
     def test_a_telemetry_source_joins_the_meaning_of_its_field(self):
         meaning = model().meaning_of(SymbolKey("jk00d", "ram", 0xFFFF1034))
-        self.assertEqual((meaning.key, meaning.tier), ("normalized_load/ram", "field"))
+        self.assertEqual((meaning.key, meaning.tier), ("normalized_load/ram", "file"))
         self.assertEqual(meaning.symbols["7mfk"].address, 0xFFFF102C)
         self.assertEqual({layout: status.state for layout, status in meaning.statuses.items()},
                          {"1nd": "unresolved", "1me3b": "unresolved"})
@@ -81,11 +83,11 @@ class ProfileAdapterTest(unittest.TestCase):
         for (layout, address), name in cases.items():
             with self.subTest(layout=layout, address=f"{address:08x}"):
                 meaning = m.meaning_of(SymbolKey(layout, "hook", address))
-                self.assertEqual((meaning.name, meaning.tier), (name, "hook"))
+                self.assertEqual((meaning.name, meaning.tier), (name, "file"))
         # The 8MFK key exhaust_cvtc_target_lookup names another word than the
         # canonical key of the same spelling.
         own = m.meaning_of(SymbolKey("jk00d", "hook", 0x000C5B94))
-        self.assertNotEqual(own.tier, "hook")
+        self.assertNotEqual(own.name, "exhaust_cvtc_target_lookup")
         self.assertIs(own, m.meaning_of(SymbolKey("jk00c", "hook", 0x000C5B58)))
 
     def test_a_hook_word_links_to_the_meaning_at_its_stock_value(self):
@@ -138,7 +140,8 @@ class ProfileAdapterTest(unittest.TestCase):
                 ("jk78c", 0xFFFFDC48, "can_symbols", "probe.toml"),
                 *((layout, 0xFFFFDC08, "can_symbols", "probe.toml")
                   for layout in ("jk00c", "jk00d"))]
-        facts = SimpleNamespace(roles={}, key_entries=lambda: ({"mailbox_data": rows}, {}))
+        facts = SimpleNamespace(roles={}, all_words=frozenset(),
+                                key_entries=lambda: ({"mailbox_data": rows}, {}))
         targets = defaultdict(dict)
         profiles._declare_keys(b, facts, targets)
         m = b.finish()
@@ -285,8 +288,8 @@ class ProfileAdapterTest(unittest.TestCase):
     def test_a_later_feature_states_its_hook_text_in_its_target(self):
         m = model()
         word = SymbolKey("1nd", "hook", 0x00115490)
-        self.assertEqual(m.symbols[word].props["note"],
-                         ["Dispatcher literal resolves the exact 0x551 serializer"])
+        self.assertEqual(profiles.row_item(m.symbols[word], "the word")[1]["note"],
+                         "Dispatcher literal resolves the exact 0x551 serializer")
         entry = m.targets[("rolling_launch", "1nd")].props["hooks"]["feedback_arbitration"]
         self.assertEqual((entry["hook"], entry["note"]),
                          (word, "Rolling feedback chains from the Map Switching serializer wrapper"))
@@ -569,9 +572,11 @@ class NativeAdapterTest(unittest.TestCase):
     def test_each_fuel_cut_datum_takes_evidence_at_its_first_reference_in_the_function(self):
         m = model()
         item = lambda at: {"kind": "l0", "supports": "identity", "at": at}
-        self.assertIn(item("jk78c:0006aedc"),
-                      m.symbols[SymbolKey("jk78c", "ram", 0xFFFF10E5)].evidence)
-        self.assertIn(item("1nd:00076b1e"), m.symbols[SymbolKey("1nd", "ram", 0xFFFE94BA)].evidence)
+        # A correspondence row states its text as the note of the item.
+        stated = lambda key: [{name: value for name, value in found.items() if name != "note"}
+                              for found in m.symbols[key].evidence]
+        self.assertIn(item("jk78c:0006aedc"), stated(SymbolKey("jk78c", "ram", 0xFFFF10E5)))
+        self.assertIn(item("1nd:00076b1e"), stated(SymbolKey("1nd", "ram", 0xFFFE94BA)))
 
     def test_a_call_site_off_its_instruction_ordinal_is_an_issue(self):
         targets = _fuel_cut()

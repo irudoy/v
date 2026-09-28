@@ -1,0 +1,65 @@
+[[symbol]]
+layout = "1me3b"
+address = "000fd68c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000fd68c"
+to = "7mfk:000a9554"
+note = "The stock task of entry 1 is displaced by the periodic wrapper"
+
+[[symbol]]
+layout = "1nd"
+address = "000f1880"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000f1880"
+to = "7mfk:000a9554"
+note = "The stock task of entry 1 is displaced by the periodic wrapper"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a9554"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a9554"
+
+[[symbol]]
+layout = "jk00c"
+address = "000aeb74"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000aeb5c"
+to = "7mfk:000a953c"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk00d"
+address = "000aeb54"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000aeb3c"
+to = "7mfk:000a953c"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk78c"
+address = "000b2294"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000b2294"
+to = "7mfk:000a9554"
+note = "The stock task of entry 0 is displaced by the periodic wrapper"

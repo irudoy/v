@@ -1,0 +1,76 @@
+[[symbol]]
+layout = "1me3b"
+address = "00123478"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0012326e"
+note = "Target serializer literal holds the payload base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00123478"
+value = "fffeb0ef"
+
+[[symbol]]
+layout = "1nd"
+address = "00116eac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00116c3e"
+note = "Target serializer literal holds the payload base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00116eac"
+value = "fffeafab"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c5434"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c524c"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ccb88"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000cca0a"
+to = "7mfk:000c5434"
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd2c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000cd146"
+to = "7mfk:000c5434"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed238"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ed040"
+note = "Target serializer literal holds the payload base"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000ed238"
+value = "ffff3d33"

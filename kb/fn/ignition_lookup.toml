@@ -20,6 +20,18 @@ storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00029ba8"
+to = "7mfk:00026230"
+note = "Target ignition hooks share this lookup"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00029ba8"
+
 [[symbol]]
 layout = "1nd"
 address = "00028634"
@@ -30,6 +42,12 @@ supports = "homology"
 to = "7mfk:00026230"
 value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
 key = "00026230"
+note = "Target ignition hooks share this lookup"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002864e"
 
 [[symbol]]
 layout = "7mfk"
@@ -47,6 +65,11 @@ at = "jk00c:00026df4"
 to = "jk00d:00026df4"
 sha256 = "2176f4225ad3356f24c52d11e5da14b2cdd5935f1970a667bd0d89a732bf81c3"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026e0e"
+
 [[symbol]]
 layout = "jk00d"
 address = "00026df4"
@@ -58,6 +81,11 @@ to = "7mfk:00026230"
 value = "normalized-wrapper-shape-and-call-topology"
 key = "00026230"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026e0e"
+
 [[symbol]]
 layout = "jk78c"
 address = "00028018"
@@ -68,3 +96,9 @@ supports = "homology"
 to = "7mfk:00026230"
 value = "exact-wrapper-bytes-and-reviewed-library-order"
 key = "00026230"
+note = "Reviewed interpolation contract binds the common ignition lookup"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028032"

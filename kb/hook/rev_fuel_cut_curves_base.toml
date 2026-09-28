@@ -1,0 +1,21 @@
+width = 32
+
+[[symbol]]
+layout = "jk78c"
+address = "0006b070"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aed8"
+note = "Native state-machine literal selects both adjacent eight-point curves"
+
+[[link]]
+type = "target"
+to = "rev_limit_fuel_cut_curves/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006b070"
+value = "00016bf4"

@@ -1,0 +1,33 @@
+[[symbol]]
+layout = "7mfk"
+address = "000c6b68"
+former = ["granite-bobcat/fn/7mfk-000c6b68"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c6b68"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ce646"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000cf420"
+to = "7mfk:000c794c"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "000ced82"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000cfb5c"
+to = "7mfk:000c794c"
+count = 1
+value = 0

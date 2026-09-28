@@ -1,0 +1,37 @@
+width = 32
+
+[[symbol]]
+layout = "jk00c"
+address = "000c5b58"
+name = "noisy-smilodon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c5aaa"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c5b94"
+name = "thundering-mayfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c5ae6"
+
+[[link]]
+type = "target"
+to = "exhaust_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c5b58"
+value = "00026d7c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000c5b94"
+value = "00026d7c"

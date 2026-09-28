@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffed0e4"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffed0e4"
+to = "7mfk:ffff5648"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffecfe4"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffecfe4"
+to = "7mfk:ffff5648"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+The same publisher reads this base as the second summand before the 0x6400 \
+neutral correction"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5648"
+former = ["merciful-donkey/ram/7mfk-ffff5648"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff56c0"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00059ae4"
+to = "7mfk:00057bc4"
+value = "ffff56c0"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff56d4"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00059ae0"
+to = "7mfk:00057bc4"
+value = "ffff56d4"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff5be0"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000748b0"
+to = "7mfk:00058354"
+value = "ffff5be0"
+note = """
+The same publisher reads this base as the second summand before the 0x6400 \
+neutral correction"""

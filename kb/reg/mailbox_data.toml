@@ -1,0 +1,57 @@
+[[symbol]]
+layout = "1me3b"
+address = "ffffdc48"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:ffffdc48"
+key = "SH7058S-HW-17.3.3"
+note = "HCAN1 mailbox 26 data address is unchanged"
+
+[[symbol]]
+layout = "1nd"
+address = "ffffdc48"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:ffffdc48"
+key = "SH7058S-HW-17.3.3"
+note = "HCAN1 mailbox 26 data address is unchanged"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffdc48"
+former = ["auburn-mussel/reg/7mfk-ffffdc48"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffffdc48"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:ffffdc48"
+key = "SH7058S-HW-17.3.3"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffffdc48"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:ffffdc48"
+key = "SH7058S-HW-17.3.3"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffffdc48"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:ffffdc48"
+key = "SH7058S-HW-17.3.3"
+note = "HCAN1 mailbox 26 data address is unchanged"

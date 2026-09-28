@@ -1,0 +1,61 @@
+[[symbol]]
+layout = "1me3b"
+address = "000220c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00021756"
+to = "7mfk:0002196c"
+note = "Homologous 152-entry periodic task table walked by the scheduler"
+
+[[symbol]]
+layout = "1nd"
+address = "00022058"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00021708"
+to = "7mfk:0002196c"
+note = "Homologous 148-entry periodic task table walked by the scheduler"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002196c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000212ee"
+
+[[symbol]]
+layout = "jk00c"
+address = "000219ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00021362"
+to = "7mfk:0002196c"
+
+[[symbol]]
+layout = "jk00d"
+address = "000219ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00021362"
+to = "7mfk:0002196c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00021a4c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000212fe"
+to = "7mfk:0002196c"
+note = "Homologous 144-entry periodic task table walked by the scheduler"

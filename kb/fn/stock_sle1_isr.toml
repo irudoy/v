@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "00127910"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00127910"
+to = "7mfk:000c7914"
+note = "Vector target supplies the complete ISR tail-chain entry"
+
+[[symbol]]
+layout = "1nd"
+address = "0011b334"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011b334"
+to = "7mfk:000c7914"
+note = "Vector target supplies the complete ISR tail-chain entry"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c7914"
+former = ["fearless-bandicoot/fn/7mfk-000c7914"]
+
+[[symbol]]
+layout = "jk00c"
+address = "000cf3e8"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cf2f4"
+to = "7mfk:000c7820"
+count = 1
+value = 178
+
+[[symbol]]
+layout = "jk00d"
+address = "000cfb24"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cfa30"
+to = "7mfk:000c7820"
+count = 1
+value = 178
+
+[[symbol]]
+layout = "jk78c"
+address = "000f0410"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000f031c"
+to = "7mfk:000c7820"
+count = 1
+value = 131
+note = "Vector target supplies the complete ISR tail-chain entry"

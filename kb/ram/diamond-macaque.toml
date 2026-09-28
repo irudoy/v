@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "ffff22f8"
+name = "diamond-macaque"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040dac"

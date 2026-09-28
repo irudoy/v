@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe942b"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe942b"
+to = "7mfk:ffff2440"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe945b"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe945b"
+to = "7mfk:ffff2440"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the duty byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2440"
+former = ["outgoing-orca/ram/7mfk-ffff2440"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff24c4"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00093aca"
+to = "7mfk:0008ee16"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff24cc"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00093aca"
+to = "7mfk:0008ee16"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff239a"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000b1238"
+to = "7mfk:0008ef74"
+count = 1
+value = "mnemonic"
+note = "Aligned diagnostic pointer table preserves the duty byte"

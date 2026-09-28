@@ -4,12 +4,26 @@ address = "0003357c"
 
 [[symbol.evidence]]
 kind = "l0"
+supports = "homology"
+at = "1me3b:0003357c"
+to = "7mfk:0002c648"
+note = "Startup function is bound by two stock literals"
+
+[[symbol.evidence]]
+kind = "l0"
 supports = "identity"
 at = "1me3b:00033cec"
 
 [[symbol]]
 layout = "1nd"
 address = "00030810"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00030810"
+to = "7mfk:0002c648"
+note = "Startup function is bound by two stock literals"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -22,8 +36,40 @@ address = "0002c648"
 former = ["thankful-tamarin/fn/7mfk-0002c648"]
 
 [[symbol]]
+layout = "jk00c"
+address = "0002d2b4"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00028994"
+to = "7mfk:00027d28"
+value = "0002d2b4"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002d2b4"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00028994"
+to = "7mfk:00027d28"
+value = "0002d2b4"
+
+[[symbol]]
 layout = "jk78c"
 address = "0002f596"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0002a6fc"
+to = "7mfk:00027d28"
+value = "0002f596"
+note = """
+Instruction alignment and the stock jump literal bind the target \
+initializer"""
 
 [[symbol.evidence]]
 kind = "l0"

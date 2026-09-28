@@ -37,18 +37,56 @@ and 20.3).
   word each.
 - `render_profiles` and `render_correspondence` give the canonical text of the
   address profiles and of a correspondence file.
+
+From their conversion the registries are projections of the files, which
+`render_registries` gives:
+
+- `patches/rom-address-profiles.toml` has a profile for the image of each
+  layout other than `7mfk` with a `runtime` target, and an `inherits`
+  profile for each other image of the layout. A profile states the family of
+  its layout, the `7mfk` image as `layout_source`, the keys of the `runtime`
+  and `map_switching` targets, the status of each feature target as its
+  capability, and the addresses of the `families` symbols. A hook key takes
+  the address of its symbol, the stock word that the `target` link of its
+  meaning reaches, and its replacement, and a later feature than map
+  switching takes as `base` the replacement of the previous feature that
+  redirects the word, or else the stock word. The DID allocations of
+  `rolling_launch` give `rolling_diagnostics`, the symbols and the roles of a
+  target its symbol table with the `can_telemetry` numbers and the
+  image-byte words of its records, a field role or the symbol of the source
+  meaning of a field its telemetry source, a field whose source meaning has
+  a status on the layout `telemetry_unavailable`, and the `basis` of the
+  targets `evidence`.
+- `patches/<layout>-runtime-correspondence.csv` exists for each layout whose
+  `runtime` target states `notes`: an `allocation` row for each note, whose
+  source is the bound of the `7mfk` target and which is `mapped` where the
+  target is the source plus the relocation of the profile; for each feature a
+  row of each family, hook, symbol, role, required meaning, unsupported
+  entry, and number of its target; a `telemetry` row for each field with its
+  role, the symbol of its source meaning, or the status of that meaning; and
+  a `capability` row for each target that states a `note`. The row item of a
+  symbol is the first evidence item of its entry that is homology evidence
+  toward `7mfk`, which gives `mapped`, or identity evidence of its own layout
+  other than image bytes, which gives `target-specific`, and its note is the
+  text of the row. A role row is `target-specific` with the note of the role,
+  an unsupported entry or a status `unsupported` with its note, and a number
+  `mapped` where it equals the `7mfk` value; a `target-specific` map row
+  takes the domain `map_native`, and the hook row of a later feature than
+  the first that redirects its word the `note` of its hook key.
 """
 
 import ast
 from collections import defaultdict
 import csv
+from dataclasses import dataclass
 import io
 from pathlib import Path
 import re
 import tomllib
 
-from kb import store
+from kb import match, repo, store
 from kb.adapters import layouts, telemetry
+from kb.model import SymbolKey
 from kb.repo import KbError
 from kb.values import hexed
 
@@ -121,6 +159,21 @@ UNRESOLVED = re.compile(r"\bno homolog\b|\bnot traced\b|\bno match\b", re.IGNORE
 Hook = layouts.Hook
 
 
+@dataclass
+class Row:
+    """A correspondence row with the symbols it names: `right` on its layout,
+    `left` on `7mfk`, and `hook` for a hook row; `role` when the row binds a
+    role of its feature."""
+
+    layout: str
+    path: str
+    row: dict
+    left: object = None
+    right: object = None
+    hook: Hook | None = None
+    role: bool = False
+
+
 def inputs(root):
     found = [PROFILES.as_posix(), RUNTIME_TARGETS.as_posix()]
     found += [path.relative_to(root).as_posix()
@@ -170,6 +223,8 @@ class Profiles:
         self.document = tomllib.loads((root / PROFILES).read_text(encoding="utf-8"))
         self.layouts_doc = layouts.documents(root)
         self.rows = correspondence(root)
+        # The rows with the symbols they name, as `_declare_rows` resolves them.
+        self.resolved = []
         by_image = {image: layout.id for layout in b.layouts.values() for image in layout.images}
         self.profiles = {}
         src = PROFILES.as_posix()
@@ -199,6 +254,10 @@ class Profiles:
                                 for hook in layouts.canonical_hooks(self.layouts_doc)}
         self.hooks = self._hooks()
         self.words = layouts.words(self.hooks)
+        # The hook words of every layout, which the canonical layouts state on
+        # `7mfk` and the address profiles elsewhere.
+        self.all_words = frozenset({*self.words,
+                                    *((CANONICAL, word) for word in self.canonical_words)})
 
     def _roles(self):
         """{(layout, key): (target, row)} of the `target-specific` symbol rows
@@ -287,14 +346,16 @@ class Profiles:
         return entries, values
 
 
-def key_kind(b, entries):
+def key_kind(b, entries, words=frozenset()):
     """The kind of a symbol-table key: `tbl` for a map family, `hook` when a
-    feature redirects the word at every address of the key, else the kind of
-    the symbols registered at its addresses, else the kind its addresses
-    admit."""
+    feature redirects the word at every address of the key, as the hook
+    symbols or the (layout, address) `words` state, else the kind of the
+    symbols registered at its addresses, else the kind its addresses admit."""
     if any(table in ("map_families", TEMPLATE) for _, _, table, _ in entries):
         return "tbl"
-    kinds = [{key.kind for key in b.at(layout, address)} for layout, address, _, _ in entries]
+    kinds = [{key.kind for key in b.at(layout, address)}
+             | ({"hook"} if (layout, address) in words else set())
+             for layout, address, _, _ in entries]
     if all("hook" in found for found in kinds):
         return "hook"
     registered = set().union(*kinds) - {"hook"}
@@ -356,7 +417,7 @@ def _declare_keys(b, facts, targets):
     entries, values = facts.key_entries()
     found = {}
     for name, rows in sorted(entries.items()):
-        kind = key_kind(b, rows)
+        kind = key_kind(b, rows, facts.all_words)
         if kind is None:
             b.issue("symbols", rows[0][3], name,
                     "the addresses of the key lie in different spaces")
@@ -507,12 +568,15 @@ def _declare_rows(b, facts, keys, targets):
                 continue
             if facts.roles.get((layout, row["key"]), (None, None))[1] is row:
                 role = entry.setdefault("roles", {}).setdefault(row["key"], {})
-                role.update({"symbol": b.symbol(layout, kind, target, path), "note": text})
+                right = b.symbol(layout, kind, target, path)
+                role.update({"symbol": right, "note": text})
+                left = None
                 if source is not None and domain == "telemetry":
-                    b.symbol(CANONICAL, kind, source, path, group=(kind, "field", row["key"]),
-                             strength="field")
+                    left = b.symbol(CANONICAL, kind, source, path,
+                                    group=(kind, "field", row["key"]), strength="field")
                 elif source is not None:
-                    b.symbol(CANONICAL, kind, source, path, group=(kind, "key", row["key"]))
+                    left = b.symbol(CANONICAL, kind, source, path, group=(kind, "key", row["key"]))
+                facts.resolved.append(Row(layout, path, row, left, right, role=True))
                 continue
             if domain == "telemetry":
                 group, strength = (kind, "field", row["key"]), "field"
@@ -530,6 +594,7 @@ def _declare_rows(b, facts, keys, targets):
                     b.symbol(layout, kind, target, path, evidence=[{
                         "kind": "rom-bytes", "supports": "identity", "at": right.location,
                         "value": row["stock"], "note": row["key"]}])
+            facts.resolved.append(Row(layout, path, row, left, right))
             if row["variant"]:
                 if right is None:
                     b.issue("schema", where, subject, "a variant without a target")
@@ -627,9 +692,11 @@ def _hook_row(b, facts, targets, layout, row, path, where, subject, source, targ
         key = b.symbol(layout, "hook", target, path)
         entry = _entry(targets, feature, layout, path)
         entry["hooks"][hook.key]["note"] = row["evidence"]
+    other = None
     if source is not None and source in facts.canonical_words:
         other = b.symbol(CANONICAL, "hook", source, path)
         b.join(other, key, where, "homology" if row["status"] == "mapped" else "role")
+    facts.resolved.append(Row(layout, path, row, other, key, hook=hook))
 
 
 def relate(b, root):
@@ -796,3 +863,401 @@ def render_correspondence(rows, fields):
     writer.writerow(CSV_FIELDS)
     writer.writerows([row[field] for field in CSV_FIELDS] for row in sorted(rows, key=order))
     return out.getvalue()
+
+
+# Projections ---------------------------------------------------------------
+
+SCHEMA_VERSION = 2
+# The prefix of the domains of the hook and symbol rows of each feature, and
+# the hook and symbol tables of each feature in a profile.
+PREFIX = {"map_switching": "map", "rolling_launch": "rolling", "can_telemetry": "can"}
+PROFILE_HOOKS = {feature: table for table, feature in HOOK_TABLES.items()}
+PROFILE_SYMBOLS = {feature: f"{prefix}_symbols" for feature, prefix in PREFIX.items()}
+# The delta of a profile that relocates each allocation bound of `7mfk`.
+BOUND_DELTA = {"free_rom_start": "rom_delta", "free_rom_end": "rom_delta",
+               "injected_rom_start": "rom_delta", "injected_rom_end": "rom_delta",
+               "free_ram_start": "ram_delta", "free_ram_end": "ram_delta",
+               "injected_ram_start": "ram_delta", "injected_ram_end": "ram_delta"}
+MAPPED, SPECIFIC, UNSUPPORTED = "mapped", "target-specific", "unsupported"
+
+
+def _unhexed(value):
+    """The addresses of a target value as integers."""
+    if isinstance(value, str):
+        return int(value, 16)
+    if isinstance(value, dict):
+        return {key: _unhexed(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_unhexed(item) for item in value]
+    return value
+
+
+def _held(model, key, layout, subject):
+    """The symbol of a key that a target of `layout` names, on that layout."""
+    symbol = model.symbols.get(key) if isinstance(key, SymbolKey) else None
+    if symbol is None or symbol.layout != layout:
+        raise KbError(f"{subject} name {getattr(key, 'key', key)}, which is no symbol of "
+                      f"{layout}", code=3)
+    return symbol
+
+
+def _targets(model):
+    """{layout: {feature: target}} of the model."""
+    found = defaultdict(dict)
+    for (feature, layout), target in model.targets.items():
+        found[layout][feature] = target
+    return found
+
+
+def _stocks(model):
+    """{hook symbol key: stock word}: the address on the layout of a word of
+    the symbol of the meaning that the `target` link of the word names there."""
+    found = {}
+    for link in model.links:
+        if link.type != "target":
+            continue
+        for layout in link.stated:
+            owner, to = link.owner.symbols.get(layout), link.to.symbols.get(layout)
+            if owner is None or owner.kind != "hook" or to is None:
+                continue
+            if found.setdefault(owner.key, to.address) != to.address:
+                raise KbError(f"{owner.key.key}: target links name the stock words "
+                              f"{found[owner.key]:08x} and {to.address:08x}", code=3)
+    return found
+
+
+def _chains(targets):
+    """{word symbol key: [(feature, key, entry)]} of the hooks of the targets
+    of a layout, in the order of the features."""
+    found = defaultdict(list)
+    for feature in FEATURES:
+        target = targets.get(feature)
+        for key, entry in (target.props.get("hooks", {}) if target else {}).items():
+            found[entry["hook"]].append((feature, key, entry))
+    return found
+
+
+def _field_source(model, field):
+    """The source meaning of a telemetry field."""
+    entity = model.entities.get(("field", field))
+    keys = list(entity.refs.get("source", ())) if entity is not None else []
+    meaning = model.meaning_of(keys[0]) if len(keys) == 1 else None
+    if meaning is None:
+        raise KbError(f"the field {field} names no source meaning", code=3)
+    return meaning
+
+
+def _record_word(model, key, layout, subject):
+    """The image word of a record: the value of the `rom-bytes` identity item
+    at its symbol."""
+    values = _bytes(_held(model, key, layout, subject))
+    if not values:
+        raise KbError(f"{subject}: {key.key} states no image bytes of its record", code=3)
+    return int(values, 16)
+
+
+def _bytes(symbol):
+    """The value of the `rom-bytes` identity item at a symbol, or ""."""
+    values = {item.get("value") for item in symbol.evidence
+              if item.get("kind") == "rom-bytes"
+              and item.get("supports", "identity") == "identity"
+              and match.location(item.get("at")) == (symbol.layout, symbol.address)}
+    if len(values) > 1:
+        raise KbError(f"{symbol.key.key} states the image bytes {', '.join(sorted(values))}",
+                      code=3)
+    return values.pop() if values else ""
+
+
+def profiles_document(model, fields, targets, stocks):
+    """The document of `patches/rom-address-profiles.toml`: a profile of the
+    image of each layout other than `7mfk` with a `runtime` target, and one
+    that inherits it for each other image of the layout."""
+    found = {}
+    for layout in model.layouts.values():
+        held = targets.get(layout.id, {})
+        if layout.id == CANONICAL or RUNTIME not in held:
+            continue
+        found[layout.image] = _profile(model, layout, held, fields, stocks)
+        found.update({image: {"inherits": layout.image}
+                      for image in layout.images if image != layout.image})
+    return {"schema_version": SCHEMA_VERSION, "profile": found}
+
+
+def _profile(model, layout, targets, fields, stocks):
+    """The profile of a layout from its targets: the runtime and map keys, the
+    capabilities, the families, the hooks with the stock word of their
+    `target` link and the replacement of the previous feature as their base,
+    the DID slots of the allocations, the symbol tables with the non-field
+    roles, the numbers, and the record words, the telemetry sources, the
+    fields whose source has a status on the layout, and the basis."""
+    subject = f"the targets of {layout.id}"
+    runtime = targets[RUNTIME].props
+    profile = {"family": layout.family, "layout_source": model.layouts[CANONICAL].image}
+    profile.update({key: _unhexed(runtime[key]) if key in ADDRESS_KEYS else runtime[key]
+                    for key in RUNTIME_KEYS if key in runtime})
+    maps = targets.get(FEATURES[0])
+    props = maps.props if maps is not None else {}
+    profile.update({key: _unhexed(props[key]) if key in ADDRESS_KEYS else props[key]
+                    for key in MAP_KEYS if key in props})
+    profile["capabilities"] = {feature: targets[feature].status == "supported"
+                               for feature in FEATURES if feature in targets}
+    if "families" in props:
+        profile["map_families"] = {key: _held(model, value, layout.id, subject).address
+                                   for key, value in props["families"].items()}
+    for word, chain in _chains(targets).items():
+        symbol = _held(model, word, layout.id, subject)
+        if word not in stocks:
+            raise KbError(f"{symbol.key.key}: no target link states the stock word", code=3)
+        stock = base = stocks[word]
+        for feature, key, entry in chain:
+            replacement = int(entry["replacement"], 16)
+            value = [symbol.address, stock, replacement]
+            if feature != FEATURES[0]:
+                value[2:2] = [base]
+            profile.setdefault(PROFILE_HOOKS[feature], {})[key] = value
+            base = replacement
+    rolling = targets.get("rolling_launch")
+    diagnostics = {}
+    for name, entry in (rolling.props.get("allocations", {}) if rolling else {}).items():
+        if "did" in entry:
+            did = _held(model, entry["did"], layout.id, subject)
+            diagnostics[name] = [did.value("number"), did.address, int(entry["address"], 16),
+                                 entry["width"]]
+    if diagnostics:
+        profile["rolling_diagnostics"] = diagnostics
+    sources = {}
+    for feature, table in PROFILE_SYMBOLS.items():
+        target = targets.get(feature)
+        if target is None:
+            continue
+        symbols = target.props.get("symbols", {})
+        found = {key: _held(model, value, layout.id, subject).address
+                 for key, value in symbols.items()}
+        for key, role in target.props.get("roles", {}).items():
+            address = _held(model, role["symbol"], layout.id, subject).address
+            (sources if key in fields else found)[key] = address
+        found.update({key: target.props[key] for key in CAN_KEYS if key in target.props})
+        found.update({key: _record_word(model, symbols[record], layout.id, subject)
+                      for key, record in ROM_BYTES.items() if record in symbols})
+        if found:
+            profile[table] = found
+    if "can_telemetry" in targets:
+        unavailable = []
+        for field in fields:
+            if field in sources:
+                continue
+            meaning = _field_source(model, field)
+            symbol = meaning.symbols.get(layout.id)
+            if symbol is not None:
+                sources[field] = symbol.address
+            elif layout.id in meaning.statuses:
+                unavailable.append(field)
+            else:
+                raise KbError(f"the source {meaning.key} of the field {field} has neither a "
+                              f"symbol nor a status on {layout.id}", code=3)
+        profile["telemetry_sources"] = sources
+        profile["telemetry_unavailable"] = unavailable
+    basis = {}
+    for feature in (RUNTIME, *FEATURES):
+        if feature in targets:
+            basis.update(targets[feature].props.get("basis", {}))
+    if basis:
+        profile["evidence"] = basis
+    return profile
+
+
+def _to(item):
+    """(layout, address) that the `to` of an evidence item locates."""
+    to = item.get("to")
+    if isinstance(to, SymbolKey):
+        return to.layout, to.address
+    return match.location(to)
+
+
+def row_item(symbol, subject):
+    """(status, item) of the row of a symbol: its first evidence item that is
+    homology evidence toward `7mfk`, `mapped`, or identity evidence of the
+    symbol on its own layout other than image bytes, `target-specific`."""
+    for item in symbol.evidence:
+        kind, supports = item.get("kind"), item.get("supports", "identity")
+        to = _to(item)
+        if (supports == "homology" and kind in match.HOMOLOGY_KINDS and to is not None
+                and to[0] == CANONICAL):
+            return MAPPED, item
+        if supports == "identity" and kind != "rom-bytes":
+            at = match.location(item.get("at"))
+            if at is None or at[0] == symbol.layout:
+                return SPECIFIC, item
+    raise KbError(f"{subject}: {symbol.key.key} has neither homology evidence toward "
+                  f"{CANONICAL} nor identity evidence on {symbol.layout}", code=3)
+
+
+def _text(value, subject):
+    """The one text of a note."""
+    texts = [value] if isinstance(value, str) else list(value or ())
+    if len(texts) != 1 or not texts[0].strip():
+        raise KbError(f"{subject}: {len(texts)} texts where the row takes one", code=3)
+    return texts[0]
+
+
+def _row(domain, key, source=None, target=None, stock="", variant="", status=SPECIFIC,
+         text=""):
+    return {"domain": domain, "key": key,
+            "source": f"{source:08x}" if source is not None else "",
+            "target": f"{target:08x}" if target is not None else "",
+            "stock": stock, "variant": variant, "status": status, "evidence": text}
+
+
+def _origin(symbol):
+    """The address of the `7mfk` symbol of the meaning of a symbol, or None."""
+    origin = symbol.meaning.symbols.get(CANONICAL) if symbol.meaning is not None else None
+    return origin.address if origin is not None else None
+
+
+def _symbol_row(domain, key, symbol, variants, subject):
+    """The row of a symbol with the status and the note of its row item."""
+    where = f"{subject}: {domain}:{key}"
+    status, item = row_item(symbol, where)
+    return _row(domain, key, _origin(symbol), symbol.address, _bytes(symbol),
+                variants.get(symbol.key, ""), status, _text(item.get("note"), where))
+
+
+def _map_domain(row):
+    """`map` of a mapped table and `map_native` of a target-specific one."""
+    if row["status"] == SPECIFIC:
+        row["domain"] = "map_native"
+    return row
+
+
+def correspondence_rows(model, layout, targets, fields, stocks):
+    """The rows of the correspondence file of a layout from its targets."""
+    subject = f"the targets of {layout}"
+    rows = []
+    runtime = targets[RUNTIME].props
+    canonical = model.targets.get((RUNTIME, CANONICAL))
+    bounds = canonical.props if canonical is not None else {}
+    for key, text in runtime.get("notes", {}).items():
+        target = int(runtime[key], 16)
+        source = int(bounds[key], 16) if key in bounds else None
+        mapped = (source is not None
+                  and (source + runtime[BOUND_DELTA[key]]) % (1 << 32) == target)
+        rows.append(_row("allocation", key, source, target, status=MAPPED if mapped else SPECIFIC,
+                         text=_text(text, f"{subject}: allocation:{key}")))
+    chains = _chains(targets)
+    for feature in FEATURES:
+        target = targets.get(feature)
+        if target is None:
+            continue
+        props, prefix = target.props, PREFIX[feature]
+        home = model.targets.get((feature, CANONICAL))
+        home = home.props if home is not None else {}
+        variants = {entry["symbol"]: entry["variant"] for entry in props.get("variants", ())}
+        for key, value in props.get("families", {}).items():
+            rows.append(_map_domain(_symbol_row(
+                "map", key, _held(model, value, layout, subject), variants, subject)))
+        for key, entry in props.get("hooks", {}).items():
+            symbol = _held(model, entry["hook"], layout, subject)
+            where = f"{subject}: {prefix}_hook:{key}"
+            status, item = row_item(symbol, where)
+            first = chains[entry["hook"]][0][0] == feature
+            rows.append(_row(f"{prefix}_hook", key, _origin(symbol), symbol.address,
+                             f"{stocks[entry['hook']]:08x}", "", status,
+                             _text(item.get("note") if first else entry.get("note"), where)))
+        for key, value in props.get("symbols", {}).items():
+            rows.append(_symbol_row(f"{prefix}_symbol", key,
+                                    _held(model, value, layout, subject), variants, subject))
+        for key, role in props.get("roles", {}).items():
+            if key in fields:
+                continue
+            symbol = _held(model, role["symbol"], layout, subject)
+            source = home.get("symbols", {}).get(key)
+            rows.append(_row(f"{prefix}_symbol", key,
+                             source.address if isinstance(source, SymbolKey) else None,
+                             symbol.address, _bytes(symbol), "", SPECIFIC,
+                             _text(role.get("note"), f"{subject}: role {key}")))
+        for value in props.get("requires", ()):
+            meaning = model.meaning_of(value)
+            symbol = meaning.symbols.get(layout) if meaning is not None else None
+            if symbol is None:
+                raise KbError(f"{subject}: {feature} requires "
+                              f"{meaning.key if meaning else value}, which has no symbol on "
+                              f"{layout}", code=3)
+            if feature == FEATURES[0] and meaning.kind == "tbl":
+                rows.append(_map_domain(_symbol_row("map", meaning.name, symbol, variants,
+                                                    subject)))
+            else:
+                rows.append(_symbol_row(f"{prefix}_symbol", meaning.name, symbol, variants,
+                                        subject))
+        for entry in props.get("unsupported", ()):
+            meaning = model.meaning_of(entry["symbol"])
+            origin = meaning.symbols.get(CANONICAL) if meaning is not None else None
+            if origin is None:
+                raise KbError(f"{subject}: an unsupported entry of {feature} names no meaning "
+                              f"with a {CANONICAL} symbol", code=3)
+            rows.append(_row("map" if feature == FEATURES[0] else f"{prefix}_symbol",
+                             meaning.name, origin.address, status=UNSUPPORTED,
+                             text=_text(entry.get("note"), f"{subject}: {meaning.key}")))
+        for key, text in props.get("notes", {}).items():
+            source, value = home.get(key), props.get(key)
+            rows.append(_row(f"{prefix}_symbol", key, source, value,
+                             status=MAPPED if source == value else SPECIFIC,
+                             text=_text(text, f"{subject}: {prefix}_symbol:{key}")))
+    can = targets.get("can_telemetry")
+    roles = can.props.get("roles", {}) if can is not None else {}
+    for field in fields:
+        meaning = _field_source(model, field)
+        origin = meaning.symbols.get(CANONICAL)
+        source = origin.address if origin is not None else None
+        where = f"{subject}: telemetry:{field}"
+        if field in roles:
+            symbol = _held(model, roles[field]["symbol"], layout, subject)
+            rows.append(_row("telemetry", field, source, symbol.address,
+                             text=_text(roles[field].get("note"), where)))
+            continue
+        symbol = meaning.symbols.get(layout)
+        if symbol is not None:
+            rows.append(_symbol_row("telemetry", field, symbol, {}, subject))
+            continue
+        status = meaning.statuses.get(layout)
+        if status is None:
+            raise KbError(f"{where}: {meaning.key} has neither a symbol nor a status", code=3)
+        rows.append(_row("telemetry", field, source, status=UNSUPPORTED,
+                         text=_text(status.props.get("note"), where)))
+    for feature in FEATURES:
+        target = targets.get(feature)
+        if target is not None and target.props.get("note"):
+            rows.append(_row("capability", feature,
+                             text=_text(target.props["note"], f"{subject}: {feature}")))
+    return rows
+
+
+def render_registries(model):
+    """{path: text} of the address profiles and of the correspondence file of
+    each layout whose `runtime` target states the notes of its allocation
+    rows."""
+    fields = telemetry_fields(model.root)
+    targets = _targets(model)
+    stocks = _stocks(model)
+    found = {PROFILES.as_posix(): render_profiles(
+        profiles_document(model, fields, targets, stocks), fields)}
+    for layout, held in sorted(targets.items()):
+        if layout == CANONICAL or "notes" not in getattr(held.get(RUNTIME), "props", {}):
+            continue
+        path = PATCHES / f"{layout}{CORRESPONDENCE[1:]}"
+        found[path.as_posix()] = render_correspondence(
+            correspondence_rows(model, layout, held, fields, stocks), fields)
+    return found
+
+
+def address_profiles(root=repo.ROOT):
+    """The text of `patches/rom-address-profiles.toml` from the model."""
+    from kb import compile
+    return render_registries(compile.cached(root))[PROFILES.as_posix()]
+
+
+def correspondences(root=repo.ROOT):
+    """{path: text} of the correspondence file of every layout from the model."""
+    from kb import compile
+    found = render_registries(compile.cached(root))
+    del found[PROFILES.as_posix()]
+    return found

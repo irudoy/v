@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00034a7c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00034806"
+to = "7mfk:0002d7fc"
+note = "Primary HCAN1 caller literal binds the initializer"
+
+[[symbol]]
+layout = "1nd"
+address = "00031ce4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00031a6c"
+to = "7mfk:0002d7fc"
+note = "Primary HCAN1 caller literal binds the initializer"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002d7fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d50a"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002e1c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0002e0e6"
+to = "7mfk:0002d7fc"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002e1c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0002e0e6"
+to = "7mfk:0002d7fc"
+
+[[symbol]]
+layout = "jk78c"
+address = "000306a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000305be"
+to = "7mfk:0002d7fc"
+note = "Aligned primary caller literal binds the D800 HCAN initializer"
+
+[[link]]
+type = "target"
+to = "hcan1_init/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00034a7c"
+value = "0011f2ec"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00031ce4"
+value = "0011363c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0002e1c8"
+value = "000c9092"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0002e1c8"
+value = "000c97ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000306a0"
+value = "000ea582"

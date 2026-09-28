@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeb236"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:001232d8"
+to = "7mfk:ffff3ada"
+note = "Serializer payload offset 0x142 places status at byte 5"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb0f2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00116f08"
+to = "7mfk:ffff3ada"
+note = "Serializer payload offset 0x142 places status at byte 5"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3ada"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c53cc"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c0c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000cb1aa"
+to = "7mfk:ffff3ada"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c20"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000cb8e6"
+to = "7mfk:ffff3ada"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3d62"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ed09c"
+to = "7mfk:000c53d4"
+count = 1
+value = 15
+note = "Serializer payload offset 0x2a places status at byte 5"

@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00032b50"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00032aa2"
+to = "7mfk:00028090"
+note = "Caller literal binds the coherent snapshot boundary"
+
+[[symbol]]
+layout = "1nd"
+address = "0002fe08"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0002fd5a"
+to = "7mfk:00028090"
+note = "Caller literal binds the coherent snapshot boundary"
+
+[[symbol]]
+layout = "7mfk"
+address = "00028090"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00027f02"
+
+[[symbol]]
+layout = "jk00c"
+address = "00028cf8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00028b6a"
+to = "7mfk:00028090"
+
+[[symbol]]
+layout = "jk00d"
+address = "00028cf8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00028b6a"
+to = "7mfk:00028090"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002aa7c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0002a8e2"
+to = "7mfk:00028090"
+note = "Aligned caller instruction binds the coherent snapshot boundary"
+
+[[link]]
+type = "target"
+to = "coherent_snapshot/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00032b50"
+value = "00020d04"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0002fe08"
+value = "00020cf4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00028cf8"
+value = "00020e30"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00028cf8"
+value = "00020e30"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0002aa7c"
+value = "00020f1a"

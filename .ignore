@@ -8,3 +8,5 @@
 /defs/vq37-native-fuel-cut.toml
 /defs/JK08A-*.definition-addresses.csv
 /defs/definition-projections.toml
+/patches/rom-address-profiles.toml
+/patches/*-runtime-correspondence.csv

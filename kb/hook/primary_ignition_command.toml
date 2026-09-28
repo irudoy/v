@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00079194"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007912c"
+to = "7mfk:0004e198"
+note = "Target call path consumes the final ignition command"
+
+[[symbol]]
+layout = "1nd"
+address = "00074d88"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00074d1c"
+to = "7mfk:0004e198"
+note = "Target call path consumes the final ignition command"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e198"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e072"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004faec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004f9b8"
+to = "7mfk:0004e198"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fae8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004f9bc"
+to = "7mfk:0004e198"
+
+[[symbol]]
+layout = "jk78c"
+address = "000699d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006994a"
+to = "7mfk:0004e198"
+note = "Producer literal calls the final ignition command consumer"
+
+[[link]]
+type = "target"
+to = "stock_ignition_consumer/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079194"
+value = "000311b2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00074d88"
+value = "0002e464"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004faec"
+value = "0002b51a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fae8"
+value = "0002b51a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000699d4"
+value = "0002d6f6"

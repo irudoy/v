@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "00123264"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00123264"
+to = "7mfk:000c5372"
+note = "0x551 dispatcher resolves this serializer"
+
+[[symbol]]
+layout = "1nd"
+address = "00116e4c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00116e4c"
+to = "7mfk:000c5372"
+note = "0x551 dispatcher resolves this serializer"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c5372"
+former = ["energetic-kakapo/fn/7mfk-000c5372"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c5372"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ccb32"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000c9fc4"
+to = "7mfk:000c3fa4"
+value = "000ccb32"
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd26e"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000ca700"
+to = "7mfk:000c3fa4"
+value = "000cd26e"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed03c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ed09c"
+to = "7mfk:000c53d4"
+count = 1
+value = 15
+note = """
+Near-exact instruction sequence and dispatcher position bind the serializer"""

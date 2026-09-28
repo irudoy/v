@@ -1,0 +1,66 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe9430"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe9430"
+to = "7mfk:ffff2325"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9460"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe9460"
+to = "7mfk:ffff2325"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the adjacent channel byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2325"
+former = ["noisy-rat/ram/7mfk-ffff2325"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2399"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004e438"
+to = "7mfk:0004d374"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff23a1"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004e43c"
+to = "7mfk:0004d374"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff239f"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:ffff239f"
+to = "7mfk:ffff2325"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table preserves the adjacent channel byte"

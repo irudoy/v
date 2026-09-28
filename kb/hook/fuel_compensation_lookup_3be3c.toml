@@ -1,0 +1,94 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "00048b78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000489ea"
+note = "Runtime coordinator literal calls the common lookup"
+
+[[symbol]]
+layout = "1nd"
+address = "000454f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004536c"
+note = "Runtime coordinator literal calls the common lookup"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003c388"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003c290"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003d13c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0003d044"
+to = "7mfk:0003c388"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003d13c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0003d044"
+to = "7mfk:0003c388"
+
+[[symbol]]
+layout = "jk78c"
+address = "00040f6c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040dca"
+note = "Runtime coordinator literal calls the common lookup"
+
+[[link]]
+type = "target"
+to = "fuel_compensation_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00048b78"
+value = "000298b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000454f4"
+value = "000285f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0003d13c"
+value = "00026db4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0003d13c"
+value = "00026db4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00040f6c"
+value = "00027fd8"

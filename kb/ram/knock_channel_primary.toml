@@ -1,0 +1,63 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe81bc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00021358"
+to = "7mfk:ffff11de"
+note = "Target evaluator reads this channel byte while selector bit 3 is clear"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe81d6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0002d66a"
+to = "7mfk:ffff11de"
+note = "Target evaluator reads this channel byte while selector bit 3 is clear"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11de"
+former = ["nifty-marmoset/ram/7mfk-ffff11de"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff11ee"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002a35c"
+to = "7mfk:000296d4"
+count = 1
+value = 103
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff11ee"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002a35c"
+to = "7mfk:000296d4"
+count = 1
+value = 103
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff11c8"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00063614"
+to = "7mfk:00049d88"
+count = 1
+value = "mnemonic"
+note = "Target evaluator reads this channel byte while selector bit 3 is clear"

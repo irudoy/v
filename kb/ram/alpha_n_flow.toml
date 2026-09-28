@@ -4,6 +4,30 @@ address = "ffff1170"
 former = ["military-puffin/ram/7mfk-ffff1170"]
 
 [[symbol]]
+layout = "jk00c"
+address = "ffff117c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002d8e0"
+to = "7mfk:0002cc72"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff117c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002d8e0"
+to = "7mfk:0002cc72"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "jk78c"
 address = "ffff115c"
 level = "code"
@@ -20,3 +44,25 @@ at = "jk78c:0003c8e0"
 to = "7mfk:000392b2"
 count = 1
 value = 49
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1170"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+No homolog is established for the Fuel Compensation Main column coordinate: \
+the target curve pair and its consumer are not traced"""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1170"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+No homolog is established for the Fuel Compensation Main column coordinate: \
+the target curve pair and its consumer are not traced"""

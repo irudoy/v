@@ -1,0 +1,65 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe94b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002cdfc"
+to = "7mfk:ffff24c9"
+note = """
+Primary ignition command builder tests bit 6 of this mode byte at the 1ND \
+instruction positions"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe94e5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0002a0a8"
+to = "7mfk:ffff24c9"
+note = "APC control path binds the mode byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24c9"
+former = ["remarkable-husky/ram/7mfk-ffff24c9"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2551"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00028422"
+to = "7mfk:000277b6"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2559"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00028422"
+to = "7mfk:000277b6"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff241e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002b548"
+to = "7mfk:00028af8"
+count = 1
+value = 37
+note = "APC control path binds the mode byte"

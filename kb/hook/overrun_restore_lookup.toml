@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007c3e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c240"
+to = "7mfk:00050258"
+note = "Target literal calls the DFCO lookup"
+
+[[symbol]]
+layout = "1nd"
+address = "00077abc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00077918"
+to = "7mfk:00050258"
+note = "Target literal calls the DFCO lookup"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050258"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000500aa"
+
+[[symbol]]
+layout = "jk00c"
+address = "00051bd4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00051aea"
+to = "7mfk:00050258"
+
+[[symbol]]
+layout = "jk00d"
+address = "00051bd0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00051ae6"
+to = "7mfk:00050258"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006c2f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006c13a"
+to = "7mfk:00050258"
+note = "Target restore-classifier literal calls the exact DFCO lookup"
+
+[[link]]
+type = "target"
+to = "dfco_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007c3e4"
+value = "0002aa48"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00077abc"
+value = "000287cc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00051bd4"
+value = "00026f8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00051bd0"
+value = "00026f8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006c2f0"
+value = "000281b0"

@@ -1,0 +1,82 @@
+width = 32
+
+[[symbol]]
+layout = "1nd"
+address = "00075584"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000752f2"
+note = """
+Literal shared by both coordinator halves; the executed half reads the hot \
+surface through it"""
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e58c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e4a2"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004fee4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:0004fdfa"
+to = "7mfk:0004e58c"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fee0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:0004fdf6"
+to = "7mfk:0004e58c"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a058"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069de0"
+note = """
+Literal shared by both coordinator halves; the executed half reads the hot \
+and cold surfaces through it"""
+
+[[link]]
+type = "target"
+to = "ignition_lookup/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00075584"
+value = "00028634"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fee4"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fee0"
+value = "00026df4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006a058"
+value = "00028018"

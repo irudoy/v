@@ -57,6 +57,9 @@ mask = "7F"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00079ca8"
+note = """
+Coordinator reads this 16x16 surface for state code 1 through the hooked \
+ignition lookup literal 00079cac and has no source counterpart"""
 
 [[symbol]]
 layout = "1nd"
@@ -91,6 +94,9 @@ mask = "7F"
 kind = "l0"
 supports = "identity"
 at = "1nd:00074fc8"
+note = """
+Executed coordinator half reads this 16x16 surface for state code 1 through \
+the hooked ignition lookup literals and has no source counterpart"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -110,6 +116,10 @@ configuration byte leaves unexecuted."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006a074"
+note = """
+Executed coordinator half reads this 16x16 surface at or below the coolant \
+threshold through the hooked ignition lookup literals and has no source \
+counterpart"""
 
 [[symbol.evidence]]
 kind = "l0"

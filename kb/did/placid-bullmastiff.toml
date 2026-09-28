@@ -1,0 +1,61 @@
+number = 0x1229
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d88"
+name = "benign-lemming"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d88"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022d14"
+name = "berserk-sidewinder"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022d14"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "00022940"
+name = "placid-bullmastiff"
+
+[[symbol]]
+layout = "jk00c"
+address = "000229dc"
+name = "uber-caiman"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:000229dc"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "000229dc"
+name = "scarlet-jaguarundi"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:000229dc"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "000229bc"
+name = "excellent-hawk"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:000229bc"
+value = "ffffffff"

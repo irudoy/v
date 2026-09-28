@@ -1,0 +1,844 @@
+[[target]]
+layout = "1me3b"
+status = "supported"
+note = """
+Requires four DFCO families two fuel compensation surfaces two warm-idle \
+timing tables two ignition hooks one state-code ignition hook native \
+fuel-cut caps and curves and a throttle-scalar commit"""
+ascd_enabled_mask = 8
+requires = [
+    "ignition_unreferenced_routine/const",
+    "over_run_channel_multiplier/tbl",
+    "rev_fuel_cut_delay/ram",
+    "rev_fuel_cut_selector/ram",
+    "rev_fuel_cut_state/ram",
+    "rev_fuel_cut_state_machine/fn",
+    "rev_limit_fuel_cut_delay_calibration/tbl",
+]
+
+[target.basis]
+maps = """
+Reviewed 1ND correspondence of the interpolation leaves, target call \
+topology, exact stock storage, the native 190-byte fuel-cut state machine, \
+and 1ME3B bank structure bind eighteen supported families. Stock \
+ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by \
+the VVEL state code alone: the two 16x16 ignition families and the four 8x8 \
+state-code families are every surface it reads besides the 8x8 reference \
+surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The \
+literal 0x00079994 is the only pointer through which FUN_000797CC calls the \
+8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at \
+0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer \
+or branch; its private literals stay stock. The ASCD-enabled flag is bit 3 \
+of 0xFFFEB985 by the 1ME3B packing of the flag byte."""
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
+fuel_compensation_main_default = "fuel_compensation_main/tbl"
+idle_ignition_timing_alternate = "timing_state_addend_alternate/tbl"
+idle_ignition_timing_default = "idle_ignition_timing/tbl"
+ignition_surface_cold = "ignition_surface_cold/tbl"
+ignition_surface_hot = "ignition_surface_hot/tbl"
+ignition_surface_state_3 = "ignition_surface_state_3/tbl"
+ignition_surface_state_4 = "ignition_surface_state_4/tbl"
+ignition_surface_state_5 = "ignition_surface_state_5/tbl"
+ignition_surface_state_6_7 = "ignition_surface_state_6_7/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut_caps = "rev_limit_fuel_cut_caps/tbl"
+rev_limit_fuel_cut_curves = "rev_limit_fuel_cut_curves/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "0013c5e0"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "0013b380"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "0013b380"
+
+[target.hooks.idle_ignition_lookup_pool_1]
+hook = "idle_ignition_lookup/hook"
+replacement = "0013d000"
+
+[target.hooks.idle_ignition_lookup_pool_2]
+hook = "idle_ignition_lookup_pool_2/hook"
+replacement = "0013b3c0"
+
+[target.hooks.ignition_lookup_1]
+hook = "ignition_lookup_493e8/hook"
+replacement = "0013b340"
+
+[target.hooks.ignition_lookup_2]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "0013b340"
+
+[target.hooks.ignition_state_lookup]
+hook = "ignition_state_lookup/hook"
+replacement = "0013e080"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "0013b480"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "0013b480"
+
+[target.hooks.rev_fuel_cut_activation_curve_base]
+hook = "rev_fuel_cut_activation_curve_base/hook"
+replacement = "ffff0c14"
+
+[target.hooks.rev_fuel_cut_caps_base]
+hook = "rev_fuel_cut_caps_base/hook"
+replacement = "ffff0c10"
+
+[target.hooks.rev_fuel_cut_release_curve_base]
+hook = "rev_fuel_cut_release_curve_base/hook"
+replacement = "ffff0c24"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff0c38"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "0013b108"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "0013b2a0"
+
+[target.ignition_state_storage]
+adapter_end = "0013e100"
+adapter_start = "0013e080"
+
+[target.ignition_state_storage.ignition_surface_state_3]
+copies = ["0013e180", "0013e1c0", "0013e200", "0013e240"]
+pointer_table = "0013e100"
+
+[target.ignition_state_storage.ignition_surface_state_4]
+copies = ["0013e280", "0013e2c0", "0013e300", "0013e340"]
+pointer_table = "0013e114"
+
+[target.ignition_state_storage.ignition_surface_state_5]
+copies = ["0013e380", "0013e3c0", "0013e400", "0013e440"]
+pointer_table = "0013e128"
+
+[target.ignition_state_storage.ignition_surface_state_6_7]
+copies = ["0013e480", "0013e4c0", "0013e500", "0013e540"]
+pointer_table = "0013e13c"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_coordinator_config_byte = "ignition_coordinator_config_byte/tbl"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+
+[[target.unsupported]]
+note = """
+1ME3B declares no P0014 and P0024 descriptor records and the exhaust-cam \
+target surface bytes do not recur in the target image"""
+symbol = "exhaust_cvtc_target/tbl"
+
+[[target.unsupported]]
+note = """
+Target ignition coordinator 000797cc has no counterpart of the gated 1ND \
+coordinator half and the source surface bytes do not recur in the target \
+image"""
+symbol = "high_detonation_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target ignition coordinator 000797cc has no counterpart of the gated 1ND \
+coordinator half and the source surface bytes do not recur in the target \
+image"""
+symbol = "high_octane_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target uses interpolated curves and scalar caps instead of the source 2x2 \
+table"""
+symbol = "rev_limit_fuel_cut/tbl"
+
+[[target.variants]]
+symbol = "fuel_compensation_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "timing_state_addend_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_caps/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_curves/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_delay_calibration/tbl"
+variant = "zero_delay"
+
+[[target]]
+layout = "1nd"
+status = "supported"
+note = """
+Requires four DFCO families two fuel compensation surfaces two warm-idle \
+timing tables four ignition hooks native fuel-cut caps and curves and a \
+throttle-scalar commit"""
+requires = [
+    "over_run_channel_multiplier/tbl",
+    "rev_fuel_cut_delay/ram",
+    "rev_fuel_cut_selector/ram",
+    "rev_fuel_cut_state/ram",
+    "rev_fuel_cut_state_machine/fn",
+    "rev_limit_fuel_cut_delay_calibration/tbl",
+]
+
+[target.basis]
+maps = """
+Reviewed cross-generation interpolation correspondence, target call \
+topology, exact stock storage, the native 190-byte fuel-cut state machine, \
+and 1ND bank structure bind eighteen supported families. The two 16x16 \
+ignition families and the four 8x8 state-code ignition families are the \
+surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the \
+three equal-byte surfaces of the gated half pass through the adapter. The \
+literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the \
+8x8 lookup 0x000285B4 for the four state-code surfaces; the second literal \
+0x00075570 serves only the reference surface 0x0000A650, which the stock \
+configuration leaves unread."""
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
+fuel_compensation_main_default = "fuel_compensation_main/tbl"
+idle_ignition_timing_alternate = "timing_state_addend_alternate/tbl"
+idle_ignition_timing_default = "idle_ignition_timing/tbl"
+ignition_surface_cold = "ignition_surface_cold/tbl"
+ignition_surface_hot = "ignition_surface_hot/tbl"
+ignition_surface_state_3 = "ignition_surface_state_3/tbl"
+ignition_surface_state_4 = "ignition_surface_state_4/tbl"
+ignition_surface_state_5 = "ignition_surface_state_5/tbl"
+ignition_surface_state_6_7 = "ignition_surface_state_6_7/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut_caps = "rev_limit_fuel_cut_caps/tbl"
+rev_limit_fuel_cut_curves = "rev_limit_fuel_cut_curves/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "001335e0"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "00132380"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "00132380"
+
+[target.hooks.idle_ignition_lookup_pool_1]
+hook = "idle_ignition_lookup/hook"
+replacement = "00134000"
+
+[target.hooks.idle_ignition_lookup_pool_2]
+hook = "idle_ignition_lookup_pool_2/hook"
+replacement = "001323c0"
+
+[target.hooks.ignition_lookup_1]
+hook = "ignition_lookup_493e8/hook"
+replacement = "00132340"
+
+[target.hooks.ignition_lookup_2]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "00132340"
+
+[target.hooks.ignition_lookup_3]
+hook = "ignition_lookup_4e1c0_b/hook"
+replacement = "00132340"
+
+[target.hooks.ignition_lookup_4]
+hook = "ignition_lookup_4/hook"
+replacement = "00132340"
+
+[target.hooks.ignition_state_lookup]
+hook = "ignition_state_lookup/hook"
+replacement = "00135080"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "00132480"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "00132480"
+
+[target.hooks.rev_fuel_cut_activation_curve_base]
+hook = "rev_fuel_cut_activation_curve_base/hook"
+replacement = "ffff0c14"
+
+[target.hooks.rev_fuel_cut_caps_base]
+hook = "rev_fuel_cut_caps_base/hook"
+replacement = "ffff0c10"
+
+[target.hooks.rev_fuel_cut_release_curve_base]
+hook = "rev_fuel_cut_release_curve_base/hook"
+replacement = "ffff0c24"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff0c38"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "00132108"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "001322a0"
+
+[target.ignition_state_storage]
+adapter_end = "00135100"
+adapter_start = "00135080"
+
+[target.ignition_state_storage.ignition_surface_state_3]
+copies = ["00135180", "001351c0", "00135200", "00135240"]
+pointer_table = "00135100"
+
+[target.ignition_state_storage.ignition_surface_state_4]
+copies = ["00135280", "001352c0", "00135300", "00135340"]
+pointer_table = "00135114"
+
+[target.ignition_state_storage.ignition_surface_state_5]
+copies = ["00135380", "001353c0", "00135400", "00135440"]
+pointer_table = "00135128"
+
+[target.ignition_state_storage.ignition_surface_state_6_7]
+copies = ["00135480", "001354c0", "00135500", "00135540"]
+pointer_table = "0013513c"
+
+[target.roles.ignition_coordinator_config_byte]
+note = """
+Stock value 0xba sets bit 5 and the ignition coordinator 0x74d98 branches at \
+0x74db4 to its gated half only when the bit is clear"""
+symbol = "knock_selector_config/tbl"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_gated_surface_1 = "ignition_gated_surface_1/tbl"
+ignition_gated_surface_2 = "high_octane_timing_state/tbl"
+ignition_gated_surface_3 = "high_detonation_timing_state/tbl"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+
+[[target.unsupported]]
+note = """
+VQ37 removes exhaust camshaft timing control together with its P0014 and \
+P0024 descriptor records so published target byte fffe9466 is never \
+produced"""
+symbol = "exhaust_cvtc_target/tbl"
+
+[[target.unsupported]]
+note = """
+Target surface 0x9a80 lies in the coordinator half gated off by stock \
+ROM8[0x8a2b] bit 5 and is byte-identical to 0x9880 and 0x9980"""
+symbol = "high_detonation_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target surface 0x9980 lies in the coordinator half gated off by stock \
+ROM8[0x8a2b] bit 5 and is byte-identical to 0x9880 and 0x9a80"""
+symbol = "high_octane_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target uses interpolated curves and scalar caps instead of the source 2x2 \
+table"""
+symbol = "rev_limit_fuel_cut/tbl"
+
+[[target.variants]]
+symbol = "fuel_compensation_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "timing_state_addend_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_caps/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_curves/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_delay_calibration/tbl"
+variant = "zero_delay"
+
+[[target]]
+layout = "7mfk"
+status = "supported"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+exhaust_lookup = "exhaust_lookup/fn"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+throttle_container = "throttle_container/tbl"
+throttle_runtime = "throttle_runtime/ram"
+
+[[target]]
+layout = "jk00c"
+status = "supported"
+
+[target.basis]
+maps = """
+Exact JK00D-to-JK00C function matches and target literals bind the local map \
+addresses; both CVTC target families remain explicit."""
+
+[target.extra_cvtc_storage]
+adapter_end = "000e1740"
+adapter_start = "000e1700"
+copies = ["000e1800", "000e1900", "000e1a00", "000e1b00"]
+pointer_table = "000e1750"
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+exhaust_cvtc_target = "exhaust_cvtc_target/tbl"
+fuel_compensation_main = "fuel_compensation_main/tbl"
+high_detonation_timing_state = "high_detonation_timing_state/tbl"
+high_octane_timing_state = "high_octane_timing_state/tbl"
+idle_ignition_timing = "idle_ignition_timing/tbl"
+intake_cvtc_target = "intake_cvtc_target/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut = "rev_limit_fuel_cut/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "000dfce0"
+
+[target.hooks.exhaust_cvtc_target_lookup]
+hook = "noisy-smilodon/hook"
+replacement = "000e1700"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "000dea80"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "000dea80"
+
+[target.hooks.idle_ignition_lookup]
+hook = "idle_ignition_lookup/hook"
+replacement = "000e0700"
+
+[target.hooks.ignition_lookup_knock]
+hook = "ignition_lookup_493e8/hook"
+replacement = "000dea40"
+
+[target.hooks.ignition_lookup_primary_a]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "000dea40"
+
+[target.hooks.ignition_lookup_primary_b]
+hook = "ignition_lookup_4e1c0_b/hook"
+replacement = "000dea40"
+
+[target.hooks.intake_cvtc_target_lookup]
+hook = "exhaust_cvtc_target_lookup/hook"
+replacement = "000deac0"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "000deb80"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "000deb80"
+
+[target.hooks.rev_fuel_cut_base]
+hook = "rev_fuel_cut_base/hook"
+replacement = "ffff6010"
+
+[target.hooks.rev_throttle_cluster_base]
+hook = "rev_throttle_cluster_base/hook"
+replacement = "ffff6020"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff6028"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "000de808"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "000de9a0"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+exhaust_lookup = "exhaust_lookup/fn"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+throttle_container = "throttle_container/tbl"
+throttle_runtime = "throttle_runtime/ram"
+
+[[target]]
+layout = "jk00d"
+status = "supported"
+
+[target.basis]
+maps = """
+Reviewed interpolation correspondence, exact map contents, homologous call \
+topology, and target literal references bind all families; the intake-cam \
+and exhaust-cam target families switch independently."""
+
+[target.extra_cvtc_storage]
+adapter_end = "000e1740"
+adapter_start = "000e1700"
+copies = ["000e1800", "000e1900", "000e1a00", "000e1b00"]
+pointer_table = "000e1750"
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+exhaust_cvtc_target = "exhaust_cvtc_target/tbl"
+fuel_compensation_main = "fuel_compensation_main/tbl"
+high_detonation_timing_state = "high_detonation_timing_state/tbl"
+high_octane_timing_state = "high_octane_timing_state/tbl"
+idle_ignition_timing = "idle_ignition_timing/tbl"
+intake_cvtc_target = "intake_cvtc_target/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut = "rev_limit_fuel_cut/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "000dfce0"
+
+[target.hooks.exhaust_cvtc_target_lookup]
+hook = "noisy-smilodon/hook"
+replacement = "000e1700"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "000dea80"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "000dea80"
+
+[target.hooks.idle_ignition_lookup]
+hook = "idle_ignition_lookup/hook"
+replacement = "000e0700"
+
+[target.hooks.ignition_lookup_knock]
+hook = "ignition_lookup_493e8/hook"
+replacement = "000dea40"
+
+[target.hooks.ignition_lookup_primary_a]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "000dea40"
+
+[target.hooks.ignition_lookup_primary_b]
+hook = "ignition_lookup_4e1c0_b/hook"
+replacement = "000dea40"
+
+[target.hooks.intake_cvtc_target_lookup]
+hook = "exhaust_cvtc_target_lookup/hook"
+replacement = "000deac0"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "000deb80"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "000deb80"
+
+[target.hooks.rev_fuel_cut_base]
+hook = "rev_fuel_cut_base/hook"
+replacement = "ffff6010"
+
+[target.hooks.rev_throttle_cluster_base]
+hook = "rev_throttle_cluster_base/hook"
+replacement = "ffff6020"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff6028"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "000de808"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "000de9a0"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+exhaust_lookup = "exhaust_lookup/fn"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+throttle_container = "throttle_container/tbl"
+throttle_runtime = "throttle_runtime/ram"
+
+[[target]]
+layout = "jk78c"
+status = "supported"
+note = """
+Requires four DFCO families two fuel compensation surfaces two warm-idle \
+timing tables four ignition hooks native fuel-cut caps and curves and a \
+throttle-scalar commit"""
+requires = [
+    "over_run_channel_multiplier/tbl",
+    "rev_fuel_cut_delay/ram",
+    "rev_fuel_cut_selector/ram",
+    "rev_fuel_cut_state/ram",
+    "rev_fuel_cut_state_machine/fn",
+    "rev_limit_fuel_cut_delay_calibration/tbl",
+]
+
+[target.basis]
+maps = """
+Reviewed JK08A-to-JK78C interpolation contracts, target call topology, \
+bank-local storage, and the native 190-byte fuel-cut state machine bind \
+fourteen supported VQ37 families. The two ignition families are the 16x16 \
+surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the \
+three equal-byte surfaces of the gated half pass through the adapter."""
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
+fuel_compensation_main_default = "fuel_compensation_main/tbl"
+idle_ignition_timing_alternate = "timing_state_addend_alternate/tbl"
+idle_ignition_timing_default = "idle_ignition_timing/tbl"
+ignition_surface_cold = "ignition_surface_cold/tbl"
+ignition_surface_hot = "ignition_surface_hot/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut_caps = "rev_limit_fuel_cut_caps/tbl"
+rev_limit_fuel_cut_curves = "rev_limit_fuel_cut_curves/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "0001dfe0"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "0001cd80"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "0001cd80"
+
+[target.hooks.idle_ignition_lookup_pool_1]
+hook = "idle_ignition_lookup/hook"
+replacement = "0001ea00"
+
+[target.hooks.idle_ignition_lookup_pool_2]
+hook = "idle_ignition_lookup_pool_2/hook"
+replacement = "0001cdc0"
+
+[target.hooks.ignition_lookup_1]
+hook = "ignition_lookup_493e8/hook"
+replacement = "0001cd40"
+
+[target.hooks.ignition_lookup_2]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "0001cd40"
+
+[target.hooks.ignition_lookup_3]
+hook = "ignition_lookup_4e1c0_b/hook"
+replacement = "0001cd40"
+
+[target.hooks.ignition_lookup_4]
+hook = "ignition_lookup_4/hook"
+replacement = "0001cd40"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "0001ce80"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "0001ce80"
+
+[target.hooks.rev_fuel_cut_caps_base]
+hook = "rev_fuel_cut_caps_base/hook"
+replacement = "ffff0c10"
+
+[target.hooks.rev_fuel_cut_curves_base]
+hook = "rev_fuel_cut_curves_base/hook"
+replacement = "ffff0c14"
+
+[target.hooks.rev_fuel_cut_release_cap_base]
+hook = "rev_fuel_cut_release_cap_base/hook"
+replacement = "ffff0c12"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff0c38"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "0001cb08"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "0001cca0"
+
+[target.roles.ignition_coordinator_config_byte]
+note = """
+Stock value 0xba sets bit 5 and the ignition coordinator 0x69ab8 tests it at \
+0x69adc to take its mode-selected half"""
+symbol = "knock_selector_config/tbl"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_gated_surface_1 = "ignition_gated_surface_1/tbl"
+ignition_gated_surface_2 = "high_octane_timing_state/tbl"
+ignition_gated_surface_3 = "high_detonation_timing_state/tbl"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "startup_initializer/fn"
+
+[[target.unsupported]]
+note = """
+VQ37 removes exhaust camshaft timing control together with its P0014 and \
+P0024 descriptor records so published target byte ffff23a4 is never \
+produced"""
+symbol = "exhaust_cvtc_target/tbl"
+
+[[target.unsupported]]
+note = """
+Target surface 0x97ca lies in the coordinator half gated off by stock \
+ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x96ca"""
+symbol = "high_detonation_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target surface 0x96ca lies in the coordinator half gated off by stock \
+ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x97ca"""
+symbol = "high_octane_timing_state/tbl"
+
+[[target.unsupported]]
+note = """
+Target uses interpolated curves and scalar caps instead of the source 2x2 \
+table"""
+symbol = "rev_limit_fuel_cut/tbl"
+
+[[target.variants]]
+symbol = "fuel_compensation_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "timing_state_addend_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_caps/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_curves/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_delay_calibration/tbl"
+variant = "zero_delay"

@@ -3,6 +3,14 @@ layout = "1me3b"
 address = "0007a740"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007a740"
+note = """
+Complete recovered function aggregates stock conditions before its sole \
+final-mask store"""
+
+[[symbol.evidence]]
 kind = "rom-bytes"
 supports = "identity"
 at = "1me3b:00022144"
@@ -13,6 +21,14 @@ layout = "1nd"
 address = "000760cc"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000760cc"
+note = """
+Complete recovered function aggregates stock conditions before its sole \
+final-mask store"""
+
+[[symbol.evidence]]
 kind = "rom-bytes"
 supports = "identity"
 at = "1nd:000220d8"
@@ -21,6 +37,14 @@ value = "000760cc"
 [[symbol]]
 layout = "jk78c"
 address = "0006a9b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a9b0"
+note = """
+Complete coordinator aggregates stock conditions before its sole final-mask \
+store"""
 
 [[symbol.evidence]]
 kind = "rom-bytes"

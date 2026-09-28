@@ -1,0 +1,59 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007b320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1aa"
+note = """
+Native state-machine literal selects the adjacent activation and release \
+scalar caps"""
+
+[[symbol]]
+layout = "1nd"
+address = "00076c98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076adc"
+note = """
+Native state-machine literal selects the adjacent activation and release \
+scalar caps"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0006b068"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aecc"
+note = """
+Native state-machine literal selects the adjacent activation and release \
+scalar caps"""
+
+[[link]]
+type = "target"
+to = "rev_limit_fuel_cut_caps/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007b320"
+value = "00009266"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00076c98"
+value = "000091d2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006b068"
+value = "00009040"

@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe92ac"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe92ac"
+to = "7mfk:ffff22dc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
+index of the 1ND source"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe92e0"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe92e0"
+to = "7mfk:ffff22dc"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Aligned diagnostic pointer table and direct references agree"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22dc"
+former = ["ultramarine-fox/ram/7mfk-ffff22dc"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2350"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003d29a"
+to = "7mfk:0003c4e6"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2358"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003d29a"
+to = "7mfk:0003c4e6"
+count = 1
+value = 0
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2238"
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:000411f6"
+to = "7mfk:0003c4e6"
+count = 1
+value = 0
+note = "Aligned diagnostic pointer table and direct references agree"

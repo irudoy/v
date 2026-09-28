@@ -86,9 +86,12 @@ io = ["ffffc000", "100000000"]
 manual = ["esm-", "sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
 
 # Keys of `manual` evidence that start with one of these prefixes cite the
-# SH7059/SH7058S hardware manual (tools/kb/SPEC.md, section 7.6).
+# SH7059/SH7058S hardware manual (tools/kb/SPEC.md, section 7.6). `vectors` is
+# the key of its exception vector table, which places each vector at its
+# offset from VBR; a slot of the table on every layout is one vector.
 [manual]
 mcu = ["sh7058-hw-", "sh7058-hardware-manual", "SH7058S-HW-"]
+vectors = "SH7058S-HW-7.2.6"
 
 [vocab]
 quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "speed",

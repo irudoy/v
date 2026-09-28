@@ -1,0 +1,64 @@
+[[symbol]]
+layout = "1me3b"
+address = "001370dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:001370dc"
+to = "7mfk:000d09d8"
+note = "Exact selector entry recovered from its caller"
+
+[[symbol]]
+layout = "1nd"
+address = "00129cbc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00129cbc"
+to = "7mfk:000d09d8"
+note = "Exact selector entry recovered from its caller"
+
+[[symbol]]
+layout = "7mfk"
+address = "000d09d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000d09d8"
+
+[[symbol]]
+layout = "jk00c"
+address = "000dc868"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:000da548"
+to = "7mfk:000ce8dc"
+value = "000dc868"
+
+[[symbol]]
+layout = "jk00d"
+address = "000dcfa4"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:000dac84"
+to = "7mfk:000ce8dc"
+value = "000dcfa4"
+
+[[symbol]]
+layout = "jk78c"
+address = "000fd40c"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000fb260"
+to = "7mfk:000ce8dc"
+value = "000fd40c"
+note = "Unique mapped-neighbor fingerprint preserves the complete selector body"

@@ -1,0 +1,68 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffeb985"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000216a2"
+note = """
+ASCD functions set and test the enabled flag as bit 3 of this byte; bit 7 of \
+the byte is an unrelated flag of the periodic list walker"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb823"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ae4a2"
+to = "7mfk:ffff41ae"
+note = "Selector reads this ASCD state byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006e706"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff434b"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000709b0"
+to = "7mfk:0006e6f8"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff435f"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000709b0"
+to = "7mfk:0006e6f8"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff450c"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0008cddc"
+to = "7mfk:0006e700"
+count = 1
+value = "mnemonic"
+note = "Selector reads this ASCD state byte"

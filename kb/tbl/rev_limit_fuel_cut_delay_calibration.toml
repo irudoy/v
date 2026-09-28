@@ -10,6 +10,7 @@ address = "00008b40"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b216"
+note = "Exact ROM8 value zero governs the native activation delay state"
 
 [[symbol]]
 layout = "1nd"
@@ -19,6 +20,7 @@ address = "00008af3"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076b48"
+note = "Exact ROM8 value zero governs the native activation delay state"
 
 [[symbol]]
 layout = "jk78c"
@@ -28,3 +30,4 @@ address = "00008a1f"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006af3e"
+note = "Exact ROM8 value zero governs the native activation delay state"

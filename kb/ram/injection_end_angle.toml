@@ -1,0 +1,71 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe8946"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe8946"
+to = "7mfk:ffff192e"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe89a2"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe89a2"
+to = "7mfk:ffff192e"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Homologous end-of-injection stage 0007f4e0 stores the doubled 209-count \
+clamp to this word"""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff192e"
+former = ["nifty-meerkat/ram/7mfk-ffff192e"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1992"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053c1a"
+to = "7mfk:000521ca"
+count = 1
+value = 87
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1996"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00053c16"
+to = "7mfk:000521ca"
+count = 1
+value = 87
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff192a"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e160"
+to = "7mfk:000521dc"
+count = 1
+value = 78
+note = """
+Homologous end-of-injection stage 000730cc stores the doubled 209-count \
+clamp to this word"""

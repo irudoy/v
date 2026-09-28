@@ -1,0 +1,67 @@
+[[symbol]]
+layout = "1me3b"
+address = "fffe92b0"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:fffe92b0"
+to = "7mfk:ffff22e0"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = """
+Matched 1ND consumer functions reference this cell at the same instruction \
+ordinals"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe92e4"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:fffe92e4"
+to = "7mfk:ffff22e0"
+sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+note = "Multiple homologous fuel-control functions use this mask"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22e0"
+former = ["dandelion-dolphin/ram/7mfk-ffff22e0"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2354"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = 157
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff235c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = 157
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff223c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002edca"
+to = "7mfk:0002bea4"
+count = 1
+value = 44
+note = "Aligned diagnostic pointer table preserves the inhibit mask position"

@@ -1,0 +1,177 @@
+[[target]]
+layout = "1me3b"
+status = "supported"
+free_ram_end = "ffff1000"
+free_ram_start = "ffff0c00"
+free_rom_end = "0013ff00"
+free_rom_start = "00139dc4"
+injected_ram_end = "ffff0f00"
+injected_ram_start = "ffff0c00"
+injected_rom_end = "0013f000"
+injected_rom_start = "0013b108"
+map_variant = "sh7059-1me3b"
+ram_delta = -20736
+rom_delta = 430080
+rom_size = 1572864
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff0de0"
+
+[target.basis]
+free_ram = """
+TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B \
+executable census: no stock access reaches the allocation."""
+free_rom = """
+AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with no \
+recovered stock ownership; scalar-alias references begin at 0x0013ffec, \
+above the declared end. Runtime uses the bounded 0x0013b108..0x0013efff \
+envelope."""
+
+[target.ignition_unreferenced_routine]
+end = "000797cc"
+start = "000791a4"
+
+[target.notes]
+free_ram_end = "Audited free RAM ends at this exclusive address"
+free_ram_start = "Direct and decompiler-assisted RAM trace found no stock accesses"
+free_rom_end = """
+Erased ROM audit ends at this exclusive address below the scalar-alias \
+references that begin at 0013ffec"""
+free_rom_start = "Erased ROM audit begins at this address"
+injected_ram_end = "Runtime uses 0x300 bytes inside the audited 0x400-byte window"
+injected_ram_start = "Uniform RAM relocation is -0x5100"
+injected_rom_end = "Canonical runtime envelope preserves its 0x3ef8-byte extent"
+injected_rom_start = "Uniform ROM relocation is 0x69000"
+
+[[target]]
+layout = "1nd"
+status = "supported"
+free_ram_end = "ffff1000"
+free_ram_start = "ffff0c00"
+free_rom_end = "0017ff80"
+free_rom_start = "0012c990"
+injected_ram_end = "ffff0f00"
+injected_ram_start = "ffff0c00"
+injected_rom_end = "00136000"
+injected_rom_start = "00132108"
+map_variant = "sh7059-1nd"
+ram_delta = -20736
+rom_delta = 393216
+rom_size = 1572864
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff0de0"
+
+[target.basis]
+free_ram = """
+TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A \
+executable census: no stock access reaches the allocation."""
+free_rom = """
+AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no \
+recovered stock ownership; runtime uses the bounded 0x00132108..0x00135fff \
+envelope."""
+
+[target.notes]
+free_ram_end = "Audited free RAM ends at this exclusive address"
+free_ram_start = "Direct and decompiler-assisted RAM trace found no stock accesses"
+free_rom_end = "Erased ROM audit ends at this exclusive address"
+free_rom_start = "Erased ROM audit begins at this address"
+injected_ram_end = "Runtime uses 0x300 bytes inside the audited 0x400-byte window"
+injected_ram_start = "Uniform RAM relocation is -0x5100"
+injected_rom_end = "Canonical runtime envelope preserves its 0x3ef8-byte extent"
+injected_rom_start = "Uniform ROM relocation is 0x60000"
+
+[[target]]
+layout = "7mfk"
+status = "supported"
+injected_ram_end = "ffff6000"
+injected_ram_start = "ffff5d00"
+injected_rom_end = "000d6000"
+injected_rom_start = "000d2108"
+
+[[target]]
+layout = "jk00c"
+status = "supported"
+free_ram_end = "ffff6600"
+free_ram_start = "ffff6000"
+free_rom_end = "000e2700"
+free_rom_start = "000de800"
+injected_ram_end = "ffff6300"
+injected_ram_start = "ffff6000"
+injected_rom_end = "000e2700"
+injected_rom_start = "000de808"
+map_variant = "dual-cvtc"
+ram_delta = 768
+rom_delta = 50944
+rom_size = 1048576
+telemetry_completion_variant = "mailbox26-tail-chain"
+
+[target.basis]
+free_ram = """
+TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recovered \
+functions: zero accesses, calls, candidates, or decompiler failures."""
+free_rom = """
+AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with \
+zero instructions, data, functions, or references."""
+
+[[target]]
+layout = "jk00d"
+status = "supported"
+free_ram_end = "ffff6600"
+free_ram_start = "ffff6000"
+free_rom_end = "000e2700"
+free_rom_start = "000de800"
+injected_ram_end = "ffff6300"
+injected_ram_start = "ffff6000"
+injected_rom_end = "000e2700"
+injected_rom_start = "000de808"
+map_variant = "dual-cvtc"
+ram_delta = 768
+rom_delta = 50944
+rom_size = 1048576
+telemetry_completion_variant = "mailbox26-tail-chain"
+
+[target.basis]
+free_ram = """
+TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recovered \
+functions: zero accesses, calls, candidates, or decompiler failures."""
+free_rom = """
+AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with \
+zero instructions, data, functions, or references."""
+
+[[target]]
+layout = "jk78c"
+status = "supported"
+free_ram_end = "ffff1000"
+free_ram_start = "ffff0c00"
+free_rom_end = "00020000"
+free_rom_start = "0001caac"
+injected_ram_end = "ffff0f00"
+injected_ram_start = "ffff0c00"
+injected_rom_end = "00020000"
+injected_rom_start = "0001cb08"
+map_variant = "sh7058-jk78"
+ram_delta = -20736
+rom_delta = -742912
+rom_size = 1048576
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff0de0"
+
+[target.basis]
+free_ram = """
+TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recovered \
+functions: zero accesses, calls, candidates, or decompiler failures."""
+free_rom = """
+The 0x0001caac..0x0001ffff envelope is erased; recovered stock references at \
+0x0001e30c and in the final reserve remain outside every runtime write \
+range."""
+
+[target.notes]
+free_ram_end = "Audited free RAM ends at this exclusive address"
+free_ram_start = "Decompiler-assisted trace found no stock accesses"
+free_rom_end = "The erased envelope ends at the exclusive flash boundary"
+free_rom_start = "The erased envelope begins before the first projected write"
+injected_ram_end = "Runtime uses 0x300 bytes inside the audited 0x400-byte window"
+injected_ram_start = "Uniform RAM relocation is -0x5100"
+injected_rom_end = """
+Active runtime including the fuel-coordinator wrapper ends at 0x1fa80 and \
+the compact reserve ends at the one-MiB flash boundary"""
+injected_rom_start = "Uniform ROM relocation is -0xb5600"

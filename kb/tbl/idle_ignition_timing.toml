@@ -1,3 +1,5 @@
+former = ["idle_ignition_timing_default"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00013a26"

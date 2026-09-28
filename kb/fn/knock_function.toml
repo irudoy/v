@@ -1,0 +1,59 @@
+[[symbol]]
+layout = "1me3b"
+address = "00071d64"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00071d64"
+note = "Target coordinator clears the saturating event count at 0x720d8"
+
+[[symbol]]
+layout = "1nd"
+address = "0006d948"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006d948"
+note = """
+Target coordinator reads the saturating event count at 0x6dede and 0x6df20 \
+and clears it at 0x6df4a"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000493e8"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004a42c"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004a4d4"
+to = "7mfk:00049490"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "0004a430"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004a4d8"
+to = "7mfk:00049490"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk78c"
+address = "00062780"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062780"
+note = "Target event path preserves bit tracking and saturating count behavior"

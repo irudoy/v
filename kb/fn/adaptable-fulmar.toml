@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk00d"
+address = "0004b280"
+name = "adaptable-fulmar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004b280"

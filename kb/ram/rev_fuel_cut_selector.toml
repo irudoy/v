@@ -6,6 +6,7 @@ address = "fffe80e5"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b1b2"
+note = "Native interpolation selector indexes the shared eight-point axis"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -20,6 +21,7 @@ address = "fffe80ed"
 kind = "l0"
 supports = "identity"
 at = "1nd:00076ae4"
+note = "Native interpolation selector indexes the shared eight-point axis"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -34,6 +36,7 @@ address = "ffff10e5"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006aedc"
+note = "Native interpolation selector indexes the shared eight-point axis"
 
 [[link]]
 type = "reader"

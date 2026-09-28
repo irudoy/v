@@ -1,0 +1,65 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1980"
+former = ["voracious-goat/ram/7mfk-ffff1980"]
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff19e6"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00075992"
+to = "7mfk:000731f6"
+count = 1
+value = 33
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff19ec"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00075992"
+to = "7mfk:000731f6"
+count = 1
+value = 33
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1976"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093020"
+to = "7mfk:00073800"
+count = 1
+value = 22
+note = """
+Homologous stage 00093164 stores the curve-pair coordinate to this word and \
+passes it as the column of surface 0000face"""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1980"
+count = 0
+l0 = "fcabdc8a705bbb84"
+note = """
+No homolog is established for the requested-torque column coordinate: the \
+target conversion chain is not traced to a stored forward coordinate"""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1980"
+count = 0
+l0 = "8b3d18403665f8be"
+note = """
+No homolog is established for the requested-torque column coordinate: the \
+target conversion chain is not traced to a stored forward coordinate"""

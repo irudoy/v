@@ -1,0 +1,37 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0007b32c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1b4"
+note = "Native state-machine literal selects the eight-point activation curve"
+
+[[symbol]]
+layout = "1nd"
+address = "00076ca4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076ae6"
+note = "Native state-machine literal selects the eight-point activation curve"
+
+[[link]]
+type = "target"
+to = "rev_limit_fuel_cut_curves/tbl"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0007b32c"
+value = "000172b6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00076ca4"
+value = "00017202"

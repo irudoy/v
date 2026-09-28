@@ -1,0 +1,97 @@
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "0002e18c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002e136"
+to = "7mfk:00027d28"
+note = "Literal call target identifies the exact startup initializer"
+
+[[symbol]]
+layout = "1nd"
+address = "0002b398"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0002b342"
+to = "7mfk:00027d28"
+note = "Literal call target identifies the exact startup initializer"
+
+[[symbol]]
+layout = "7mfk"
+address = "00027d28"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00027ce4"
+
+[[symbol]]
+layout = "jk00c"
+address = "00028994"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00028950"
+to = "7mfk:00027d28"
+
+[[symbol]]
+layout = "jk00d"
+address = "00028994"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00028950"
+to = "7mfk:00027d28"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002a6fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0002a6b0"
+to = "7mfk:00027d28"
+note = "Literal jump target identifies the startup initializer"
+
+[[link]]
+type = "target"
+to = "startup_initializer/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0002e18c"
+value = "0003357c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0002b398"
+value = "00030810"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00028994"
+value = "0002d2b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00028994"
+value = "0002d2b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0002a6fc"
+value = "0002f596"

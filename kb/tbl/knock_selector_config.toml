@@ -1,0 +1,70 @@
+[[symbol]]
+layout = "1me3b"
+address = "00008a7c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007484c"
+to = "7mfk:00008b3d"
+note = """
+Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
+alternate channel byte"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008a2b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000710c6"
+to = "7mfk:00008b3d"
+note = """
+Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
+alternate channel byte"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00008b3d"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000419b4"
+
+[[symbol]]
+layout = "jk00c"
+address = "00008b70"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00c:00042ae8"
+to = "7mfk:00041af0"
+value = "00008b70"
+
+[[symbol]]
+layout = "jk00d"
+address = "00008b71"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk00d:00042ae8"
+to = "7mfk:00041af0"
+value = "00008b71"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008965"
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:0005b0d0"
+to = "7mfk:00041d50"
+value = "00008965"
+note = """
+Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
+alternate channel byte"""

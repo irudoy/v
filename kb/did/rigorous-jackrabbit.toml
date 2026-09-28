@@ -1,0 +1,61 @@
+number = 0x1216
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d3c"
+name = "fractal-ammonite"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1me3b:00022d3c"
+value = "ffffffff"
+
+[[symbol]]
+layout = "1nd"
+address = "00022cc8"
+name = "quiet-guppy"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "1nd:00022cc8"
+value = "ffffffff"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228f4"
+name = "rigorous-jackrabbit"
+
+[[symbol]]
+layout = "jk00c"
+address = "00022990"
+name = "cerulean-pelican"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00c:00022990"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk00d"
+address = "00022990"
+name = "fierce-okapi"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk00d:00022990"
+value = "ffffffff"
+
+[[symbol]]
+layout = "jk78c"
+address = "00022970"
+name = "thistle-viper"
+
+[[symbol.evidence]]
+kind = "did-table"
+supports = "identity"
+at = "jk78c:00022970"
+value = "ffffffff"

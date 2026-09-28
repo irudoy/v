@@ -1,0 +1,85 @@
+storage = "uint32"
+
+[[symbol]]
+layout = "1me3b"
+address = "00009838"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00009838"
+to = "7mfk:000097c6"
+sha256 = "fb5e512425fc9449316ec95969ebe71e2d576dbab833d61e2a5b9330fd70ee02"
+note = "Adjacent physical mailbox 28 remains stock occupied"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00009838"
+value = "04000000"
+
+[[symbol]]
+layout = "1nd"
+address = "00009754"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00009754"
+to = "7mfk:000097c6"
+sha256 = "fb5e512425fc9449316ec95969ebe71e2d576dbab833d61e2a5b9330fd70ee02"
+note = "Adjacent physical mailbox 28 remains stock occupied"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00009754"
+value = "04000000"
+
+[[symbol]]
+layout = "7mfk"
+address = "000097c6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000097c6"
+value = "04000000"
+
+[[symbol]]
+layout = "jk00c"
+address = "0000988a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0000988a"
+value = "04000000"
+
+[[symbol]]
+layout = "jk00d"
+address = "0000989a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0000989a"
+value = "04000000"
+
+[[symbol]]
+layout = "jk78c"
+address = "000094b6"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:000094b6"
+to = "7mfk:000097c6"
+sha256 = "fb5e512425fc9449316ec95969ebe71e2d576dbab833d61e2a5b9330fd70ee02"
+note = "Adjacent physical mailbox 28 remains stock occupied"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000094b6"
+value = "04000000"

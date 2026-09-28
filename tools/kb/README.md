@@ -206,7 +206,6 @@ a reference that names nothing fails the `references` check.
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
 | `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch` |
-| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py` | Target symbols, hook words that join the `7mfk` words of their canonical keys, DIDs, and telemetry sources with their statuses; the feature targets with their key tables, the roles that a symbol of another meaning fills on a layout, `requires`, `variants`, `unsupported`, the prose of their rows in `notes` and hook keys, and the review topics in `basis` |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
 | `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
@@ -228,6 +227,7 @@ a projection of the files.
 | `defs/*.interp.csv`, `defs/JK08A-*.interp-correspondence.csv` | 3 | `fn` meanings with `[interp]`, the evidence of their symbols, and the `unresolved` statuses of the `interp-contract` search | `kb.adapters.interp:registries`, `kb.adapters.interp:correspondences` |
 | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | 3 | `tbl`, `axis`, `fn`, `ram`, and `const` meanings with symbols on `jk78c`, `1nd`, and `1me3b`: the keys and `[editor]` of the native tables, the evidence of their symbols, their `reader` and `axis` links, and their `absent` statuses | `kb.adapters.native:tables`, `kb.adapters.native:fuel_cut` |
 | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | 3 | `tbl` and `axis` meanings with the row items of their symbols and the `absent` and `unresolved` statuses of the rows; the `definitions` targets of `kb/feature/definitions.toml` with `images`, `requires`, `variants`, and `omitted` | `kb.adapters.definitions:addresses`, `kb.adapters.definitions:projections` |
+| `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, the symbol and hook-key tables of `patches/runtime_targets.py` | 3 | `hook`, `fn`, `ram`, `reg`, `tbl`, `const`, and `did` meanings with the row items of their symbols, the `target` links of the hook words, and the `absent` and `unresolved` statuses of the rows; the targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` in `kb/feature/` with their key tables, roles, `requires`, `variants`, `unsupported`, `notes`, and `basis` | `kb.adapters.profiles:address_profiles`, `kb.adapters.profiles:correspondences` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -247,6 +247,8 @@ interpolation registries:
 - A wrapper symbol that no other registry states takes `l0` identity
   evidence at the first instruction of its body that calls its kernel entry,
   or at its entry when it is its own kernel.
+- An item of an entry states an item of the registries when it equals the
+  item or adds only the note of a correspondence row to it.
 - An `unsupported` correspondence becomes an `unresolved` status with the L0
   digest of its layout and without the registry evidence.
 
@@ -263,7 +265,9 @@ The rules of the native registries:
   they state for its symbols where one of them has the value of the meaning.
 - Each symbol that they declare takes an entry with its overrides of those
   keys, its `images`, its notes, and its evidence. An axis that they only
-  name is a symbol that another registry declares.
+  name is a symbol that another registry declares. An item of an entry
+  states an evidence item of the registries when it equals the item or adds
+  only the note of a correspondence row to it.
 - Each link takes an entry with its slot, its role, and the evidence of every
   symbol that states it, and each `absent` status an entry with its note and
   evidence. The notes of a file precede those of the registries in the note
@@ -308,6 +312,55 @@ layout, which gives a `reviewed-target` row; a symbol that `omitted` lists
 and a status give `unsupported` rows. `defs/definition-projections.toml` has
 `[projection.<ROM>]` for each image of a `definitions` target other than
 `7mfk`, with its note wrapped within 79 columns as `comment`.
+
+The rules of the address profiles and the correspondence files:
+
+- A symbol that a correspondence row states takes its row item first in its
+  entry, with the text of the row as `note`: an item of its entry that states
+  the row, or else the homology item toward the `7mfk` symbol of its meaning
+  for a `mapped` row and the identity item of its own layout for a
+  `target-specific` row. The homology item is the item that `kb.match.typed`
+  gives, a `manual` item where the hardware manual of the MCU or its vector
+  table places the symbol at the address of its origin, or an `l0` item; the
+  identity item is the test of a row whose symbol no instruction reaches, the
+  entry of a function, the `did-table` item of a DID slot, an `l0` item, or
+  the `indirect` base item of a hook with the `rom-bytes` item of its stock
+  word. An `l0` item lies at the entry of a function, and otherwise at the
+  first census operand of the storage, the first instruction that touches
+  it, the first load of one of its words from a literal pool, or the first
+  place whose L0 references name it, where it verifies.
+- A symbol that only the registries state and no row states takes the same
+  homology item, or else the identity item; a `7mfk` symbol that a homology
+  item of the conversion reaches and no evidence grounds takes its identity
+  item. A wrapper with `[interp]` that only the registries state takes the
+  `l0` identity item of the interpolation conversion, at the first call of
+  its kernel entry.
+- The `rom-bytes` items of the image-byte keys stay, a note that only the
+  registries state for a symbol is dropped, and the names that only the
+  registries state become `former` names. The `target` link of each hook word
+  of another layout than `7mfk` takes the `rom-bytes` item of the word.
+- A status that the file of its meaning states keeps its entry; an
+  `unresolved` status takes the search of the `7mfk` symbol on its layout,
+  the L0 digest of the layout, and the text of its row.
+- `kb/feature/<feature>.toml` of `runtime`, `map_switching`,
+  `rolling_launch`, and `can_telemetry` takes a `[[target]]` for each layout
+  with the keys of its target.
+
+`patches/rom-address-profiles.toml` has a profile for the image of each
+layout other than `7mfk` with a `runtime` target and an `inherits` profile for
+each other image of the layout, with the keys of its targets, the addresses
+of their symbols and roles, the stock word that the `target` link of a hook
+meaning reaches, the replacement of the previous feature as the `base` of a
+hook, the fields whose source meaning has a status on the layout as
+`telemetry_unavailable`, and the `basis` of the targets as `evidence`.
+`patches/<layout>-runtime-correspondence.csv` exists for each layout whose
+`runtime` target states `notes`. The row item of a symbol is the first
+evidence item of its entry that is homology evidence toward `7mfk`, which
+gives a `mapped` row, or identity evidence of its own layout other than image
+bytes, which gives a `target-specific` row; a role gives a `target-specific`
+row with its note, an `unsupported` entry and a status `unsupported` rows,
+an allocation is `mapped` where it is the `7mfk` bound plus the relocation of
+the profile, and a number where it equals the `7mfk` value.
 
 ## Matchers
 
