@@ -1,0 +1,44 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff121a"
+former = ["vegan-zebra/ram/7mfk-ffff121a"]
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+The target selects ignition surfaces by state code and does not retain the \
+separate signed Q8 state"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00071d64"
+note = """
+The knock function keeps no signed Q8 state: it has no block gated by bit 5 \
+of 00008a7c and no store that rounds a signed Q8 word, which 1nd:0006dd78 \
+and jk78c:00062e9e perform in their gated blocks"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00021390"
+note = """
+The scheduler copy fffe81ee -> fffe8226 (0x38 bytes) latches no cell of the \
+knock function, while 1nd:0002136a latches the Q8 state 1nd:fffe8214 into \
+its slew reference"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000797e8"
+note = """
+The ignition coordinator 000797cc selects surfaces by the state code \
+fffeb826 when bit 3 of 00008a7d is set"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00008a7d"
+value = "0x1c"
+note = "Bit 3 set enables the state-code selection of 000797cc"
