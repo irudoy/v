@@ -130,7 +130,7 @@ telemetry,injection_3_raw,ffff23ce,fffe93ac,,,mapped,Contiguous six-word channel
 telemetry,injection_4_raw,ffff23d0,fffe93ae,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
 telemetry,injection_5_raw,ffff23d2,fffe93b0,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
 telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,The target selects ignition surfaces by state code and does not retain the separate signed Q8 state
-telemetry,knock_surface_state,ffff2466,,,,unsupported,The target packs the surface flag into bit 7 of fffe945b while the wire contract decodes bit 6 and the target ignition coordinator does not read the flag
+telemetry,knock_surface_state,ffff2466,,,,unsupported,The JK08A accesses of ffff2466 have no match in the target; the knock function 00071d64 sets bit 7 of fffe945b at 000721a4 and 000721b4 and clears it at 000721b0 while the wire contract decodes bit 6
 telemetry,app1_raw,ffff269e,fffe96ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,app2_raw,ffff26a2,fffe96d2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,tps_b1_raw,ffff2756,fffe97e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
@@ -166,8 +166,8 @@ telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 st
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8aa4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8aa6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,No intake solenoid duty command cell is established for the target
-telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The adjacent command cell follows the same unestablished pair
+telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of 00008576 set in the stock image the BFR programmer 0011c3a6 writes BFR7B from the word fffe9692 and fffe938f holds its high byte after two scheduler copies
+telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The JK08A accesses of ffff23b5 have no match in the target; the BFR programmer 0011c3a6 writes BFR7A from the word fffe9694 and fffe9390 holds its high byte after two scheduler copies
 telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe9810,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe9812,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,af_adjustment_b1_raw,ffff45a0,fffebdfa,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
