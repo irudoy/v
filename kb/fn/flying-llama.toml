@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "jk78c"
-address = "00063ac8"
-name = "flying-llama"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00063ac8"

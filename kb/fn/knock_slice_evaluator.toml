@@ -1,0 +1,57 @@
+[[symbol]]
+layout = "7mfk"
+address = "0004a238"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004b27c"
+former = ["vivid-capuchin/fn/jk00c-0004b27c"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004b27c"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004b27c"
+to = "7mfk:0004a238"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004b280"
+former = ["adaptable-fulmar/fn/jk00d-0004b280"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004b280"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004b280"
+to = "7mfk:0004a238"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00063ac8"
+former = ["flying-llama/fn/jk78c-00063ac8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00063ac8"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00063ac8"
+to = "7mfk:0004a238"
+count = 1
+value = "mnemonic"

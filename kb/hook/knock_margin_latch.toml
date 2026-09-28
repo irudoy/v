@@ -70,26 +70,6 @@ caller sets every register it reads after the call"""
 
 [[link]]
 type = "target"
-to = "adaptable-fulmar/fn"
-
-[[link.evidence]]
-kind = "rom-bytes"
-supports = "identity"
-at = "jk00d:0004ba08"
-value = "0004b280"
-
-[[link]]
-type = "target"
-to = "flying-llama/fn"
-
-[[link.evidence]]
-kind = "rom-bytes"
-supports = "identity"
-at = "jk78c:0006429c"
-value = "00063ac8"
-
-[[link]]
-type = "target"
 to = "heavenly-fox/fn"
 
 [[link.evidence]]
@@ -100,6 +80,28 @@ value = "00072920"
 
 [[link]]
 type = "target"
+to = "knock_slice_evaluator/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004ba04"
+value = "0004b27c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004ba08"
+value = "0004b280"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0006429c"
+value = "00063ac8"
+
+[[link]]
+type = "target"
 to = "ruby-boobook/fn"
 
 [[link.evidence]]
@@ -107,13 +109,3 @@ kind = "rom-bytes"
 supports = "identity"
 at = "1nd:0006f17c"
 value = "0006ea18"
-
-[[link]]
-type = "target"
-to = "vivid-capuchin/fn"
-
-[[link.evidence]]
-kind = "rom-bytes"
-supports = "identity"
-at = "jk00c:0004ba04"
-value = "0004b27c"

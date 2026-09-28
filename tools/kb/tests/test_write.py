@@ -144,8 +144,8 @@ class PlanTest(unittest.TestCase):
     def test_operations_refuse_what_the_model_contradicts(self):
         self.assertIn("finds jk00c:000142d3 on jk00c, not jk00c:000142d4",
                       self.refused(bind(TABLE, "jk00c:000142d4")))
-        self.assertIn("jk00c:0004b27c is vivid-capuchin/fn/jk00c-0004b27c; `kb merge`",
-                      self.refused(bind("adaptable-fulmar/fn", "jk00c:0004b27c")))
+        self.assertIn("jk00c:0004b27c is knock_slice_evaluator/fn/jk00c-0004b27c; `kb merge`",
+                      self.refused(bind("heavenly-fox/fn", "jk00c:0004b27c")))
         self.assertIn(f"{THROTTLE} has {THROTTLE}/jk00d-ffff17ec on jk00d",
                       self.refused(bind(THROTTLE, "jk00d:ffff17ee")))
         self.assertIn(f"`kb bind {THROTTLE} jk78c:{THROTTLE_JK78C:08x}` records it",
@@ -172,16 +172,159 @@ class PlanTest(unittest.TestCase):
                                      code=2).startswith("op 2: cmd 'move'"))
 
 
+def merge(meaning, other, **keys):
+    return {"cmd": "merge", "meaning": meaning, "other": other, **keys}
+
+
+class MergeTest(unittest.TestCase):
+    """Merges over a base that splits the JK00C symbol of EVALUATOR out into the
+    unnamed meaning CAPUCHIN, as the conversion of the targets of the knock
+    margin latch stated it, and that adds a second file MARMOT of the symbol of
+    the unnamed target FOX, as a second session would. The search from the 7mfk
+    symbol of EVALUATOR finds the JK00C symbol and nothing on 1ND and 1ME3B."""
+
+    EVALUATOR, CAPUCHIN, FOX, MARMOT = ("knock_slice_evaluator/fn", "vivid-capuchin/fn",
+                                        "heavenly-fox/fn", "sturdy-marmot/fn")
+    HOOK = store.path_of("hook", "knock_margin_latch")
+    FILES = {name: store.path_of("fn", name.partition("/")[0])
+             for name in (EVALUATOR, CAPUCHIN, FOX, MARMOT)}
+
+    @classmethod
+    def setUpClass(cls):
+        paths = (cls.FILES[cls.EVALUATOR], cls.HOOK, cls.FILES[cls.FOX])
+        cls.tree = {path: (repo.ROOT / path).read_text(encoding="utf-8") for path in paths}
+        evaluator = tomllib.loads(cls.tree[cls.FILES[cls.EVALUATOR]])
+        entry = next(entry for entry in evaluator["symbol"] if entry["layout"] == "jk00c")
+        evaluator["symbol"].remove(entry)
+        capuchin = {"symbol": [{"layout": "jk00c", "address": entry["address"],
+                                "name": "vivid-capuchin", "evidence": [
+                                    item for item in entry["evidence"] if item["kind"] == "l0"]}]}
+        hook = tomllib.loads(cls.tree[cls.HOOK])
+        link = next(link for link in hook["link"] if link["to"] == cls.EVALUATOR)
+        item = next(item for item in link["evidence"] if item["at"].startswith("jk00c:"))
+        link["evidence"].remove(item)
+        hook["link"].append({"type": "target", "to": cls.CAPUCHIN, "evidence": [item]})
+        fox = tomllib.loads(cls.tree[cls.FILES[cls.FOX]])
+        marmot = {"symbol": [{**fox["symbol"][0], "name": "sturdy-marmot", "note": "probe"}]}
+        cls.base = compile.build(repo.ROOT, {
+            cls.FILES[cls.EVALUATOR]: store.render("fn", evaluator),
+            cls.FILES[cls.CAPUCHIN]: store.render("fn", capuchin),
+            cls.HOOK: store.render("hook", hook),
+            cls.FILES[cls.MARMOT]: store.render("fn", marmot)})
+
+    def plan(self, *ops):
+        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+
+    def change(self, *ops):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        for number, op in enumerate(ops, 1):
+            change.run(op, number)
+        return change
+
+    def refused(self, *ops, code=3):
+        with self.assertRaises(KbError) as caught:
+            self.change(*ops)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def test_a_merge_of_a_homologous_meaning_gives_the_files_of_the_tree(self):
+        change, texts, result = self.plan(merge(self.EVALUATOR, self.CAPUCHIN))
+        self.assertEqual(texts, {self.FILES[self.EVALUATOR]: self.tree[self.FILES[self.EVALUATOR]],
+                                 self.FILES[self.CAPUCHIN]: None,
+                                 self.HOOK: self.tree[self.HOOK]})
+        symbol = result.symbols[SymbolKey("jk00c", "fn", 0x4B27C)]
+        self.assertEqual(symbol.meaning.key, self.EVALUATOR)
+        self.assertEqual(symbol.former, ("vivid-capuchin",))
+        self.assertEqual(sorted(symbol.meaning.symbols), ["7mfk", "jk00c", "jk00d", "jk78c"])
+        self.assertEqual(change.lines, [
+            f"merge {self.CAPUCHIN} into {self.EVALUATOR}: jk00c:0004b27c function-match at "
+            "jk00c:0004b27c to 7mfk:0004a238 count 1 value mnemonic; 1 reference rewritten"])
+        self.assertIn("--- a/kb/fn/vivid-capuchin.toml\n+++ /dev/null\n", change.diff(texts))
+
+    def test_a_merge_joins_the_files_of_one_meaning(self):
+        meaning = self.base.meaning_of(SymbolKey("1me3b", "fn", 0x72920))
+        self.assertEqual(meaning.key, self.MARMOT)
+        change, texts, result = self.plan(merge(self.FOX, self.MARMOT))
+        path = self.FILES[self.FOX]
+        self.assertEqual(sorted(texts), [path, self.FILES[self.MARMOT]])
+        self.assertIsNone(texts[self.FILES[self.MARMOT]])
+        [entry] = tomllib.loads(texts[path])["symbol"]
+        self.assertEqual((entry["name"], entry["note"], entry["former"]),
+                         ("heavenly-fox", "probe", ["sturdy-marmot/fn/1me3b-00072920"]))
+        self.assertEqual(entry["evidence"],
+                         tomllib.loads(self.tree[path])["symbol"][0]["evidence"])
+        self.assertEqual(result.meaning_of(SymbolKey("1me3b", "fn", 0x72920)).key, self.FOX)
+        self.assertNotIn("the files hold one meaning; merge them",
+                         {key[2] for key in write._issues(result)})
+        self.assertEqual(change.lines, [
+            f"merge {self.MARMOT} into {self.FOX}: kb/fn/sturdy-marmot.toml joins "
+            "kb/fn/heavenly-fox.toml"])
+
+    def test_a_merge_rewrites_the_references_to_the_other_name(self):
+        texts = self.change(merge(self.MARMOT, self.FOX)).texts()
+        self.assertIsNone(texts[self.FILES[self.FOX]])
+        [entry] = tomllib.loads(texts[self.FILES[self.MARMOT]])["symbol"]
+        self.assertEqual((entry["name"], entry["former"]),
+                         ("sturdy-marmot", ["heavenly-fox/fn/1me3b-00072920"]))
+        links = tomllib.loads(texts[self.HOOK])["link"]
+        self.assertIn(self.MARMOT, [link["to"] for link in links])
+        self.assertNotIn(self.FOX, [link["to"] for link in links])
+
+    def test_merges_refuse_what_the_model_contradicts(self):
+        self.assertIn(f"{self.EVALUATOR} has {self.EVALUATOR}/7mfk-0004a238 on 7mfk",
+                      self.refused(merge(self.EVALUATOR, SELECTOR)))
+        self.assertIn("the masked-match search from 7mfk:0004a238 finds no candidate on 1nd, "
+                      "not 1nd:0006ea18; state the evidence",
+                      self.refused(merge(self.EVALUATOR, "ruby-boobook/fn")))
+        self.assertIn("op 2: kb/fn/vivid-capuchin.toml leaves the store in this change",
+                      self.refused(merge(self.EVALUATOR, self.CAPUCHIN),
+                                   merge(self.EVALUATOR, self.CAPUCHIN)))
+        self.assertIn(f"{self.EVALUATOR} has a semantic name and {self.CAPUCHIN} a generated "
+                      "one", self.refused(merge(self.CAPUCHIN, self.EVALUATOR), code=2))
+        self.assertIn("is a fn meaning and throttle_runtime/ram a ram one",
+                      self.refused(merge(self.EVALUATOR, THROTTLE), code=2))
+        self.assertIn("name one meaning", self.refused(merge(self.CAPUCHIN, self.CAPUCHIN),
+                                                       code=2))
+        self.assertIn("join without evidence", self.refused(
+            merge(self.FOX, self.MARMOT, evidence=[SPEC]), code=2))
+
+
+class RenameTest(unittest.TestCase):
+    def test_references_and_citations_to_the_other_names_name_the_target(self):
+        document = {"to": "gentle-otter/fn", "via": ["gentle-otter/fn/jk00c"],
+                    "note": "[[gentle-otter/fn]], [[gentle-otter]], and [[gentle-otter/ram]]",
+                    "former": ["gentle-otter/fn/jk00c-00040000"], "name": "gentle-otter",
+                    "evidence": [{"kind": "l0", "to": "gentle-otter/fn/jk00c"}],
+                    "other": "gentle-otter/ram"}
+        found, count = write.renamed(document, {"gentle-otter"}, "fn", "knock_function")
+        self.assertEqual(count, 5)
+        self.assertEqual(found, {
+            **document, "to": "knock_function/fn", "via": ["knock_function/fn/jk00c"],
+            "note": "[[knock_function/fn]], [[knock_function]], and [[gentle-otter/ram]]",
+            "evidence": [{"kind": "l0", "to": "knock_function/fn/jk00c"}]})
+
+    def test_links_of_one_key_that_agree_join(self):
+        first = {"type": "target", "to": "x/fn", "note": "one",
+                 "evidence": [{"kind": "l0", "at": "jk00d:1"}]}
+        second = {"type": "target", "to": "x/fn", "evidence": [{"kind": "l0", "at": "jk00c:1"}]}
+        other = {"type": "target", "to": "x/fn", "note": "another",
+                 "evidence": [{"kind": "l0", "at": "jk78c:1"}]}
+        self.assertEqual(write.joined_links([first, second, other]), [
+            {"type": "target", "to": "x/fn", "note": "one",
+             "evidence": [{"kind": "l0", "at": "jk00c:1"}, {"kind": "l0", "at": "jk00d:1"}]},
+            other])
+
+
 class HomeTest(unittest.TestCase):
     def test_a_symbol_that_would_move_the_home_of_an_unnamed_meaning_pins_it(self):
         meaning = Meaning("fn", symbols={"jk00d": object()})
         document = {}
-        write.Change._keep_home(meaning, "jk78c", document)
+        write.Change._keep_home(meaning, ["jk78c"], document)
         self.assertEqual(document, {})
-        write.Change._keep_home(meaning, "jk00c", document)
+        write.Change._keep_home(meaning, ["jk00c"], document)
         self.assertEqual(document, {"home": "jk00d"})
         document = {}
-        write.Change._keep_home(meaning, "7mfk", document)
+        write.Change._keep_home(meaning, ["jk78c", "7mfk"], document)
         self.assertEqual(document, {"home": "jk00d"})
 
 
@@ -208,6 +351,8 @@ class OverlayTest(unittest.TestCase):
         self.assertEqual([issue.subject for issue in store.canonical(self.root, overlay)],
                          ["kept/ram"])
         self.assertEqual(store.canonical(self.root), [])
+        with self.assertRaises(FileNotFoundError):
+            store.load(self.root, store.path_of("ram", "removed"), overlay)
 
     def test_an_overlay_replaces_the_names(self):
         text = "layout,kind,address,name,former\n7mfk,ram,ffff1000,gentle-otter,brisk-lynx\n"
@@ -255,6 +400,20 @@ class ArgumentsTest(unittest.TestCase):
                                 "evidence": [{"kind": "l0", "at": "jk00c:00040000"}],
                                 "from": "7mfk", "level": None, "note": None}])
         self.assertFalse(applied.call_args.kwargs["dry_run"])
+
+    def test_merge_prints_the_files_it_removes(self):
+        stub = write.Change(mock.Mock(names=[]), None)
+        stub.lines = ["merge y"]
+        texts = {Path("kb/fn/x.toml"): "a\n", Path("kb/fn/y.toml"): None}
+        with mock.patch.object(write, "apply", return_value=(stub, texts)) as applied:
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                code = cli.main(["merge", "x/fn", "y/fn", "--from", "7mfk"])
+        self.assertEqual(code, 0)
+        self.assertEqual(out.getvalue(), "kb/fn/x.toml: written\nkb/fn/y.toml: removed\nmerge y\n")
+        self.assertEqual(applied.call_args.args[0], [{"cmd": "merge", "meaning": "x/fn",
+                                                      "other": "y/fn", "evidence": [],
+                                                      "from": "7mfk"}])
 
 
 class ApplyTest(unittest.TestCase):

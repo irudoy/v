@@ -34,6 +34,7 @@ uv run kb fmt                        # rewrite the entity files of kb/ in canoni
 uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning on another layout
 uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
 uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
+uv run kb merge <meaning> <other> --dry-run   # two meanings, or two files of one meaning, as one
 uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
@@ -135,8 +136,9 @@ name resolves with a note that names the current reference.
 
 ## Write commands
 
-`kb bind`, `kb absent`, and `kb unresolved` write one operation, and `kb
-apply` the operations of a TOML file of `[[op]]` tables, as one change under
+`kb bind`, `kb absent`, `kb unresolved`, and `kb merge` write one operation,
+and `kb apply` the operations of a TOML file of `[[op]]` tables, as one change
+under
 `.kb/lock` (section 12.3 of the specification). A change resolves its
 references on a current graph, edits the entity files in memory, and compiles
 the model with them in place of the files on disk (`compile.build` with an
@@ -165,6 +167,16 @@ names of the diff anew.
   search with the L0 digest of the layout, or those of `--method`, `--target`,
   and `--count`; a search with one candidate is refused with the `kb bind`
   that records it.
+- `kb merge <meaning> <other>` moves the symbols of the other meaning into
+  the file of the meaning, each with the evidence of its join: the
+  `--evidence` items at its layout, or the candidate of the search as for
+  `kb bind`. A named meaning keeps the former name of each moved symbol as a
+  `former` reference. The statuses, keys, links, analogs, and former names of
+  the other file join where they agree, the other file is removed, and the
+  references of every entity file to the other names, including `[[...]]`
+  citations, name the meaning. The two files of one meaning, which the `names`
+  check reports, join entry by entry, and the name that the other file gives
+  a symbol becomes its `former` reference.
 - An evidence item is a TOML inline table, for example `--evidence 'kind =
   "l0", at = "jk00c:00043f10"'`, and a batch states it as an `[[op.evidence]]`
   table.

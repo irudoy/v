@@ -314,8 +314,9 @@ def _write(args, ops, root=repo.ROOT):
     """Apply write operations as one change and print the files it writes and
     one line per operation; a dry run prints the diff instead of writing."""
     change, texts = write.apply(ops, root, dry_run=args.dry_run, log=_stderr)
-    for path in texts:
-        print(f"{path.as_posix()}: {'would be written' if args.dry_run else 'written'}")
+    for path, text in texts.items():
+        done = "written" if text is not None else "removed"
+        print(f"{path.as_posix()}: {'would be ' + done if args.dry_run else done}")
     for line in change.lines:
         print(line)
     if args.dry_run:
@@ -342,6 +343,13 @@ def command_unresolved(args, root=repo.ROOT):
         "cmd": "unresolved", "meaning": args.meaning, "layout": args.layout,
         "from": args.source, "method": args.method, "target": args.target,
         "count": args.count, "note": args.note}], root)
+
+
+def command_merge(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "merge", "meaning": args.meaning, "other": args.other,
+        "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
+        "from": args.source}], root)
 
 
 def command_apply(args, root=repo.ROOT):
@@ -490,6 +498,15 @@ def build_parser():
     unresolved.add_argument("--count", type=int, help="the matches of a stated search")
     unresolved.add_argument("--note", help="prose about the status")
     unresolved.set_defaults(handler=command_unresolved)
+    merge = writer("merge", "join another meaning, or another file of one meaning, into a "
+                   "meaning", ("meaning", "the meaning that keeps its name, or its symbol that "
+                               "a search starts from"),
+                   ("other", "the meaning or the meaning file that joins it"))
+    merge.add_argument("--evidence", action="append",
+                       help=f"{evidence} at the layout of a symbol of the other meaning; by "
+                       "default the evidence of the search")
+    merge.add_argument("--from", dest="source", help=source)
+    merge.set_defaults(handler=command_merge)
     writer("apply", "a batch of write operations as one change",
            ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
 

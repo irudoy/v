@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "jk00c"
-address = "0004b27c"
-name = "vivid-capuchin"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk00c:0004b27c"

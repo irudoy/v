@@ -177,7 +177,10 @@ def files(root, overlay=None):
 
 def load(root, path, overlay=None):
     if overlay and Path(path) in overlay:
-        return tomllib.loads(overlay[Path(path)])
+        text = overlay[Path(path)]
+        if text is None:
+            raise FileNotFoundError(f"{Path(path).as_posix()} leaves the store")
+        return tomllib.loads(text)
     return tomllib.loads((root / path).read_text(encoding="utf-8"))
 
 

@@ -1163,7 +1163,8 @@ Options common to the read commands:
 | `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>]` | Status `absent` with the evidence that removes the mechanism |
 | `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>]` | Status `unresolved` with the method and target of the search |
 | `kb link <from> <type> <to>` / `kb unlink` | A typed link and its evidence |
-| `kb rename`, `kb merge`, `kb move` | [Renames, merges, and moves](#55-renames-merges-and-moves) |
+| `kb merge <meaning> <other> [--evidence <item>]... [--from <l>]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) |
+| `kb rename`, `kb move` | [Renames, merges, and moves](#55-renames-merges-and-moves) |
 | `kb retire <ref>` | Retires a meaning or designed entity; its names stay reserved |
 | `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) |
 | `kb apply <batch> [--dry-run]` | A batch of the operations above as one change |
@@ -1207,15 +1208,39 @@ references.
   with the `l0` digest of the layout, or those that `--method`, `--target`,
   and `--count` state together. A search that finds one candidate is refused
   with the `kb bind` that records it.
+- `kb merge <meaning> <other>` keeps the name and the file of the meaning.
+  Each symbol of the other meaning takes the evidence of the join: the
+  `--evidence` items at its layout, or else the evidence of the candidate at
+  its address that the search of `kb.match` finds as for `kb bind`. The merge
+  refuses a layout where both meanings have a symbol, a symbol without that
+  evidence, and an unnamed meaning with a named other. The entries of the
+  other file, or those that `kb/names.csv` names, move into the file of the
+  meaning; in a named meaning the name of each moved symbol becomes its first
+  `former` reference, and the name of a named other becomes a former name of
+  the meaning. The statuses, keys, links, analogs, and former names of the
+  other file join those of the file: a status of a layout that gains a symbol
+  leaves the file, and a status or key that both meanings state agrees, or
+  the merge is refused. The other file leaves the store, every reference and
+  `[[...]]` citation of the entity files to a name of the other meaning names
+  the meaning, links of one type, target, slot, and offset whose keys agree
+  join, and a link of the meaning to itself leaves its file.
+- `kb merge` of the two files of one meaning, which the `names` check
+  reports, takes `<name>/<kind>` as the file of that name and joins the
+  entries of each symbol that both files state: the name that the other file
+  gives the symbol becomes a `former` reference, and the keys and evidence of
+  the entries join.
 - An evidence item is a TOML inline table, for example `kind = "l0", at =
   "jk00c:00043f10"`, with the keys of its kind ([Evidence](#76-evidence)).
 
 A batch is a TOML file of `[[op]]` tables, each with `cmd` and the arguments
-of one command under their names: `meaning`, `symbol`, `layout`, `evidence`
-as an array of tables, `from`, `level`, `method`, `target`, `count`, and
-`note`. `kb apply` applies all operations or none, and each operation reads
-the working tree, not the result of an earlier operation of the batch.
-Subagents write only through batches, so the parent reviews one diff.
+of one command under their names: `meaning`, `other`, `symbol`, `layout`,
+`evidence` as an array of tables, `from`, `level`, `method`, `target`,
+`count`, and `note`. `kb apply` applies all operations or none. Each
+operation resolves its references and searches on the working tree, not on
+the result of an earlier operation of the batch, and edits the files as the
+earlier operations leave them; an operation that names a file that an
+earlier one removes is refused. Subagents write only through batches, so the
+parent reviews one diff.
 
 ### 12.4 Output
 

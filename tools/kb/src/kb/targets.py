@@ -24,7 +24,8 @@ RECORD_WORDS = {"feedback_config_record_value": "feedback_config_record_address"
 
 def _document(kind, name, root, overlay):
     path = store.path_of(kind, name)
-    if not (overlay and path in overlay) and not (root / path).is_file():
+    if (overlay[path] is None if overlay and path in overlay
+            else not (root / path).is_file()):
         raise KbError(f"{path.as_posix()}: no entity file", code=3)
     return store.load(root, path, overlay)
 

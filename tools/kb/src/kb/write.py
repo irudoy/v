@@ -1,5 +1,6 @@
 """Write commands (tools/kb/SPEC.md, section 12.3): `bind`, `absent`,
-`unresolved`, and `apply`, which applies a batch of them as one change.
+`unresolved`, `merge`, and `apply`, which applies a batch of them as one
+change.
 
 A change edits entity files as documents over the working tree. An operation
 reads the file of its meaning from the change or from the disk, or starts it
@@ -18,6 +19,14 @@ become `former` references.
 - `unresolved` records the method, the target, and the count of the search
   from a symbol of the meaning, which finds no unique candidate, or of a
   stated search, with the L0 digest of the layout.
+- `merge` joins another meaning into a meaning, or another file of one meaning
+  into its file. Each symbol of the other meaning takes the evidence of the
+  join, stated or found as `bind` finds it, and its entry moves into the file
+  of the meaning, where a named meaning keeps its former name as a `former`
+  reference. The statuses, keys, links, analogs, and former names of the other
+  file join those of the file where they agree, the other file leaves the
+  store, and every reference of the entity files to a name of the other
+  meaning names the meaning.
 
 `plan` compiles the model with the rendered files in place of those on disk
 and refuses the change with exit code 3 when the result has an issue of a
@@ -28,11 +37,12 @@ files through temporary files and renames, and loads the graph.
 
 import difflib
 from pathlib import Path
+import re
 import tomllib
 import weakref
 
 from kb import checks, compile, graph, lock, match, names, refs, repo, store, vocab
-from kb.model import SymbolKey
+from kb.model import MEANING_REF, SymbolKey
 from kb.repo import KbError
 
 # The keys of each operation of a batch besides `cmd`, and those it requires.
@@ -40,10 +50,21 @@ COMMANDS = {
     "bind": ("meaning", "symbol", "evidence", "from", "level", "note"),
     "absent": ("meaning", "layout", "evidence", "note"),
     "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
+    "merge": ("meaning", "other", "evidence", "from"),
 }
 REQUIRED = {"bind": ("meaning", "symbol"), "absent": ("meaning", "layout", "evidence"),
-            "unresolved": ("meaning", "layout")}
+            "unresolved": ("meaning", "layout"), "merge": ("meaning", "other")}
 SEARCH = ("method", "target", "count")
+# The keys of a meaning file that a merge joins by their own rules; the other
+# keys move into a file that lacks them.
+JOINED = ("symbol", "status", "link", "analog", "former", "home")
+# The keys of a symbol entry that a merge of two entries of one symbol joins.
+ENTRY = ("layout", "address", "name", "former", "evidence")
+# A reference in a string of an entity file: the whole string, or a `[[...]]`
+# citation of prose.
+REFERENCE = re.compile(r"(?P<name>[a-z][a-z0-9_-]*)(?P<rest>/(?P<kind>[a-z]+)"
+                       r"(?:/[0-9a-z]+(?:-[0-9a-f]{8})?)?)?")
+CITATION = re.compile(r"\[\[(?P<ref>[^\[\]]+)\]\]")
 _CHECKED = weakref.WeakKeyDictionary()
 
 
@@ -104,6 +125,76 @@ def summary(item):
     return " ".join(parts)
 
 
+def renamed(value, others, kind, target, key=None):
+    """(value, count): a value of an entity file with each reference to a name
+    of `others` of `kind` naming `target` instead, and the count of the
+    references it rewrites. A reference is a whole string `<name>/<kind>`
+    with an optional layout and address, or a `[[...]]` citation of prose,
+    where a bare generated name counts too; `former` records names and stays."""
+    if key == "former":
+        return value, 0
+    if isinstance(value, dict):
+        found, count = {}, 0
+        for name, item in value.items():
+            found[name], added = renamed(item, others, kind, target, name)
+            count += added
+        return found, count
+    if isinstance(value, list):
+        found, count = [], 0
+        for item in value:
+            item, added = renamed(item, others, kind, target, key)
+            found.append(item)
+            count += added
+        return found, count
+    if not isinstance(value, str):
+        return value, 0
+    whole = REFERENCE.fullmatch(value)
+    if whole and whole.group("name") in others and whole.group("kind") == kind:
+        return target + whole.group("rest"), 1
+    count = 0
+
+    def cite(found):
+        nonlocal count
+        inner = REFERENCE.fullmatch(found.group("ref").strip())
+        if inner and inner.group("name") in others and (
+                inner.group("kind") == kind or inner.group("kind") is None
+                and vocab.GENERATED_NAME.fullmatch(inner.group("name"))):
+            count += 1
+            return f"[[{target}{inner.group('rest') or ''}]]"
+        return found.group(0)
+
+    return CITATION.sub(cite, value), count
+
+
+def _union(items, added):
+    return [*items, *(item for item in added if item not in items)]
+
+
+def _link_key(link):
+    return link.get("type"), link.get("to"), link.get("slot"), link.get("offset")
+
+
+def joined_links(links):
+    """Links with one entry for each type, target, slot, and offset whose
+    other keys agree: the evidence of the entries joins in the order of its
+    locations, and their lists join."""
+    found = []
+    for link in links:
+        held = next((held for held in found if _link_key(held) == _link_key(link)
+                     and all(held[key] == value for key, value in link.items()
+                             if key in held and not isinstance(value, list))), None)
+        if held is None:
+            found.append(dict(link))
+            continue
+        for key, value in link.items():
+            if key not in held:
+                held[key] = value
+            elif isinstance(value, list):
+                held[key] = _union(held[key], value)
+        held["evidence"] = sorted(held.get("evidence", ()), key=lambda item: str(item.get("at")))
+    return found
+
+
 def model_resolver(model):
     """A resolver over the model alone: a meaning key `<name>/<kind>` or a
     location `<layout>:<address>`, for callers without a graph."""
@@ -156,6 +247,7 @@ class Change:
     def __init__(self, model, resolve, root=repo.ROOT):
         self.model, self.resolve, self.root = model, resolve, root
         self.documents = {}
+        self.removed = set()
         self.rows = {row.key: row for row in model.names}
         self.rows_changed = False
         self.lines = []
@@ -213,7 +305,7 @@ class Change:
         entry = {"layout": layout, "address": f"{address:08x}"}
         if not meaning.semantic:
             entry["name"] = name
-            self._keep_home(meaning, layout, document)
+            self._keep_home(meaning, [layout], document)
         entry.update({"level": level, "note": op.get("note"), "evidence": evidence})
         document["symbol"] = [*document.get("symbol", ()), entry]
         document["status"] = [status for status in document.get("status", ())
@@ -261,15 +353,240 @@ class Change:
         self.lines.append(f"unresolved {meaning.key} on {layout}: {method} search of {target}, "
                           f"{count} matches")
 
+    def merge(self, op):
+        meaning, named, path = self._file_of(op["meaning"])
+        other, _, other_path = self._file_of(op["other"])
+        if meaning.kind != other.kind:
+            raise KbError(f"{op['meaning']} is a {meaning.kind} meaning and {op['other']} a "
+                          f"{other.kind} one", code=2)
+        if meaning is other:
+            self._merge_files(meaning, path, other_path, op)
+        else:
+            self._merge_meanings(meaning, named, other, other_path, op)
+
+    def _merge_meanings(self, meaning, named, other, other_path, op):
+        """Join the symbols and the file of `other` into `meaning`."""
+        if other.semantic and not meaning.semantic:
+            raise KbError(f"{other.key} has a semantic name and {meaning.key} a generated one; "
+                          f"`kb merge {other.key} {meaning.key}` keeps the semantic name",
+                          code=2)
+        path, document = self.document(meaning)
+        source = self._open(other_path) if other_path is not None else {}
+        held = set(meaning.symbols) | {entry.get("layout") for entry in document.get("symbol", ())}
+        for layout, symbol in sorted(other.symbols.items()):
+            if layout in held:
+                current = meaning.symbols.get(layout)
+                raise KbError(
+                    f"{meaning.key} has {self._ref(current) if current else 'a symbol'} on "
+                    f"{layout}, where {other.key} has {self._ref(symbol)}; `kb move` corrects a "
+                    "wrong symbol", code=3)
+        stated = [evidence_item(item) for item in op.get("evidence") or ()]
+        several = len(other.symbols) > 1
+        if several and any((match.location(item.get("at")) or (None,))[0] not in other.symbols
+                           for item in stated):
+            raise KbError(f"{other.key} has {len(other.symbols)} symbols; each evidence item "
+                          "names the layout of one in `at`", code=2)
+        entries = {(entry.get("layout"), entry.get("address")): entry
+                   for entry in source.get("symbol", ())}
+        moved, joins = [], []
+        for layout, symbol in sorted(other.symbols.items()):
+            items = [item for item in stated
+                     if not several or match.location(item.get("at"))[0] == layout]
+            evidence = items or self._joining(meaning, named, op.get("from"), symbol)
+            entry = entries.get((layout, f"{symbol.address:08x}"))
+            entry = self._entry_of(meaning, other, symbol,
+                                   dict(entry) if entry is not None
+                                   else self.adopt(meaning, symbol))
+            entry["evidence"] = _union(entry.get("evidence", []), evidence)
+            moved.append(entry)
+            joins.append(f"{symbol.key.location} {'; '.join(summary(item) for item in evidence)}")
+        if not meaning.semantic:
+            self._keep_home(meaning, [entry["layout"] for entry in moved], document)
+        document["symbol"] = [*document.get("symbol", ()), *moved]
+        layouts = set(meaning.symbols) | {entry.get("layout") for entry in document["symbol"]}
+        formers = ([other.name] if other.semantic else []) + list(source.get("former", ()))
+        self._absorb(document, source, layouts, meaning, formers if meaning.semantic else [],
+                     meaning.name, f"{meaning.key} and {other.key}")
+        if other_path is not None:
+            self._remove(other_path)
+        others = {other.name, *(symbol.generated for symbol in other.symbols.values()),
+                  *(entry.get("name") for entry in source.get("symbol", ()))}
+        count = self._rename(others - {None, meaning.name}, meaning.kind, meaning.name, path)
+        self.lines.append(f"merge {other.key} into {meaning.key}: {', '.join(joins)}"
+                          f"{self._renames(count)}")
+
+    def _merge_files(self, meaning, path, other_path, op):
+        """Join the file `other_path` of a meaning into its file `path`: an
+        entry of one symbol in both joins, and the name of the other file
+        becomes a former reference of that symbol."""
+        if path is None or other_path is None or path == other_path:
+            raise KbError(f"{op['meaning']} and {op['other']} name one meaning, {meaning.key}",
+                          code=2)
+        if op.get("evidence") or op.get("from"):
+            raise KbError("the files of one meaning join without evidence", code=2)
+        kind, own, name = meaning.kind, path.stem, other_path.stem
+        semantic = bool(vocab.SEMANTIC_NAME.fullmatch(own))
+        if not semantic and vocab.SEMANTIC_NAME.fullmatch(name):
+            raise KbError(f"{name}/{kind} is a semantic name and {own}/{kind} a generated one; "
+                          f"`kb merge {name}/{kind} {own}/{kind}` keeps the semantic name", code=2)
+        document, source = self._open(path), self._open(other_path)
+        symbols = document.setdefault("symbol", [])
+        home = next((entry.get("layout") for entry in symbols if entry.get("name") == own), None)
+        for entry in source.get("symbol", ()):
+            layout, address = entry.get("layout"), entry.get("address")
+            reference = f"{entry.get('name') or name}/{kind}/{layout}-{address}"
+            held = next((item for item in symbols
+                         if (item.get("layout"), item.get("address")) == (layout, address)), None)
+            if held is None:
+                if any(item.get("layout") == layout for item in symbols):
+                    raise KbError(f"{path.as_posix()} and {other_path.as_posix()} hold two "
+                                  f"symbols on {layout}; `kb move` corrects a wrong symbol",
+                                  code=3)
+                entry = dict(entry)
+                if semantic:
+                    entry.pop("name", None)
+                    entry["former"] = _union([reference], entry.get("former", []))
+                symbols.append(entry)
+                continue
+            for key, value in entry.items():
+                if key in ENTRY:
+                    continue
+                if key not in held:
+                    held[key] = value
+                elif held[key] != value:
+                    raise KbError(f"the entries of {layout}:{address} in {path.as_posix()} and "
+                                  f"{other_path.as_posix()} disagree on {key}", code=3)
+            current = f"{held.get('name') or own}/{kind}/{layout}-{address}"
+            former = [reference] if reference != current else []
+            held["former"] = _union(held.get("former", []),
+                                    former + list(entry.get("former", ())))
+            held["evidence"] = _union(held.get("evidence", []), entry.get("evidence", ()))
+        layouts = {entry.get("layout") for entry in symbols}
+        if not semantic and home is not None and "home" not in document:
+            if ("7mfk" if "7mfk" in layouts else min(layouts)) != home:
+                document["home"] = home
+        formers = ([name] if vocab.SEMANTIC_NAME.fullmatch(name) else []) \
+            + list(source.get("former", ()))
+        self._absorb(document, source, layouts, None, formers if semantic else [], own,
+                     f"{path.as_posix()} and {other_path.as_posix()}")
+        self._remove(other_path)
+        others = {name, *(entry.get("name") for entry in source.get("symbol", ()))}
+        count = self._rename(others - {None, own}, kind, own, path)
+        self.lines.append(f"merge {name}/{kind} into {own}/{kind}: {other_path.as_posix()} "
+                          f"joins {path.as_posix()}{self._renames(count)}")
+
+    def _joining(self, meaning, named, layout, symbol):
+        """The evidence of the candidate at the address of a symbol that the
+        search from a symbol of the meaning finds on the symbol's layout."""
+        source = self._source(meaning, named, layout)
+        found = match.search(self.model, source, symbol.layout)
+        candidate = found.candidates.get(symbol.address)
+        if candidate is None:
+            listed = ", ".join(f"{symbol.layout}:{other:08x}" for other in sorted(found.candidates))
+            raise KbError(
+                f"the {found.method} search from {source.key.location} finds "
+                f"{listed or 'no candidate'} on {symbol.layout}, not {symbol.key.location}; "
+                "state the evidence", code=3)
+        return [self._stored(candidate.evidence)]
+
+    @staticmethod
+    def _entry_of(meaning, other, symbol, entry):
+        """The entry of a symbol of `other` in the file of `meaning`: a named
+        meaning keeps the name of the symbol in `other` as the first former
+        reference."""
+        if not meaning.semantic:
+            return entry
+        name = entry.pop("name", None)
+        current = other.name if other.semantic else name or symbol.generated
+        former = [f"{current}/{symbol.kind}/{symbol.layout}-{symbol.address:08x}"] \
+            if current else []
+        former = _union(former, entry.get("former", ()))
+        if former:
+            entry["former"] = former
+        return entry
+
+    @staticmethod
+    def _absorb(document, source, layouts, meaning, formers, own, pair):
+        """Join the statuses, keys, links, analogs, and former names of the
+        file `source` into `document`, whose meaning has symbols on `layouts`:
+        a status of such a layout leaves both, and a status or key that both
+        state, or that `meaning` states from a registry, agrees."""
+        statuses = {entry.get("layout"): entry for entry in document.get("status", ())
+                    if entry.get("layout") not in layouts}
+        stated = meaning.statuses if meaning is not None else {}
+        for entry in source.get("status", ()):
+            layout = entry.get("layout")
+            if layout in layouts:
+                continue
+            held = statuses.get(layout)
+            state = (held.get("state") if held is not None
+                     else stated[layout].state if layout in stated else None)
+            if state is None:
+                statuses[layout] = entry
+            elif state != entry.get("state"):
+                raise KbError(f"{pair} disagree on {layout}: {state} and {entry.get('state')}",
+                              code=3)
+        document["status"] = list(statuses.values())
+        for key, value in source.items():
+            if key in JOINED:
+                continue
+            current = document.get(key)
+            if current is None and meaning is not None:
+                current = meaning.props.get(key, meaning.tables.get(key))
+            if current is None:
+                document[key] = value
+            elif current != value:
+                raise KbError(f"{pair} disagree on {key}", code=3)
+        analogs = {entry.get("to"): entry for entry in document.get("analog", ())}
+        for entry in source.get("analog", ()):
+            analogs.setdefault(entry.get("to"), entry)
+        document["analog"] = list(analogs.values())
+        document["link"] = [*document.get("link", ()), *source.get("link", ())]
+        former = _union(document.get("former", []), [name for name in formers if name != own])
+        if former:
+            document["former"] = former
+
+    def _rename(self, others, kind, target, own):
+        """Rewrite the references of the entity files to a name of `others` of
+        `kind` as references to `target`, join the links that the rewrite
+        makes equal, and drop the links of the file `own` to its own meaning;
+        returns the count of rewritten references."""
+        paths = {path for _, _, path in store.files(self.root, self.model.overlay)}
+        total = 0
+        for path in sorted((paths | set(self.documents)) - self.removed,
+                           key=lambda item: item.as_posix()):
+            document = self.documents.get(path)
+            if document is None:
+                document = store.load(self.root, path, self.model.overlay)
+            document, count = renamed(document, others, kind, target)
+            if path == own:
+                document["link"] = [
+                    link for link in document.get("link", ())
+                    if not ((found := REFERENCE.fullmatch(str(link.get("to"))))
+                            and found.group("name") == target and found.group("kind") == kind)]
+            if count or path == own:
+                document["link"] = joined_links(document.get("link", ()))
+                self.documents[path] = document
+            total += count
+        return total
+
+    @staticmethod
+    def _renames(count):
+        return f"; {count} reference{'' if count == 1 else 's'} rewritten" if count else ""
+
     # Documents -------------------------------------------------------------
 
     def texts(self):
-        """{repository path: text} of the files that the change rewrites."""
+        """{repository path: text, or None for a file that leaves the store} of
+        the files that the change rewrites."""
         found = {}
         for path, document in self.documents.items():
             text = store.render(path.parent.name, document)
             if self._current(path) != text:
                 found[path] = text
+        for path in self.removed:
+            if self._current(path) is not None:
+                found[path] = None
         if self.rows_changed:
             text = names.render(self.rows.values())
             if self._current(names.PATH) != text:
@@ -282,8 +599,9 @@ class Change:
         for path, text in texts.items():
             before = self._current(path) or ""
             out.extend(difflib.unified_diff(
-                before.splitlines(keepends=True), text.splitlines(keepends=True),
-                f"a/{path.as_posix()}" if before else "/dev/null", f"b/{path.as_posix()}"))
+                before.splitlines(keepends=True), (text or "").splitlines(keepends=True),
+                f"a/{path.as_posix()}" if before else "/dev/null",
+                f"b/{path.as_posix()}" if text is not None else "/dev/null"))
         return "".join(out)
 
     def _current(self, path):
@@ -297,8 +615,7 @@ class Change:
     def document(self, meaning):
         """(path, document) of the file of a meaning; a meaning without one
         starts a file with the entry of its home symbol."""
-        path = next((Path(src) for owner, src in self.model.files.values()
-                     if owner is meaning), None)
+        path = self._path(meaning)
         if path is None:
             path = store.path_of(meaning.kind, meaning.name)
             if path not in self.documents and self._current(path) is not None:
@@ -306,10 +623,41 @@ class Change:
                               code=3)
         if path not in self.documents:
             if self._current(path) is not None:
-                self.documents[path] = store.load(self.root, path, self.model.overlay)
+                self._open(path)
             else:
                 self.documents[path] = {"symbol": [self.adopt(meaning, meaning.home_symbol)]}
         return path, self.documents[path]
+
+    def _path(self, meaning):
+        """The file of a meaning: the file of its name, or else its only file."""
+        held = self.model.files.get((meaning.kind, meaning.name))
+        if held is not None and held[0] is meaning:
+            return Path(held[1])
+        return next((Path(src) for owner, src in self.model.files.values()
+                     if owner is meaning), None)
+
+    def _file_of(self, text):
+        """(meaning, symbol or None, path of its file or None) of a reference;
+        `<name>/<kind>` of a meaning file names that file, so that the files of
+        one meaning resolve apart."""
+        found = MEANING_REF.fullmatch(str(text).strip())
+        held = found and self.model.files.get((found.group("kind"), found.group("name")))
+        if held and held[0] is not None:
+            return held[0], None, Path(held[1])
+        meaning, symbol = self.resolve(text)
+        return meaning, symbol, self._path(meaning)
+
+    def _open(self, path):
+        """The document of an entity file of the change or the working tree."""
+        if path in self.removed:
+            raise KbError(f"{path.as_posix()} leaves the store in this change", code=3)
+        if path not in self.documents:
+            self.documents[path] = store.load(self.root, path, self.model.overlay)
+        return self.documents[path]
+
+    def _remove(self, path):
+        self.documents.pop(path, None)
+        self.removed.add(path)
 
     def designed(self, kind, slug):
         """(path, document) of the file of a designed entity; an entity without
@@ -344,12 +692,12 @@ class Change:
         document["status"] = kept + [status]
 
     @staticmethod
-    def _keep_home(meaning, layout, document):
+    def _keep_home(meaning, layouts, document):
         """Pin the home of an unnamed meaning, whose name is the generated name
-        of its home symbol, when a symbol on `layout` would move it."""
+        of its home symbol, when symbols on `layouts` would move it."""
         if "home" in meaning.props or "home" in document:
             return
-        layouts = set(meaning.symbols) | {layout}
+        layouts = set(meaning.symbols) | set(layouts)
         after = "7mfk" if "7mfk" in layouts else min(layouts)
         if after != meaning.home:
             document["home"] = meaning.home
