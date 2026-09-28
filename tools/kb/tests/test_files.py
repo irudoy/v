@@ -162,6 +162,26 @@ class FilesTest(unittest.TestCase):
         self.assertIn(("feature", "map_switching"), model.entities)
         self.assertEqual(b.issues, [])
 
+    def test_the_key_tables_and_unsupported_entries_of_a_target_name_symbols(self):
+        self.write("tbl", "fuel_cut", {"title": "Cut", "symbol": [
+            {"layout": "7mfk", "address": "0000f000"}, {"layout": "jk00d", "address": "0000f100"}]})
+        self.write("tbl", "exhaust_target", {"title": "Target", "symbol": [
+            {"layout": "7mfk", "address": "0000f200"}]})
+        self.write("feature", "map_switching", {"title": "Map switching", "target": [
+            {"layout": "jk00d", "status": "supported",
+             "families": {"over_run_fuel_cut": "fuel_cut/tbl"},
+             "unsupported": [{"symbol": "exhaust_target/tbl", "note": "No surface"}]}]})
+        b, model = self.build()
+        target = model.targets[("map_switching", "jk00d")]
+        self.assertEqual(target.props["families"],
+                         {"over_run_fuel_cut": SymbolKey("jk00d", "tbl", 0xF100)})
+        # A meaning without a symbol on the layout of the target resolves to
+        # its home symbol.
+        self.assertEqual(target.props["unsupported"],
+                         [{"symbol": SymbolKey("7mfk", "tbl", 0xF200), "note": "No surface"}])
+        self.assertEqual(target.needs(), [SymbolKey("jk00d", "tbl", 0xF100)])
+        self.assertEqual(b.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

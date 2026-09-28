@@ -30,10 +30,11 @@ ADDRESS_KEYS = ("layout", "address", "name", "former", "evidence")
 MEANING_ARRAYS = ("symbol", "status", "link", "analog")
 TABLE_KEYS = ("editor", "logparam", "diagnostic")
 # Keys of a feature target whose entries hold a symbol reference: tables of
-# named entries, arrays of entries, and lists of meaning references, which name
-# the home symbol of their meaning.
+# named entries, arrays of entries, tables of references, and lists of meaning
+# references, which name the home symbol of their meaning.
 TARGET_REFS = {"roles": "symbol", "hooks": "hook", "allocations": "did"}
-TARGET_ARRAYS = {"variants": "symbol", "omitted": "symbol"}
+TARGET_ARRAYS = {"variants": "symbol", "omitted": "symbol", "unsupported": "symbol"}
+TARGET_TABLES = ("families", "symbols")
 TARGET_LISTS = ("requires",)
 # Designed kinds that the store holds from the stage that converts them.
 CONVERTED_KINDS = ("feature",)
@@ -216,6 +217,10 @@ def _feature(b, slug, document, src):
                 props[key] = [{**item, field: Ref(item[field], src, layout)}
                               if isinstance(item, dict) and field in item else item
                               for item in props[key]]
+        for key in TARGET_TABLES:
+            if isinstance(props.get(key), dict):
+                props[key] = {name: Ref(item, src, layout) if isinstance(item, str) else item
+                              for name, item in props[key].items()}
         for key in TARGET_LISTS:
             if isinstance(props.get(key), list):
                 props[key] = [Ref(item, src) if isinstance(item, str) else item

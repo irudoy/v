@@ -10,11 +10,11 @@ allocation,injected_ram_end,ffff6000,ffff0f00,,,mapped,Runtime uses 0x300 bytes 
 map,cold_idle_ignition_timing,00012196,000137e0,,,mapped,homologous fallback branch preserves the default table role
 map,exhaust_cvtc_target,0000b33a,,,,unsupported,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so published target byte ffff23a4 is never produced
 map_native,fuel_compensation_main_alternate,,00009fba,,alternate,target-specific,Alternate compensation channel shares the index byte and both axes and the interpolator of the default surface and has no source counterpart
-map,fuel_compensation_main_default,0000a29a,00009eba,,default,target-specific,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
+map,fuel_compensation_main_default,0000a29a,00009eba,,default,mapped,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
 map,high_detonation_timing_state,00009b1a,,,,unsupported,Target surface 0x97ca lies in the coordinator half gated off by stock ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x96ca
 map,high_octane_timing_state,00009a1a,,,,unsupported,Target surface 0x96ca lies in the coordinator half gated off by stock ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x97ca
 map_native,idle_ignition_timing_alternate,,000137f0,,alternate,target-specific,Alternate arm of the target state selector shares the index byte and interpolator of the default table and has no source counterpart
-map,idle_ignition_timing_default,0001219e,000137e8,,default,target-specific,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
+map,idle_ignition_timing_default,0001219e,000137e8,,default,mapped,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
 map_native,ignition_surface_cold,,0000a20a,,,target-specific,Executed coordinator half reads this 16x16 surface at or below the coolant threshold through the hooked ignition lookup literals and has no source counterpart
 map_native,ignition_surface_hot,,0000a10a,,,target-specific,Executed coordinator half reads this 16x16 surface above the coolant threshold through the hooked ignition lookup literals and has no source counterpart
 map,over_run_channel_multiplier,000129c0,00013e86,,,mapped,near-exact homologous accessor preserves the operand and six exact bytes
@@ -53,14 +53,14 @@ map_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Serializer payload of
 map_symbol,fuel_compensation_lookup,000261f0,00027fd8,,,mapped,Reviewed interpolation contract binds the common fuel lookup
 map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle literal-pool hooks
 map_symbol,ignition_coordinator_config_byte,,00008965,,,target-specific,Stock value 0xba sets bit 5 and the ignition coordinator 0x69ab8 tests it at 0x69adc to take its mode-selected half
-map_symbol,ignition_gated_surface_1,0000991a,000095ca,,,target-specific,First 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
-map_symbol,ignition_gated_surface_2,00009a1a,000096ca,,,target-specific,Second 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
-map_symbol,ignition_gated_surface_3,00009b1a,000097ca,,,target-specific,Third 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
+map_symbol,ignition_gated_surface_1,0000991a,000095ca,,,mapped,"the homologous surface 000095ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000096ca and 000097ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
+map_symbol,ignition_gated_surface_2,00009a1a,000096ca,,,mapped,"the homologous surface 000096ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000097ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
+map_symbol,ignition_gated_surface_3,00009b1a,000097ca,,,mapped,"the homologous surface 000097ca belongs to the gated half of the ignition coordinator 00069ab8, which stock ROM8[0x8965] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 000095ca and 000096ca, and the executed surfaces 0000a10a and 0000a20a are target-native tables"
 map_symbol,ignition_lookup,00026230,00028018,,,mapped,Reviewed interpolation contract binds the common ignition lookup
 map_symbol,rev_fuel_cut_delay,,ffff2449,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008a1f
 map_symbol,rev_fuel_cut_selector,,ffff10e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,ffff23f5,,,target-specific,Bits 0x08 and 0x10 retain the armed and active hysteresis state
-map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,Exact 190-byte function is the third Boolean predicate aggregated by the final fuel-mask coordinator
+map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,"The BSR at coordinator instruction ordinal 28 targets FUN_0006aeb8, the third Boolean predicate aggregated by the final fuel-mask coordinator. It interpolates the adjacent activation and release curves on the shared eight-point axis, caps both results with the adjacent scalar limits, and compares them with the current native RPM word."
 map_symbol,selector_function,000d09d8,000fd40c,,,mapped,Unique mapped-neighbor fingerprint preserves the complete selector body
 map_symbol,startup_initializer,0002c648,0002f596,,,mapped,Instruction alignment and the stock jump literal bind the target initializer
 rolling_hook,displaced_periodic_task,00021970,00021a4c,000b2294,,mapped,Entry 0 of the homologous 144-entry scheduler table at 00021a4c binds the periodic wrapper

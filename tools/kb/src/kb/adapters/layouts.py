@@ -8,7 +8,11 @@ which own the patch design of `7mfk`.
   a later feature redirects the replacement of an earlier one, the stock of the
   first feature is the stock word, and its key names the word.
 - The `[[family]]` entries of the map layout give the `7mfk` tables of the map
-  families under their keys.
+  families under their keys, which enter `families` of the `7mfk` target of
+  `map_switching`.
+- The payload offset of the `[feedback]` record of the map layout is
+  `feedback_payload_offset` of the `7mfk` target of `can_telemetry`, as the
+  address profiles state it on the other layouts.
 - The `[[diagnostic]]` entries of the rolling layout give the `7mfk` DID slots
   with `number` and the allocations of the `rolling_launch` target.
 - A hook word links to the meaning at its stock value with `target`.
@@ -163,15 +167,21 @@ def declare(b, root):
                       entry["target"], entry["width"], src)
                      for entry in found["rolling_launch"].get("diagnostic", ())], targets)
     src = LAYOUTS["map_switching"].as_posix()
+    families = targets.setdefault(("map_switching", CANONICAL), {}).setdefault("families", {})
     for family in found["map_switching"].get("family", ()):
         group = ("tbl", "key", family["key"])
-        b.symbol(CANONICAL, "tbl", family["canonical_address"], src, group=group)
+        families[family["key"]] = b.symbol(CANONICAL, "tbl", family["canonical_address"], src,
+                                           group=group)
         b.name(group, family["key"], "symbol_key", src)
     for feature in FEATURES:
         b.entity("feature", feature, LAYOUTS[feature].as_posix())
         props = targets.get((feature, CANONICAL), {})
         b.target(feature, CANONICAL, LAYOUTS[feature].as_posix(), status="supported",
                  props=props)
+    feedback = found["map_switching"].get("feedback", {})
+    if "payload_offset" in feedback:
+        b.target("can_telemetry", CANONICAL, src,
+                 props={"feedback_payload_offset": feedback["payload_offset"]})
 
 
 def relate(b, root):

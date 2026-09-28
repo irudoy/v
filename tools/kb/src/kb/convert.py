@@ -532,15 +532,20 @@ def dump(model):
 
 
 def _target_props(model, props):
-    """The keys of a target with `requires` as the set of its meanings, which
-    a registry states by their symbols and a file by their references."""
-    if "requires" not in props:
-        return props
-    found = set()
-    for key in props["requires"]:
-        meaning = model.meaning_of(key) if isinstance(key, SymbolKey) else None
-        found.add(meaning.key if meaning is not None else key)
-    return {**props, "requires": frozenset(found)}
+    """The keys of a target with `requires` as the set of its meanings and the
+    symbol of an `unsupported` entry as its meaning, which a registry states
+    by their symbols and a file by their references."""
+    def meaning(key):
+        found = model.meaning_of(key) if isinstance(key, SymbolKey) else None
+        return found.key if found is not None else key
+
+    found = dict(props)
+    if "requires" in props:
+        found["requires"] = frozenset(meaning(key) for key in props["requires"])
+    if "unsupported" in props:
+        found["unsupported"] = [{**item, "symbol": meaning(item.get("symbol"))}
+                                for item in props["unsupported"]]
+    return found
 
 
 def differences(expected, found):

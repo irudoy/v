@@ -37,6 +37,10 @@ STRENGTHS = ("file", "homology", "native", "field", "key", "role")
 STRENGTH_RANK = {strength: rank for rank, strength in enumerate(STRENGTHS)}
 # Prose keys accumulate across registries; every other key states one fact.
 PROSE = ("title", "summary", "note")
+# Keys of a feature target that name the symbols the feature needs on its
+# layout: tables of symbols, and tables of entries with a symbol.
+NEEDED_TABLES = ("families", "symbols")
+NEEDED_ENTRIES = {"roles": "symbol", "hooks": "hook"}
 # Reference forms of files: a symbol `<name>/<kind>/<layout>` and a meaning or
 # designed entity `<name>/<kind>`.
 SYMBOL_REF = re.compile(r"(?P<name>[a-z][a-z0-9_-]*)/(?P<kind>[a-z]+)/(?P<layout>[0-9a-z]+)")
@@ -194,6 +198,18 @@ class Target:
     status: str | None = None
     props: dict = field(default_factory=dict)
     sources: set = field(default_factory=set)
+
+    def needs(self):
+        """The symbols that the feature needs on the layout of the target, in
+        order: its key tables, the symbols of its roles and hooks, and
+        `requires` (section 7.9)."""
+        found = []
+        for key in NEEDED_TABLES:
+            found += self.props.get(key, {}).values()
+        for key, name in NEEDED_ENTRIES.items():
+            found += [entry[name] for entry in self.props.get(key, {}).values()
+                      if isinstance(entry, dict) and name in entry]
+        return found + list(self.props.get("requires", ()))
 
 
 @dataclass(frozen=True, order=True)
@@ -834,7 +850,7 @@ class Model:
         required on a layout where they have no symbol (section 7.4). A
         requirement is `family` when the meaning has a symbol on another layout
         of the family, `<feature>` when a feature that targets the layout
-        requires it or its target on the layout lists it in `requires`, and
+        requires it or its target on the layout needs it (`Target.needs`), and
         `<feature> via <field>/field` when the feature requires a field whose
         `source` it is."""
         family = {layout.id: layout.family for layout in self.layouts.values()}
@@ -867,7 +883,7 @@ class Model:
                         if layout not in meaning.symbols:
                             found[(meaning.key, layout)].add(requirement)
         for (feature, layout), target in sorted(self.targets.items()):
-            for ref in target.props.get("requires", ()):
+            for ref in target.needs():
                 meaning = self.meaning_of(ref)
                 if meaning is not None and meaning.name and layout not in meaning.symbols:
                     found[(meaning.key, layout)].add(feature)

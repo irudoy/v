@@ -701,15 +701,29 @@ Features:
   target layout; `vendor` lists the competitor products that offer it, for
   the parity catalog.
 - `[[target]]` keys: `layout`, `status` (`supported`, `planned`, or
-  `unsupported`), `note`, `requires`, and the keys of the feature. An
-  `unsupported` target names in `note` the meanings whose status blocks it.
+  `unsupported`), `note`, `basis`, `requires`, and the keys of the feature.
+  An `unsupported` target names in `note` the meanings whose status blocks
+  it; `basis` holds the prose of the review behind the target by topic.
   `requires` of a target lists the meanings that the feature needs on its
-  layout alone; `REQUIRES` carries them with the layouts of the targets
-  that list them, and `kb gaps` reports those without a symbol there.
+  layout beyond those that its key tables, roles, and hooks name.
+  `REQUIRES` carries all of them with the layouts of the targets that name
+  them, and `kb gaps` reports those without a symbol there.
+- `families` (`map_switching`) and `symbols` are tables of the keys of the
+  patch build, whose entries name the meaning of each key on the layout of
+  the target; a role key enters `roles` instead. `variants` lists the
+  symbols that a build variant selects with the variant, and `unsupported`
+  the meanings of the feature that the layout does not support, each with a
+  `note`; a meaning that has no symbol on the layout also carries a status
+  there.
 - The `runtime` feature holds the runtime allocation of each layout, its
-  ROM and RAM relocation, and the build variants. `can_telemetry` holds the
-  wire constants, profiles, and contexts, and each of its targets lists in
-  `unavailable` the fields whose source meaning has a status on the layout.
+  ROM and RAM relocation, and the build variants, with the prose of a bound
+  in `notes`; its `7mfk` target holds the envelope that the other layouts
+  relocate. `can_telemetry` holds the wire constants, profiles, and
+  contexts; its targets hold the telemetry mailbox, its mask, and the
+  payload offset of the feedback record, with the prose of each in `notes`.
+  A field is unavailable on a layout where its source meaning has a status
+  and no symbol fills the role of the field; the list of those fields is
+  derived, not stored.
   `definitions` holds `default_emit` and the switches of the editor
   definitions, and each of its targets holds in `images` the header metadata,
   checksums, switch addresses, exposed features, prose (`note`), and the
@@ -723,7 +737,9 @@ Features:
   the replacement of each. The build applies them in that order, so the value
   of a word before a feature redirects it is the replacement of the last
   earlier feature that redirects the same word, or the stock value; it is
-  derived, not stored.
+  derived, not stored. The prose of the first feature that redirects a word
+  belongs to the `hook` symbol, and the prose of a later feature is the
+  `note` of its hook key.
 - RAM and ROM that a feature allocates are not meanings. Each target lists
   them in `allocations`, a table of allocation names whose entries hold the
   `address` and the `width` in bytes on the layout of the target, and fields
@@ -1280,7 +1296,7 @@ until the stage that replaces them.
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
 | `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
 | `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
-| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol, or a status and an entry in the target's `unavailable` list | 4 |
+| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target | 4 |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered | 2 |
 | `guard` | `.claude/settings.json` is tracked and runs `tools/kb/hook.py` before every guarded tool; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |
 
@@ -1555,6 +1571,10 @@ address = "ffff1034"
 layout = "jk00d"
 address = "ffff1034"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1032"
+
 [[status]]
 layout = "1me3b"
 state = "unresolved"
@@ -1565,14 +1585,6 @@ l0 = "<digest>"
 
 [[status]]
 layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:0003bd1c"
-count = 0
-l0 = "<digest>"
-
-[[status]]
-layout = "jk78c"
 state = "unresolved"
 method = "masked-match"
 target = "7mfk:0003bd1c"
@@ -1633,10 +1645,9 @@ basis = "exact-code"
 observes = ["normalized_bfs_snapshot/ram"]
 ```
 
-The field takes `x*100/128` from the meaning. The `can_telemetry` targets of
-`jk78c`, `1nd`, and `1me3b` list `normalized_load_raw/field` in
-`unavailable`, and the `fields` check accepts the list because the source
-meaning has a status on each of them.
+The field takes `x*100/128` from the meaning. The meaning has a status on
+`1nd` and `1me3b`, so the field is unavailable there, and the `fields` check
+accepts it.
 
 ```text
 $ uv run kb where normalized_bfs_snapshot
@@ -1646,7 +1657,7 @@ normalized_bfs_snapshot/ram  code  home 7mfk  Scheduler snapshot of the normaliz
 7mfk   ffff102c  code  copy of normalized_bfs/ram/7mfk-ffff1048  indirect block-copy 7mfk:00020f18
 jk00c  ffff1034  code  copy of normalized_bfs/ram/jk00c-ffff1050  indirect block-copy jk00c:00020f50
 jk00d  ffff1034  code  copy of normalized_bfs/ram/jk00d-ffff1050  indirect block-copy jk00d:00020f50
-jk78c  unresolved  masked-match 7mfk:0003bd1c  count 0
+jk78c  ffff1032  code  copy of normalized_bfs/ram/jk78c-ffff1042
 
 $ uv run kb at jk00d:ffff1034
 normalized_bfs_snapshot/ram/jk00d-ffff1034  ram 8-bit unsigned  code
@@ -2140,16 +2151,16 @@ Stage 3. `patches/rom-address-profiles.toml`, per image profile:
 | `family`, `layout_source`, `inherits` | Derived from `rom-images/homology.toml` and the layouts |
 | `rom_size`, `rom_delta`, `ram_delta`, the `free_*` and `injected_*` ROM and RAM bounds, `map_variant`, `telemetry_completion_variant`, `telemetry_zero_source`, `ignition_unreferenced_routine` | Keys of the `runtime` target |
 | `capabilities.<feature>` | `status` of the target of `<feature>` |
-| A key of `map_families`, `map_symbols`, `rolling_symbols`, or `can_symbols` whose value is an address | Symbol of the meaning the key names |
+| A key of `map_families`, `map_symbols`, `rolling_symbols`, or `can_symbols` whose value is an address | Symbol of the meaning the key names, and the key in `families` (`map_families`) or `symbols` of the target of its feature; a role key enters `roles` instead |
 | `can_symbols` keys `feedback_config_record_value`, `mailbox_record_stock`, and `occupied_mailbox_record_stock` | `rom-bytes` evidence of the symbol at the matching address key |
 | `can_symbols` keys `mailbox_index`, `mailbox_mask`, and `feedback_payload_offset` | Keys of the `can_telemetry` target |
 | `telemetry_sources.<field>` | Symbol of the source meaning of the field |
-| `telemetry_unavailable` | The `unavailable` list of the `can_telemetry` target, and a status of the source meaning of each listed field: `unresolved` when the evidence of the field's correspondence row, or else the telemetry evidence of the profile, states that a search found no counterpart (`no homolog`, `not traced`, `no match`), and `absent` otherwise |
+| `telemetry_unavailable` | A status of the source meaning of each listed field: `unresolved` when the evidence of the field's correspondence row, or else the telemetry evidence of the profile, states that a search found no counterpart (`no homolog`, `not traced`, `no match`), and `absent` otherwise; the list is derived from those statuses |
 | `map_hooks.<key>` = address, stock, replacement | The `hook` symbol at the address with a `target` link to the meaning at the stock value, and `<key>` with the replacement in the `map_switching` target |
 | `rolling_hooks.<key>`, `can_hooks.<key>` = address, stock, base, replacement | The same in the `rolling_launch` and `can_telemetry` targets; `base` is derived ([Designed entities](#79-designed-entities)), and the conversion checks it |
 | `rolling_diagnostics.<key>` = DID, pointer address, target, width | The `did` symbol at the pointer address with `number`, and the allocation `<key>` of `rolling_launch` at the target address with `width` |
 | `extra_cvtc_storage`, `ignition_state_storage` | ROM allocations of the `map_switching` target |
-| `evidence.<topic>` | `note` of the target of the topic's feature: `free_rom` and `free_ram` of `runtime`, `maps` of `map_switching`, `rolling` of `rolling_launch`, and `can` and `telemetry` of `can_telemetry` |
+| `evidence.<topic>` | `basis.<topic>` of the target of the topic's feature: `free_rom` and `free_ram` of `runtime`, `maps` of `map_switching`, `rolling` of `rolling_launch`, and `can` and `telemetry` of `can_telemetry` |
 
 The conversion adds typed evidence to the symbols and statuses whose
 locations the evidence text states and lists the text it cannot type.
@@ -2159,21 +2170,23 @@ The canonical feature layouts give the `7mfk` side of the same tables: the
 `patches/rolling-launch-layout.toml`, and `patches/can-telemetry-layout.toml`
 the `hook` symbols with their canonical keys and replacements, the
 `[[family]]` entries of the map layout the `tbl` symbols of the map
-families, and the `[[diagnostic]]` entries of the rolling layout the `did`
-symbols. The adapter `layouts` reads them, and the layouts stay the owners
-of the patch design.
+families in `families` of the `7mfk` target, the payload offset of its
+`[feedback]` record the `feedback_payload_offset` of the `7mfk`
+`can_telemetry` target, and the `[[diagnostic]]` entries of the rolling
+layout the `did` symbols. The adapter `layouts` reads them, and the layouts
+stay the owners of the patch design.
 
 `patches/*-runtime-correspondence.csv`:
 
 | Column | Target |
 |---|---|
-| `domain`, `key` | The entry: `telemetry` names a field source, `can_symbol`, `map_symbol`, and `rolling_symbol` a symbol meaning, or for `mailbox_index`, `mailbox_mask`, and `feedback_payload_offset` a key of the `can_telemetry` target, `map_hook`, `can_hook`, and `rolling_hook` a `hook` meaning, `map` and `map_native` a `tbl` meaning, `allocation` a `runtime` allocation, and `capability` a feature target |
-| `source` | The `7mfk` symbol, allocation, or key value |
+| `domain`, `key` | The entry: `telemetry` names a field source, `can_symbol`, `map_symbol`, and `rolling_symbol` a symbol meaning, or for `mailbox_index`, `mailbox_mask`, and `feedback_payload_offset` a key of the `can_telemetry` target, `map_hook`, `can_hook`, and `rolling_hook` a `hook` meaning, `map` and `map_native` a `tbl` meaning, `allocation` a `runtime` allocation, and `capability` a feature target. A symbol row whose key names no symbol-table key of the address profile on its layout enters `requires` of the target of its feature with its symbol |
+| `source` | The `7mfk` symbol, allocation, or key value; the sources of the allocation rows give the envelope of the `7mfk` `runtime` target |
 | `target` | The symbol, allocation, or key value on the target layout |
 | `stock` | The stock word at the target: the `target` link of a hook, or `rom-bytes` evidence of a record or literal symbol; the `image-bytes` check verifies both |
-| `variant` | A key of the feature target |
-| `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; the status of an `unsupported` `map` or `map_native` row gives way to a symbol that another row places in the meaning on the layout. For an allocation or a capability: the `note` of the target key |
-| `evidence` | The `note` of the typed evidence item |
+| `variant` | An entry of `variants` of the feature target with the symbol at the target |
+| `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; an `unsupported` `map` or `map_native` row also enters `unsupported` of the target with the `7mfk` symbol of its source and its evidence as `note`, and its status gives way to a symbol that another row places in the meaning on the layout. For an allocation: `mapped` where the target is the source plus the relocation of the profile; for a capability `target-specific` |
+| `evidence` | The `note` of the typed evidence item; the evidence of a hook row of a later feature than the first that redirects its word is the `note` of its hook key in the target of its feature, of an allocation or a `can_telemetry` number the entry of `notes` of its target, and of a capability the `note` of the target |
 
 A `target-specific` symbol row whose target a `mapped` row of another key of
 the same file places fills a role ([Designed entities](#79-designed-entities)):
@@ -2323,13 +2336,14 @@ each `unresolved` status of the method `interp-contract`.
 
 `patches/runtime_targets.py`: `CANONICAL_MAP_SYMBOLS`,
 `CANONICAL_ROLLING_SYMBOLS`, and `CANONICAL_CAN_SYMBOLS` give the `7mfk`
-symbols of the meanings their keys name, with the value keys converted as in
-the address profiles. `MAP_HOOK_KEYS` and `VQ37_MAP_HOOK_KEYS` give the
-per-layout hook keys of the feature targets and join them to the canonical
-keys. `IGNITION_STATE_TEMPLATE` gives the `1nd` table symbols of the four
-state-code families; its pointer tables are addresses of the adapter template
-before relocation, which the `ignition_state_storage` allocation of each
-target replaces.
+symbols of the meanings their keys name and the keys in `symbols` of the
+`7mfk` targets, with the value keys converted as in the address profiles.
+`MAP_HOOK_KEYS` and `VQ37_MAP_HOOK_KEYS` give the per-layout hook keys of the
+feature targets and join them to the canonical keys.
+`IGNITION_STATE_TEMPLATE` gives the `1nd` table symbols of the four
+state-code families, which `families` of the `1nd` target also names; its
+pointer tables are addresses of the adapter template before relocation,
+which the `ignition_state_storage` allocation of each target replaces.
 
 ### 20.4 VQ37VHR native registries
 

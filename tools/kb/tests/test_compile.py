@@ -65,10 +65,9 @@ class ProfileAdapterTest(unittest.TestCase):
     def test_an_unavailable_field_states_absent_or_unresolved_by_its_evidence(self):
         knock = model().meaning_of(SymbolKey("7mfk", "ram", 0xFFFF121A))
         self.assertEqual(knock.statuses["1nd"].state, "absent")
-        self.assertIn("unavailable", {key for key in
-                                      model().targets[("can_telemetry", "1nd")].props})
-        self.assertIn("knock_timing_state_raw",
-                      model().targets[("can_telemetry", "1nd")].props["unavailable"])
+        # The status of the source meaning states the unavailable field; the
+        # target holds no list of the fields.
+        self.assertNotIn("unavailable", model().targets[("can_telemetry", "1nd")].props)
 
     def test_a_hook_word_takes_its_canonical_key(self):
         m = model()
@@ -161,7 +160,7 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(role["symbol"], SymbolKey("jk78c", "ram", 0xFFFF22F8))
         self.assertIn("column of the target Fuel Compensation surfaces", role["note"])
         self.assertEqual(sorted(m.meaning_of(role["symbol"]).symbols), ["jk78c"])
-        self.assertNotIn("alpha_n_flow_raw", target["unavailable"])
+        self.assertNotIn("alpha_n_flow_raw", target.get("symbols", {}))
         # The source meaning of the field keeps the homolog of its producer.
         flow = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1170))
         self.assertEqual((flow.key, flow.symbols["jk78c"].address),
@@ -230,6 +229,66 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(runtime.props["rom_delta"], 0x60000)
         self.assertEqual(runtime.props["free_ram_start"], "ffff0c00")
         self.assertIn(("feature", "map_switching"), m.entities)
+
+    def test_feature_targets_carry_the_key_tables_of_the_profile(self):
+        m = model()
+        maps = m.targets[("map_switching", "1me3b")].props
+        self.assertEqual(maps["families"]["rev_limit_fuel_cut_caps"],
+                         SymbolKey("1me3b", "tbl", 0x00009266))
+        self.assertEqual(maps["symbols"]["ignition_lookup"], SymbolKey("1me3b", "fn", 0x00029BA8))
+        # A role key enters `roles`, not `symbols`.
+        roles = m.targets[("map_switching", "jk78c")].props
+        self.assertIn("ignition_coordinator_config_byte", roles["roles"])
+        self.assertNotIn("ignition_coordinator_config_byte", roles["symbols"])
+        canonical = m.targets[("map_switching", "7mfk")].props
+        self.assertEqual(canonical["families"]["fuel_compensation_main"],
+                         SymbolKey("7mfk", "tbl", 0x0000A29A))
+        self.assertEqual(canonical["symbols"]["ignition_lookup"],
+                         SymbolKey("7mfk", "fn", profiles.runtime_tables(repo.ROOT)[
+                             "CANONICAL_MAP_SYMBOLS"]["ignition_lookup"]))
+        self.assertEqual(m.targets[("can_telemetry", "7mfk")].props["symbols"]["mailbox_data"],
+                         SymbolKey("7mfk", "reg", 0xFFFFDC48))
+
+    def test_a_correspondence_row_without_a_profile_key_enters_requires(self):
+        m = model()
+        target = m.targets[("map_switching", "1nd")]
+        required = {m.meaning_of(key).key for key in target.props["requires"]}
+        self.assertEqual(required, {
+            "over_run_channel_multiplier/tbl", "rev_fuel_cut_delay/ram",
+            "rev_fuel_cut_selector/ram", "rev_fuel_cut_state/ram", "rev_fuel_cut_state_machine/fn",
+            "rev_limit_fuel_cut_delay_calibration/tbl"})
+        self.assertLessEqual(set(target.props["requires"]), set(target.needs()))
+        self.assertIn(target.props["families"]["over_run_fuel_cut"], target.needs())
+
+    def test_rows_give_notes_bases_variants_and_unsupported_entries(self):
+        m = model()
+        runtime = m.targets[("runtime", "jk78c")].props
+        self.assertEqual(sorted(runtime["notes"]), sorted(profiles.RUNTIME_KEYS[3:11]))
+        self.assertEqual(sorted(runtime["basis"]), ["free_ram", "free_rom"])
+        can = m.targets[("can_telemetry", "jk78c")].props
+        self.assertEqual(sorted(can["notes"]), sorted(profiles.CAN_KEYS))
+        self.assertEqual(sorted(can["basis"]), ["can", "telemetry"])
+        self.assertEqual(m.targets[("can_telemetry", "7mfk")].props["feedback_payload_offset"],
+                         0x20)
+        maps = m.targets[("map_switching", "1nd")].props
+        self.assertIn({"symbol": SymbolKey("1nd", "tbl", 0x0000A2C0), "variant": "alternate"},
+                      maps["variants"])
+        unsupported = {m.meaning_of(item["symbol"]).key for item in maps["unsupported"]}
+        self.assertIn("exhaust_cvtc_target/tbl", unsupported)
+        self.assertTrue(maps["note"])
+        # The allocation rows give the canonical runtime envelope.
+        self.assertEqual(m.targets[("runtime", "7mfk")].props,
+                         {"injected_rom_start": "000d2108", "injected_rom_end": "000d6000",
+                          "injected_ram_start": "ffff5d00", "injected_ram_end": "ffff6000"})
+
+    def test_a_later_feature_states_its_hook_text_in_its_target(self):
+        m = model()
+        word = SymbolKey("1nd", "hook", 0x00115490)
+        self.assertEqual(m.symbols[word].props["note"],
+                         ["Dispatcher literal resolves the exact 0x551 serializer"])
+        entry = m.targets[("rolling_launch", "1nd")].props["hooks"]["feedback_arbitration"]
+        self.assertEqual((entry["hook"], entry["note"]),
+                         (word, "Rolling feedback chains from the Map Switching serializer wrapper"))
 
 
 class DefinitionAdapterTest(unittest.TestCase):

@@ -9,10 +9,20 @@ and 20.3).
   telemetry source the source meaning of its field, and a hook the ROM word
   that its features redirect, which joins the `7mfk` word of its canonical key
   (`kb.adapters.layouts`). The other keys go to the targets of `runtime`,
-  `map_switching`, `rolling_launch`, and `can_telemetry`.
+  `map_switching`, `rolling_launch`, and `can_telemetry`: a key of
+  `map_families` enters `families` of its target and a key of another symbol
+  table `symbols`, the storage tables, the numbers, and the variants their
+  own keys, and each evidence topic `basis`.
 - A row of `patches/<layout>-runtime-correspondence.csv` joins its target
   symbol to the meaning of its source symbol, and an `unsupported` row gives a
-  status.
+  status. A symbol or map row whose key names no symbol-table key of the
+  address profile on its layout enters `requires` of its target with its
+  symbol, and an `unsupported` map row enters `unsupported` with the `7mfk`
+  symbol of its source and its text. The text of a hook row of a later
+  feature than the first that redirects its word is the `note` of the hook
+  key in its target, the text of an allocation or a target number the entry
+  of `notes`, and the text of a capability the `note` of the target; the
+  sources of the allocation rows give the `7mfk` bounds of `runtime`.
 - A `target-specific` row whose target a `mapped` row of another key of the
   same file places binds a role of its feature: the key and the symbol enter
   `roles` of the feature target of the layout, and neither the row nor the
@@ -88,6 +98,12 @@ EVIDENCE = {"free_rom": RUNTIME, "free_ram": RUNTIME, "maps": "map_switching",
             "rolling": "rolling_launch", "can": "can_telemetry", "telemetry": "can_telemetry"}
 TABLE_FEATURE = {"map_families": "map_switching", "map_symbols": "map_switching",
                  "rolling_symbols": "rolling_launch", "can_symbols": "can_telemetry"}
+# The key table of a feature target that states the keys of a symbol table.
+KEY_TABLE = {"map_families": "families", "map_symbols": "symbols",
+             "rolling_symbols": "symbols", "can_symbols": "symbols"}
+# Domains of the rows that enter `requires` of their target where their key
+# names no symbol-table key of the address profile.
+REQUIRING = ("map", "map_native", "map_symbol", "rolling_symbol", "can_symbol")
 DOMAIN_FEATURE = {"map": "map_switching", "map_native": "map_switching",
                   "map_symbol": "map_switching", "map_hook": "map_switching",
                   "rolling_symbol": "rolling_launch", "rolling_hook": "rolling_launch",
@@ -107,7 +123,6 @@ Hook = layouts.Hook
 
 def inputs(root):
     found = [PROFILES.as_posix(), RUNTIME_TARGETS.as_posix()]
-    found += layouts.inputs(root)
     found += [path.relative_to(root).as_posix()
               for path in sorted((root / PATCHES).glob(CORRESPONDENCE))]
     return found
@@ -234,9 +249,22 @@ class Profiles:
         """The stock value of a hook word: the base of its first feature."""
         return self.words[word][0].base
 
+    def canonical_numbers(self):
+        """The `can_telemetry` numbers of `7mfk`: the mailbox of
+        `CANONICAL_CAN_SYMBOLS`, and the payload offset of the feedback record
+        of the map layout."""
+        found = {key: value for key, value in self.tables["CANONICAL_CAN_SYMBOLS"].items()
+                 if key in CAN_KEYS}
+        feedback = self.layouts_doc["map_switching"].get("feedback", {})
+        if "payload_offset" in feedback:
+            found["feedback_payload_offset"] = feedback["payload_offset"]
+        return found
+
     def key_entries(self):
         """{key: [(layout, address, table, src)]} of the symbol tables, and the
-        image-byte and target keys of `can_symbols` by layout."""
+        image-byte and target keys of `can_symbols` by layout. The template
+        of the ignition state storage states its `1nd` tables under its own
+        name, since it is no table of a target."""
         entries = defaultdict(list)
         values = defaultdict(dict)
         src = RUNTIME_TARGETS.as_posix()
@@ -247,7 +275,7 @@ class Profiles:
                 else:
                     entries[key].append((CANONICAL, value, table, src))
         for key, (base, _) in self.tables[TEMPLATE].items():
-            entries[key].append(("1nd", base, "map_families", src))
+            entries[key].append(("1nd", base, TEMPLATE, src))
         src = PROFILES.as_posix()
         for layout, (rom, profile) in self.profiles.items():
             for table in SYMBOL_TABLES:
@@ -264,7 +292,7 @@ def key_kind(b, entries):
     feature redirects the word at every address of the key, else the kind of
     the symbols registered at its addresses, else the kind its addresses
     admit."""
-    if any(table == "map_families" for _, _, table, _ in entries):
+    if any(table in ("map_families", TEMPLATE) for _, _, table, _ in entries):
         return "tbl"
     kinds = [{key.kind for key in b.at(layout, address)} for layout, address, _, _ in entries]
     if all("hook" in found for found in kinds):
@@ -291,22 +319,19 @@ def declare(b, root):
     facts = Profiles(b, root)
     b.stash[__name__] = facts
     targets = defaultdict(dict)
-    notes = defaultdict(list)
     layouts.declare_words(b, facts.words, targets, facts.canonical_map_keys)
     _declare_dids(b, facts, targets)
     keys = _declare_keys(b, facts, targets)
     _declare_telemetry(b, facts, targets)
-    unavailable = _declare_profiles(b, facts, targets, notes)
-    _declare_rows(b, facts, keys, targets, notes)
+    unavailable = _declare_profiles(b, facts, targets)
+    _declare_rows(b, facts, keys, targets)
     _declare_unavailable(b, unavailable)
     for (feature, layout), props in sorted(targets.items()):
         b.entity("feature", feature, PROFILES.as_posix())
         status = props.pop("status", "supported")
-        srcs = props.pop("src", {PROFILES.as_posix()})
+        srcs = props.pop("src", None) or {PROFILES.as_posix()}
         target = b.target(feature, layout, sorted(srcs)[0], status=status, props=props)
         target.sources.update(srcs)
-        for note in notes.get((feature, layout), ()):
-            b.target(feature, layout, note[1], props={"note": note[0]})
 
 
 def _declare_dids(b, facts, targets):
@@ -318,8 +343,16 @@ def _declare_dids(b, facts, targets):
         targets)
 
 
+def _entry(targets, feature, layout, src):
+    """The keys of the target of a feature on a layout, which `src` states."""
+    entry = targets[(feature, layout)]
+    entry.setdefault("src", set()).add(src)
+    return entry
+
+
 def _declare_keys(b, facts, targets):
-    """Symbols of the symbol-table keys; returns {(layout, key): symbol key}."""
+    """Symbols of the symbol-table keys, and the keys of the symbol tables of
+    the targets; returns {(layout, key): symbol key}."""
     entries, values = facts.key_entries()
     found = {}
     for name, rows in sorted(entries.items()):
@@ -341,7 +374,10 @@ def _declare_keys(b, facts, targets):
                     name, {})["symbol"] = key
                 continue
             if role is None:
-                found[(layout, name)] = b.symbol(layout, kind, address, src, group=group)
+                found[(layout, name)] = key = b.symbol(layout, kind, address, src, group=group)
+                if table in KEY_TABLE:
+                    _entry(targets, TABLE_FEATURE[table], layout, src).setdefault(
+                        KEY_TABLE[table], {})[name] = key
                 continue
             if address != role[0]:
                 b.issue("audit", src, f"{name}@{layout}",
@@ -355,7 +391,7 @@ def _declare_keys(b, facts, targets):
     for layout, items in values.items():
         for name, (value, src) in items.items():
             if name in CAN_KEYS:
-                targets[("can_telemetry", layout)][name] = value
+                _entry(targets, "can_telemetry", layout, src)[name] = value
                 continue
             key = found.get((layout, ROM_BYTES[name]))
             if key is None:
@@ -402,28 +438,28 @@ def _declare_unavailable(b, pending):
                             "key": key, "note": text}])
 
 
-def _declare_profiles(b, facts, targets, notes):
+def _declare_profiles(b, facts, targets):
     """Keys of the feature targets; returns the unavailable fields that no
     correspondence row states."""
     src = PROFILES.as_posix()
     pending = []
     for layout, (rom, profile) in sorted(facts.profiles.items()):
-        runtime = targets[(RUNTIME, layout)]
+        runtime = _entry(targets, RUNTIME, layout, src)
         runtime.update({key: _value(key, profile[key]) for key in RUNTIME_KEYS if key in profile})
         for key in MAP_KEYS:
             if key in profile:
-                targets[("map_switching", layout)][key] = _value(key, profile[key])
+                _entry(targets, "map_switching", layout, src)[key] = _value(key, profile[key])
         for feature, supported in profile.get("capabilities", {}).items():
-            targets[(feature, layout)]["status"] = "supported" if supported else "unsupported"
+            _entry(targets, feature, layout, src)["status"] = (
+                "supported" if supported else "unsupported")
         unavailable = profile.get("telemetry_unavailable", [])
-        targets[("can_telemetry", layout)]["unavailable"] = list(unavailable)
         evidence = profile.get("evidence", {})
         for topic, text in evidence.items():
             feature = EVIDENCE.get(topic)
             if feature is None:
                 b.issue("schema", src, f"profile.{rom}.evidence", f"unknown topic {topic}")
                 continue
-            notes[(feature, layout)].append((text, src))
+            _entry(targets, feature, layout, src).setdefault("basis", {})[topic] = text
         rows = {row["key"]: row for row in facts.rows.get(layout, ("", []))[1]
                 if row["domain"] == "telemetry"}
         for field in unavailable:
@@ -435,7 +471,7 @@ def _declare_profiles(b, facts, targets, notes):
     return pending
 
 
-def _declare_rows(b, facts, keys, targets, notes):
+def _declare_rows(b, facts, keys, targets):
     for layout, (path, rows) in sorted(facts.rows.items()):
         if layout not in b.layouts:
             b.issue("schema", path, layout, "a correspondence file of an unknown layout")
@@ -448,32 +484,21 @@ def _declare_rows(b, facts, keys, targets, notes):
             source, target = _hex(row["source"]), _hex(row["target"])
             feature = DOMAIN_FEATURE.get(domain)
             if domain == "capability":
-                notes[(row["key"], layout)].append((text, path))
+                _entry(targets, row["key"], layout, path)["note"] = text
                 continue
             if feature is None:
                 b.issue("schema", where, subject, f"unknown domain {domain}")
                 continue
-            entry = targets[(feature, layout)]
-            entry.setdefault("src", {PROFILES.as_posix()}).add(path)
-            if row["variant"]:
-                entry.setdefault("variants", []).append(
-                    {"domain": domain, "key": row["key"], "variant": row["variant"],
-                     "address": hexed(target)})
+            entry = _entry(targets, feature, layout, path)
             if domain == "allocation":
-                stated = profile.get(row["key"])
-                if stated is not None and stated != target:
-                    b.issue("audit", where, subject,
-                            f"target {target:08x} disagrees with the profile {stated:08x}")
-                entry.setdefault("allocation_notes", {})[row["key"]] = text
+                _allocation(b, targets, layout, profile, row, path, where, subject,
+                            source, target)
                 continue
             if domain in HOOK_DOMAINS:
-                _hook_row(b, facts, layout, row, path, where, subject, source, target)
+                _hook_row(b, facts, targets, layout, row, path, where, subject, source, target)
                 continue
             if row["key"] in CAN_KEYS:
-                stated = targets[("can_telemetry", layout)].get(row["key"])
-                if stated is not None and stated != target:
-                    b.issue("audit", where, subject,
-                            f"target {target:x} disagrees with the profile {stated:x}")
+                _can_key(b, facts, targets, layout, row, path, where, subject, source, target)
                 continue
             known = keys.get((layout, row["key"])) or keys.get((CANONICAL, row["key"]))
             kind = known.kind if known else _row_kind(b, domain, layout, source, target)
@@ -505,15 +530,25 @@ def _declare_rows(b, facts, keys, targets, notes):
                     b.symbol(layout, kind, target, path, evidence=[{
                         "kind": "rom-bytes", "supports": "identity", "at": right.location,
                         "value": row["stock"], "note": row["key"]}])
+            if row["variant"]:
+                if right is None:
+                    b.issue("schema", where, subject, "a variant without a target")
+                else:
+                    entry.setdefault("variants", []).append(
+                        {"symbol": right, "variant": row["variant"]})
             if status == "unsupported":
-                if domain in MAP_DOMAINS:
-                    entry.setdefault("unsupported", []).append(
-                        {"key": row["key"], "note": text})
+                if domain in MAP_DOMAINS and left is None:
+                    b.issue("schema", where, subject, "an unsupported map row without a source")
+                elif domain in MAP_DOMAINS:
+                    entry.setdefault("unsupported", []).append({"symbol": left, "note": text})
                 b.status(group, layout, _state(text), path, props={"note": text},
                          evidence=[{"kind": "registry", "supports": "identity", "path": path,
                                     "key": subject, "note": text}],
                          yields=domain in MAP_DOMAINS)
-            elif left is not None and right is not None:
+                continue
+            if domain in REQUIRING and right is not None and (layout, row["key"]) not in keys:
+                entry.setdefault("requires", []).append(right)
+            if left is not None and right is not None:
                 b.join(left, right, where, "homology" if status == "mapped" else "role")
 
 
@@ -536,7 +571,43 @@ def _row_kind(b, domain, layout, source, target):
     return b.data_kind(where, address) or b.rom_data_kind(where, address)
 
 
-def _hook_row(b, facts, layout, row, path, where, subject, source, target):
+def _allocation(b, targets, layout, profile, row, path, where, subject, source, target):
+    """The text of an allocation row in `notes` of the `runtime` target, and
+    its source as the `7mfk` bound of its key."""
+    name = row["key"]
+    stated = profile.get(name)
+    if stated is not None and stated != target:
+        b.issue("audit", where, subject,
+                f"target {target:08x} disagrees with the profile {stated:08x}")
+    _entry(targets, RUNTIME, layout, path).setdefault("notes", {})[name] = row["evidence"]
+    if source is None:
+        return
+    canonical = _entry(targets, RUNTIME, CANONICAL, path)
+    if canonical.setdefault(name, _value(name, source)) != _value(name, source):
+        b.issue("audit", where, subject,
+                f"source {source:08x} disagrees with {canonical[name]} of {CANONICAL}")
+
+
+def _can_key(b, facts, targets, layout, row, path, where, subject, source, target):
+    """The text of a row of a `can_telemetry` number in `notes` of its target;
+    the target and the source of the row agree with the numbers of the
+    layout and of `7mfk`."""
+    name = row["key"]
+    stated = targets[("can_telemetry", layout)].get(name)
+    if stated is not None and stated != target:
+        b.issue("audit", where, subject, f"target {target:x} disagrees with the profile {stated:x}")
+    canonical = facts.canonical_numbers().get(name)
+    if canonical is not None and source is not None and canonical != source:
+        b.issue("audit", where, subject, f"source {source:x} disagrees with {canonical:x} of "
+                                         f"{CANONICAL}")
+    _entry(targets, "can_telemetry", layout, path).setdefault("notes", {})[name] = (
+        row["evidence"])
+
+
+def _hook_row(b, facts, targets, layout, row, path, where, subject, source, target):
+    """The text of the row of the first feature that redirects a word is the
+    note of its symbol, and the text of a later feature the `note` of the hook
+    key in the target of that feature."""
     hooks = facts.words.get((layout, target))
     if not hooks:
         b.issue("references", where, subject, f"no hook of the profile at {target:08x}")
@@ -545,7 +616,17 @@ def _hook_row(b, facts, layout, row, path, where, subject, source, target):
     if stock is not None and stock != facts.stock((layout, target)):
         b.issue("audit", where, subject, f"stock {stock:08x} disagrees with the profile "
                                          f"{facts.stock((layout, target)):08x}")
-    key = b.symbol(layout, "hook", target, path, props={"note": row["evidence"]})
+    feature = DOMAIN_FEATURE[row["domain"]]
+    hook = next((hook for hook in hooks if hook.feature == feature), None)
+    if hook is None or hook.key != row["key"]:
+        b.issue("references", where, subject, f"no {feature} hook {row['key']} at {target:08x}")
+        return
+    if hook is hooks[0]:
+        key = b.symbol(layout, "hook", target, path, props={"note": row["evidence"]})
+    else:
+        key = b.symbol(layout, "hook", target, path)
+        entry = _entry(targets, feature, layout, path)
+        entry["hooks"][hook.key]["note"] = row["evidence"]
     if source is not None and source in facts.canonical_words:
         other = b.symbol(CANONICAL, "hook", source, path)
         b.join(other, key, where, "homology" if row["status"] == "mapped" else "role")

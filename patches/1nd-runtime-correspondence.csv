@@ -10,11 +10,11 @@ allocation,injected_ram_end,ffff6000,ffff0f00,,,mapped,Runtime uses 0x300 bytes 
 map,cold_idle_ignition_timing,00012196,00013c12,,,mapped,homologous fallback branch preserves the default table role
 map,exhaust_cvtc_target,0000b33a,,,,unsupported,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so published target byte fffe9466 is never produced
 map_native,fuel_compensation_main_alternate,,0000a2c0,,alternate,target-specific,Alternate compensation channel shares the index byte and both axes and the interpolator of the default surface and has no source counterpart
-map,fuel_compensation_main_default,0000a29a,0000a1c0,,default,target-specific,the accessor on the default arm of the target state selector preserves exact geometry and storage
+map,fuel_compensation_main_default,0000a29a,0000a1c0,,default,mapped,the accessor on the default arm of the target state selector preserves exact geometry and storage
 map,high_detonation_timing_state,00009b1a,,,,unsupported,Target surface 0x9a80 lies in the coordinator half gated off by stock ROM8[0x8a2b] bit 5 and is byte-identical to 0x9880 and 0x9980
 map,high_octane_timing_state,00009a1a,,,,unsupported,Target surface 0x9980 lies in the coordinator half gated off by stock ROM8[0x8a2b] bit 5 and is byte-identical to 0x9880 and 0x9a80
 map_native,idle_ignition_timing_alternate,,00013c22,,alternate,target-specific,Alternate arm of the target state selector shares the index byte and interpolator of the default table and has no source counterpart
-map,idle_ignition_timing_default,0001219e,00013c1a,,default,target-specific,the branch on the default arm of the target state selector preserves the source warm-transition table role
+map,idle_ignition_timing_default,0001219e,00013c1a,,default,mapped,the branch on the default arm of the target state selector preserves the source warm-transition table role
 map_native,ignition_surface_cold,,0000a510,,,target-specific,Executed coordinator half reads this 16x16 surface for state code 1 through the hooked ignition lookup literals and has no source counterpart
 map_native,ignition_surface_hot,,0000a410,,,target-specific,Executed coordinator half reads this 16x16 surface for state codes 2 and 8 through the hooked ignition lookup literals and has no source counterpart
 map_native,ignition_surface_state_3,,0000a610,,,target-specific,Executed coordinator half reads this 8x8 surface for state code 3 through the hooked 8x8 lookup literal and has no source counterpart
@@ -58,14 +58,14 @@ map_symbol,feedback_status_byte,ffff3ada,fffeb0f2,,,mapped,Serializer payload of
 map_symbol,fuel_compensation_lookup,000261f0,000285f4,,,mapped,Both target accessor hooks share this lookup
 map_symbol,idle_ignition_lookup,00026370,000287b4,,,mapped,Both target idle literal-pool hooks share this lookup
 map_symbol,ignition_coordinator_config_byte,,00008a2b,,,target-specific,Stock value 0xba sets bit 5 and the ignition coordinator 0x74d98 branches at 0x74db4 to its gated half only when the bit is clear
-map_symbol,ignition_gated_surface_1,0000991a,00009880,,,target-specific,First 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
-map_symbol,ignition_gated_surface_2,00009a1a,00009980,,,target-specific,Second 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
-map_symbol,ignition_gated_surface_3,00009b1a,00009a80,,,target-specific,Third 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
+map_symbol,ignition_gated_surface_1,0000991a,00009880,,,mapped,"the homologous surface 00009880 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009980 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
+map_symbol,ignition_gated_surface_2,00009a1a,00009980,,,mapped,"the homologous surface 00009980 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
+map_symbol,ignition_gated_surface_3,00009b1a,00009a80,,,mapped,"the homologous surface 00009a80 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009980, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 map_symbol,ignition_lookup,00026230,00028634,,,mapped,Target ignition hooks share this lookup
 map_symbol,rev_fuel_cut_delay,,fffe950e,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008af3
 map_symbol,rev_fuel_cut_selector,,fffe80ed,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,fffe94ba,,,target-specific,Bits 0x10 and 0x20 retain the armed and active hysteresis state
-map_symbol,rev_fuel_cut_state_machine,,00076ad2,,,target-specific,Exact 190-byte function is the first Boolean predicate aggregated by the final fuel-mask coordinator
+map_symbol,rev_fuel_cut_state_machine,,00076ad2,,,target-specific,"The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state."
 map_symbol,selector_function,000d09d8,00129cbc,,,mapped,Exact selector entry recovered from its caller
 map_symbol,startup_initializer,0002c648,00030810,,,mapped,Startup function is bound by two stock literals
 rolling_hook,displaced_periodic_task,00021970,0002205c,000f1880,,mapped,Entry 1 of the homologous 148-entry scheduler table at 00022058 binds the periodic wrapper

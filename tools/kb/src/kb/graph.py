@@ -311,7 +311,7 @@ def claim_rows(model):
         targets.append({"from": f"{feature}/feature", "to": layout, "props": properties({
             **_referenced(model, props), "status": target.status,
             "producer": "claim", "src": _src(target.sources)})})
-        for key in _named_keys(model, target.props.get("requires", ())):
+        for key in _named_keys(model, target.needs()):
             layouts, sources = required[(feature, key)]
             layouts.add(layout)
             sources.update(target.sources)

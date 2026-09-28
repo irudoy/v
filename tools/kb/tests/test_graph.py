@@ -93,6 +93,21 @@ class ClaimRowsTest(unittest.TestCase):
         targets = [row for row in rows["targets"] if row["from"] == "definitions/feature"]
         self.assertTrue(targets and all("requires" not in row["props"] for row in targets))
 
+    def test_the_key_tables_roles_hooks_and_requires_of_targets_are_required(self):
+        m = model()
+        rows = graph.claim_rows(m)
+        requires = {(row["from"], row["to"]): row["props"]["layouts"]
+                    for row in rows["entity_links"][("REQUIRES", "Entity", "Meaning")]}
+        self.assertEqual(requires[("map_switching/feature", "rev_fuel_cut_state/ram")],
+                         ["1me3b", "1nd", "jk78c"])
+        self.assertIn("7mfk", requires[("map_switching/feature", "over_run_fuel_cut/tbl")])
+        self.assertIn("1nd", requires[("rolling_launch/feature", "fuel_inhibit_mask/ram")])
+        for (feature, layout), target in m.targets.items():
+            for key in target.needs():
+                meaning = m.meaning_of(key)
+                if meaning is not None and meaning.name:
+                    self.assertIn(layout, requires[(f"{feature}/feature", meaning.key)])
+
     def test_values_become_storable(self):
         stored = graph.properties({"to": SymbolKey("7mfk", "fn", 0x26740), "empty": [],
                                    "none": None, "set": {"b", "a"}, "nested": [{"x": None}]})

@@ -120,8 +120,9 @@ name resolves with a note that names the current reference.
   manifest of the layout changed since, and `absent` with its first typed
   evidence. A meaning is required on the layouts that a feature targets when
   the feature requires it directly or through the `source` of a field it
-  requires, on the layout of a target that lists it in `requires`, as the
-  `definitions` targets list the tables and axes of their definitions, and
+  requires, on the layout of a target that names it in its key tables,
+  roles, hooks, or `requires`, as the `definitions` targets list the tables
+  and axes of their definitions, and
   on the layouts of a family where another layout has its symbol;
   `--feature` lists the requirements of one feature, `--layout` one layout.
 - `kb bench` answers every question of `bench.toml` that the current stage
@@ -204,8 +205,8 @@ a reference that names nothing fails the `references` check.
 | `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the targets of the features |
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
-| `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch` |
-| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py` | Target symbols, hook words that join the `7mfk` words of their canonical keys, DIDs, and telemetry sources with their statuses; the feature targets with the roles that a symbol of another meaning fills on a layout |
+| `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch` |
+| `profiles` | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `patches/runtime_targets.py` | Target symbols, hook words that join the `7mfk` words of their canonical keys, DIDs, and telemetry sources with their statuses; the feature targets with their key tables, the roles that a symbol of another meaning fills on a layout, `requires`, `variants`, `unsupported`, the prose of their rows in `notes` and hook keys, and the review topics in `basis` |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
 | `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
