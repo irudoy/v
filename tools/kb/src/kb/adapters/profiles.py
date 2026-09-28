@@ -1,17 +1,14 @@
-"""Address profiles, runtime correspondence, and the canonical feature layouts
-(tools/kb/SPEC.md, sections 20.1 and 20.3).
+"""Address profiles and runtime correspondence (tools/kb/SPEC.md, sections 20.1
+and 20.3).
 
 - The symbol tables of `patches/runtime_targets.py` give the `7mfk` symbols of
   their keys, and its hook-key tables join the per-layout keys of a map hook to
   its canonical key. The module is read with `ast`, not imported.
-- The `[[hook]]` entries of the canonical feature layouts give the `7mfk` words
-  of the canonical hook keys, the `[[family]]` entries of the map layout the
-  `7mfk` tables of the map families, and the `[[diagnostic]]` entries of the
-  rolling layout the `7mfk` DID slots.
 - Each image profile of `patches/rom-address-profiles.toml` gives the symbols
   of its layout: a symbol-table key names the meaning at its address, a
   telemetry source the source meaning of its field, and a hook the ROM word
-  that its features redirect. The other keys go to the targets of `runtime`,
+  that its features redirect, which joins the `7mfk` word of its canonical key
+  (`kb.adapters.layouts`). The other keys go to the targets of `runtime`,
   `map_switching`, `rolling_launch`, and `can_telemetry`.
 - A row of `patches/<layout>-runtime-correspondence.csv` joins its target
   symbol to the meaning of its source symbol, and an `unsupported` row gives a
@@ -35,30 +32,22 @@
 import ast
 from collections import defaultdict
 import csv
-from dataclasses import dataclass
 import io
 from pathlib import Path
 import re
 import tomllib
 
 from kb import store
-from kb.adapters import telemetry
+from kb.adapters import layouts, telemetry
 from kb.repo import KbError
 from kb.values import hexed
 
 PROFILES = Path("patches/rom-address-profiles.toml")
 RUNTIME_TARGETS = Path("patches/runtime_targets.py")
-FEATURE_LAYOUTS = {
-    "map_switching": Path("patches/map-switching-layout.toml"),
-    "rolling_launch": Path("patches/rolling-launch-layout.toml"),
-    "can_telemetry": Path("patches/can-telemetry-layout.toml"),
-}
 PATCHES = Path("patches")
 CORRESPONDENCE = "*-runtime-correspondence.csv"
 CANONICAL = "7mfk"
-# Features in build order: a later feature redirects the replacement of an
-# earlier one, and the first feature's key names a word without canonical key.
-FEATURES = ("map_switching", "rolling_launch", "can_telemetry")
+FEATURES = layouts.FEATURES
 RUNTIME = "runtime"
 HOOK_TABLES = {"map_hooks": "map_switching", "rolling_hooks": "rolling_launch",
                "can_hooks": "can_telemetry"}
@@ -113,29 +102,12 @@ KIND_ORDER = ("hook", "fn", "tbl", "axis", "const", "did", "dtc", "ram", "reg")
 # Evidence that a search found no symbol states `unresolved`; other evidence of
 # an unsupported entry states that the mechanism is `absent`.
 UNRESOLVED = re.compile(r"\bno homolog\b|\bnot traced\b|\bno match\b", re.IGNORECASE)
-HOOK_WIDTH = 32
-
-
-@dataclass
-class Hook:
-    """One feature's redirection of a ROM word. `base` is the word before the
-    feature redirects it; `stock` is the stock word where the registry states
-    it."""
-
-    layout: str
-    address: int
-    feature: str
-    key: str
-    canonical: str | None
-    stock: int | None
-    base: int
-    replacement: int
-    src: str
+Hook = layouts.Hook
 
 
 def inputs(root):
     found = [PROFILES.as_posix(), RUNTIME_TARGETS.as_posix()]
-    found += [path.as_posix() for path in FEATURE_LAYOUTS.values()]
+    found += layouts.inputs(root)
     found += [path.relative_to(root).as_posix()
               for path in sorted((root / PATCHES).glob(CORRESPONDENCE))]
     return found
@@ -181,8 +153,7 @@ class Profiles:
     def __init__(self, b, root):
         self.tables = runtime_tables(root)
         self.document = tomllib.loads((root / PROFILES).read_text(encoding="utf-8"))
-        self.layouts_doc = {feature: tomllib.loads((root / path).read_text(encoding="utf-8"))
-                            for feature, path in FEATURE_LAYOUTS.items()}
+        self.layouts_doc = layouts.documents(root)
         self.rows = correspondence(root)
         by_image = {image: layout.id for layout in b.layouts.values() for image in layout.images}
         self.profiles = {}
@@ -207,14 +178,12 @@ class Profiles:
                 b.issue("schema", src, f"profile.{rom}", f"unknown keys {', '.join(unknown)}")
             self.profiles[layout] = (rom, profile)
         self.roles = self._roles()
-        self.canonical_map_keys = {hook["key"] for hook in
-                                   self.layouts_doc["map_switching"].get("hook", ())}
+        self.canonical_map_keys = layouts.canonical_keys(self.layouts_doc)
+        # The `7mfk` words, which the layouts state.
+        self.canonical_words = {hook.address
+                                for hook in layouts.canonical_hooks(self.layouts_doc)}
         self.hooks = self._hooks()
-        self.words = defaultdict(list)
-        for hook in self.hooks:
-            self.words[(hook.layout, hook.address)].append(hook)
-        for hooks in self.words.values():
-            hooks.sort(key=lambda hook: FEATURES.index(hook.feature))
+        self.words = layouts.words(self.hooks)
 
     def _roles(self):
         """{(layout, key): (target, row)} of the `target-specific` symbol rows
@@ -246,13 +215,6 @@ class Profiles:
 
     def _hooks(self):
         found = []
-        for feature, document in self.layouts_doc.items():
-            src = FEATURE_LAYOUTS[feature].as_posix()
-            for entry in document.get("hook", ()):
-                stock = entry["stock"] if feature == FEATURES[0] else None
-                found.append(Hook(CANONICAL, entry["address"], feature, entry["key"],
-                                  entry["key"] if feature == FEATURES[0] else None,
-                                  stock, entry["stock"], entry["replacement"], src))
         src = PROFILES.as_posix()
         for layout, (rom, profile) in self.profiles.items():
             canonical = self.hook_keys(profile)
@@ -286,10 +248,6 @@ class Profiles:
                     entries[key].append((CANONICAL, value, table, src))
         for key, (base, _) in self.tables[TEMPLATE].items():
             entries[key].append(("1nd", base, "map_families", src))
-        src = FEATURE_LAYOUTS["map_switching"].as_posix()
-        for family in self.layouts_doc["map_switching"].get("family", ()):
-            entries[family["key"]].append((CANONICAL, family["canonical_address"],
-                                           "map_families", src))
         src = PROFILES.as_posix()
         for layout, (rom, profile) in self.profiles.items():
             for table in SYMBOL_TABLES:
@@ -334,7 +292,7 @@ def declare(b, root):
     b.stash[__name__] = facts
     targets = defaultdict(dict)
     notes = defaultdict(list)
-    _declare_hooks(b, facts, targets)
+    layouts.declare_words(b, facts.words, targets, facts.canonical_map_keys)
     _declare_dids(b, facts, targets)
     keys = _declare_keys(b, facts, targets)
     _declare_telemetry(b, facts, targets)
@@ -351,51 +309,13 @@ def declare(b, root):
             b.target(feature, layout, note[1], props={"note": note[0]})
 
 
-def _declare_hooks(b, facts, targets):
-    for (layout, address), hooks in sorted(facts.words.items()):
-        before = hooks[0].base
-        first = hooks[0]
-        for hook in hooks:
-            if hook.stock is not None and hook.stock != first.base:
-                b.issue("audit", hook.src, f"{hook.feature} {hook.key}@{layout}",
-                        f"stock {hook.stock:08x} disagrees with {first.base:08x} of "
-                        f"{first.feature} {first.key}")
-            if hook.base != before:
-                b.issue("audit", hook.src, f"{hook.feature} {hook.key}@{layout}",
-                        f"base {hook.base:08x} is not {before:08x}, the word before "
-                        f"{hook.feature} redirects it")
-            before = hook.replacement
-            if hook.feature == FEATURES[0]:
-                group = (("hook", hook.feature, hook.canonical) if hook.canonical
-                         else ("hook", hook.feature, "own", hook.key))
-            else:
-                group = ("hook", hook.feature, hook.key)
-            key = b.symbol(layout, "hook", address, hook.src, group=group)
-            b.props(key, {"width": HOOK_WIDTH}, hook.src)
-            targets[(hook.feature, layout)].setdefault("hooks", {})[hook.key] = {
-                "hook": key, "replacement": hexed(hook.replacement)}
-        # The canonical key of the first feature names the word, or else its
-        # own key unless that is the canonical key of another word.
-        name = first.canonical or first.key
-        if first.canonical or first.key not in facts.canonical_map_keys:
-            b.name(key, name, "hook", first.src, rank=FEATURES.index(first.feature))
-
-
 def _declare_dids(b, facts, targets):
-    src = FEATURE_LAYOUTS["rolling_launch"].as_posix()
-    entries = [(CANONICAL, entry["name"], entry["did"], entry["pointer_address"],
-                entry["target"], entry["width"], src)
-               for entry in facts.layouts_doc["rolling_launch"].get("diagnostic", ())]
     src = PROFILES.as_posix()
-    for layout, (rom, profile) in facts.profiles.items():
-        for name, (did, pointer, target, width) in profile.get("rolling_diagnostics", {}).items():
-            entries.append((layout, name, did, pointer, target, width, src))
-    for layout, name, did, pointer, target, width, src in entries:
-        group = ("did", "number", did)
-        key = b.symbol(layout, "did", pointer, src, group=group)
-        b.props(group, {"number": did}, src)
-        allocations = targets[("rolling_launch", layout)].setdefault("allocations", {})
-        allocations[name] = {"address": hexed(target), "width": width, "did": key}
+    layouts.declare_dids(b, [
+        (layout, name, did, pointer, target, width, src)
+        for layout, (rom, profile) in facts.profiles.items()
+        for name, (did, pointer, target, width) in profile.get("rolling_diagnostics", {}).items()],
+        targets)
 
 
 def _declare_keys(b, facts, targets):
@@ -512,8 +432,6 @@ def _declare_profiles(b, facts, targets, notes):
                 continue
             pending.append((layout, field, evidence.get("telemetry", ""), src,
                             f"profile.{rom}.telemetry_unavailable"))
-    for feature in FEATURES:
-        targets[(feature, CANONICAL)].setdefault("status", "supported")
     return pending
 
 
@@ -628,24 +546,15 @@ def _hook_row(b, facts, layout, row, path, where, subject, source, target):
         b.issue("audit", where, subject, f"stock {stock:08x} disagrees with the profile "
                                          f"{facts.stock((layout, target)):08x}")
     key = b.symbol(layout, "hook", target, path, props={"note": row["evidence"]})
-    if source is not None and (CANONICAL, source) in facts.words:
+    if source is not None and source in facts.canonical_words:
         other = b.symbol(CANONICAL, "hook", source, path)
         b.join(other, key, where, "homology" if row["status"] == "mapped" else "role")
 
 
 def relate(b, root):
     facts = b.stash.get(__name__)
-    if facts is None:
-        return
-    for (layout, address), hooks in sorted(facts.words.items()):
-        first = hooks[0]
-        key = b.symbol(layout, "hook", address, first.src)
-        to = b.resolve(layout, first.base, ("fn", "tbl", "const"), first.src)
-        if to is None:
-            b.issue("references", first.src, key.key,
-                    f"stock {first.base:08x} is no ROM function, table, or constant")
-            continue
-        b.link(key, "target", to, first.src)
+    if facts is not None:
+        layouts.link_words(b, facts.words)
 
 
 # Rendering -----------------------------------------------------------------

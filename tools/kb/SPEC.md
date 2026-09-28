@@ -2160,7 +2160,8 @@ The canonical feature layouts give the `7mfk` side of the same tables: the
 the `hook` symbols with their canonical keys and replacements, the
 `[[family]]` entries of the map layout the `tbl` symbols of the map
 families, and the `[[diagnostic]]` entries of the rolling layout the `did`
-symbols. The layouts stay the owners of the patch design.
+symbols. The adapter `layouts` reads them, and the layouts stay the owners
+of the patch design.
 
 `patches/*-runtime-correspondence.csv`:
 

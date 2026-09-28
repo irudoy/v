@@ -13,11 +13,11 @@ their conversion; `kb.convert` runs `ORDER` to compile the model before a
 conversion.
 """
 
-from kb.adapters import (architecture, curated, definitions, dids, files, interp, ledgers,
-                         native, overrides, profiles, signals, telemetry)
+from kb.adapters import (architecture, curated, definitions, dids, files, interp, layouts,
+                         ledgers, native, overrides, profiles, signals, telemetry)
 
-ORDER = (files, curated, ledgers, profiles, definitions, interp, native, dids, signals,
-         telemetry, overrides, architecture)
+ORDER = (files, curated, ledgers, layouts, profiles, definitions, interp, native, dids,
+         signals, telemetry, overrides, architecture)
 CONVERTED = (interp, native, definitions)
 ADAPTERS = tuple(adapter for adapter in ORDER if adapter not in CONVERTED)
 
