@@ -15,6 +15,7 @@ repository paths of its command to exist. The path grammar is that of the
 access guard `tools/kb/hook.py`, whose functions this module uses.
 """
 
+import ast
 from importlib import import_module
 import importlib.util
 import os
@@ -24,7 +25,7 @@ import subprocess
 import tempfile
 import tomllib
 
-from kb import repo, spec
+from kb import adapters, repo, spec
 from kb.repo import KbError
 
 PATH = Path("tools/kb/projections.toml")
@@ -276,12 +277,43 @@ def _first(when):
     return min(numbers) if numbers else None
 
 
-def converted(row, now, files, rendered_files):
+def _imports_kb(path):
+    """Whether a Python module imports the `kb` package."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, UnicodeDecodeError):
+        return False
+    return any((isinstance(node, ast.Import)
+                and any(alias.name.split(".")[0] == "kb" for alias in node.names))
+               or (isinstance(node, ast.ImportFrom) and not node.level
+                   and (node.module or "").split(".")[0] == "kb")
+               for node in ast.walk(tree))
+
+
+class Readers:
+    """Whether a tracked file reads the entity files through the `kb` API
+    while no adapter reads it: a Python module that imports `kb` and that no
+    adapter of `adapters.ORDER` names among its inputs, which load on first
+    use."""
+
+    def __init__(self, root):
+        self.root, self.read = root, None
+
+    def __call__(self, name):
+        if not name.endswith(".py") or not _imports_kb(self.root / name):
+            return False
+        if self.read is None:
+            self.read = {path for adapter in adapters.ORDER for path in adapter.inputs(self.root)}
+        return name not in self.read
+
+
+def converted(row, now, files, rendered_files, reader=None):
     """Whether the owner after conversion owns the facts of a row of section
-    19 at stage `now`: the row's stage precedes `now`, or it is `now` and a
-    projection that `kb` renders registers every tracked file that the row
-    names (`rendered_files`, of the tracked `files`). A registry created in a
-    stage owns its facts from that stage."""
+    19 at stage `now`: the row's stage precedes `now`, or it is `now` and
+    every tracked file that the row names (of the tracked `files`) is a
+    projection that `kb` renders (`rendered_files`) or a module that reads the
+    entity files through the `kb` API while no adapter reads it (`reader`). A
+    registry created in a stage owns its facts from that stage."""
     when = row[2]
     first = _first(when)
     if first is None:
@@ -293,7 +325,8 @@ def converted(row, now, files, rendered_files):
     patterns = [re.sub(r"<[^>]+>", "*", item) for item in re.findall(r"`([^`]+)`", row[0])
                 if "/" in item]
     named = {name for pattern in patterns for name in files if matches(pattern, name)}
-    return bool(named) and named <= rendered_files
+    return bool(named) and all(name in rendered_files or (reader is not None and reader(name))
+                               for name in named)
 
 
 def owners(root=repo.ROOT, now=None):
@@ -301,13 +334,13 @@ def owners(root=repo.ROOT, now=None):
     `now`, with the owners, and the number of registries that own their facts
     until conversion by the stage that converts them."""
     now = stage(root) if now is None else now
-    files, rendered_files = tracked(root), active(root, now)
+    files, rendered_files, reader = tracked(root), active(root, now), Readers(root)
     done, pending = [], {}
     for row in spec.table(spec.OWNERSHIP, root):
         first = _first(row[2])
         if first is None:
             continue
-        if converted(row, now, files, rendered_files):
+        if converted(row, now, files, rendered_files, reader):
             done.append({"registry": spec.plain(row[0]), "owner": spec.plain(row[3]),
                          "stage": first})
         else:
@@ -315,12 +348,12 @@ def owners(root=repo.ROOT, now=None):
     return {"converted": done, "pending": pending}
 
 
-def _owner(row, now, files, rendered_files):
+def _owner(row, now, files, rendered_files, reader):
     """The owner of the facts of a registry of section 19 at stage `now`."""
     _, _, when, after, _ = row
     if _first(when) is None or when.startswith("created in "):
         return after
-    if converted(row, now, files, rendered_files):
+    if converted(row, now, files, rendered_files, reader):
         return f"{after} since stage {when}"
     return f"the registry until stage {when}"
 
@@ -357,9 +390,9 @@ def agents(root=repo.ROOT):
     ]
     lines.extend(f"| {item['question']} | `uv run {item['command']}` |"
                  for item in bench["question"] if item["stage"] <= now)
-    files, rendered_files = tracked(root), active(root, now)
+    files, rendered_files, reader = tracked(root), active(root, now), Readers(root)
     lines.extend(["", f"| Registry | Facts | Owner at stage {now} |", "|---|---|---|"])
-    lines.extend(f"| {row[0]} | {row[1]} | {_owner(row, now, files, rendered_files)} |"
+    lines.extend(f"| {row[0]} | {row[1]} | {_owner(row, now, files, rendered_files, reader)} |"
                  for row in spec.table(spec.OWNERSHIP, root))
     lines.append("")
     return "\n".join(lines) + "\n"

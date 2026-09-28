@@ -248,8 +248,7 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(canonical["families"]["fuel_compensation_main"],
                          SymbolKey("7mfk", "tbl", 0x0000A29A))
         self.assertEqual(canonical["symbols"]["ignition_lookup"],
-                         SymbolKey("7mfk", "fn", profiles.runtime_tables(repo.ROOT)[
-                             "CANONICAL_MAP_SYMBOLS"]["ignition_lookup"]))
+                         SymbolKey("7mfk", "fn", 0x00026230))
         self.assertEqual(m.targets[("can_telemetry", "7mfk")].props["symbols"]["mailbox_data"],
                          SymbolKey("7mfk", "reg", 0xFFFFDC48))
 

@@ -362,6 +362,15 @@ row with its note, an `unsupported` entry and a status `unsupported` rows,
 an allocation is `mapped` where it is the `7mfk` bound plus the relocation of
 the profile, and a number where it equals the `7mfk` value.
 
+`patches/runtime_targets.py` reads the `7mfk` side of the feature targets
+through `kb.targets`, which reads the entity files without compiling the
+model and with the standard library alone, since the firmware gate imports
+the module with the Python of its container: the addresses of the `symbols`
+of the `7mfk` targets with the `can_telemetry` numbers and record words, the
+per-layout key of each hook of a `map_switching` target by the `7mfk` word of
+its meaning, and the keys of a target. The adapter of the address profiles
+reads the same key tables and hooks for the model before a conversion.
+
 ## Matchers
 
 `kb.match` decides evidence on L0 and the images of each layout (sections
@@ -450,9 +459,10 @@ a pattern with the files of its rendering, and requires every tracked file
 whose first lines declare it generated to be registered.
 
 The owner of a registry of the current stage changes with its conversion:
-`kb brief` and `AGENTS.md#kb` name the owner after conversion once a
-projection of `kb` that applies registers every tracked file that the
-registry's row of section 19 names, and the registry until then.
+`kb brief` and `AGENTS.md#kb` name the owner after conversion once every
+tracked file that the registry's row of section 19 names is a projection of
+`kb` that applies or a Python module that imports `kb` and that no adapter
+reads, and the registry until then.
 
 `hook.py` is the access guard of section 15. The tracked
 `.claude/settings.json` runs it before `Read`, `Edit`, `Write`, `MultiEdit`,
@@ -475,6 +485,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.tokens` | Legacy evidence tokens and their evidence items |
 | `kb.model` | Symbols, meanings, links, and the builder that joins them |
 | `kb.store` | Entity files of `kb/`, their canonical rendering, and `kb fmt` |
+| `kb.targets` | The feature targets and the symbols of their meanings, read from the entity files for the patch build |
 | `kb.adapters` | Adapters of the entity files and of the legacy registries |
 | `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
 | `kb.compile` | The compiler from the tracked inputs, or from those with an overlay of changed files, to the model |

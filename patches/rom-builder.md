@@ -186,7 +186,9 @@ of JK08A and the stock alternate selection of the other targets:
 | 1ME3B | `0x072920` | `0x07308C` | `0x8A7C` = `0xBA` | `FFFE81BC`, `FFFE90FF` | `FFFE9194` | `FFFE9100` |
 
 `runtime_targets.py` renders every target source through explicit stock and RAM
-bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
+bindings. The JK08A values of the key tables of the feature targets and the
+hook keys of each map target come from the entity files through `kb.targets`.
+`runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
 the capability-specific stage hashes for each exact relocated stock image.
 Regenerate the registry only through:
 

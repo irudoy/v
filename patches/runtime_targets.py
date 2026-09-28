@@ -3,7 +3,9 @@
 
 The canonical SH-2E sources and layouts remain in JK08A coordinates. Exact
 8MFK address profiles provide every nonuniform stock binding, while this module
-applies the audited uniform injected-ROM and injected-RAM relocations. Target
+applies the audited uniform injected-ROM and injected-RAM relocations. The
+JK08A values of the key tables of the feature targets and the hook keys of
+each target come from the entity files through `kb.targets`. Target
 machine-code payloads are tracked separately and are accepted only when their
 digests match both the projected layout and independently assembled sources.
 """
@@ -21,8 +23,11 @@ import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# The firmware gate runs this module outside the project environment, where
+# the `kb` package is importable only from its source tree.
+for _path in (ROOT / "tools" / "kb" / "src", ROOT):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 
 from patches import apply_map_switching
 from patches import can_telemetry_assembly
@@ -39,6 +44,8 @@ from patches import rom_checksums
 from patches import can_telemetry_compose
 from tools import rom_homology
 from tools.mapkit import rom as romkit
+from kb import targets as kb_targets
+from kb.repo import KbError
 
 
 DEFAULT_PAYLOADS = Path(__file__).with_name("runtime-target-payloads.toml")
@@ -68,17 +75,12 @@ NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_])0x[0-9A-Fa-f]+")
 INTAKE_CVTC_TARGET_NAME = "Intake CVTC Target - Main"
 
 # The SH7059 VQ37 layouts switch the four 8x8 state-code ignition surfaces
-# through an adapter of their own. The template names the 1ND0A stock lookup,
-# each table base, and the canonical coordinate of each pointer table; the
-# projection binds all of them from the address profile.
+# through an adapter of their own. Its source names the stock lookup and each
+# table base of the template layout and the canonical coordinate of each
+# pointer table; the projection binds all of them from the address profile.
 IGNITION_STATE_ADAPTER_SOURCE = "map-switching-ignition-state-adapter.s"
+IGNITION_STATE_TEMPLATE_LAYOUT = "1nd"
 IGNITION_STATE_TEMPLATE_LOOKUP = 0x000285B4
-IGNITION_STATE_TEMPLATE = {
-    "ignition_surface_state_3": (0x0000A610, 0x000D5100),
-    "ignition_surface_state_4": (0x0000A710, 0x000D5114),
-    "ignition_surface_state_5": (0x0000A690, 0x000D5128),
-    "ignition_surface_state_6_7": (0x0000A6D0, 0x000D513C),
-}
 IGNITION_STATE_FAMILY_NAMES = {
     "ignition_surface_state_3": (
         "Ignition Timing Surface - VVEL State Code 3"
@@ -94,107 +96,53 @@ IGNITION_STATE_FAMILY_NAMES = {
     ),
 }
 
-MAP_HOOK_KEYS = {
-    "selector_host_call": "selector_host_call",
-    "startup_initializer": "startup_initializer",
-    "overrun_cut_lookup": "overrun_cut_lookup",
-    "overrun_restore_lookup": "overrun_restore_lookup",
-    "ignition_lookup_493e8": "ignition_lookup_knock",
-    "ignition_lookup_4e1c0_a": "ignition_lookup_primary_a",
-    "ignition_lookup_4e1c0_b": "ignition_lookup_primary_b",
-    "fuel_compensation_lookup_2c648": "fuel_compensation_lookup_startup",
-    "fuel_compensation_lookup_3be3c": "fuel_compensation_lookup_runtime",
-    "exhaust_cvtc_target_lookup": "intake_cvtc_target_lookup",
-    "rev_fuel_cut_base": "rev_fuel_cut_base",
-    "rev_throttle_cluster_base": "rev_throttle_cluster_base",
-    "rev_throttle_scalar_base": "rev_throttle_scalar_base",
-    "cruise_feedback_serializer": "cruise_feedback_serializer",
-    "idle_ignition_lookup": "idle_ignition_lookup",
-}
-
-VQ37_MAP_HOOK_KEYS = {
-    "selector_host_call": "selector_host_call",
-    "startup_initializer": "startup_initializer",
-    "overrun_cut_lookup": "overrun_cut_lookup",
-    "overrun_restore_lookup": "overrun_restore_lookup",
-    "ignition_lookup_493e8": "ignition_lookup_1",
-    "ignition_lookup_4e1c0_a": "ignition_lookup_2",
-    "ignition_lookup_4e1c0_b": "ignition_lookup_3",
-    "fuel_compensation_lookup_2c648": (
-        "fuel_compensation_lookup_startup"
-    ),
-    "fuel_compensation_lookup_3be3c": (
-        "fuel_compensation_lookup_runtime"
-    ),
-    "rev_throttle_scalar_base": "rev_throttle_scalar_base",
-    "cruise_feedback_serializer": "cruise_feedback_serializer",
-    "idle_ignition_lookup": "idle_ignition_lookup_pool_1",
-}
-
-CANONICAL_MAP_SYMBOLS = {
-    "selector_function": 0x000D09D8,
-    "button_state": 0xFFFF2A85,
-    "diagnostic_state": 0xFFFF2A84,
-    "ascd_state": 0xFFFF41AE,
-    "startup_initializer": 0x0002C648,
-    "dfco_lookup": 0x00026388,
-    "ignition_lookup": 0x00026230,
-    "fuel_compensation_lookup": 0x000261F0,
-    "exhaust_lookup": 0x000261B8,
-    "idle_ignition_lookup": 0x00026370,
-    "feedback_serializer": 0x000C5372,
-    "feedback_status_byte": 0xFFFF3ADA,
-    "throttle_container": 0x00009424,
-    "throttle_runtime": 0xFFFF1796,
-}
-
-CANONICAL_ROLLING_SYMBOLS = {
-    "periodic_task_slot": 0x00021970,
-    "periodic_task_table": 0x0002196C,
-    "scheduler_task": 0x000A9554,
-    "rpm": 0xFFFF11BC,
-    "vehicle_speed": 0xFFFF110E,
-    "pedal": 0xFFFF2672,
-    "coolant_index": 0xFFFF1077,
-    "button_state": 0xFFFF2A85,
-    "ascd_state": 0xFFFF41AE,
-    "fuel_inhibit": 0xFFFF2497,
-    "apc_mode": 0xFFFF24C9,
-    "apc_output": 0xFFFF2022,
-    "unsigned_divide": 0x00021CE0,
-    "stock_ignition_consumer": 0x0002A892,
-}
-
-CANONICAL_CAN_SYMBOLS = {
-    "coherent_snapshot": 0x00020DFE,
-    "knock_function": 0x000493E8,
-    "knock_count": 0xFFFF2142,
-    "knock_mask": 0xFFFF2150,
-    "knock_selector_config": 0x00008B3D,
-    "knock_channel_primary": 0xFFFF11DE,
-    "knock_channel_alternate": 0xFFFF2143,
-    "knock_metric_base": 0xFFFF21D8,
-    "knock_threshold_base": 0xFFFF2144,
-    "hcan1_init": 0x000C338A,
-    "stock_sle1_isr": 0x000C7914,
-    "stock_isr_helper": 0x000C6B68,
-    "feedback_config_record_address": 0x00009766,
-    "feedback_config_record_value": 0x0308AA20,
-    "feedback_dispatch_literal": 0x000C3FA4,
-    "feedback_payload_base": 0xFFFF3AB5,
-    "feedback_status_byte": 0xFFFF3ADA,
-    "mailbox_record_address": 0x000097BE,
-    "mailbox_record_stock": 0x05000000,
-    "occupied_mailbox_record_address": 0x000097C6,
-    "occupied_mailbox_record_stock": 0x04000000,
-    "mailbox_index": 26,
-    "mailbox_data": 0xFFFFDC48,
-    "mailbox_mask": 0x0400,
-}
-
 
 class RuntimeTargetError(ValueError):
     """Raised when a target projection or payload lock is incomplete."""
+
+
+def _kb(read, *args):
+    """A read of the entity files through `kb.targets`."""
+    try:
+        return read(*args, root=ROOT)
+    except KbError as error:
+        raise RuntimeTargetError(f"kb: {error}") from error
+
+
+@lru_cache(maxsize=None)
+def canonical_symbols(feature):
+    """{key: value} of the JK08A target of a feature: symbol addresses,
+    numbers, and record words."""
+    return _kb(kb_targets.canonical_symbols, feature)
+
+
+@lru_cache(maxsize=None)
+def map_hook_keys(rom):
+    """{JK08A hook word: key} of the map hooks of the layout of a ROM."""
+    return _kb(
+        kb_targets.hook_keys,
+        "map_switching",
+        _kb(kb_targets.layout_of, rom),
+    )
+
+
+@lru_cache(maxsize=None)
+def ignition_state_template():
+    """{family key: (table, pointer table)} that the ignition state adapter
+    source names: the table base of each state-code family on the template
+    layout and the pointer table of its storage there, less the ROM
+    relocation of the layout."""
+    layout = IGNITION_STATE_TEMPLATE_LAYOUT
+    maps = _kb(kb_targets.target, "map_switching", layout)
+    delta = _kb(kb_targets.target, "runtime", layout)["rom_delta"]
+    storage = maps["ignition_state_storage"]
+    return {
+        key: (
+            _kb(kb_targets.address, maps["families"][key], layout),
+            int(storage[key]["pointer_table"], 16) - delta,
+        )
+        for key in IGNITION_STATE_FAMILY_NAMES
+    }
 
 
 @dataclass(frozen=True)
@@ -406,24 +354,17 @@ def _address_mapping(profile):
         )
 
     map_hooks = profile.map_hook_by_key
-    hook_keys = (
-        MAP_HOOK_KEYS
-        if profile.map_variant == "dual-cvtc"
-        else VQ37_MAP_HOOK_KEYS
-    )
-    variant_hook_keys = rom_address_profiles.MAP_HOOK_KEYS_BY_VARIANT[
-        profile.map_variant
-    ]
+    hook_keys = map_hook_keys(profile.rom)
     for hook in canonical_map.hooks:
-        target_key = hook_keys.get(hook.key)
-        if target_key is None or target_key not in variant_hook_keys:
+        target_key = hook_keys.get(hook.address)
+        if target_key is None:
             continue
         target = map_hooks[target_key]
         _add_mapping(mapping, hook.address, target.address, profile.rom)
         _add_mapping(mapping, hook.stock, target.stock, profile.rom)
 
     map_symbols = profile.map_symbol_by_key
-    for key, source in CANONICAL_MAP_SYMBOLS.items():
+    for key, source in canonical_symbols("map_switching").items():
         if key in map_symbols:
             _add_mapping(mapping, source, map_symbols[key], profile.rom)
     _add_mapping(
@@ -459,7 +400,7 @@ def _address_mapping(profile):
             )
             _add_mapping(mapping, source.target, target.target, profile.rom)
         rolling_symbols = profile.rolling_symbol_by_key
-        for key, source in CANONICAL_ROLLING_SYMBOLS.items():
+        for key, source in canonical_symbols("rolling_launch").items():
             _add_mapping(mapping, source, rolling_symbols[key], profile.rom)
     if profile.capabilities.can_telemetry:
         can_hooks = profile.can_hook_by_key
@@ -468,7 +409,7 @@ def _address_mapping(profile):
             _add_mapping(mapping, hook.address, target.address, profile.rom)
             _add_mapping(mapping, hook.stock, target.base, profile.rom)
         can_symbols = profile.can_symbol_by_key
-        for key, source in CANONICAL_CAN_SYMBOLS.items():
+        for key, source in canonical_symbols("can_telemetry").items():
             if key in can_symbols:
                 _add_mapping(mapping, source, can_symbols[key], profile.rom)
 
@@ -801,7 +742,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 "ignition_state_lookup"
             ].stock,
         }
-        for key, (table, pointers) in IGNITION_STATE_TEMPLATE.items():
+        for key, (table, pointers) in ignition_state_template().items():
             state_overrides[table] = profile.map_family_by_key[key]
             state_overrides[pointers] = state_storage.family_by_key[
                 key

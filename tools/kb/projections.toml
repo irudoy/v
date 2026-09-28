@@ -330,7 +330,15 @@ inputs = [
     "patches/checksum-layouts.toml",
     "rom-images/roms.csv",
     "rom-images/homology.toml",
+    "kb/feature/",
+    "kb/hook/",
+    "kb/fn/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/tbl/",
+    "kb/const/",
     "patches/runtime_targets.py",
+    "tools/kb/src/kb/targets.py",
     "tools/sh-elf-run/generate_runtime_targets.py",
 ]
 consumers = [

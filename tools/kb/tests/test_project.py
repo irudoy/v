@@ -1,6 +1,7 @@
 from pathlib import Path
 import subprocess
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -249,6 +250,23 @@ class PatternTest(RepoCase):
         root = self.repo("ahead", {"tools/kb/bench.toml": BENCH})
         self.assertIn("| `defs/*.interp.csv` | Interpolation | the registry until stage 3 |",
                       project.agents(root))
+
+    def test_a_module_that_reads_kb_changes_owner_once_no_adapter_reads_it(self):
+        row = ("| Tables of `patches/runtime.py` | Hook keys | 3 | Feature targets | The module "
+               "reads them through the `kb` API |\n")
+        spec = SPEC.replace("| `symbols/<layout>.csv`", row + "| `symbols/<layout>.csv`")
+
+        def owner(name, text, read):
+            root = self.repo(name, {"tools/kb/SPEC.md": spec, "patches/runtime.py": text})
+            adapter = SimpleNamespace(inputs=lambda root: read)
+            with mock.patch.object(project.adapters, "ORDER", (adapter,)):
+                return project.agents(root)
+
+        converted = "| Tables of `patches/runtime.py` | Hook keys | Feature targets since stage 3 |"
+        pending = "| Tables of `patches/runtime.py` | Hook keys | the registry until stage 3 |"
+        self.assertIn(converted, owner("reader", "from kb import targets\n", []))
+        self.assertIn(pending, owner("read", "import kb.targets\n", ["patches/runtime.py"]))
+        self.assertIn(pending, owner("tables", "KEYS = {'a': 1}\n", []))
 
 
 class CheckTest(RepoCase):

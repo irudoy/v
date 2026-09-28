@@ -1,4 +1,6 @@
 from dataclasses import replace
+import subprocess
+import sys
 
 import pytest
 
@@ -12,6 +14,42 @@ from tools.mapkit import vq37_native_fuel_cut
 SH7059_ROMS = (
     runtime_targets.SH7059_1ND_ROMS + runtime_targets.SH7059_1ME3B_ROMS
 )
+
+
+def test_the_module_reads_kb_with_the_standard_library_alone():
+    # The firmware gate imports the module with the python3 of its container,
+    # which has no site packages.
+    probe = (
+        "import sys\n"
+        "sys.path.insert(0, sys.argv[1])\n"
+        "from patches import runtime_targets\n"
+        "runtime_targets.canonical_symbols('can_telemetry')\n"
+        "runtime_targets.map_hook_keys('JK00C')\n"
+        "runtime_targets.ignition_state_template()\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-S", "-c", probe, str(runtime_targets.ROOT)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_the_ignition_state_template_names_the_adapter_source_numbers():
+    source = (
+        runtime_targets.ROOT
+        / "patches"
+        / runtime_targets.IGNITION_STATE_ADAPTER_SOURCE
+    ).read_text(encoding="utf-8")
+    numbers = {
+        int(item, 16) for item in runtime_targets.NUMBER_RE.findall(source)
+    }
+    template = runtime_targets.ignition_state_template()
+    assert set(template) == set(runtime_targets.IGNITION_STATE_FAMILY_NAMES)
+    for table, pointers in template.values():
+        assert {table, pointers} <= numbers
+    assert runtime_targets.IGNITION_STATE_TEMPLATE_LOOKUP in numbers
 
 
 def test_runtime_registry_covers_all_supported_families():

@@ -1,9 +1,10 @@
 """Address profiles and runtime correspondence (tools/kb/SPEC.md, sections 20.1
 and 20.3).
 
-- The symbol tables of `patches/runtime_targets.py` give the `7mfk` symbols of
-  their keys, and its hook-key tables join the per-layout keys of a map hook to
-  its canonical key. The module is read with `ast`, not imported.
+- The key tables of the `7mfk` targets of `kb/feature/` give the `7mfk`
+  symbols of their keys (`kb.targets`), and the hooks of the `map_switching`
+  target of a layout join the per-layout key of a map hook to the canonical
+  key of its `7mfk` word.
 - Each image profile of `patches/rom-address-profiles.toml` gives the symbols
   of its layout: a symbol-table key names the meaning at its address, a
   telemetry source the source meaning of its field, and a hook the ROM word
@@ -75,7 +76,6 @@ From their conversion the registries are projections of the files, which
   the first that redirects its word the `note` of its hook key.
 """
 
-import ast
 from collections import defaultdict
 import csv
 from dataclasses import dataclass
@@ -84,14 +84,13 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import match, repo, store
+from kb import match, repo, store, targets
 from kb.adapters import layouts, telemetry
 from kb.model import SymbolKey
 from kb.repo import KbError
 from kb.values import hexed
 
 PROFILES = Path("patches/rom-address-profiles.toml")
-RUNTIME_TARGETS = Path("patches/runtime_targets.py")
 PATCHES = Path("patches")
 CORRESPONDENCE = "*-runtime-correspondence.csv"
 CANONICAL = "7mfk"
@@ -100,18 +99,14 @@ RUNTIME = "runtime"
 HOOK_TABLES = {"map_hooks": "map_switching", "rolling_hooks": "rolling_launch",
                "can_hooks": "can_telemetry"}
 SYMBOL_TABLES = ("map_families", "map_symbols", "rolling_symbols", "can_symbols")
-CANONICAL_TABLES = {"CANONICAL_MAP_SYMBOLS": "map_symbols",
-                    "CANONICAL_ROLLING_SYMBOLS": "rolling_symbols",
-                    "CANONICAL_CAN_SYMBOLS": "can_symbols"}
-TEMPLATE = "IGNITION_STATE_TEMPLATE"
-HOOK_KEYS = {"dual-cvtc": "MAP_HOOK_KEYS"}
-VQ37_HOOK_KEYS = "VQ37_MAP_HOOK_KEYS"
+# The symbol table of the key table `symbols` of the `7mfk` target of each
+# feature.
+CANONICAL_TABLES = {"map_switching": "map_symbols", "rolling_launch": "rolling_symbols",
+                    "can_telemetry": "can_symbols"}
 # `can_symbols` keys whose values are no addresses: the image bytes at the
 # address of another key, and keys of the `can_telemetry` target.
-ROM_BYTES = {"feedback_config_record_value": "feedback_config_record_address",
-             "mailbox_record_stock": "mailbox_record_address",
-             "occupied_mailbox_record_stock": "occupied_mailbox_record_address"}
-CAN_KEYS = ("mailbox_index", "mailbox_mask", "feedback_payload_offset")
+ROM_BYTES = targets.RECORD_WORDS
+CAN_KEYS = (*targets.NUMBERS, "feedback_payload_offset")
 # The keys whose records the image-byte keys state: one four-byte record each,
 # as one 32-bit word.
 RECORDS = frozenset(ROM_BYTES.values())
@@ -175,21 +170,11 @@ class Row:
 
 
 def inputs(root):
-    found = [PROFILES.as_posix(), RUNTIME_TARGETS.as_posix()]
+    """The registries, and the feature files of the `7mfk` key tables."""
+    found = [PROFILES.as_posix()]
+    found += [store.path_of("feature", feature).as_posix() for feature in CANONICAL_TABLES]
     found += [path.relative_to(root).as_posix()
               for path in sorted((root / PATCHES).glob(CORRESPONDENCE))]
-    return found
-
-
-def runtime_tables(root):
-    """The literal tables of `patches/runtime_targets.py` by name."""
-    wanted = {*CANONICAL_TABLES, *HOOK_KEYS.values(), VQ37_HOOK_KEYS, TEMPLATE}
-    found = {}
-    tree = ast.parse((root / RUNTIME_TARGETS).read_text(encoding="utf-8"))
-    for node in tree.body:
-        if (isinstance(node, ast.Assign) and len(node.targets) == 1
-                and isinstance(node.targets[0], ast.Name) and node.targets[0].id in wanted):
-            found[node.targets[0].id] = ast.literal_eval(node.value)
     return found
 
 
@@ -219,7 +204,10 @@ class Profiles:
     """The facts of the registries of this adapter, before they enter the model."""
 
     def __init__(self, b, root):
-        self.tables = runtime_tables(root)
+        self.root, self.overlay = root, b.overlay
+        # {feature: {key: value}} of the `7mfk` targets.
+        self.canonical = {feature: targets.canonical_symbols(feature, root, b.overlay)
+                          for feature in CANONICAL_TABLES}
         self.document = tomllib.loads((root / PROFILES).read_text(encoding="utf-8"))
         self.layouts_doc = layouts.documents(root)
         self.rows = correspondence(root)
@@ -282,16 +270,20 @@ class Profiles:
                     found[(layout, row["key"])] = (target, row)
         return found
 
-    def hook_keys(self, profile):
-        """{per-layout key: canonical key} of the map hooks of a profile."""
-        table = HOOK_KEYS.get(profile.get("map_variant"), VQ37_HOOK_KEYS)
-        return {value: key for key, value in self.tables[table].items()}
+    def hook_keys(self, layout):
+        """{per-layout key: canonical key} of the map hooks of a layout: the
+        key of the `7mfk` word of the meaning of each hook of its
+        `map_switching` target in the canonical map layout."""
+        words = {entry["address"]: entry["key"]
+                 for entry in self.layouts_doc[FEATURES[0]].get("hook", ())}
+        return {key: words[word] for word, key in targets.hook_keys(
+            FEATURES[0], layout, self.root, self.overlay).items() if word in words}
 
     def _hooks(self):
         found = []
         src = PROFILES.as_posix()
         for layout, (rom, profile) in self.profiles.items():
-            canonical = self.hook_keys(profile)
+            canonical = self.hook_keys(layout)
             for table, feature in HOOK_TABLES.items():
                 for key, values in profile.get(table, {}).items():
                     if feature == FEATURES[0]:
@@ -309,10 +301,9 @@ class Profiles:
         return self.words[word][0].base
 
     def canonical_numbers(self):
-        """The `can_telemetry` numbers of `7mfk`: the mailbox of
-        `CANONICAL_CAN_SYMBOLS`, and the payload offset of the feedback record
-        of the map layout."""
-        found = {key: value for key, value in self.tables["CANONICAL_CAN_SYMBOLS"].items()
+        """The `can_telemetry` numbers of `7mfk`: the mailbox of its target, and
+        the payload offset of the feedback record of the map layout."""
+        found = {key: value for key, value in self.canonical["can_telemetry"].items()
                  if key in CAN_KEYS}
         feedback = self.layouts_doc["map_switching"].get("feedback", {})
         if "payload_offset" in feedback:
@@ -321,20 +312,16 @@ class Profiles:
 
     def key_entries(self):
         """{key: [(layout, address, table, src)]} of the symbol tables, and the
-        image-byte and target keys of `can_symbols` by layout. The template
-        of the ignition state storage states its `1nd` tables under its own
-        name, since it is no table of a target."""
+        image-byte and target keys of `can_symbols` by layout."""
         entries = defaultdict(list)
         values = defaultdict(dict)
-        src = RUNTIME_TARGETS.as_posix()
-        for name, table in CANONICAL_TABLES.items():
-            for key, value in self.tables[name].items():
+        for feature, table in CANONICAL_TABLES.items():
+            src = store.path_of("feature", feature).as_posix()
+            for key, value in self.canonical[feature].items():
                 if key in ROM_BYTES or key in CAN_KEYS:
                     values[CANONICAL][key] = (value, src)
                 else:
                     entries[key].append((CANONICAL, value, table, src))
-        for key, (base, _) in self.tables[TEMPLATE].items():
-            entries[key].append(("1nd", base, TEMPLATE, src))
         src = PROFILES.as_posix()
         for layout, (rom, profile) in self.profiles.items():
             for table in SYMBOL_TABLES:
@@ -351,7 +338,7 @@ def key_kind(b, entries, words=frozenset()):
     feature redirects the word at every address of the key, as the hook
     symbols or the (layout, address) `words` state, else the kind of the
     symbols registered at its addresses, else the kind its addresses admit."""
-    if any(table in ("map_families", TEMPLATE) for _, _, table, _ in entries):
+    if any(table == "map_families" for _, _, table, _ in entries):
         return "tbl"
     kinds = [{key.kind for key in b.at(layout, address)}
              | ({"hook"} if (layout, address) in words else set())

@@ -1964,8 +1964,9 @@ commit of the stage that converts it. From that commit `kb/` owns them, and
 the registry is a projection until stage 11 keeps it generated or removes it.
 The stage of `tools/kb/bench.toml` is the stage in progress: `kb brief` and
 `AGENTS.md#kb` name the owner after conversion for a registry of an earlier
-stage, and for a registry of the current stage once a projection of `kb`
-that applies registers every tracked file that its row names.
+stage, and for a registry of the current stage once every tracked file that
+its row names is a projection of `kb` that applies or a Python module that
+imports `kb` and that no adapter reads.
 
 | Registry | Facts | Converted in stage | Owner after conversion | The registry after conversion |
 |---|---|---|---|---|
@@ -2009,9 +2010,9 @@ that applies registers every tracked file that its row names.
   stage writes the same model to `kb/` and turns the registry into a
   projection.
 - Adapters join symbols into meanings by registry key: one key of the symbol
-  tables of the address profiles, the correspondence files, and
-  `patches/runtime_targets.py` across layouts, one native table id across
-  targets, one field source across layouts, and one ledger address on
+  tables of the address profiles, the correspondence files, and the key
+  tables of the `7mfk` feature targets across layouts, one native table id
+  across targets, one field source across layouts, and one ledger address on
   `7mfk`. A correspondence row joins its target symbol to the meaning of its
   source symbol. Entries at one layout, kind, and address are one symbol.
 - Joins apply in the order of their strength: correspondence rows with
@@ -2032,8 +2033,8 @@ that applies registers every tracked file that its row names.
   addresses, or else the kind that its addresses admit.
 - A meaning takes as its semantic name the registry id that names it: a key
   of `map_families`, `map_symbols`, `rolling_symbols`, or `can_symbols`, a
-  key of the symbol tables of `patches/runtime_targets.py`, a native table
-  id, or a curated function name of `tools/ghidra/symbols/<layout>.csv`. The
+  key of the key tables of the `7mfk` feature targets, a native table id, or
+  a curated function name of `tools/ghidra/symbols/<layout>.csv`. The
   source meaning of a telemetry field takes the field name without the `_raw`
   suffix. When registries name one meaning differently, the native table id
   wins over the hook key, the hook key over the symbol key, the symbol key
@@ -2041,10 +2042,10 @@ that applies registers every tracked file that its row names.
   field name. Among symbol keys, a key with an entry on `7mfk` wins over a
   key without one, and then the key that sorts first. `kb audit` lists the
   other names, and the conversion records them as `former` names.
-- A `hook` meaning is one ROM word. It takes the canonical key that
-  `MAP_HOOK_KEYS` or `VQ37_MAP_HOOK_KEYS` of `patches/runtime_targets.py`
-  joins to the per-layout keys of the word, or else the key of the first
-  feature in build order that redirects the word; a per-layout key that
+- A `hook` meaning is one ROM word. It takes the canonical key of its `7mfk`
+  word in the map layout, which the `map_switching` target of a layout joins
+  to the per-layout key of its hook on that word, or else the key of the
+  first feature in build order that redirects the word; a per-layout key that
   equals the canonical key of another word gives no name. Each feature
   target keeps its own per-layout key for every hook it redirects.
 - Architecture ids name designed entities, with hyphens replaced by
@@ -2376,16 +2377,20 @@ From the conversion the registries are projections of the files:
 layout whose counterpart is a `7mfk` symbol, and an `unsupported` row for
 each `unresolved` status of the method `interp-contract`.
 
-`patches/runtime_targets.py`: `CANONICAL_MAP_SYMBOLS`,
-`CANONICAL_ROLLING_SYMBOLS`, and `CANONICAL_CAN_SYMBOLS` give the `7mfk`
-symbols of the meanings their keys name and the keys in `symbols` of the
-`7mfk` targets, with the value keys converted as in the address profiles.
-`MAP_HOOK_KEYS` and `VQ37_MAP_HOOK_KEYS` give the per-layout hook keys of the
-feature targets and join them to the canonical keys.
-`IGNITION_STATE_TEMPLATE` gives the `1nd` table symbols of the four
-state-code families, which `families` of the `1nd` target also names; its
-pointer tables are addresses of the adapter template before relocation,
-which the `ignition_state_storage` allocation of each target replaces.
+`patches/runtime_targets.py` reads the `7mfk` side of the feature targets
+through `kb.targets`, which reads the entity files without compiling the
+model and with the standard library alone, since the firmware gate imports
+the module with the Python of its container. The `symbols` of the `7mfk`
+targets of `map_switching`, `rolling_launch`, and `can_telemetry` give the
+addresses of their keys, with the numbers of the `can_telemetry` target and
+the image-byte words of its records under the value keys of the address
+profiles. The hooks of the `map_switching` target of a layout give the
+per-layout key of each `7mfk` word that the meaning of a hook holds. The
+table symbols of the four state-code families in `families` of the `1nd`
+target, and the pointer tables of their `ignition_state_storage` less the
+`rom_delta` of the `1nd` `runtime` target, are the numbers of the adapter
+template before relocation, which the address profile of each target
+replaces.
 
 ### 20.4 VQ37VHR native registries
 
