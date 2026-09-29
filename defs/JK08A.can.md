@@ -122,6 +122,10 @@ The following payload claims are sufficiently narrow for use as cross-checks:
   `0xFFFF279C`, limited to 1000. Accelerator-pedal semantics remain a
   homologous and live-correlation claim.
 - `0x239` byte 3 receives one-hot steering-switch code `0xFFFF36D8`.
+  `FUN_000CF020` accepts its stable code `0xFFFF2A85` from five equal latched
+  samples of the same code.
+- `0x239` byte 2 bit 1 receives `0xFFFF4251.bit1`, which selects ASCD display
+  state 5.
 - `0x551` byte 0 receives coolant snapshot `0xFFFF3FA4`; code 0 is the lower
   saturation and positive codes use the exact `code - 40` transform.
 - `0x551` byte 5 bits 4 through 6 contain `0xFFFF40D0 & 7`, the complete
@@ -468,6 +472,14 @@ observation in the same session establishes that each state-4 map feedback
 pulse lights SET together with CRUISE.
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
 the observation under `map_switching.feedback_vehicle_2026_09_21`.
+
+The 2026-09-21 stationary CRUISE MAIN capture establishes `0x239` byte 3 value
+`0x01` for MAIN. Byte 3 reads `0x01` only during the four MAIN presses, for 9,
+19, 19, and 33 frames, and `0x20` in every other frame. Byte 2 changes only in
+bit 1, once within each press and 3 or 4 frames after its first `0x01` frame,
+so each MAIN press toggles `0xFFFF4251.bit1`.
+[`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
+the observation under `map_switching.ascd_main_vehicle_2026_09_21`.
 
 The 2026-09-22 Map 2 Rolling Launch TRC carries 1,733 frames of `0x551`, in
 which byte 5 holds `0x02` 1,494 times, `0x42` 183 times, and `0x52` 56 times.

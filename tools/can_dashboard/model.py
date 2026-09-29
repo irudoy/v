@@ -52,6 +52,7 @@ ASCD_BUTTON_CODES = {
     0x10: "RES",
     0x08: "SET",
     0x02: "CANCEL",
+    0x01: "MAIN",
 }
 # 0x551 byte 5 carries the three-bit ASCD display state in bits 4..6 over the
 # low nibble 0x2. Stock code writes states 0, 4, 5, and 6. The runtime injects

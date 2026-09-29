@@ -72,6 +72,7 @@ stock previous/current one-hot button pair:
 
 | Code | Meaning |
 | --- | --- |
+| `0x01` | MAIN |
 | `0x02` | CANCEL |
 | `0x08` | SET/COAST |
 | `0x10` | RESUME/ACCEL |
@@ -84,6 +85,13 @@ state is structurally valid, and visual feedback is idle. On JK08A, the MAIN
 switch block of the stock ASCD task copies bit 0 of the stable switch code into
 the MAIN switch bit: bit 0 of the calibration byte `ROM8[0x8B28]` enables the
 block, and its clear bit 7 selects the switch code as the source.
+
+Bit 0 of the stable switch code is the MAIN code `0x01`, which the switch code
+holds only while MAIN is pressed, so on JK08A the MAIN switch bit follows the
+MAIN switch itself. The MAIN state that each press toggles, `0xFFFF4251.bit1`,
+and `0xFFFF424E.bit1`, which select ASCD display states 5 and 4, are not
+selector inputs. `hardware-results.toml` records the MAIN presses of the target
+vehicle under `map_switching.ascd_main_vehicle_2026_09_21`.
 
 The user gesture is:
 

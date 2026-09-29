@@ -305,6 +305,27 @@ evidence_boundary = "frame counts come from the TRC captures, while the MLG capt
 "4-starts-ab.mlg" = [1, 3, 1, 3, 3, 1]
 "6-map-1-3-4-limiter.mlg" = [1, 3, 4, 3]
 
+[map_switching.ascd_main_vehicle_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+capture_registry = "can_telemetry.schema2_profile5_captures"
+capture_name = "2-stationary-cruise-on-off.trc"
+feedback_record = "map_switching.feedback_vehicle_2026_09_21"
+code_basis = "FUN_000D185C decodes word 0xFFFF3630 against a threshold table into a one-hot code and stores it in 0xFFFF36D8 at 0x000D1A0C when two consecutive decodes agree; 0x000D0F44 moves the window 0xFFFF2805..0xFFFF2808 up by one byte and stores 0xFFFF36D8 in 0xFFFF2805 at 0x000D1098; FUN_00020DFE copies 0x104 bytes from 0xFFFF277E to 0xFFFF267A through the call at 0x00020FCC, which latches the window into 0xFFFF2701..0xFFFF2705; FUN_000CF020 stores 0xFFFF2701 in the stable code 0xFFFF2A85 at 0x000CF1B2 when the five latched samples are equal, and its MAIN switch block sets 0xFFFF41AE bit 7 at 0x000D01F0 while bit 0 of that code is set and clears it at 0x000D01FE otherwise; serializer 0x000C5ABE sends 0xFFFF36D8 in 0x239 byte 3 at 0x000C5BF4 and 0xFFFF4251 bit 1 in byte 2 bit 1 at 0x000C5B50"
+switch_frame_count = 1754
+switch_codes = [0x01, 0x20]
+main_code = 0x01
+released_code = 0x20
+main_press_count = 4
+main_press_start_seconds = [3.391, 5.070, 7.998, 33.002]
+main_press_frames = [9, 19, 19, 33]
+byte2_values = [0xA1, 0xA3]
+byte2_sequence = [0xA1, 0xA3, 0xA1, 0xA3, 0xA1]
+main_state_mask = 0x02
+main_state_change_frames_after_press = [3, 3, 3, 4]
+result = "the switch code in 0x239 byte 3 is 0x01 only during the four MAIN presses, which hold it for 9, 19, 19, and 33 frames, and 0x20 in every other frame; byte 2 changes only in bit 1, once within each press and 3 or 4 frames after its first 0x01 frame, which sets the bit at the first and third presses and clears it at the second and fourth"
+evidence_boundary = "the capture is stationary at idle, and ASCD engagement, the CRUISE lamp, and the cluster indication are not recorded; the stable code 0xFFFF2A85 and the MAIN switch bit are not in the capture and follow from the sent code through the code basis; the MAIN attribution of code 0x01 rests on this capture of switching CRUISE MAIN on and off, in which no other switch code appears"
+
 [map_switching.feedback_vehicle_2026_09_22]
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"

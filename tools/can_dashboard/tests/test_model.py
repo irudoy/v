@@ -331,6 +331,12 @@ class DashboardModelTest(unittest.TestCase):
             now=1.1,
         )
         self.assertEqual(dashboard.ascd_button, "RES")
+        button[3] = 0x01
+        dashboard.process_frame(
+            model.FrameRecord(model.ASCD_BUTTON_ID, bytes(button)),
+            now=1.15,
+        )
+        self.assertEqual(dashboard.ascd_button, "MAIN")
 
         speed = bytearray(8)
         speed[4:6] = (6854).to_bytes(2, "big")
