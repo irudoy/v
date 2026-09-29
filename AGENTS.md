@@ -63,14 +63,39 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 - Commit messages state the change itself in the present tense and carry no
   agent, tool, model, or session attribution.
 
+## Issues
+
+- GitHub issues of `irudoy/vhrev` track the problems and planned work of the
+  project. Record every problem that a task finds and does not fix as an
+  issue: a defect, a failing, missing, or weak gate, a stale projection, a
+  contradiction between tracked sources, an unverified hardware claim, or an
+  open question that blocks work.
+- Search the open issues before creating one, and extend a matching issue
+  instead of opening a duplicate.
+- An issue states the observed behavior with its evidence (paths with line
+  numbers, commands with their output, and the commit), the impact, a proposed
+  fix, and checkable acceptance criteria. Issues are repository content: write
+  them in English and do not mention the private vault.
+- Give every issue the type Bug, Task, or Feature, an `area:` label, and a
+  `priority:` label, and attach it as a sub-issue of its track epic, an issue
+  labelled `epic`.
+- Keep issues current. Read the open issues of a subsystem before changing it.
+  After a task, update every issue that it affects: check off the acceptance
+  criteria it meets, record new findings or a changed scope, and close the
+  issue with the commit that resolves it once all its criteria hold, or as not
+  planned when a decision retires it.
+
 ## Authorized project operations
 
 - Tracked Memgraph loaders and migrations may change project graph data or
   schema when required by the task. Do not make ad hoc durable graph mutations.
 - The tracked Memgraph backup tool may connect to the configured SMB/NAS and
   create project-data backups without separate confirmation.
-- These permissions do not cover `git push`, publication, messages, PRs,
-  deployment, or unrelated external systems.
+- Issues of `irudoy/vhrev` may be created, edited, commented on, labelled,
+  re-parented, and closed under the rules of the Issues section without
+  separate confirmation.
+- Apart from issues, these permissions do not cover `git push`, publication,
+  messages, PRs, deployment, or unrelated external systems.
 - Do not push unless the user explicitly requests it.
 
 ## Memgraph backup
@@ -89,7 +114,6 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 - Generated XML, XDF, ledgers, and diagnostic projections are outputs; edit
   their declared sources and regenerate them.
 - Keep text declarative and current. Git and the vault journal retain history.
-- `CLAUDE.md` is a symbolic link to this file and must remain one.
 
 <!-- kb:begin -->
 
