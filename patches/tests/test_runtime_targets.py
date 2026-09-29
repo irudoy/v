@@ -262,6 +262,15 @@ def test_vq37_sources_encode_target_variants(rom):
     assert zero is None or zero in pointers
     assert "rl_apply_fuel_overlay" not in rolling_engine
     assert "mov.w r0,@(0x14,r5)" in rolling_engine
+    # The request latch is cleared at activation and abort, set at cut, and
+    # released below restore, all against the engine speed of the gate.
+    assert rolling_engine.count("mov.w r0,@(0x16,r5)") == 4
+    rpm = re.search(
+        r"rl_rpm_address:\n\.long (0x[0-9A-F]{8})\n", rolling_engine
+    ).group(1)
+    assert f"rl_helper_rpm_address:\n.long {rpm}\n" in rolling_engine
+    shadow = target.rolling_layout.ram.fuel_shadow.start
+    assert f".long 0x{shadow:08X}" not in rolling_engine
     assert "or 0x3F,r0" in fuel_wrapper
     assert f".long 0x{native.coordinator_address:08X}" in fuel_wrapper
     assert ".long 0x000A0000" not in fuel_wrapper
@@ -290,7 +299,7 @@ def test_vq37_sources_encode_target_variants(rom):
     ).instructions == (696 if rom == "1ME3B" else 690)
     assert rolling_launch_assembly.validate_instruction_semantics(
         target.rolling_layout, rolling_parsed, target.rolling_payloads
-    ).instructions == 872
+    ).instructions == 894
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():

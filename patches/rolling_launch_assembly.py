@@ -195,6 +195,40 @@ def _validate_engine_abi(parsed, *, vq37=False):
             for index in range(len(texts) - len(request_sequence) + 1)
         ):
             raise ValueError("VQ37 active fuel request sequence differs")
+        # The latch is cleared at activation and abort, set at or above cut,
+        # released below restore, and the request follows the exact latch.
+        hold_sequences = (
+            [
+                "mov.w @(0xc,r5),r0",
+                "extu.w r0,r0",
+                "cmp/hs r0,r1",
+                "bf rl_hold_below_cut",
+                "mov #0x1,r0",
+                "mov.w r0,@(0x16,r5)",
+            ],
+            [
+                "mov.w @(0xe,r5),r0",
+                "extu.w r0,r0",
+                "cmp/hs r0,r1",
+                "bt rl_hold_publish",
+                "mov #0x0,r0",
+                "mov.w r0,@(0x16,r5)",
+            ],
+            [
+                "mov.w @(0x16,r5),r0",
+                "cmp/eq 0x1,r0",
+                "bf rl_hold_done",
+                *request_sequence,
+            ],
+        )
+        if texts.count("mov.w r0,@(0x16,r5)") != 4 or not all(
+            any(
+                texts[index:index + len(sequence)] == sequence
+                for index in range(len(texts) - len(sequence) + 1)
+            )
+            for sequence in hold_sequences
+        ):
+            raise ValueError("VQ37 fuel request latch differs")
         if "rl_apply_fuel_overlay" in parsed.labels:
             raise ValueError("VQ37 engine retains the map-shadow overlay")
     else:

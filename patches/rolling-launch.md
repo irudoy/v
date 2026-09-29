@@ -331,9 +331,17 @@ rest of the selected map limiter cluster intact. Abort restores the full
 selected map shadow through the Map Switching limiter commit.
 
 The VQ37 variant clears a dedicated uint16 request at the start of every
-periodic pass and publishes exactly `0x003F` only while a non-observe mode is
-active. The scheduler entry 31 positions after the displaced periodic task
-calls a wrapper that first executes the complete stock fuel-mask coordinator. An exact request then ORs the six cylinder bits
+periodic pass. In an active non-observe mode, a latch in the state sets when
+native RPM reaches `cut` and releases when native RPM falls below `restore`,
+and the engine publishes exactly `0x003F` while the latch equals 1. The
+latch uses the `cut` and `restore` thresholds that the VQ25HR/VQ35HR variants
+write into the stock fuel-cut window. The stock native fuel-cut state machine
+keeps the thresholds of the selected map, so Rolling Launch adds cut and
+cannot raise the stock limit. Activation, abort, a corrupt state, and startup
+clear the latch; the activation pass runs at the captured speed and publishes
+no request. The scheduler entry 31 positions after the displaced periodic
+task calls a wrapper that first executes the complete stock fuel-mask
+coordinator. An exact request then ORs the six cylinder bits
 into the coordinator result; zero and every malformed request leave the stock
 mask unchanged. The wrapper preserves the stock coordinator's return value.
 Activation does not modify the 36-byte native fuel-cut shadow. Abort
@@ -438,8 +446,8 @@ for index 31.
 The canonical 20-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, cut RPM, restore RPM, the
 observed stock and effective ignition commands, and the captured retard-band
-start. VQ37 extends the record to 24 bytes with the exact fuel request and one
-cleared reserved word. The nine diagnostic views retain the same offsets.
+start. VQ37 extends the record to 24 bytes with the exact fuel request and its
+latch. The nine diagnostic views retain the same offsets.
 
 The fuel-cut flag of an active state reports the active cut bit of the stock
 RPM fuel-cut state of the target: bit 2 of the main RPM fuel-cut state byte

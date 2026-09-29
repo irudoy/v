@@ -115,7 +115,8 @@ functions, so the stock image hash, the scheduler pointer, the exact BSR site,
 and the hash of the contiguous predicate bind the executable chain, and no
 contiguous envelope stands for a body. Rolling Launch executes the
 stock final-mask coordinator first and adds all six cylinder bits only for the
-exact request value `0x003F`.
+exact request value `0x003F`, which the engine publishes from the captured cut
+until engine speed falls below restore.
 
 ## Source-map parity
 

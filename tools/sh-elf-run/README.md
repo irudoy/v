@@ -63,7 +63,15 @@ The gate performs these checks:
    JK78C, bit 5 on 1ND, and bit 3 on 1ME3B. One case sets every other bit of
    the byte, and on the VQ37 targets a final mask that inhibits all six
    cylinders, and requires the flag clear; the VQ37 fuel coordinator cases
-   require the state byte unchanged. The telemetry knock surface cases set
+   require the state byte unchanged. The VQ37 Rolling Launch hold cases run
+   the engine and then the coordinator wrapper at engine speeds below, at, and
+   above cut and at and below restore in both hold modes and in observe mode,
+   and require the request, its latch, and the final mask of each pass: the
+   request latches at cut, holds down to restore, releases below it, stays
+   released between the thresholds, and latches again at cut; a latch other
+   than 1 publishes no request; an abort clears the latch; and activation
+   clears a latch left in IDLE at a saturated capture, whose captured speed
+   lies between restore and cut. The telemetry knock surface cases set
    the high-detonation bit of the knock surface byte of each target, bit 6 on
    every target except 1ME3B and bit 7 on 1ME3B, whose capture moves it into
    wire bit 6 and clears the other bits of the wire byte; one case sets every

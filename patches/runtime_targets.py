@@ -700,8 +700,9 @@ def _vq37_rolling_engine_source(source):
         "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 "
         "and 2 write the\n"
         "// fuel shadow.\n",
-        "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 and 2 publish\n"
-        "// the exact all-cylinder request; selected VQ37 maps remain unchanged.\n",
+        "// hold, and 2 RPM hold plus band-limited retard. Modes 1 and 2 publish the\n"
+        "// exact all-cylinder request from cut until the speed falls below\n"
+        "// restore; selected VQ37 maps remain unchanged.\n",
         "VQ37 actuator description",
     )
     source = _replace_source_once(
@@ -709,7 +710,8 @@ def _vq37_rolling_engine_source(source):
         "//   +0x12 u16 captured ignition-retard band start\n",
         "//   +0x12 u16 captured ignition-retard band start\n"
         "//   +0x14 u16 exact all-cylinder fuel-cut request\n"
-        "//   +0x16 u16 reserved and cleared\n",
+        "//   +0x16 u16 request latch: 1 from cut until the speed falls below\n"
+        "//             restore, 0 otherwise\n",
         "VQ37 state description",
     )
     source = _replace_source_once(
@@ -720,6 +722,32 @@ def _vq37_rolling_engine_source(source):
         "mov.w r0,@(0x14,r5)\n"
         "mov.b @r5,r0\n",
         "VQ37 per-tick fuel request clear",
+    )
+    source = _replace_source_once(
+        source,
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x6,r5)\n"
+        "mov.w r0,@(0x8,r5)\n"
+        "mov.l @(rl_rpm_address,pc),r4\n",
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x6,r5)\n"
+        "mov.w r0,@(0x8,r5)\n"
+        "mov.w r0,@(0x16,r5)\n"
+        "mov.l @(rl_rpm_address,pc),r4\n",
+        "VQ37 activation latch clear",
+    )
+    source = _replace_source_once(
+        source,
+        "rl_abort_publish_cooldown:\n"
+        "mov.l @(rl_state_address,pc),r5\n"
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x8,r5)\n",
+        "rl_abort_publish_cooldown:\n"
+        "mov.l @(rl_state_address,pc),r5\n"
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x8,r5)\n"
+        "mov.w r0,@(0x16,r5)\n",
+        "VQ37 abort latch clear",
     )
     source = _replace_source_once(
         source,
@@ -745,10 +773,35 @@ def _vq37_rolling_engine_source(source):
         "mov r3,r0\n",
         "tst r2,r2\n"
         "bt rl_active_flags_fuel\n"
+        "// Latch the request at or above cut, release it below restore, and\n"
+        "// publish it while the latch holds.\n"
+        "mov.l @(rl_helper_rpm_address,pc),r4\n"
+        "mov.w @r4,r1\n"
+        "extu.w r1,r1\n"
+        "mov.w @(0xC,r5),r0\n"
+        "extu.w r0,r0\n"
+        "cmp/hs r0,r1\n"
+        "bf rl_hold_below_cut\n"
+        "mov #0x1,r0\n"
+        "mov.w r0,@(0x16,r5)\n"
+        "bra rl_hold_publish\n"
+        "nop\n"
+        "rl_hold_below_cut:\n"
+        "mov.w @(0xE,r5),r0\n"
+        "extu.w r0,r0\n"
+        "cmp/hs r0,r1\n"
+        "bt rl_hold_publish\n"
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x16,r5)\n"
+        "rl_hold_publish:\n"
+        "mov.w @(0x16,r5),r0\n"
+        "cmp/eq 0x1,r0\n"
+        "bf rl_hold_done\n"
         "mov #0x3F,r0\n"
         "mov.w r0,@(0x14,r5)\n"
+        "rl_hold_done:\n"
         "mov r3,r0\n",
-        "VQ37 active fuel request publication",
+        "VQ37 held fuel request publication",
     )
     overlay_start = source.index(
         "// Atomically replace only the first eight bytes"
@@ -759,9 +812,18 @@ def _vq37_rolling_engine_source(source):
     source = source[:overlay_start] + source[overlay_end:]
     source = _replace_source_once(
         source,
+        "// Publish active/output flags and the current stock fuel-cut state.\n"
+        ".org 0x000D3E34\n",
+        "// Publish active/output flags, the held fuel-cut request, and the\n"
+        "// current stock fuel-cut state.\n"
+        ".org 0x000D3E04\n",
+        "VQ37 flag publisher origin",
+    )
+    source = _replace_source_once(
+        source,
         "rl_helper_fuel_shadow_address:\n.long 0xFFFF5D10\n",
-        "",
-        "VQ37 fuel-shadow literal removal",
+        "rl_helper_rpm_address:\n.long 0xFFFF11BC\n",
+        "VQ37 fuel-shadow literal replacement",
     )
     return source
 

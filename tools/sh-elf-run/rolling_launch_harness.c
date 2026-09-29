@@ -18,9 +18,15 @@
 #define FUEL_CUT_WRAPPER 0x000d5000U
 #define FUEL_REQUEST_OFFSET 20U
 #define FUEL_REQUEST_MASK 0x003fU
+/* The request latch: set at or above cut, released below restore. */
+#define FUEL_REQUEST_LATCH_OFFSET 22U
 /* The final six-cylinder inhibit mask that the stock coordinator publishes
    and the wrapper extends. */
 #define FUEL_FINAL_MASK 0xffff22e0U
+/* The base mask that the coordinator stub publishes and returns, and the
+   mask after the wrapper adds the six cylinder bits of a request. */
+#define FUEL_STOCK_MASK 0x80U
+#define FUEL_REQUESTED_MASK 0xbfU
 #else
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
@@ -403,6 +409,9 @@ static int run_structural_cases(void)
         state[5] = test->mode;
         write_u16(state + 6, test->run_ticks);
         write_u16(state + 8, test->rearm_ticks);
+#ifdef TARGET_VQ37_ROLLING
+        write_u16(state + FUEL_REQUEST_LATCH_OFFSET, 1);
+#endif
         run_engine();
         if (!verify_corrupt_recovery(test->name))
             return 0;
@@ -679,6 +688,8 @@ static int verify_overlay(
 #ifdef TARGET_VQ37_ROLLING
     uint8_t expected[FUEL_SHADOW_SIZE];
 
+    /* Activation leaves the selected map storage unchanged. Engine speed is
+       the captured value, below cut, so no request is published yet. */
     (void)cut;
     (void)restore;
     for (size_t index = 0; index < sizeof(expected); ++index)
@@ -687,12 +698,14 @@ static int verify_overlay(
             name, "fuel_map_storage", ram_pointer(FUEL_SHADOW), expected,
             sizeof(expected)))
         return 0;
-    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET)
-        != FUEL_REQUEST_MASK)
+    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET) != 0)
         return fail_value(
             name, "fuel_request",
-            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET),
-            FUEL_REQUEST_MASK);
+            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET), 0);
+    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET) != 0)
+        return fail_value(
+            name, "fuel_request_latch",
+            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET), 0);
     return 1;
 #else
     uint8_t expected[8];
@@ -747,12 +760,15 @@ static int verify_active_state(
             name, "retard_band_start", read_u16(state + 18),
             retard_band_start);
 #ifdef TARGET_VQ37_ROLLING
-    if (read_u16(state + FUEL_REQUEST_OFFSET)
-        != (mode == MODE_OBSERVE ? 0U : FUEL_REQUEST_MASK))
+    /* The activation pass runs at the captured speed, below cut, in every
+       mode. */
+    if (read_u16(state + FUEL_REQUEST_OFFSET) != 0)
         return fail_value(
-            name, "fuel_request",
-            read_u16(state + FUEL_REQUEST_OFFSET),
-            mode == MODE_OBSERVE ? 0U : FUEL_REQUEST_MASK);
+            name, "fuel_request", read_u16(state + FUEL_REQUEST_OFFSET), 0);
+    if (read_u16(state + FUEL_REQUEST_LATCH_OFFSET) != 0)
+        return fail_value(
+            name, "fuel_request_latch",
+            read_u16(state + FUEL_REQUEST_LATCH_OFFSET), 0);
 #endif
     return verify_state_guards(name);
 }
@@ -1385,9 +1401,9 @@ struct fuel_wrapper_case {
 };
 
 static const struct fuel_wrapper_case fuel_wrapper_cases[] = {
-    {"fuel-wrapper-inactive", 0x0000U, 0x80U},
-    {"fuel-wrapper-corrupt-request", 0x003eU, 0x80U},
-    {"fuel-wrapper-active", FUEL_REQUEST_MASK, 0xbfU},
+    {"fuel-wrapper-inactive", 0x0000U, FUEL_STOCK_MASK},
+    {"fuel-wrapper-corrupt-request", 0x003eU, FUEL_STOCK_MASK},
+    {"fuel-wrapper-active", FUEL_REQUEST_MASK, FUEL_REQUESTED_MASK},
 };
 
 static int run_fuel_wrapper_cases(void)
@@ -1406,9 +1422,9 @@ static int run_fuel_wrapper_cases(void)
         ram_pointer(FUEL_FINAL_MASK)[0] = 0x12U;
         ram_pointer(FUEL_CUT_STATUS)[0] = FUEL_CUT_ACTIVE;
         returned = invoke_r0(FUEL_CUT_WRAPPER);
-        if (returned != 0x80U)
+        if (returned != FUEL_STOCK_MASK)
             return fail_value(
-                test->name, "stock_return", returned, 0x80U);
+                test->name, "stock_return", returned, FUEL_STOCK_MASK);
         if (ram_pointer(FUEL_FINAL_MASK)[0] != test->expected_mask)
             return fail_value(
                 test->name, "fuel_mask",
@@ -1424,6 +1440,179 @@ static int run_fuel_wrapper_cases(void)
         if (!verify_state_guards(test->name))
             return 0;
     }
+    return 1;
+}
+
+/* Check the phase, the request and its latch after an engine pass, then run
+   the coordinator wrapper and check the final mask it leaves. */
+static int expect_hold(
+    const char *name, uint8_t phase, uint16_t request, uint16_t latch)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    uint8_t expected_mask = request == FUEL_REQUEST_MASK
+        ? FUEL_REQUESTED_MASK
+        : FUEL_STOCK_MASK;
+    uint32_t returned;
+
+    if (state[0] != phase)
+        return fail_value(name, "phase", state[0], phase);
+    if (read_u16(state + FUEL_REQUEST_OFFSET) != request)
+        return fail_value(
+            name, "fuel_request", read_u16(state + FUEL_REQUEST_OFFSET),
+            request);
+    if (read_u16(state + FUEL_REQUEST_LATCH_OFFSET) != latch)
+        return fail_value(
+            name, "fuel_request_latch",
+            read_u16(state + FUEL_REQUEST_LATCH_OFFSET), latch);
+    ram_pointer(FUEL_FINAL_MASK)[0] = 0x12U;
+    returned = invoke_r0(FUEL_CUT_WRAPPER);
+    if (returned != FUEL_STOCK_MASK)
+        return fail_value(name, "stock_return", returned, FUEL_STOCK_MASK);
+    if (ram_pointer(FUEL_FINAL_MASK)[0] != expected_mask)
+        return fail_value(
+            name, "fuel_mask", ram_pointer(FUEL_FINAL_MASK)[0],
+            expected_mask);
+    return verify_state_guards(name);
+}
+
+/* One ACTIVE pass at an engine speed. The selected map storage stays
+   unchanged while the request holds or releases. */
+static int hold_step(
+    const char *name, uint16_t rpm, uint16_t request, uint16_t latch)
+{
+    write_u16(ram_pointer(RPM), rpm);
+    run_engine();
+    if (!expect_hold(name, PHASE_ACTIVE, request, latch))
+        return 0;
+    return verify_fuel_untouched(name);
+}
+
+/* Activation at the reset speed 300 captures cut 316 and restore 310. The
+   longer run timeout leaves room for every pass of a case. */
+static void reset_hold_case(uint8_t mode)
+{
+    reset_case(mode, 0x01);
+    write_u16(rom_pointer(RL_CONFIG) + 18, 0x0100);
+}
+
+static int activate_hold(uint8_t mode)
+{
+    reset_hold_case(mode);
+    run_engine();
+    return ram_pointer(RL_STATE)[0] == PHASE_ACTIVE;
+}
+
+static int run_hold_cases(void)
+{
+    volatile uint8_t *state;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-below-cut", "setup", 0, 1);
+    if (!hold_step("hold-below-cut", 315, 0, 0))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-at-cut", "setup", 0, 1);
+    if (!hold_step("hold-at-cut", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-above-cut", "setup", 0, 1);
+    if (!hold_step("hold-above-cut", 400, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-latched-between", "setup", 0, 1);
+    if (!hold_step("hold-latched-between", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+    if (!hold_step("hold-latched-between", 313, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-latched-at-restore", "setup", 0, 1);
+    if (!hold_step("hold-latched-at-restore", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+    if (!hold_step("hold-latched-at-restore", 310, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    /* Below restore the request releases, stays released between the
+       thresholds, and latches again at cut. */
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-release", "setup", 0, 1);
+    if (!hold_step("hold-release", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+    if (!hold_step("hold-release", 309, 0, 0))
+        return 0;
+    if (!hold_step("hold-release", 313, 0, 0))
+        return 0;
+    if (!hold_step("hold-release", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD_RETARD))
+        return fail_value("hold-retard", "setup", 0, 1);
+    if (!hold_step("hold-retard", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+    if (!hold_step("hold-retard", 309, 0, 0))
+        return 0;
+
+    count_case();
+    if (!activate_hold(MODE_OBSERVE))
+        return fail_value("hold-observe", "setup", 0, 1);
+    if (!hold_step("hold-observe", 400, 0, 0))
+        return 0;
+
+    /* A latch other than 1 publishes no request until a threshold sets or
+       releases it. */
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-foreign-latch", "setup", 0, 1);
+    write_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET, 2);
+    if (!hold_step("hold-foreign-latch", 313, 0, 2))
+        return 0;
+    if (!hold_step("hold-foreign-latch", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+
+    /* An abort clears the latch with the request and republishes the
+       captured map. */
+    count_case();
+    if (!activate_hold(MODE_RPM_HOLD))
+        return fail_value("hold-abort", "setup", 0, 1);
+    if (!hold_step("hold-abort", 316, FUEL_REQUEST_MASK, 1))
+        return 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
+    run_engine();
+    if (!expect_phase_reason(
+            "hold-abort", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
+        return 0;
+    if (!expect_hold("hold-abort", PHASE_COOLDOWN, 0, 0))
+        return 0;
+    if (!verify_engine_fuel_release("hold-abort", 0))
+        return 0;
+
+    /* Activation clears a latch left in IDLE. The saturated capture puts
+       the captured speed between restore and cut, where a kept latch would
+       publish the request. */
+    count_case();
+    reset_hold_case(MODE_RPM_HOLD);
+    state = ram_pointer(RL_STATE);
+    write_u16(state + FUEL_REQUEST_LATCH_OFFSET, 1);
+    write_u16(ram_pointer(RPM), 0xfff8);
+    run_engine();
+    if (!expect_hold("hold-activation-latch", PHASE_ACTIVE, 0, 0))
+        return 0;
+    if (read_u16(state + 12) != 0xffff || read_u16(state + 14) != 0xfff3)
+        return fail_value(
+            "hold-activation-latch", "thresholds", read_u16(state + 14),
+            0xfff3);
+    if (!hold_step("hold-activation-latch", 0xffff, FUEL_REQUEST_MASK, 1))
+        return 0;
     return 1;
 }
 #endif
@@ -1453,14 +1642,16 @@ int main(void)
 #ifdef TARGET_VQ37_ROLLING
     if (!run_fuel_wrapper_cases())
         return 1;
-    if (case_count != 126U)
-        return fail_value("summary", "case_count", case_count, 126);
+    if (!run_hold_cases())
+        return 1;
+    if (case_count != 137U)
+        return fail_value("summary", "case_count", case_count, 137);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=27 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-        "fuel_coordinator=3 entries=9\n",
+        "fuel_coordinator=3 hold=11 entries=9\n",
         (unsigned long)case_count);
 #else
     if (case_count != 123U)

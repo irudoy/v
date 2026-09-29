@@ -137,7 +137,8 @@ banks. Its limiter atomically publishes two native fuel-cut caps, independent
 eight-point activation and release curves, and the selected throttle scalar.
 Exact pointer redirects feed those RAM shadows to the stock 190-byte hysteresis
 state machine. Rolling Launch runs the stock final-mask coordinator first and
-adds an exact all-cylinder request only for an active non-observe state.
+adds an exact all-cylinder request in an active non-observe state from the
+captured cut until engine speed falls below restore.
 Telemetry uses mailbox 26 and a register-preserving completion wrapper that
 tail-chains to the complete stock ISR.
 

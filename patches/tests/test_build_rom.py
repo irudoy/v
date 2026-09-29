@@ -230,7 +230,7 @@ class BuildRomTest(unittest.TestCase):
                 )
                 self.assertEqual(
                     result.rolling_instruction_count,
-                    872 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
+                    894 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
                 )
                 # The 1ME3B capture adds the six instructions that move the
                 # high-detonation bit of the knock surface byte into the wire bit.
@@ -316,7 +316,7 @@ class BuildRomTest(unittest.TestCase):
                     result.configuration,
                     profile.calibration.to_bytes(),
                 )
-                self.assertEqual(result.rolling_instruction_count, 872)
+                self.assertEqual(result.rolling_instruction_count, 894)
 
     def test_relocated_migration_preserves_alternate_map_bytes(self):
         rom = "JK00C"
