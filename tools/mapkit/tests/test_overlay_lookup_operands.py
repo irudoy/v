@@ -324,7 +324,7 @@ class OverlayLookupOperandTest(unittest.TestCase):
         self.assertEqual(mov_l_literal(rom, 0x2CC9A), 0x261F0)
         self.assertEqual(u16(rom, 0x2CC9C), 0x420B)  # jsr @r2
         self.assertEqual(u16(rom, 0x2CC9E), 0x67ED)  # extu.w r14,r7
-        # FUN_0003BE3C: r9 = ffff11d4, r10 = ffff1114, r12 = ffff11f4.
+        # FUN_0003BD74: r9 = ffff11d4, r10 = ffff1114, r12 = ffff11f4.
         for address in (0x3BE90, 0x3BF2C, 0x3BF60, 0x3C092):
             with self.subTest(r9=hex(address)):
                 self.assertEqual(u16(rom, address) >> 8, 0xD9)

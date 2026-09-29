@@ -60,6 +60,6 @@ state = "unresolved"
 method = "interp-contract"
 target = "7mfk:000261b8"
 count = 0
-l0 = "fd713dabb05caef6"
+l0 = "6bd18b774cb344a9"
 note = """
 complete-JK78C-interpolation-library-census-has-no-matching-standard-finisher-contract"""

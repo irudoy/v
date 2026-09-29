@@ -1,8 +1,9 @@
 """L0: the machine extraction of each layout, stored in `l0/<layout>/`.
 
 `export` runs the export scripts of `tools/ghidra/` headless against the
-program of the layout's L0 image, normalizes the CSV files, and writes them
-with `manifest.toml`. `check_all` is the `l0` check of `kb check`.
+program of the layout's L0 image, normalizes the CSV files, writes them with
+`manifest.toml`, and reports each function with a `fn` symbol whose entry or
+body the export changes. `check_all` is the `l0` check of `kb check`.
 
 Usage: python -m kb.l0 <layout> [--check] [--stage DIR] [--from-stage DIR]
 """
@@ -60,6 +61,10 @@ ACCESSORS = (
 # into programs, and names come from L1.
 DROPPED = {"funcs.csv": {"name"}}
 MANIFEST = "manifest.toml"
+# The fragments that MergeFuncs.java joins into their functions, per layout.
+MERGES = Path("tools/ghidra/merges")
+MERGE_HEADER = ("entry", "fragment", "note")
+ENTRY_RE = re.compile(r"[0-9a-f]{8}")
 ADDRESS_RE = re.compile(r"[0-9a-fA-F]{1,8}")
 HEX_RE = re.compile(r"[0-9a-fA-F]+")
 INTEGER_RE = re.compile(r"-?[0-9]+")
@@ -383,9 +388,68 @@ def build(layout, plan, stage, out_dir, root=repo.ROOT):
     return manifest
 
 
+def _functions(base):
+    """{entry: size} and {entry: instruction addresses} of an L0 directory."""
+    with (Path(base) / "funcs.csv").open(newline="", encoding="utf-8") as source:
+        sizes = {int(row["addr"], 16): int(row["size"]) for row in csv.DictReader(source)}
+    bodies = {}
+    with (Path(base) / "function_tokens.csv").open(newline="", encoding="utf-8") as source:
+        for row in csv.DictReader(source):
+            bodies.setdefault(int(row["func_addr"], 16), set()).add(int(row["ins_addr"], 16))
+    return sizes, bodies
+
+
+def body_changes(old, new, names):
+    """Lines for each entry of `names` ({entry: name}) whose function differs
+    between the L0 directories `old` and `new`: the entry is no function entry,
+    its size differs, or a new entry lies in its former body."""
+    old_sizes, old_bodies = _functions(old)
+    new_sizes, new_bodies = _functions(new)
+    holders = {}
+    for entry, body in new_bodies.items():
+        for address in body:
+            holders.setdefault(address, set()).add(entry)
+    added = set(new_sizes) - set(old_sizes)
+    lines = []
+    for entry in sorted(set(names) & set(old_sizes)):
+        label = f"{entry:08x} {names[entry]}"
+        if entry not in new_sizes:
+            where = ", ".join(f"{owner:08x}" for owner in sorted(holders.get(entry, ())))
+            lines.append(f"{label}: no function entry; the instruction lies in "
+                         f"{where or 'no function'}")
+            continue
+        parts = []
+        if new_sizes[entry] != old_sizes[entry]:
+            parts.append(f"size {old_sizes[entry]} -> {new_sizes[entry]}")
+        inside = sorted(added & old_bodies.get(entry, set()))
+        if inside:
+            parts.append("new entries in the former body: "
+                         + ", ".join(f"{address:08x}" for address in inside))
+        if parts:
+            lines.append(f"{label}: " + "; ".join(parts))
+    return lines
+
+
+def review(layout_id, old, new, root=repo.ROOT):
+    """`body_changes` for the functions with a `fn` symbol of the layout."""
+    from kb import compile  # the compiler reads L0 through the adapters
+
+    try:
+        model = compile.cached(root)
+    except KbError as error:
+        return [f"the model does not compile, so no function is compared: {error}"]
+    names = {}
+    for key, symbol in model.symbols.items():
+        if key.layout == layout_id and key.kind == "fn":
+            names[key.address] = symbol.meaning.key if symbol.meaning is not None else key.key
+    return body_changes(old, new, names)
+
+
 def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
            root=repo.ROOT, log=print):
-    """Export one layout into l0/<layout>/, or compare a fresh export with it."""
+    """Export one layout into l0/<layout>/, or compare a fresh export with it.
+    Each function with a `fn` symbol whose entry or body the export changes
+    is logged as a `review:` line."""
     layout = repo.layout(layout_id, root)
     plan = census(layout_id, root)
     with tempfile.TemporaryDirectory(prefix=f"kb-l0-{layout_id}-") as scratch:
@@ -398,6 +462,9 @@ def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
         built = scratch / "l0"
         build(layout, plan, staged, built, root)
         target = root / repo.L0 / layout_id
+        if (target / "funcs.csv").is_file() and (target / "function_tokens.csv").is_file():
+            for line in review(layout_id, target, built, root):
+                log(f"review: {line}")
         if check:
             differences = compare_dirs(built, target)
             for line in differences:
@@ -522,6 +589,60 @@ def check_layout(layout, root=repo.ROOT, verified=None):
             verified.add(digest)
     for name in sorted(set(listed) - present):
         fail(f"{shown}/{name}", "file", "the file is missing")
+    failures += _join_failures(layout, base, present, root)
+    return failures
+
+
+def merges(layout_id, root=repo.ROOT):
+    """(entry, fragment) pairs of `tools/ghidra/merges/<layout>.csv`: the
+    fragments that MergeFuncs.java joins into the function of each entry."""
+    path = root / MERGES / f"{layout_id}.csv"
+    if not path.is_file():
+        return []
+    shown = (MERGES / path.name).as_posix()
+    lines = [line for line in path.read_text(encoding="utf-8").splitlines()
+             if line.strip() and not line.startswith("#")]
+    reader = csv.reader(lines)
+    if tuple(next(reader, ())) != MERGE_HEADER:
+        raise KbError(f"{shown}: the header must be {','.join(MERGE_HEADER)}")
+    pairs, seen = [], set()
+    for row in reader:
+        if len(row) != 3 or not all(ENTRY_RE.fullmatch(cell) for cell in row[:2]):
+            raise KbError(f"{shown}: {','.join(row)}: expected entry,fragment,note with "
+                          "eight-digit addresses and no comma in the note")
+        entry, fragment = int(row[0], 16), int(row[1], 16)
+        if fragment in seen or fragment == entry:
+            raise KbError(f"{shown}: {row[1]}: a fragment joins one other function")
+        seen.add(fragment)
+        pairs.append((entry, fragment))
+    return pairs
+
+
+def _join_failures(layout, base, present, root):
+    """Each join of the merge registry of a layout that its L0 lacks."""
+    registry = (MERGES / f"{layout.id}.csv").as_posix()
+    fix = (f"run MergeFuncs.java with {registry} on the program, then "
+           f"tools/ghidra/export-l0.sh {layout.id}")
+    try:
+        joins = merges(layout.id, root)
+    except KbError as error:
+        return [Failure(registry, "syntax", str(error), "correct the registry")]
+    if not joins or not {"funcs.csv", "function_tokens.csv"} <= present:
+        return []
+    sizes, bodies = _functions(base)
+    failures = []
+    for entry, fragment in joins:
+        if entry not in sizes:
+            failures.append(Failure(registry, f"{entry:08x}",
+                                    "the entry is no function entry of the L0", fix))
+        elif fragment in sizes:
+            failures.append(Failure(registry, f"{fragment:08x}",
+                                    f"the fragment of {entry:08x} is a function entry "
+                                    "of the L0", fix))
+        elif fragment not in bodies.get(entry, set()):
+            failures.append(Failure(registry, f"{fragment:08x}",
+                                    f"the fragment lies outside the body of {entry:08x}",
+                                    fix))
     return failures
 
 
@@ -540,6 +661,14 @@ def check_all(root=repo.ROOT, only=None):
                 failures.append(Failure(
                     f"{repo.L0}/{path.name}", "layout",
                     "the directory is not a layout of rom-images/homology.toml",
+                    "remove it or declare the layout",
+                ))
+    if only is None and (root / MERGES).is_dir():
+        for path in sorted((root / MERGES).glob("*.csv")):
+            if path.stem not in known:
+                failures.append(Failure(
+                    (MERGES / path.name).as_posix(), "layout",
+                    "the registry is not of a layout of rom-images/homology.toml",
                     "remove it or declare the layout",
                 ))
     try:

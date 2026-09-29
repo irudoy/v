@@ -77,7 +77,9 @@ export directories as review inputs:
 
 `RecoverFuncs.java` may persist reviewed missing entries before export;
 `AnalyzeFuncs.java` then analyzes the bodies it disassembled so their
-references reach `xrefs.csv`.
+references reach `xrefs.csv`. `MergeFuncs.java` joins the reviewed function
+fragments of `tools/ghidra/merges/<layout>.csv` into their functions, so the
+exports attribute a lookup inside a fragment to the function that holds it.
 `ResolveAccessors.java` also recovers an unmarked function in memory when a
 registered callsite otherwise lacks a decompiler function.
 

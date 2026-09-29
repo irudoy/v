@@ -361805,131 +361805,131 @@ func_addr,ins_addr,ordinal,mnemonic,shape
 000eb84e,000eb92c,111,_mov,"_mov r14,r4"
 000eb84e,000eb92e,112,bra,bra #
 000eb84e,000eb930,113,_nop,_nop
-000eb938,000eb938,0,mov.l,"mov.l @(#,pc),r2"
-000eb938,000eb93a,1,extu.w,"extu.w r6,r6"
-000eb938,000eb93c,2,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb93e,3,bt,bt #
-000eb938,000eb940,4,mov.w,"mov.w @(#,pc),r2"
-000eb938,000eb942,5,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb944,6,bt,bt #
-000eb938,000eb946,7,mov.l,"mov.l @(#,pc),r2"
-000eb938,000eb948,8,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb94a,9,bt,bt #
-000eb938,000eb94c,10,mov.l,"mov.l @(#,pc),r2"
-000eb938,000eb94e,11,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb950,12,bt,bt #
-000eb938,000eb952,13,mov.w,"mov.w @(#,pc),r2"
-000eb938,000eb954,14,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb956,15,bt,bt #
-000eb938,000eb958,16,mov,"mov ##,r2"
-000eb938,000eb95a,17,shll8,shll8 r2
-000eb938,000eb95c,18,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb95e,19,bt,bt #
-000eb938,000eb960,20,mov,"mov ##,r2"
-000eb938,000eb962,21,shll8,shll8 r2
-000eb938,000eb964,22,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb966,23,bt,bt #
-000eb938,000eb968,24,mov.w,"mov.w @(#,pc),r2"
-000eb938,000eb96a,25,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb96c,26,bt,bt #
-000eb938,000eb96e,27,mov.l,"mov.l @(#,pc),r2"
-000eb938,000eb970,28,cmp/eq,"cmp/eq r2,r6"
-000eb938,000eb972,29,bf,bf #
-000eb938,000eb974,30,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb976,31,jsr,jsr @r3
-000eb938,000eb978,32,_nop,_nop
-000eb938,000eb97a,33,bra,bra #
-000eb938,000eb97c,34,_nop,_nop
-000eb938,000eb97e,35,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb980,36,jsr,jsr @r3
-000eb938,000eb982,37,_nop,_nop
-000eb938,000eb984,38,bra,bra #
-000eb938,000eb986,39,_nop,_nop
-000eb938,000eb988,40,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb98a,41,jsr,jsr @r3
-000eb938,000eb98c,42,_nop,_nop
-000eb938,000eb98e,43,bra,bra #
-000eb938,000eb990,44,_nop,_nop
-000eb938,000eb992,45,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb994,46,jsr,jsr @r3
-000eb938,000eb996,47,_nop,_nop
-000eb938,000eb998,48,bra,bra #
-000eb938,000eb99a,49,_nop,_nop
-000eb938,000eb99c,50,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb99e,51,jsr,jsr @r3
-000eb938,000eb9a0,52,_nop,_nop
-000eb938,000eb9a2,53,bra,bra #
-000eb938,000eb9a4,54,_nop,_nop
-000eb938,000eb9a6,55,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb9a8,56,jsr,jsr @r3
-000eb938,000eb9aa,57,_nop,_nop
-000eb938,000eb9ac,58,bra,bra #
-000eb938,000eb9ae,59,_nop,_nop
-000eb938,000eb9b0,60,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb9b2,61,jsr,jsr @r3
-000eb938,000eb9b4,62,_nop,_nop
-000eb938,000eb9b6,63,bra,bra #
-000eb938,000eb9b8,64,_nop,_nop
-000eb938,000eb9ba,65,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb9bc,66,jsr,jsr @r3
-000eb938,000eb9be,67,_nop,_nop
-000eb938,000eb9c0,68,bra,bra #
-000eb938,000eb9c2,69,_nop,_nop
-000eb938,000eb9c4,70,mov.l,"mov.l @(#,pc),r3"
-000eb938,000eb9c6,71,jsr,jsr @r3
-000eb938,000eb9c8,72,_nop,_nop
-000eb938,000eb9ca,73,add,"add r13,r12"
-000eb938,000eb9cc,74,mov.b,"mov.b @r12,r0"
-000eb938,000eb9ce,75,or,"or #,r0"
-000eb938,000eb9d0,76,mov.b,"mov.b r0,@r12"
-000eb938,000eb9d2,77,add,"add #,r14"
-000eb938,000eb9d4,78,extu.b,"extu.b r14,r14"
-000eb938,000eb9d6,79,mov,"mov ##,r7"
-000eb938,000eb9d8,80,cmp/ge,"cmp/ge r7,r14"
-000eb938,000eb9da,81,bt,bt #
-000eb938,000eb9dc,82,bra,bra #
-000eb938,000eb9de,83,_nop,_nop
-000eb938,000eb9e0,84,bra,bra #
-000eb938,000eb9e2,85,_nop,_nop
-000eba48,000eba48,0,mov,"mov ##,r4"
-000eba48,000eba4a,1,mov.l,"mov.l @(#,pc),r14"
-000eba48,000eba4c,2,mov,"mov ##,r7"
-000eba48,000eba4e,3,extu.b,"extu.b r4,r4"
-000eba48,000eba50,4,mov,"mov r4,r2"
-000eba48,000eba52,5,shll2,shll2 r2
-000eba48,000eba54,6,add,"add r14,r2"
-000eba48,000eba56,7,mov.b,"mov.b @r2,r0"
-000eba48,000eba58,8,cmp/eq,"cmp/eq #,r0"
-000eba48,000eba5a,9,bf,bf #
-000eba48,000eba5c,10,mov,"mov r4,r2"
-000eba48,000eba5e,11,shll2,shll2 r2
-000eba48,000eba60,12,mov.l,"mov.l @(#,pc),r5"
-000eba48,000eba62,13,add,"add r4,r2"
-000eba48,000eba64,14,shll,shll r2
-000eba48,000eba66,15,add,"add r2,r5"
-000eba48,000eba68,16,mov.b,"mov.b @r5,r0"
-000eba48,000eba6a,17,and,"and #,r0"
-000eba48,000eba6c,18,mov.b,"mov.b r0,@r5"
-000eba48,000eba6e,19,add,"add #,r4"
-000eba48,000eba70,20,extu.b,"extu.b r4,r4"
-000eba48,000eba72,21,cmp/ge,"cmp/ge r7,r4"
-000eba48,000eba74,22,bf,bf #
-000eba48,000eba76,23,mov.l,"mov.l @(#,pc),r6"
-000eba48,000eba78,24,mov.b,"mov.b @r6,r0"
-000eba48,000eba7a,25,and,"and #,r0"
-000eba48,000eba7c,26,mov.b,"mov.b r0,@r6"
-000eba48,000eba7e,27,mov.l,"mov.l @(#,pc),r5"
-000eba48,000eba80,28,mov.w,"mov.w @(#,pc),r0"
-000eba48,000eba82,29,mov.w,"mov.w @(r0,r5),r2"
-000eba48,000eba84,30,add,"add #,r2"
-000eba48,000eba86,31,mov.w,"mov.w r2,@(r0,r5)"
-000eba48,000eba88,32,lds.l,"lds.l @r15+,pr"
-000eba48,000eba8a,33,mov.l,"mov.l @r15+,r14"
-000eba48,000eba8c,34,mov.l,"mov.l @r15+,r13"
-000eba48,000eba8e,35,mov.l,"mov.l @r15+,r12"
-000eba48,000eba90,36,mov.l,"mov.l @r15+,r11"
-000eba48,000eba92,37,rts,rts
-000eba48,000eba94,38,_mov.l,"_mov.l @r15+,r10"
+000eb84e,000eb938,114,mov.l,"mov.l @(#,pc),r2"
+000eb84e,000eb93a,115,extu.w,"extu.w r6,r6"
+000eb84e,000eb93c,116,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb93e,117,bt,bt #
+000eb84e,000eb940,118,mov.w,"mov.w @(#,pc),r2"
+000eb84e,000eb942,119,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb944,120,bt,bt #
+000eb84e,000eb946,121,mov.l,"mov.l @(#,pc),r2"
+000eb84e,000eb948,122,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb94a,123,bt,bt #
+000eb84e,000eb94c,124,mov.l,"mov.l @(#,pc),r2"
+000eb84e,000eb94e,125,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb950,126,bt,bt #
+000eb84e,000eb952,127,mov.w,"mov.w @(#,pc),r2"
+000eb84e,000eb954,128,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb956,129,bt,bt #
+000eb84e,000eb958,130,mov,"mov ##,r2"
+000eb84e,000eb95a,131,shll8,shll8 r2
+000eb84e,000eb95c,132,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb95e,133,bt,bt #
+000eb84e,000eb960,134,mov,"mov ##,r2"
+000eb84e,000eb962,135,shll8,shll8 r2
+000eb84e,000eb964,136,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb966,137,bt,bt #
+000eb84e,000eb968,138,mov.w,"mov.w @(#,pc),r2"
+000eb84e,000eb96a,139,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb96c,140,bt,bt #
+000eb84e,000eb96e,141,mov.l,"mov.l @(#,pc),r2"
+000eb84e,000eb970,142,cmp/eq,"cmp/eq r2,r6"
+000eb84e,000eb972,143,bf,bf #
+000eb84e,000eb974,144,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb976,145,jsr,jsr @r3
+000eb84e,000eb978,146,_nop,_nop
+000eb84e,000eb97a,147,bra,bra #
+000eb84e,000eb97c,148,_nop,_nop
+000eb84e,000eb97e,149,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb980,150,jsr,jsr @r3
+000eb84e,000eb982,151,_nop,_nop
+000eb84e,000eb984,152,bra,bra #
+000eb84e,000eb986,153,_nop,_nop
+000eb84e,000eb988,154,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb98a,155,jsr,jsr @r3
+000eb84e,000eb98c,156,_nop,_nop
+000eb84e,000eb98e,157,bra,bra #
+000eb84e,000eb990,158,_nop,_nop
+000eb84e,000eb992,159,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb994,160,jsr,jsr @r3
+000eb84e,000eb996,161,_nop,_nop
+000eb84e,000eb998,162,bra,bra #
+000eb84e,000eb99a,163,_nop,_nop
+000eb84e,000eb99c,164,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb99e,165,jsr,jsr @r3
+000eb84e,000eb9a0,166,_nop,_nop
+000eb84e,000eb9a2,167,bra,bra #
+000eb84e,000eb9a4,168,_nop,_nop
+000eb84e,000eb9a6,169,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb9a8,170,jsr,jsr @r3
+000eb84e,000eb9aa,171,_nop,_nop
+000eb84e,000eb9ac,172,bra,bra #
+000eb84e,000eb9ae,173,_nop,_nop
+000eb84e,000eb9b0,174,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb9b2,175,jsr,jsr @r3
+000eb84e,000eb9b4,176,_nop,_nop
+000eb84e,000eb9b6,177,bra,bra #
+000eb84e,000eb9b8,178,_nop,_nop
+000eb84e,000eb9ba,179,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb9bc,180,jsr,jsr @r3
+000eb84e,000eb9be,181,_nop,_nop
+000eb84e,000eb9c0,182,bra,bra #
+000eb84e,000eb9c2,183,_nop,_nop
+000eb84e,000eb9c4,184,mov.l,"mov.l @(#,pc),r3"
+000eb84e,000eb9c6,185,jsr,jsr @r3
+000eb84e,000eb9c8,186,_nop,_nop
+000eb84e,000eb9ca,187,add,"add r13,r12"
+000eb84e,000eb9cc,188,mov.b,"mov.b @r12,r0"
+000eb84e,000eb9ce,189,or,"or #,r0"
+000eb84e,000eb9d0,190,mov.b,"mov.b r0,@r12"
+000eb84e,000eb9d2,191,add,"add #,r14"
+000eb84e,000eb9d4,192,extu.b,"extu.b r14,r14"
+000eb84e,000eb9d6,193,mov,"mov ##,r7"
+000eb84e,000eb9d8,194,cmp/ge,"cmp/ge r7,r14"
+000eb84e,000eb9da,195,bt,bt #
+000eb84e,000eb9dc,196,bra,bra #
+000eb84e,000eb9de,197,_nop,_nop
+000eb84e,000eb9e0,198,bra,bra #
+000eb84e,000eb9e2,199,_nop,_nop
+000eb84e,000eba48,200,mov,"mov ##,r4"
+000eb84e,000eba4a,201,mov.l,"mov.l @(#,pc),r14"
+000eb84e,000eba4c,202,mov,"mov ##,r7"
+000eb84e,000eba4e,203,extu.b,"extu.b r4,r4"
+000eb84e,000eba50,204,mov,"mov r4,r2"
+000eb84e,000eba52,205,shll2,shll2 r2
+000eb84e,000eba54,206,add,"add r14,r2"
+000eb84e,000eba56,207,mov.b,"mov.b @r2,r0"
+000eb84e,000eba58,208,cmp/eq,"cmp/eq #,r0"
+000eb84e,000eba5a,209,bf,bf #
+000eb84e,000eba5c,210,mov,"mov r4,r2"
+000eb84e,000eba5e,211,shll2,shll2 r2
+000eb84e,000eba60,212,mov.l,"mov.l @(#,pc),r5"
+000eb84e,000eba62,213,add,"add r4,r2"
+000eb84e,000eba64,214,shll,shll r2
+000eb84e,000eba66,215,add,"add r2,r5"
+000eb84e,000eba68,216,mov.b,"mov.b @r5,r0"
+000eb84e,000eba6a,217,and,"and #,r0"
+000eb84e,000eba6c,218,mov.b,"mov.b r0,@r5"
+000eb84e,000eba6e,219,add,"add #,r4"
+000eb84e,000eba70,220,extu.b,"extu.b r4,r4"
+000eb84e,000eba72,221,cmp/ge,"cmp/ge r7,r4"
+000eb84e,000eba74,222,bf,bf #
+000eb84e,000eba76,223,mov.l,"mov.l @(#,pc),r6"
+000eb84e,000eba78,224,mov.b,"mov.b @r6,r0"
+000eb84e,000eba7a,225,and,"and #,r0"
+000eb84e,000eba7c,226,mov.b,"mov.b r0,@r6"
+000eb84e,000eba7e,227,mov.l,"mov.l @(#,pc),r5"
+000eb84e,000eba80,228,mov.w,"mov.w @(#,pc),r0"
+000eb84e,000eba82,229,mov.w,"mov.w @(r0,r5),r2"
+000eb84e,000eba84,230,add,"add #,r2"
+000eb84e,000eba86,231,mov.w,"mov.w r2,@(r0,r5)"
+000eb84e,000eba88,232,lds.l,"lds.l @r15+,pr"
+000eb84e,000eba8a,233,mov.l,"mov.l @r15+,r14"
+000eb84e,000eba8c,234,mov.l,"mov.l @r15+,r13"
+000eb84e,000eba8e,235,mov.l,"mov.l @r15+,r12"
+000eb84e,000eba90,236,mov.l,"mov.l @r15+,r11"
+000eb84e,000eba92,237,rts,rts
+000eb84e,000eba94,238,_mov.l,"_mov.l @r15+,r10"
 000eba96,000eba96,0,mov.l,"mov.l @(#,pc),r5"
 000eba96,000eba98,1,mov,"mov ##,r0"
 000eba96,000eba9a,2,mov.l,"mov.l @(#,pc),r1"

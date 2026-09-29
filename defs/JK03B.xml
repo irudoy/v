@@ -1691,7 +1691,7 @@
 
     <!-- 0x0A29A  16x16 uint8  common-definition Map 1 storage projected from 0x0A29A [code]
          Map 1 uses canonical stock storage
-         canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
+         canonical accessor 0x2C648, 0x3BD74; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
@@ -2114,7 +2114,7 @@
     <!-- 0xD3100  16x16 uint8  common-definition Map 2 storage projected from 0x0A29A [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
+         canonical accessor 0x2C648, 0x3BD74; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
@@ -2547,7 +2547,7 @@
     <!-- 0xD3200  16x16 uint8  common-definition Map 3 storage projected from 0x0A29A [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
+         canonical accessor 0x2C648, 0x3BD74; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
@@ -2980,7 +2980,7 @@
     <!-- 0xD3300  16x16 uint8  common-definition Map 4 storage projected from 0x0A29A [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
+         canonical accessor 0x2C648, 0x3BD74; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]
@@ -3413,7 +3413,7 @@
     <!-- 0xD3400  16x16 uint8  common-definition Map 5 storage projected from 0x0A29A [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x2C648, 0x3BE3C; r4 operand: pool
+         canonical accessor 0x2C648, 0x3BD74; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
          [candidate]

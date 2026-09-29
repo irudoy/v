@@ -93,7 +93,7 @@ sha256 = "ebac5e2ab01f9e932f774b95a76fbbdd6a6e032b5ec202ef24b108865f937df4"
 rows = 10
 
 [files."accessors.28c8c.csv"]
-sha256 = "af0f20c5680cf5abb4d0c3e4d8e15f245fcf3a08b0829ea04ab0291a4a5ebf28"
+sha256 = "aa646f54e2dc793d1747926ac6e9839999928ce4e534430d16b9af63e48baefd"
 rows = 2
 
 [files."accessors.28e10.csv"]
@@ -105,7 +105,7 @@ sha256 = "b595548cdc0b3a6a06fed2dedfe41281c069325e4f472166a14227938e762192"
 rows = 6
 
 [files."accessors.291dc.csv"]
-sha256 = "5f042443dbaffc5eadebcef61a8e261e5317c2ef5953d32a08207268a504030a"
+sha256 = "44815b8a84a7c11fad22f4a7850f32d73f47e33587c4cc6a3e4dc8a243058f30"
 rows = 20
 
 [files."accessors.293d8.csv"]
@@ -117,7 +117,7 @@ sha256 = "2118a59d1252e8c2121f11b3cedce0229dd49d1dc75cc8a7dcc55b95fe87bbb3"
 rows = 1
 
 [files."accessors.298b4.csv"]
-sha256 = "1e45d2b6b2d95b3883c3785643bce21dba160e3ffc55d07792e38119fff216f5"
+sha256 = "626b26b46798e3d86d6cb5ac167bcc4dbaf76f1298bb175ed069f01842f37808"
 rows = 44
 
 [files."accessors.29ba8.csv"]
@@ -173,11 +173,11 @@ sha256 = "28e567a1a206870bea4016a69ef50368276bde443873d0c0d8b2a1eadba0c1d2"
 rows = 3
 
 [files."accessors.2ac9c.csv"]
-sha256 = "44bb894af74fb29f968d2ba35c1d2e69a9d115701b57f7396d4f3b188463edd5"
+sha256 = "d6d139f1925b6dbc14b4c5e647100a988a58b7c94576b7d6b95f782df3453fac"
 rows = 93
 
 [files."accessors.2ad6c.csv"]
-sha256 = "836f782765741bf956b354ba444ff78cc37fd84b1b3167b57e4fbac2a6f6c98e"
+sha256 = "7795696b126263c2293d54569ada5a02ccb5a5d5fb71f418807d5cdb8ad7b895"
 rows = 44
 
 [files."accessors.2aeac.csv"]
@@ -225,29 +225,29 @@ sha256 = "3bed2f223b5fef1cdac0579fa9003eaa49d0615f4f660c0809ca60efebb24044"
 rows = 44
 
 [files."calls.csv"]
-sha256 = "354c2e62c69de696316bde7a9628041ae79986079285a7157aaee64513c5e302"
+sha256 = "35ee480f57daa4531860c854aaafda8470757fbc7b0813b842a7dbb2f367dfb5"
 rows = 3737
 
 [files."funcs.csv"]
-sha256 = "be7bc1bfde1cbce087444cf3617e14aa9721d2ed7847ce7882fae445f8cbf2e9"
-rows = 2330
+sha256 = "942555db575fe044e114113b80df23446f9c821c53b3b964ece5d185669366f4"
+rows = 2329
 
 [files."function_references.csv"]
-sha256 = "0b2c4db3c11f3796fec8c8dcf690c9ae5abd2feb2ee7f9b26327b5948763f429"
+sha256 = "a85fe852cbe6accfbd49c20a20787243100c281938b8f17af83ed5e99252785d"
 rows = 191820
 
 [files."function_signatures.csv"]
-sha256 = "a7a10e0e7aa9966ca06322fe3120adb4034837d92a733daa7d048c4b55520fa1"
-rows = 2325
+sha256 = "71fd4d441518d60efa55fcd641f4cadd427d482312729d608f84017627008a0e"
+rows = 2324
 
 [files."function_sites.csv"]
-sha256 = "0cc803b52b4c17173f33a44592004f0312d4858f60fdb6da1aecaaa7361e2314"
+sha256 = "1bd5c3e98f80c9ff640b45c71727c7a97ab01065fa839587ee11c9b233700d19"
 rows = 5579
 
 [files."function_tokens.csv"]
-sha256 = "1ef106e1f96deaee93ec4c947626bdebe373a8f9d9e9f0376efa483f2c4e99bd"
+sha256 = "1d008d890d9ea80fd8bfe710c2fc2844932aa62f6ff1193b84f85aaf9591b979"
 rows = 445342
 
 [files."xrefs.csv"]
-sha256 = "75a74f7793337036de52bc1d2da43acfd3b7845e415260e480fb533b14dc2d18"
-rows = 56062
+sha256 = "8a75b79cd1e9d0d5a6ce82d6aeb1749ffc3c11d4e1fa8f4437a53b41b012544b"
+rows = 56055

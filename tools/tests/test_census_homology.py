@@ -153,8 +153,8 @@ def test_1me3b_census_ledger_matches_the_stock_images(ledger):
         "homolog": 589,
         "ambiguous": 5,
         "unpaired": 174,
-        "aligned-reference": 499,
-        "unique-exact-content": 83,
+        "aligned-reference": 500,
+        "unique-exact-content": 82,
         "published-registry": 7,
         "bytes_equal": 558,
     }

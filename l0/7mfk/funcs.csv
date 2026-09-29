@@ -556,10 +556,7 @@ addr,size,is_thunk,is_external
 0003b498,136,false,false
 0003b520,456,false,false
 0003b75c,1436,false,false
-0003bd74,98,false,false
-0003bdd8,12,false,false
-0003be3c,162,false,false
-0003bede,988,false,false
+0003bd74,1260,false,false
 0003c3ac,92,false,false
 0003c408,84,false,false
 0003c45c,20,false,false
@@ -2175,9 +2172,7 @@ addr,size,is_thunk,is_external
 000c3994,144,false,false
 000c3a24,212,false,false
 000c3b14,630,false,false
-000c3de4,232,false,false
-000c3ed2,156,false,false
-000c3fcc,78,false,false
+000c3de4,466,false,false
 000c401a,222,false,false
 000c410a,70,false,false
 000c4150,416,false,false

@@ -484,7 +484,7 @@ map,00014262,8x1:uint8:step32,homolog,000143f6,unique-exact-content,yes,
 map,0001426a,8x1:uint8,unpaired,,,,flat-content
 map,00014272,8x1:uint8,unpaired,,,,flat-content
 map,0001427a,8x1:uint8:step32,homolog,0001440e,aligned-reference,yes,
-map,00014282,8x1:uint8:step32,homolog,00014416,unique-exact-content,yes,
+map,00014282,8x1:uint8:step32,homolog,00014416,aligned-reference,yes,
 map,0001428a,8x1:uint8,unpaired,,,,no-content-match
 map,00014292,8x1:uint8,homolog,00014426,unique-exact-content,yes,
 map,0001429a,8x1:uint8,homolog,0001442e,unique-exact-content,yes,

@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 from kb import (answer, checks, compile, graph, guard, instance, l0, lock, project, read, repo,
-                store, vocab, write)
+                sites, store, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -26,7 +26,8 @@ def _model_check(name, table=checks.CHECKS):
 
 
 # Checks active at the current transition stage, in execution order.
-CHECKS = {"l0": l0.check_all, **{name: _model_check(name) for name in checks.CHECKS},
+CHECKS = {"l0": l0.check_all, "sites": sites.check,
+          **{name: _model_check(name) for name in checks.CHECKS},
           "projections": project.check, "guard": guard.check}
 # Reports of a check that do not fail it.
 NOTES = {name: _model_check(name, checks.NOTES) for name in checks.NOTES}

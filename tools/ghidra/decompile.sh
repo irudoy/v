@@ -19,6 +19,13 @@
 # request costs nothing; a headless run with missing files takes a few
 # seconds. Output paths are printed one per line.
 #
+# OUTDIR/.decompile-key holds the key of the kept outputs: the pinned Ghidra
+# release, the program and its image, and, for the L0 image of a layout, the
+# digests of the layout's L0 manifest and of its curated function names
+# (program_name.py --cache-key). A request under another key removes every
+# decomp_*.c and funclisting_*.txt of OUTDIR first, so a reanalysis, a join of
+# fragments, or a rename never serves an output of the previous program state.
+#
 # Every headless run reads the executable SHA-256 that Ghidra recorded at
 # import. Output reaches OUTDIR only when it equals the SHA-256 of the
 # registered stock image, so a program under another name cannot stand in for
@@ -55,9 +62,14 @@ mkdir -p "$outdir"
 
 resolved="$(cd "$ROOT" && uv run --quiet python -m tools.ghidra.program_name "$rom" \
     --project-dir "$PROJECT_DIR" --project-name "$PROJECT_NAME" \
-    --program "$program_override")"
-program="${resolved%%$'\t'*}"
-image_sha256="${resolved##*$'\t'}"
+    --program "$program_override" --cache-key)"
+IFS=$'\t' read -r program image_sha256 cache_key <<< "$resolved"
+
+key_file="$outdir/.decompile-key"
+if [ "$(cat "$key_file" 2>/dev/null || true)" != "$cache_key" ]; then
+    rm -f "$outdir"/decomp_*.c "$outdir"/funclisting_*.txt
+    printf '%s\n' "$cache_key" > "$key_file"
+fi
 
 declare -a addresses=()
 declare -a decompile=()

@@ -128,7 +128,7 @@ discrepancy is recorded at the finding.
 
 ## Fuel Compensation Main to BFS
 
-`FUN_0003BE3C` contains the live accessor for Fuel Compensation Main `0xA29A`.
+`FUN_0003BD74` contains the live accessor for Fuel Compensation Main `0xA29A`.
 At `0x3C284..0x3C29C`, the active lookup path uses wrapper `0x261F0` with row
 axis `0x11CF0` over RPM/12.5 word `0xFFFF11F4` and column axis `0x11D4C` over
 byte `0xFFFF1170`, then writes the uint8 result to `0xFFFF1160`. Runtime
@@ -210,7 +210,7 @@ Stock `ROM8[0x8D92] = 0x7A` has bit 4 set, selecting:
 ```
 
 The opposite configuration branch uses the saturated `(P + T) >> 13` result.
-`FUN_0003BE3C` also publishes `0xFFFF115C`; its selected source can be a
+`FUN_0003BD74` also publishes `0xFFFF115C`; its selected source can be a
 calculated word, a parallel working word, or stock constant
 `ROM16[0x90EE] = 0x020C` according to runtime state. `0xFFFF115C` is therefore
 not the `0xA29A` result and must not be merged with `0xFFFF1160` in a definition

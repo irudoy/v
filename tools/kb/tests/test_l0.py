@@ -238,6 +238,65 @@ class LayoutTest(unittest.TestCase):
         self.assertTrue(cache.is_file())
         self.assertIn(repo.sha256_file(self.target / "calls.csv"), cache.read_text())
 
+    def registry(self, *rows):
+        write(self.root / l0.MERGES / "t1.csv",
+              "# Fragments of layout t1.\nentry,fragment,note\n"
+              + "".join(f"{row}\n" for row in rows))
+
+    def test_the_joins_of_the_merge_registry_are_required(self):
+        self.registry("00000100,00000102,in the body",
+                      "00000100,00000104,a function entry",
+                      "00000106,00000108,no function",
+                      "00000100,0000010a,outside the body")
+        self.assertEqual(l0.merges("t1", self.root)[0], (0x100, 0x102))
+        self.assertEqual(self.failures(), [
+            "tools/ghidra/merges/t1.csv: 00000104",
+            "tools/ghidra/merges/t1.csv: 00000106",
+            "tools/ghidra/merges/t1.csv: 0000010a",
+        ])
+
+    def test_a_malformed_or_foreign_merge_registry_fails(self):
+        self.registry("100,102,short addresses")
+        write(self.root / l0.MERGES / "zz.csv", "entry,fragment,note\n")
+        self.assertEqual(self.failures(), [
+            "tools/ghidra/merges/t1.csv: syntax",
+            "tools/ghidra/merges/zz.csv: layout",
+        ])
+        self.registry("00000100,00000102,a", "00000104,00000102,b")
+        with self.assertRaisesRegex(KbError, "a fragment joins one other function"):
+            l0.merges("t1", self.root)
+
+
+class ReviewTest(unittest.TestCase):
+    def export(self, base, functions):
+        """An L0 directory of `functions`, {entry: body addresses}."""
+        write(base / "funcs.csv", table(
+            ("addr", "size", "is_thunk", "is_external"),
+            *((f"{entry:08x}", 2 * len(body), "false", "false")
+              for entry, body in functions.items())))
+        write(base / "function_tokens.csv", table(
+            ("func_addr", "ins_addr", "ordinal", "mnemonic", "shape"),
+            *((f"{entry:08x}", f"{address:08x}", index, "nop", "nop")
+              for entry, body in functions.items()
+              for index, address in enumerate(body))))
+        return base
+
+    def test_joined_split_and_unchanged_functions_of_symbols(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            old = self.export(Path(scratch) / "old", {
+                0x100: (0x100, 0x102), 0x104: (0x104, 0x106),
+                0x120: (0x120, 0x122), 0x130: (0x130,)})
+            new = self.export(Path(scratch) / "new", {
+                0x100: (0x100, 0x102, 0x104, 0x106), 0x120: (0x120,), 0x122: (0x122,),
+                0x130: (0x130,)})
+            names = {0x100: "joined", 0x104: "fragment", 0x120: "split", 0x130: "same",
+                     0x200: "elsewhere"}
+            self.assertEqual(l0.body_changes(old, new, names), [
+                "00000100 joined: size 4 -> 8",
+                "00000104 fragment: no function entry; the instruction lies in 00000100",
+                "00000120 split: size 4 -> 2; new entries in the former body: 00000122",
+            ])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -525,8 +525,7 @@ addr,size,is_thunk,is_external
 00047e2a,218,false,false
 00047fac,488,false,false
 00048298,660,false,false
-00048564,258,false,false
-000486e0,1248,false,false
+00048564,1506,false,false
 00048cc0,166,false,false
 00048d66,78,false,false
 00048dec,376,false,false

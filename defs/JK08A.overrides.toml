@@ -110,7 +110,7 @@ scale = "x*0.00152588"
 [logparam.ffff1170]
 # Fuel Compensation Main column coordinate. FUN 0003b498 writes it as the high
 # byte of curve 00015042 or 00015022 over an opening area divided by engine
-# speed, and FUN 0002c648 and FUN 0003be3c pass it to wrapper 000261f0, whose
+# speed, and FUN 0002c648 and FUN 0003bd74 pass it to wrapper 000261f0, whose
 # byte core 00026944 compares each point of axis 00011d4c with it directly. The
 # axis percent scale is a catalog candidate, so the record repeats the axis
 # expression.

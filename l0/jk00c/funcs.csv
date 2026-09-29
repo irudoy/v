@@ -562,10 +562,7 @@ addr,size,is_thunk,is_external
 0003c244,136,false,false
 0003c2cc,458,false,false
 0003c50c,1434,false,false
-0003cb24,98,false,false
-0003cb88,12,false,false
-0003cbf0,162,false,false
-0003cc92,988,false,false
+0003cb24,1260,false,false
 0003d160,92,false,false
 0003d1bc,84,false,false
 0003d210,20,false,false

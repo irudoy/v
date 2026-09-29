@@ -41,9 +41,29 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 
 Without `-noanalysis` and `-readOnly`, HeadlessAnalyzer reruns the
 auto-analysis of the installed version over the whole program and saves it.
+The reanalysis recreates the function fragments of the analysis artifacts that
+[Function fragments](#function-fragments) describes, so each program of a
+layout with a registry `merges/<layout>.csv` then runs `MergeFuncs.java` with
+that registry, and each program of a layout with `symbols/<layout>.csv` runs
+`RenameFuncs.java` with it:
+
+```bash
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process <program-name> -noanalysis -scriptPath "$PWD/tools/ghidra" \
+  -postScript MergeFuncs.java "$PWD/tools/ghidra/merges/<layout>.csv"
+```
+
 `export-l0.sh` then re-exports every layout; each manifest records the pinned
 version, and the `l0` check of `kb check` fails on a manifest of another
-version.
+version or on a fragment of a registry that the export lists as a function
+entry. The export logs a `review:` line for every function of a `kb` symbol
+of the layout whose entry disappears or whose body changes size, and for every
+new entry inside a former body. Each reported function is re-reviewed before
+the export is committed: a new fragment of an artifact joins its function
+through the registry and another run of `MergeFuncs.java`, and a real split
+moves the ledger rows and `kb` symbols to the functions that hold the code.
+The decompilation outputs follow without a manual purge, because their cache
+key includes the digest of the L0 manifest.
 
 ## On-demand decompilation and listings
 
@@ -72,6 +92,15 @@ stock image, so a program cannot stand in for a different dump.
 `DecompileFuncs.java` and `DumpFuncListing.java`; the project location and
 name follow `GHIDRA_PROJECT_DIR` and `GHIDRA_PROJECT_NAME` when set.
 
+The cached outputs are valid for one program state. `.decompile-key` in the
+export directory holds the key they were made under: the pinned Ghidra
+release, the program name, and the image digest, and, for the L0 image of a
+layout, the digests of the layout's L0 manifest and of `symbols/<layout>.csv`
+(`program_name.py --cache-key`). A request under another key first removes
+every `decomp_*.c` and `funclisting_*.txt` of the directory, so a reanalysis,
+a join of fragments, or a rename that reaches the L0 export or the name
+registry never serves an output of the previous state.
+
 ## Canonical structure exports
 
 `ExportGraph.java` writes `funcs.csv` and `calls.csv`.
@@ -97,8 +126,9 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -postScript ExportFunctionTokens.java <export-dir>
 ```
 
-`RecoverFuncs.java`, `AnalyzeFuncs.java`, and `RenameFuncs.java` intentionally
-mutate the local Ghidra project and must run without `-readOnly`. A seed that
+`RecoverFuncs.java`, `AnalyzeFuncs.java`, `MergeFuncs.java`, and
+`RenameFuncs.java` intentionally mutate the local Ghidra project and must run
+without `-readOnly`. A seed that
 `RecoverFuncs.java` disassembles itself carries no operand references until
 `AnalyzeFuncs.java` runs the program analyzers over the created bodies; without
 that pass `xrefs.csv` lists no RAM or peripheral access for the recovered
@@ -110,6 +140,27 @@ after those mutations persist successfully.
 
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
+
+## Function fragments
+
+The auto-analysis of SH-2E code cuts some functions into fragments:
+
+- the Shared Return Calls analyzer gives a `bra` whose target is a function
+  entry a `CALL_RETURN` flow override, so the jump becomes a call and the
+  target stays a function of its own;
+- a function created at the first instruction after a literal pool cuts the
+  body of the function whose branch reaches that instruction.
+
+The body of the real function then ends at the fragment, and the exports
+attribute the fragment's instructions, references, and calls to the fragment.
+`merges/<layout>.csv` is the tracked repair registry of one layout: each row
+names a function entry, one fragment that belongs to it, and the branches that
+reach the fragment. `MergeFuncs.java` clears the flow overrides of those
+branches, removes the fragment functions, and recomputes the body of the entry
+in one transaction, which it rolls back when the recomputed body lacks a
+fragment or a referencing branch. A registry lists only reviewed fragments;
+the `review:` lines of the L0 export and the `sites` check of `kb check`
+report candidates.
 
 ## L0 exports
 
@@ -141,7 +192,7 @@ registered image and a raw export that lacks a file.
 
 | Group | Scripts | Purpose |
 |---|---|---|
-| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `AnalyzeFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
+| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `AnalyzeFuncs`, `MergeFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
 | Diagnostics | `ExportDiagnosticRefs`, `TraceRamAccesses`, `InventoryGbrAccesses`, `InventoryPointerArgs` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |

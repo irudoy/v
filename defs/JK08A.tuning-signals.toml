@@ -465,7 +465,7 @@ sources = [0xFFFF1170]
 widths = [1]
 dids = []
 evidence = "exact-code"
-note = "FUN 0003B498 forms u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) + (0xFFFF120E * 0xFFFF114E >> 11)), about 3522 * (throttle opening area + inflow area / 4) / RPM, and writes the high byte of curve 0x15042 at 4 * u while u < 0x3C00 and of curve 0x15022 at u - 0x3C00 otherwise. FUN 0002C648 and FUN 0003BE3C pass the byte as the column input of Fuel Compensation Map 0xA29A. No service-0x22 DID publishes it."
+note = "FUN 0003B498 forms u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) + (0xFFFF120E * 0xFFFF114E >> 11)), about 3522 * (throttle opening area + inflow area / 4) / RPM, and writes the high byte of curve 0x15042 at 4 * u while u < 0x3C00 and of curve 0x15022 at u - 0x3C00 otherwise. FUN 0002C648 and FUN 0003BD74 pass the byte as the column input of Fuel Compensation Map 0xA29A. No service-0x22 DID publishes it."
 
 [[signal]]
 id = "injection_end_angle"

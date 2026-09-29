@@ -45639,6 +45639,8 @@ func_addr,periph_addr,kind
 000eb84e,ffff3fbb,W
 000eb84e,ffff3fbc,R
 000eb84e,ffff3fbc,W
+000eb84e,ffff3fd0,R
+000eb84e,ffff3fd0,W
 000eb84e,ffff44ef,D
 000eb84e,ffff44ef,L
 000eb84e,ffff44f0,R
@@ -45648,13 +45650,9 @@ func_addr,periph_addr,kind
 000eb84e,ffff4591,W
 000eb84e,ffff4592,R
 000eb84e,ffff4592,W
-000eba48,ffff3c18,L
-000eba48,ffff3d33,L
-000eba48,ffff3fd0,R
-000eba48,ffff3fd0,W
-000eba48,ffffaa40,L
-000eba48,ffffaa40,R
-000eba48,ffffaa40,W
+000eb84e,ffffaa40,L
+000eb84e,ffffaa40,R
+000eb84e,ffffaa40,W
 000eba96,ffff26d6,L
 000eba96,ffff2708,W
 000eba96,ffff2709,W

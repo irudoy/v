@@ -18,6 +18,10 @@ connect the site to the row:
 
 The addresses a row names are the eight-digit hexadecimal addresses of its
 structured columns and evidence tokens; the prose columns do not name them.
+
+`check` is the `sites` check of `kb check`: a `site:` token of a row of a
+function ledger that is an instruction of an L0 function lies in the body of
+a function related to the row, or references the row's function.
 """
 
 import bisect
@@ -45,6 +49,11 @@ STORAGE_BYTES = {"uint8": 1, "int8": 1, "uint16": 2, "int16": 2, "uint32": 4, "i
 CENSUS_ADDRESSES = ("kernel", "wrapper", "slot", "accessor", "bt_r4", "bt_r5", "bt_r6",
                     "df_r4", "df_r5", "df_r6", "df_r7")
 KINDS = ("reference", "body", "pointer", "linked")
+# The call instructions of SH-2E: a `bra` that a Ghidra flow override records
+# as a call is a jump.
+CALLS = ("jsr", "bsr", "bsrf")
+# Transfers after whose delay slot execution does not continue in sequence.
+NO_FALL_THROUGH = ("branch", "jump", "return")
 
 
 @dataclass(frozen=True)
@@ -191,6 +200,92 @@ def ledger_sites(layout_id, rom, root=repo.ROOT):
                 sites.append(Site(ledger, subject, site,
                                   classify(site, subject, span, named, found, owned, data, links)))
     return sites
+
+
+@lru_cache(maxsize=None)
+def calls(layout_id, root=repo.ROOT):
+    """{function entry: the entries it calls and the entries that call it}, by
+    the call instructions of the L0 references."""
+    found = collections.defaultdict(set)
+    for row in _rows(root / repo.L0 / layout_id / "function_references.csv"):
+        if row["ref_type"] in ("unconditional_call", "computed_call") \
+                and row["mnemonic"] in CALLS:
+            caller, callee = int(row["func_addr"], 16), int(row["ref_addr"], 16)
+            found[caller].add(callee)
+            found[callee].add(caller)
+    return found
+
+
+@lru_cache(maxsize=None)
+def runs_into(layout_id, root=repo.ROOT):
+    """{function entry: the entries its body continues into in sequence}: an
+    instruction of the body that is no unconditional transfer or the delay
+    slot of one continues at the next address, which can be the entry of
+    another function."""
+    data = derive.image_bytes(repo.layout(layout_id, root), root)
+    every = bodies(layout_id, root)
+
+    def stops(address):
+        return sh2.decode(derive._word(data, address), address).flow in NO_FALL_THROUGH
+
+    found = {}
+    for func, addresses in every.items():
+        body = set(addresses)
+        found[func] = {
+            address + 2 for address in addresses
+            if address + 2 not in body and address + 2 in every and not stops(address)
+            and not (address - 2 in body and stops(address - 2))
+        }
+    return found
+
+
+def related(layout_id, func, root=repo.ROOT):
+    """The functions whose bodies hold the work of `func`: itself, the
+    functions it continues into, transitively, and those it calls or that
+    call it."""
+    into = runs_into(layout_id, root)
+    found, pending = {func}, [func]
+    while pending:
+        for entry in into.get(pending.pop(), ()):
+            if entry not in found:
+                found.add(entry)
+                pending.append(entry)
+    return found | calls(layout_id, root).get(func, set())
+
+
+def check(root=repo.ROOT):
+    """The `sites` check over the function ledger `defs/<image>.funcs.csv` of
+    the L0 image of each layout: every `site:` token that is an instruction of
+    an L0 function lies in the body of the row's function, of a function the
+    row names, or of a function related to the row's function, or its
+    instruction references the row's function."""
+    subject_column, prose = LEDGERS["funcs"]
+    failures = []
+    for layout in repo.layouts(root).values():
+        path = root / "defs" / f"{layout.image}.funcs.csv"
+        if not path.exists():
+            continue
+        shown = path.relative_to(root).as_posix()
+        found = references(layout.id, root)
+        owned = owners(layout.id, root)
+        for row in _rows(path):
+            subject = int(row[subject_column], 16)
+            structured = ";".join(value for column, value in row.items()
+                                  if value and column not in prose)
+            listed = {int(value, 16) for value in SITE_RE.findall(structured)}
+            named = {int(value, 16) for value in ADDRESS_RE.findall(structured)} - listed
+            allowed = named | related(layout.id, subject, root)
+            for site in sorted(listed):
+                functions = owned.get(site, set())
+                if not functions or functions & allowed or subject in found.get(site, ()):
+                    continue
+                holders = ", ".join(f"{func:08x}" for func in sorted(functions))
+                failures.append(
+                    f"{shown}: {subject:08x}: site:{site:08x} lies in the body of {holders}, "
+                    "which the row neither names nor reaches by a call or in sequence "
+                    "(cite the site under its own function, name that function, or repair "
+                    f"the bodies with MergeFuncs.java and tools/ghidra/export-l0.sh {layout.id})")
+    return failures
 
 
 def summary(sites):

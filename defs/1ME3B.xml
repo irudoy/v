@@ -1698,12 +1698,12 @@
 
     <!-- 0x0A1F4  16x16 uint8  common-definition Map 1 storage projected from 0x0A1F4 [code]
          Map 1 uses canonical stock storage
-         canonical accessor 0x3357C, 0x486E0; r4 operand: reviewed-target
+         canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
          [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
          0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
          accessor directly after the default surface 0x0000A0F4 with the same coordinates and
          the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
@@ -2218,12 +2218,12 @@
     <!-- 0x13BD00  16x16 uint8  common-definition Map 2 storage projected from 0x0A1F4 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x3357C, 0x486E0; r4 operand: reviewed-target
+         canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
          [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
          0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
          accessor directly after the default surface 0x0000A0F4 with the same coordinates and
          the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
@@ -2754,12 +2754,12 @@
     <!-- 0x13BE00  16x16 uint8  common-definition Map 3 storage projected from 0x0A1F4 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x3357C, 0x486E0; r4 operand: reviewed-target
+         canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
          [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
          0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
          accessor directly after the default surface 0x0000A0F4 with the same coordinates and
          the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
@@ -3290,12 +3290,12 @@
     <!-- 0x13BF00  16x16 uint8  common-definition Map 4 storage projected from 0x0A1F4 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x3357C, 0x486E0; r4 operand: reviewed-target
+         canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
          [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
          0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
          accessor directly after the default surface 0x0000A0F4 with the same coordinates and
          the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
@@ -3826,12 +3826,12 @@
     <!-- 0x13C000  16x16 uint8  common-definition Map 5 storage projected from 0x0A1F4 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
-         canonical accessor 0x3357C, 0x486E0; r4 operand: reviewed-target
+         canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
          [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
          0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
          accessor directly after the default surface 0x0000A0F4 with the same coordinates and
          the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank

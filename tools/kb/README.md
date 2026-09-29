@@ -40,7 +40,8 @@ uv run kb move <symbol> <layout>:<address> --dry-run   # the address of a symbol
 uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
-- `kb check` runs the active checks, which `make check` includes: `l0`; the
+- `kb check` runs the active checks, which `make check` includes: `l0`;
+  `sites` over the function ledgers ([L0](#l0)); the
   model checks `schema`, `canonical`, `names`, `references`, `symbols`, and
   `links` over the entity files and the compiled registries; the matcher
   checks `homology`, `image-bytes`, `statuses`, and `writers`
@@ -212,11 +213,28 @@ draws the generated names of the diff anew.
 - the manifest against the layout, the image catalog digest, the Ghidra pin,
   the digests of the export scripts, and the census plan of `config.toml` and
   the interpolation registry;
-- the file set, each file's digest and row count, and the normal form.
+- the file set, each file's digest and row count, and the normal form;
+- every join of the fragment registry `tools/ghidra/merges/<layout>.csv`: the
+  entry is a function entry, the fragment is none, and the fragment lies in
+  the body of the entry
+  ([`../ghidra/README.md`](../ghidra/README.md#function-fragments)).
 
 A file whose digest the check has verified in normal form is recorded in
 `.kb/cache/l0-normal.json`, so a repeated check hashes the files and skips
 the parse.
+
+The export logs a `review:` line for every function of a `fn` symbol of the
+layout whose entry disappears, whose size changes, or whose former body holds
+a new entry, so a reanalysis that splits or joins a reviewed function is
+re-reviewed before its export is committed.
+
+The `sites` check reads the function ledger `defs/<image>.funcs.csv` of the
+L0 image of each layout. A `site:` token that is an instruction of an L0
+function lies in the body of the row's function, of a function that the row
+names outside its prose columns, or of a function that the row's function
+calls, is called by, or continues into in sequence; otherwise the site
+instruction references the row's function. A failure is a site cited under
+the wrong function or a function that the analysis cut into fragments.
 
 ## Model
 
@@ -539,10 +557,10 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, and the `AGENTS.md#kb` section |
 | `kb.convert` | The conversions of legacy registries into entity files |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
-| `kb.l0` | L0 export, normal form, manifest, and the `l0` check |
+| `kb.l0` | L0 export, normal form, manifest, the fragment registries, the export review, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |
 | `kb.derive` | Function bodies and literal pairing over L0 and the layout image |
-| `kb.sites` | Reproduction of the `site:` evidence of the ledgers from L0 |
+| `kb.sites` | Reproduction of the `site:` evidence of the ledgers from L0, and the `sites` check |
 | `kb.match` | Masked matching, evidence verification, grounding, counterpart search, and the writer gate over L0 |
 | `kb.cli` | The command line |
 

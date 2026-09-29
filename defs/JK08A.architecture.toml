@@ -194,7 +194,7 @@ stage = "control"
 summary = "Fuel multiplier, commanded mixture 0xFFFF22E8, compensation and transient terms, and the compensated six-channel injection-pulse words 0xFFFF23C8."
 specs = ["defs/JK08A.fuel.md"]
 functions = [
-  "0003be3c", "0004e614", "0004e974", "0004ead4", "0004eba2", "0005185c",
+  "0003bd74", "0004e614", "0004e974", "0004ead4", "0004eba2", "0005185c",
   "00052576", "000526a0", "000528be", "00052902", "00052be8", "00052de8",
   "00052f00", "00053698", "00054eb8", "00054ee0", "00055098", "0005525a",
   "000554ae", "000554f8", "00055596", "00055648", "000556ec", "0005594a",
@@ -602,10 +602,9 @@ name = "Unattributed components"
 stage = "unattributed"
 summary = "Reviewed accessors whose functional role the ledgers do not yet establish."
 functions = [
-  "0002c59c", "0003bd74", "0003c4a0", "0003edb4", "0003ef74", "0005e278",
-  "0005fac0", "0005fdb0", "000602f2", "0006062c", "00060fb4", "000617ea",
-  "0006205c", "00062c68", "000638b4", "000647e8", "0006edbc", "0007b650",
-  "0007b7c0",
+  "0002c59c", "0003c4a0", "0003edb4", "0003ef74", "0005e278", "0005fac0",
+  "0005fdb0", "000602f2", "0006062c", "00060fb4", "000617ea", "0006205c",
+  "00062c68", "000638b4", "000647e8", "0006edbc", "0007b650", "0007b7c0",
 ]
 
 # Peripheral endpoints.
@@ -1182,7 +1181,7 @@ from = "0000a29a"
 to = "ffff1160"
 effect = "looks-up"
 sign = "positive"
-via = ["0003be3c"]
+via = ["0003bd74"]
 note = "Fuel Compensation Main, Q7 with 128 = 100 percent, on RPM/12.5 ffff11f4 and alpha-N byte ffff1170; runtime gates can write a bounded bypass."
 
 [[chain.step]]

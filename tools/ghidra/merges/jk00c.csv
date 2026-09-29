@@ -1,0 +1,10 @@
+# Function fragments of layout jk00c, whose L0 image is JK00C, and the function
+# each belongs to. MergeFuncs.java joins them into that function after an
+# analysis of the program; the l0 check of kb check requires the joins in
+# l0/jk00c/.
+# Format: entry,fragment,note (addresses are eight hexadecimal digits; note
+# states how the entry reaches the fragment and holds no comma).
+entry,fragment,note
+0003cb24,0003cb88,bra at 0003cb82 over the literal word 0003cb86 in the transition to state 1
+0003cb24,0003cbf0,bf/s at 0003cb46 to the dispatch of states 1 and 2 after the literal pool that ends at 0003cbee
+0003cb24,0003cc92,bra at 0003cb52 and 0003cb5e and 0003cb68 and the conditional branches of the state dispatch to the store of state 0

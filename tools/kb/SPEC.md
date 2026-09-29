@@ -863,6 +863,14 @@ rows = 0
 - A layout joins with a new export of all its files; a partial export, an
   export of another program, or an image digest other than the catalog digest
   is refused.
+- `tools/ghidra/merges/<layout>.csv` lists the reviewed function fragments of
+  the layout, each with the function it belongs to; `MergeFuncs.java` joins
+  them in the program before the export, and the `l0` check requires every
+  join in the exported bodies.
+- The export logs a `review:` line for every function of a `fn` symbol of
+  the layout whose entry disappears, whose size changes, or whose former body
+  holds a new entry, and each reported function is re-reviewed before the
+  export is committed.
 
 ### 8.5 Derivations
 
@@ -896,7 +904,10 @@ The compiler derives, as `derived` elements:
 
 - Decompilations and listings stay in the export directory of
   `tools/ghidra/` as the cache of `kb code`, which calls
-  `tools/ghidra/decompile.sh`.
+  `tools/ghidra/decompile.sh`. The cache is keyed by the Ghidra pin, the
+  program, and the image, and for the L0 image of a layout by the digests of
+  its L0 manifest and its name registry; a request under another key empties
+  it first.
 - `interp_core.csv`, `diagnostic_refs.csv`, flag scans, table references,
   and RAM slices stay local research exports. A gate that needs one of them
   first moves it into L0 with a manifest entry.
@@ -1336,7 +1347,8 @@ until the stage that replaces them.
 
 | Check | Requires | Active from stage |
 |---|---|---|
-| `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form | 1 |
+| `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form; every join of `tools/ghidra/merges/<layout>.csv` holds: the entry is a function entry, the fragment is none, and the fragment lies in the body of the entry | 1 |
+| `sites` | Every `site:` token of a row of the function ledger `defs/<image>.funcs.csv` of the L0 image of a layout that is an instruction of an L0 function lies in the body of the row's function, of a function the row names outside its prose columns, or of a function that the row's function calls, is called by, or continues into in sequence, or its instruction references the row's function | 3 |
 | `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name | 2 |
 | `canonical` | Every entity file equals the canonical rendering of its parse | 3 |
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn | 2 |

@@ -7,9 +7,10 @@ program to the registered image.
 
 Usage:
     python -m tools.ghidra.program_name ROM [--project-dir DIR]
-        [--project-name NAME] [--program PROGRAM]
+        [--project-name NAME] [--program PROGRAM] [--cache-key]
 
-Prints "<program>\t<sha256 of the registered image>".
+Prints "<program>\t<sha256 of the registered image>", and with --cache-key a
+third field: the key of the outputs that decompile.sh keeps for the program.
 """
 import argparse
 import hashlib
@@ -18,6 +19,7 @@ import re
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
 _ENTRY = re.compile(r"^  [0-9a-fA-F]{8}:(?P<name>.*):[^:]*$")
 
 
@@ -63,6 +65,28 @@ def read_index(project_dir, project_name):
         return None
 
 
+def cache_key(rom_key, program, image_sha256, root=ROOT):
+    """The key of the decompilations and listings of a program: the pinned
+    Ghidra release, the program and its image, and, when the image is the L0
+    image of a layout, the digests of the layout's L0 manifest and of its
+    curated function names. A reanalysis, a join of fragments, or a rename
+    reaches the key through the re-export of L0 or the name registry."""
+    from kb import repo
+
+    parts = [f"ghidra={repo.ghidra_version(root)}", f"program={program}",
+             f"image={image_sha256[:16]}"]
+    for layout in repo.layouts(root).values():
+        if layout.image != rom_key:
+            continue
+        manifest = root / repo.L0 / layout.id / "manifest.toml"
+        digest = repo.sha256_file(manifest)[:16] if manifest.is_file() else "-"
+        parts.append(f"l0={layout.id}:{digest}")
+        names = root / "tools" / "ghidra" / "symbols" / f"{layout.id}.csv"
+        if names.is_file():
+            parts.append(f"names={repo.sha256_file(names)[:16]}")
+    return " ".join(parts)
+
+
 def main(argv=None):
     from tools.mapkit import rom
 
@@ -72,6 +96,8 @@ def main(argv=None):
                         default=os.path.expanduser("~/tools/ghidra-projects"))
     parser.add_argument("--project-name", default="vq-hr")
     parser.add_argument("--program", default="")
+    parser.add_argument("--cache-key", action="store_true",
+                        help="also print the key of the decompile.sh outputs")
     args = parser.parse_args(argv)
 
     image = rom.load(args.rom)
@@ -83,7 +109,10 @@ def main(argv=None):
     except LookupError as error:
         print(error, file=sys.stderr)
         return 1
-    print(f"{program}\t{sha256}")
+    if args.cache_key:
+        print(f"{program}\t{sha256}\t{cache_key(args.rom, program, sha256)}")
+    else:
+        print(f"{program}\t{sha256}")
     return 0
 
 

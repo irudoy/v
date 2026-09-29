@@ -2978,7 +2978,7 @@ width = 16
 height = 16
 storagetype = "uint8"
 values_sha256 = "d53abe90629e27ba5bf33532a76313ffcb12361fd1ea1353e215e3f1dd8a6b14"
-pointer_bindings = [{ site = 0x00033ED8, accessor = 0x0003357C }, { site = 0x00048B7C, accessor = 0x000486E0 }]
+pointer_bindings = [{ site = 0x00033ED8, accessor = 0x0003357C }, { site = 0x00048B7C, accessor = 0x00048564 }]
 axis_x = 0x00013D06
 axis_y = 0x00013D26
 name = "Fuel Compensation - Main - Alternate"

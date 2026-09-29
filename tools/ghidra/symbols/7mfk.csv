@@ -80,7 +80,7 @@ addr,name,note
 0003a904,dual_bank_maf_coordinator,Process both MAF channels and publish the combined airflow aggregate
 0003b252,combined_maf_aggregate,Build the nonnegative combined MAF value used by BFS
 0003b75c,base_fuel_schedule_producer,Calculate Base Fuel Schedule ffff1026 and normalized-BFS load byte ffff1048
-0003be3c,fuel_compensation_coordinator,Publish Fuel Compensation Main byte ffff1160 and selected multiplier ffff115c
+0003bd74,fuel_compensation_coordinator,Advance the three-state gate ffff1fdc and publish Fuel Compensation Main byte ffff1160 and selected multiplier ffff115c
 0004e974,injection_pulse_precursor_builder,Build common and two-bank injection pulse precursors
 0004ead4,bank_base_pulse_builder,Apply bank trims and common additive word to form two parity bases
 0004ecac,six_channel_pulse_dispatch,Build two parity bases then calculate six compensated pulse channels

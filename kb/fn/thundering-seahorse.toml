@@ -1,7 +1,8 @@
 [[symbol]]
 layout = "1me3b"
-address = "000486e0"
+address = "00048564"
 name = "thundering-seahorse"
+former = ["thundering-seahorse/fn/1me3b-000486e0"]
 
 [[symbol.evidence]]
 kind = "l0"

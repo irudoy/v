@@ -1,0 +1,9 @@
+# Function fragments of layout jk78c, whose L0 image is JK78C, and the function
+# each belongs to. MergeFuncs.java joins them into that function after an
+# analysis of the program; the l0 check of kb check requires the joins in
+# l0/jk78c/.
+# Format: entry,fragment,note (addresses are eight hexadecimal digits; note
+# states how the entry reaches the fragment and holds no comma).
+entry,fragment,note
+000eb84e,000eb938,bf at 000eb920 and 000eb926 after the literal words that end at 000eb936
+000eb84e,000eba48,bra at 000eb862 and 000eb86e of the two entry gates to the disabled path that falls into the epilogue at 000eba7e
