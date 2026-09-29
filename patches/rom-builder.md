@@ -249,19 +249,22 @@ The 1ND address profile binds eighteen switched families: four DFCO rows, the
 two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
 surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
-curves, and the throttle-limiter scalar. Custom CAN telemetry binds 55 of the
-60 schema fields. The normalized load snapshot, the two intake CVTC duty command
-fields, and the requested-torque and Fuel Compensation Main column coordinates
-are encoded from cleared reserved RAM and remain identified as unavailable in
-metadata: the 32-instruction JK08A producer of the normalized load snapshot at `0x03BD1C` has no match in the image with
-PC-relative displacements masked, both stock images set bit 2 of
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds 57 of the
+60 schema fields. The two intake CVTC duty command fields read the 8-bit command
+cells `0xFFFE93BF` and `0xFFFE93C0`: both stock images set bit 2 of
 `ROM8[0x8561]`, so the BFR programmer `0x1108D0` writes BFR7B and BFR7A from
-the 16-bit duty words `0xFFFE96BC` and `0xFFFE96BE` and the 8-bit command cells
-`0xFFFE93BF` and `0xFFFE93C0` hold their high bytes after two scheduler copies,
-and no target homolog of the column-coordinate producers `0x073948` and
-`0x03B498` is traced. 1ND0A
-and 1ND3B share executable payload bytes but retain separate stock identities,
-stage hashes, and six-field checksum closure.
+the 16-bit duty words `0xFFFE96BC` and `0xFFFE96BE`, and the cells hold their
+high bytes after two scheduler copies. In that scheme the command cells and the
+live duty bytes carry `x * 25 / 64` percent, within 0.16 percentage points of
+the `raw * 39 / 100` wire decoding
+([`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). The normalized load snapshot and
+the requested-torque and Fuel Compensation Main column coordinates are encoded
+from cleared reserved RAM and remain identified as unavailable in metadata: the
+32-instruction JK08A producer of the normalized load snapshot at `0x03BD1C` has
+no match in the image with PC-relative displacements masked, and no target
+homolog of the column-coordinate producers `0x073948` and `0x03B498` is traced.
+1ND0A and 1ND3B share executable payload bytes but retain separate stock
+identities, stage hashes, and six-field checksum closure.
 
 ## SH7059 1ME3B correspondence
 
@@ -287,18 +290,21 @@ coordinator with private lookup literals; the profile table
 in which an aligned word points into that range or a PC-relative branch outside
 it targets its entry, so the hooked literals are the complete live set.
 
-Custom CAN telemetry binds 53 of the 60 ECU-RAM fields. The knock timing
-state, the knock surface state, the normalized load snapshot, both intake
-solenoid duty commands, and the requested-torque and Fuel Compensation Main
-column coordinates are encoded from cleared reserved RAM and remain identified
-as unavailable in metadata: the knock function `0x071D64` keeps no signed Q8
-state, the image packs the surface flag into bit 7 of `0xFFFE945B`, while the
-wire contract decodes bit 6 of the source byte, the JK08A producer of the
-normalized load snapshot has no match in the image, the stock image sets bit 2
-of `ROM8[0x8576]`, so the 8-bit command cells `0xFFFE938F` and `0xFFFE9390`
-hold the high bytes of the 16-bit duty words `0xFFFE9692` and `0xFFFE9694`
-after two scheduler copies, and no target homolog of the column-coordinate
-producers is traced.
+Custom CAN telemetry binds 55 of the 60 ECU-RAM fields. The two intake
+solenoid duty command fields read the 8-bit command cells `0xFFFE938F` and
+`0xFFFE9390`: the stock image sets bit 2 of `ROM8[0x8576]`, so the BFR
+programmer `0x11C3A6` writes BFR7B and BFR7A from the 16-bit duty words
+`0xFFFE9692` and `0xFFFE9694`, and the cells hold their high bytes after two
+scheduler copies. In that scheme the command cells and the live duty bytes
+carry `x * 25 / 64` percent, within 0.16 percentage points of the
+`raw * 39 / 100` wire decoding. The knock timing state, the knock surface
+state, the normalized load snapshot, and the requested-torque and Fuel
+Compensation Main column coordinates are encoded from cleared reserved RAM and
+remain identified as unavailable in metadata: the knock function `0x071D64`
+keeps no signed Q8 state, the image packs the surface flag into bit 7 of
+`0xFFFE945B`, while the wire contract decodes bit 6 of the source byte, the
+JK08A producer of the normalized load snapshot has no match in the image, and
+no target homolog of the column-coordinate producers is traced.
 
 ## SH7058 JK78C correspondence
 

@@ -1,6 +1,7 @@
 [[symbol]]
 layout = "1me3b"
 address = "fffe942c"
+scale = "x*25/64"
 
 [[symbol.evidence]]
 kind = "byte-identical"
@@ -12,9 +13,29 @@ note = """
 Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
 index of the 1ND source"""
 
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
+note = """
+Bit 2 of ROM8[0x8576] selects the 16-bit scheme in the stock image: function \
+00119b00, the caller of writer 0011aa10, stores the high byte of duty word \
+fffe9694, copied to fffe966c, into this byte, x*25/64 percent"""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
+note = """
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""
+
 [[symbol]]
 layout = "1nd"
 address = "fffe945c"
+scale = "x*25/64"
 
 [[symbol.evidence]]
 kind = "byte-identical"
@@ -23,6 +44,25 @@ at = "1nd:fffe945c"
 to = "7mfk:ffff2441"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the adjacent duty byte"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
+note = """
+Bit 2 of ROM8[0x8561] selects the 16-bit scheme in both stock images: writer \
+0010ea78 stores the high byte of duty word fffe96be, copied to fffe9696, \
+into this byte, x*25/64 percent"""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
+note = """
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""
 
 [[symbol]]
 layout = "7mfk"
@@ -56,6 +96,7 @@ value = "mnemonic"
 [[symbol]]
 layout = "jk78c"
 address = "ffff239b"
+scale = "x*25/64"
 
 [[symbol.evidence]]
 kind = "byte-identical"
@@ -64,3 +105,22 @@ at = "jk78c:ffff239b"
 to = "7mfk:ffff2441"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the adjacent duty byte"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
+note = """
+Bit 2 of ROM8[0x852A] selects the 16-bit scheme in the stock image: writer \
+000e6226 stores the high byte of duty word ffff25c6, copied to ffff25a6, \
+into this byte, x*25/64 percent"""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
+note = """
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""

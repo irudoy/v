@@ -167,8 +167,8 @@ telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 st
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8aa4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8aa6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of 00008576 set in the stock image the BFR programmer 0011c3a6 writes BFR7B from the word fffe9692 and fffe938f holds its high byte after two scheduler copies
-telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The JK08A accesses of ffff23b5 have no match in the target; the BFR programmer 0011c3a6 writes BFR7A from the word fffe9694 and fffe9390 holds its high byte after two scheduler copies
+telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,fffe938f,,,mapped,"The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7B, as 000beace loads ffff23b4 on 7mfk"
+telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,fffe9390,,,mapped,"The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7A, as 000beace loads ffff23b5 on 7mfk"
 telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe9810,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe9812,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,af_adjustment_b1_raw,ffff45a0,fffebdfa,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source

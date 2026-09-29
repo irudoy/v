@@ -335,6 +335,10 @@ questions on the command line.
   selector, the exact sensor and diagnostic bindings of the selector inputs,
   the MAP and brake-booster pressure channel, and the unit boundary of the
   target surfaces.
+- `JK78C.cvtc.md` models the intake CVTC solenoid output stage of the VQ37
+  layouts: the scheme selector, the channel-7 cycle and buffer registers, the
+  command path from the 16-bit duty words to the 8-bit command cells, and the
+  units of the cells.
 - `1ME3B.interp.md` models the fused calibration access library that replaces
   the `1ND` library, its recovered contracts, the fused census, and the tool
   boundary of `FindInterpCore.java`.

@@ -1,4 +1,80 @@
 [[symbol]]
+layout = "1me3b"
+address = "fffe938f"
+scale = "x*25/64"
+note = """
+The 8-bit command cell of the first intake solenoid; programmer 0011c3a6 \
+drives BFR7B from the 16-bit duty word fffe9692, whose high byte the cell \
+holds."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011c418"
+to = "7mfk:ffff23b4"
+note = """
+The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7B, as \
+000beace loads ffff23b4 on 7mfk"""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
+note = """
+Bit 2 of ROM8[0x8576] selects the 16-bit scheme in the stock image: \
+programmer 0011c3a6 drives BFR7B from duty word fffe9692 over a cycle of \
+1000 counts, and the cell holds the high byte of that word after the \
+scheduler copies, x*25/64 percent"""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
+note = """
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe93bf"
+scale = "x*25/64"
+note = """
+The 8-bit command cell of the first intake solenoid; programmer 001108d0 \
+drives BFR7B from the 16-bit duty word fffe96bc, whose high byte the cell \
+holds."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00110942"
+to = "7mfk:ffff23b4"
+note = """
+The 8-bit branch of buffer programmer 001108d0 loads the cell for BFR7B, as \
+000beace loads ffff23b4 on 7mfk"""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
+note = """
+Bit 2 of ROM8[0x8561] selects the 16-bit scheme in both stock images: \
+programmer 001108d0 drives BFR7B from duty word fffe96bc over a cycle of \
+1000 counts, and the cell holds the high byte of that word after the \
+scheduler copies, x*25/64 percent"""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
+note = """
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff23b4"
 former = ["mahogany-raven/ram/7mfk-ffff23b4"]
@@ -30,6 +106,7 @@ value = 24
 [[symbol]]
 layout = "jk78c"
 address = "ffff2308"
+scale = "x*25/64"
 
 [[symbol.evidence]]
 kind = "byte-identical"
@@ -41,28 +118,22 @@ note = """
 Target ATU-II channel-7 duty programming reads this cell before writing \
 buffer register fffff592"""
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff23b4"
-count = 0
-l0 = "fcabdc8a705bbb84"
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK78C.cvtc.md"
 note = """
-The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of \
-00008576 set in the stock image the BFR programmer 0011c3a6 writes BFR7B \
-from the word fffe9692 and fffe938f holds its high byte after two scheduler \
-copies"""
+Bit 2 of ROM8[0x852A] selects the 16-bit scheme in the stock image: \
+programmer 000e7994 drives BFR7B from duty word ffff25c4 over a cycle of \
+1000 counts, and the cell holds the high byte of that word after the \
+scheduler copies, x*25/64 percent"""
 
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff23b4"
-count = 0
-l0 = "8b3d18403665f8be"
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+key = "test_cell_scale_bounds_the_programmed_duty"
 note = """
-The JK08A accesses of ffff23b4 have no match in the target; with bit 2 of \
-00008561 set in both stock images the BFR programmer 001108d0 writes BFR7B \
-from the word fffe96bc and fffe93bf holds its high byte after two scheduler \
-copies"""
+The high byte x of a duty word bounds the duty that the 16-bit scheme \
+programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
+the output stage of every VQ37 image"""

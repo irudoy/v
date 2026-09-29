@@ -325,6 +325,13 @@ the coordinates carry the catalog percent scales of the axes they index,
 `raw * 0.00152588` for `FFFF1980` and `raw * 0.390625` for `FFFF1170`. The A/F adjustment words occupy
 signed slots, because their producers are signed.
 
+The stock VQ37 images program the intake solenoids from 16-bit duty words,
+and their intake duty command cells and live duty bytes hold the high byte `x`
+of those words, `x * 25 / 64` percent. The wire keeps `raw * 39 / 100 percent`
+on every layout; over the byte range the two scales differ by at most 0.16
+percentage points, less than half a wire step.
+[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md) states the output stage.
+
 The stream carries the two column coordinates of the tuning surfaces instead
 of engine speed, which the stock bus publishes directly: `0x180` bytes 0 and 1
 hold `RPM * 8` at `10.24 ms` from serializer `FUN_000C577A`, so a host that

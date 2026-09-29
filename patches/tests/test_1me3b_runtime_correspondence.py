@@ -60,8 +60,6 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
         "knock_timing_state_raw",
         "knock_surface_state",
         "alpha_n_flow_raw",
-        "intake_cvtc_duty_command_b1_raw",
-        "intake_cvtc_duty_command_b2_raw",
     ]
     for row in rows:
         if row["status"] != "unsupported":

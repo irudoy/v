@@ -122,8 +122,6 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
     assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
     assert one.telemetry_unavailable == (
         "alpha_n_flow_raw",
-        "intake_cvtc_duty_command_b1_raw",
-        "intake_cvtc_duty_command_b2_raw",
         "normalized_load_raw",
         "request_flow_raw",
     )

@@ -181,7 +181,7 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
         ),
         (
             "patches/rom-builder.md",
-            "binds 53 of the 60 ECU-RAM fields",
+            "binds 55 of the 60 ECU-RAM fields",
             "binds 56 of the 60 ECU-RAM fields",
         ),
         (
@@ -191,8 +191,8 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
         ),
         (
             "patches/rom-address-profiles.toml",
-            "55 of the 60 ECU-RAM fields bind to 1ND0A sources",
             "57 of the 60 ECU-RAM fields bind to 1ND0A sources",
+            "58 of the 60 ECU-RAM fields bind to 1ND0A sources",
         ),
         (
             "rom-images/support-matrix.md",
@@ -201,8 +201,8 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
         ),
         (
             "rom-images/support-matrix.md",
-            "mailbox 26; seven fields unavailable",
             "mailbox 26; five fields unavailable",
+            "mailbox 26; seven fields unavailable",
         ),
         (
             "patches/rom-builder.md",

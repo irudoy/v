@@ -81,6 +81,7 @@ engines.
 - Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
 - Exact JK78C HCAN model: [`defs/JK78C.can.md`](defs/JK78C.can.md)
 - Exact JK78C VVEL target model: [`defs/JK78C.vvel.md`](defs/JK78C.vvel.md)
+- Exact VQ37 intake-CVTC solenoid output stage: [`defs/JK78C.cvtc.md`](defs/JK78C.cvtc.md)
 - Exact JK08A intake/exhaust-CVTC model: [`defs/JK08A.cvtc.md`](defs/JK08A.cvtc.md)
 - Analysis and definition pipeline: [`tools/map-analysis-pipeline.md`](tools/map-analysis-pipeline.md)
 - Tool navigation and local deployment: [`tools/README.md`](tools/README.md)
