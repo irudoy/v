@@ -6,9 +6,13 @@
 
 #define TEST_RAM_BASE 0x01000000U
 
-/* The verifier defines the symbols that the entity files state for the
-   layout: the ASCD flag byte, the mask of its MAIN bit, and the button state
-   byte, and the base register value that the stock pool gives the region. */
+/* The verifier defines the key and the entry of the region, the symbols
+   that the entity files state for the layout: the ASCD flag byte, the mask of
+   its MAIN bit, and the button state byte, and the base register value that
+   the stock pool gives the region. */
+#if !defined(REGION_KEY) || !defined(REGION_ENTRY)
+#error "the verifier defines the key and the entry of the region"
+#endif
 #if !defined(ASCD_FLAGS) || !defined(ASCD_MAIN_MASK) || !defined(BUTTON_STATE)
 #error "the verifier defines the symbols of the entity files"
 #endif
@@ -20,7 +24,6 @@
    calibration byte selects bit 7 of the alternative state byte instead of
    bit 0 of the button state byte as the source of the MAIN bit, and the
    coolant flag is set while the coolant byte reaches the threshold byte. */
-#define REGION_ENTRY 0x000fcbb0U
 #define MAIN_CONFIG 0x0000894fU
 #define ALTERNATIVE_STATE 0xffff455fU
 #define COOLANT 0xffff1079U
@@ -152,8 +155,7 @@ int main(void)
             return 1;
     }
     printf(
-        "VQ_SH_ELF_STOCK_CODE status=PASS region=jk78c-ascd-main "
-        "cases=%lu\n",
-        (unsigned long)ARRAY_SIZE(stock_cases));
+        "VQ_SH_ELF_STOCK_CODE status=PASS region=%s cases=%lu\n",
+        REGION_KEY, (unsigned long)ARRAY_SIZE(stock_cases));
     return 0;
 }

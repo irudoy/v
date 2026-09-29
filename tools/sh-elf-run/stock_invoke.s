@@ -2,8 +2,9 @@
     .balign 2
 ! stock_invoke(entry, r12, r0): call a stock region at `entry` with the base
 ! register r12 and r0 of its entry state and GBR 0, as the stock firmware runs;
-! the region returns through the boundary RTS of the fixture. r12, r13, GBR,
-! and PR are restored for the caller.
+! a block returns through the boundary RTS of the fixture and a whole function
+! through its own RTS. r12, r13, GBR, and PR are restored for the caller, and
+! the r0 of the return is the result.
     .global _stock_invoke
     .type _stock_invoke,@function
 _stock_invoke:

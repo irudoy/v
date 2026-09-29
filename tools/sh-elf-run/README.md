@@ -114,7 +114,27 @@ The gate performs these checks:
    for two cases and then restores, and both outcomes of the coolant threshold.
    Each case requires the MAIN bit to follow its source, the other bits of the
    flag byte to keep their values, and every other byte of the flag window to
-   stay unchanged.
+   stay unchanged. The JK00C function `0x00050bf8..0x00050c99` and the JK00D
+   function `0x00050bf4..0x00050c95` are the main RPM fuel-cut state machines
+   of the two relocated 8MFK layouts. The reconstructions
+   `stock_jk00c_rpm_fuel_cut.s` and `stock_jk00d_rpm_fuel_cut.s` hold each
+   function and the five pool words that it loads; the fixture aliases the two
+   high-RAM pool words, and the function returns through its own RTS, whose
+   delay slot restores the GBR that it saves. The shared harness
+   `stock_rpm_fuel_cut_harness.c` takes the address of `fuel_inhibit/ram`,
+   the masks of its named bits `armed` and `active`, the engine speed word
+   `rpm/ram`, and the threshold table `rev_limit_fuel_cut/tbl` from the entity
+   files, and the delay counter, the pair selector, and the configuration and
+   delay bytes, which no entity file names, from the region. It requires the
+   stock configuration to select the pair by bit 4 of the selector, reads the
+   thresholds from the fixture, and executes both pairs: speed below, at, and
+   above the cut-on word with the arm clear and set, a zero and a nonzero cut
+   delay counter, a nonzero delay byte that the harness sets in the fixture for
+   one case and then restores, and speed at, above, and below the release word
+   with the cut active. Each case requires both named bits, the delay counter,
+   and the return value, the other bits of the state byte to keep their
+   values, the engine speed word, and every other byte of the window around
+   GBR to stay unchanged.
 
 A successful run prints `VQ_SH_ELF_MAP_SWITCHING`,
 `VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`,

@@ -2,14 +2,17 @@
 """Execute stock instruction regions whose behavior the entity files state.
 
 A region is a run of stock instructions of one image at their original
-addresses. The verifier links the GNU reconstruction of the region and of the
-pool words it loads at the same addresses and requires byte identity with the
-image. It then builds a simulator-only fixture from the image: the pool words
-that hold high-RAM addresses point into simulator test RAM, and an RTS/NOP
-pair replaces the two instruction words that follow the region, outside it.
-The harness seeds the RAM inputs, calls the region with the registers that it
-reads on entry, and checks every store against the symbols and the named bits
-of the entity files, which the verifier passes to it.
+addresses: a whole function, or a block inside one. The verifier links the
+GNU reconstruction of the region and of the pool words it loads at the same
+addresses and requires byte identity with the image. It then builds a
+simulator-only fixture from the image: the pool words that hold high-RAM
+addresses point into simulator test RAM, and for a block an RTS/NOP pair
+replaces the two instruction words that follow it, outside the region; a
+whole function returns through its own RTS. The harness seeds the RAM and
+calibration inputs, calls the region with the registers that it reads on
+entry, and checks every store and the return value against the symbols and
+the named bits of the entity files, which the verifier passes to it with the
+region constants.
 """
 
 from __future__ import annotations
@@ -46,17 +49,39 @@ class Region:
     source: str
     harness: str
     start: int
-    # The first address after the region, where the boundary RTS/NOP goes.
+    # The first address after the region.
     end: int
-    pool: int
-    pool_size: int
+    # The pool spans that the region loads, as (address, size).
+    pools: tuple[tuple[int, int], ...]
     # Pool words that hold high-RAM addresses.
     ram_literals: tuple[int, ...]
-    # The stock MOV.L @(disp,PC),R12 that loads the base register before the
-    # region.
-    base_load: int
     cases: int
+    # A block returns through the RTS/NOP pair that the fixture places at
+    # `end`; a whole function returns through its own RTS.
+    boundary: bool = True
+    # The stock MOV.L @(disp,PC),R12 that loads the base register before a
+    # block that reads it on entry.
+    base_load: int | None = None
+    # Harness definitions of the address of a meaning on the layout, as
+    # (definition, meaning).
+    symbols: tuple[tuple[str, str], ...] = ()
+    # Harness definitions of the mask of a named bit, as (definition,
+    # meaning, bit).
+    bits: tuple[tuple[str, str, str], ...] = ()
+    # Harness definitions of the addresses inside the region that no entity
+    # file names, as (definition, value).
+    constants: tuple[tuple[str, int], ...] = ()
 
+
+FUEL_CUT_SYMBOLS = (
+    ("FUEL_INHIBIT", "fuel_inhibit/ram"),
+    ("ENGINE_SPEED", "rpm/ram"),
+    ("FUEL_CUT_TABLE", "rev_limit_fuel_cut/tbl"),
+)
+FUEL_CUT_BITS = (
+    ("ARMED_MASK", "fuel_inhibit/ram", "armed"),
+    ("ACTIVE_MASK", "fuel_inhibit/ram", "active"),
+)
 
 REGIONS = (
     Region(
@@ -66,11 +91,58 @@ REGIONS = (
         harness="stock_ascd_main_harness.c",
         start=0x000FCBB0,
         end=0x000FCBEE,
-        pool=0x000FCD60,
-        pool_size=0x10,
+        pools=((0x000FCD60, 0x10),),
         ram_literals=(0x000FCD60, 0x000FCD6C),
-        base_load=0x000FC9CA,
         cases=8,
+        base_load=0x000FC9CA,
+        symbols=(
+            ("ASCD_FLAGS", "ascd_state/ram"),
+            ("BUTTON_STATE", "button_state/ram"),
+        ),
+        bits=(("ASCD_MAIN_MASK", "ascd_state/ram", "main"),),
+    ),
+    # The main RPM fuel-cut state machines of the two relocated 8MFK layouts:
+    # the delay counter, the pair selector, the configuration byte, and the
+    # delay byte have no symbols on them.
+    Region(
+        key="jk00c-rpm-fuel-cut",
+        rom="JK00C",
+        source="stock_jk00c_rpm_fuel_cut.s",
+        harness="stock_rpm_fuel_cut_harness.c",
+        start=0x00050BF8,
+        end=0x00050C9A,
+        pools=((0x00050D68, 4), (0x00050D88, 0x10)),
+        ram_literals=(0x00050D68, 0x00050D88),
+        cases=14,
+        boundary=False,
+        symbols=FUEL_CUT_SYMBOLS,
+        bits=FUEL_CUT_BITS,
+        constants=(
+            ("DELAY_COUNTER", 0xFFFF2579),
+            ("PAIR_SELECTOR", 0xFFFF24EC),
+            ("CUT_CONFIG", 0x00008B6B),
+            ("CUT_DELAY", 0x00008C97),
+        ),
+    ),
+    Region(
+        key="jk00d-rpm-fuel-cut",
+        rom="JK00D",
+        source="stock_jk00d_rpm_fuel_cut.s",
+        harness="stock_rpm_fuel_cut_harness.c",
+        start=0x00050BF4,
+        end=0x00050C96,
+        pools=((0x00050D64, 4), (0x00050D84, 0x10)),
+        ram_literals=(0x00050D64, 0x00050D84),
+        cases=14,
+        boundary=False,
+        symbols=FUEL_CUT_SYMBOLS,
+        bits=FUEL_CUT_BITS,
+        constants=(
+            ("DELAY_COUNTER", 0xFFFF2581),
+            ("PAIR_SELECTOR", 0xFFFF24F4),
+            ("CUT_CONFIG", 0x00008B6C),
+            ("CUT_DELAY", 0x00008C99),
+        ),
     ),
 )
 
@@ -125,7 +197,10 @@ def require_reconstruction(region, image, build_dir):
         stem.with_suffix(".elf"), stem.with_suffix(".raw"),
     ])
     raw = stem.with_suffix(".raw").read_bytes()
-    spans = ((region.start, region.end), (region.pool, region.pool + region.pool_size))
+    spans = (
+        (region.start, region.end),
+        *((address, address + size) for address, size in region.pools),
+    )
     for start, end in spans:
         actual = raw[start - region.start : end - region.start]
         if actual != image[start:end]:
@@ -140,34 +215,40 @@ def build_fixture(region, image):
     """The simulator-only fixture of a region; the region bytes stay stock."""
     fixture = bytearray(image)
     for address in region.ram_literals:
-        if not region.pool <= address < region.pool + region.pool_size:
+        if not any(start <= address <= start + size - 4
+                   for start, size in region.pools):
             raise VerificationError(
-                f"{region.key}: {address:#010x} lies outside the pool"
+                f"{region.key}: {address:#010x} lies outside the pools"
             )
         value = _word(fixture, address)
         fixture[address : address + 4] = base_verifier.alias_high_ram(
             value
         ).to_bytes(4, "big")
-    fixture[region.end : region.end + len(RETURN_STUB)] = RETURN_STUB
+    if region.boundary:
+        fixture[region.end : region.end + len(RETURN_STUB)] = RETURN_STUB
     if fixture[region.start : region.end] != image[region.start : region.end]:
         raise VerificationError(f"{region.key}: the fixture alters the region")
     return bytes(fixture)
 
 
 def harness_defines(region, image):
-    """The symbols and named bits of the entity files, and the stock base
-    register value, as harness definitions."""
+    """The entry of a region, the symbols and named bits of the entity files
+    on its layout, its constants, and the stock base register value, as
+    harness definitions."""
     layout = kb_targets.layout_of(region.rom, root=ROOT)
-    return {
-        "ASCD_FLAGS": kb_targets.address("ascd_state/ram", layout, root=ROOT),
-        "ASCD_MAIN_MASK": 1 << kb_targets.bit(
-            "ascd_state/ram", layout, "main", root=ROOT
-        ),
-        "BUTTON_STATE": kb_targets.address(
-            "button_state/ram", layout, root=ROOT
-        ),
-        "REGION_R12": base_register(region, image),
-    }
+    defines = {"REGION_ENTRY": region.start}
+    defines.update(
+        (name, kb_targets.address(ref, layout, root=ROOT))
+        for name, ref in region.symbols
+    )
+    defines.update(
+        (name, 1 << kb_targets.bit(ref, layout, bit, root=ROOT))
+        for name, ref, bit in region.bits
+    )
+    defines.update(region.constants)
+    if region.base_load is not None:
+        defines["REGION_R12"] = base_register(region, image)
+    return defines
 
 
 def run_region(region, invoke, build_dir):
@@ -189,6 +270,7 @@ def run_region(region, invoke, build_dir):
         [
             base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2",
             "-Wall", "-Wextra", "-Werror",
+            f'-DREGION_KEY="{region.key}"',
             *(f"-D{name}={value:#x}U" for name, value in defines.items()),
             f"-Wl,-Ttext-segment={text_base:#x}",
             "-Wl,--section-start=.rom=0",

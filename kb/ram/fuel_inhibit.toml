@@ -1,3 +1,111 @@
+[[bit]]
+bit = 1
+name = "armed"
+summary = """
+Cut arm: [[main_rpm_fuel_cut_state_machine/fn]] sets it when engine speed \
+reaches the cut-on word of the pair of [[rev_limit_fuel_cut/tbl]] that it \
+selects and loads the cut delay counter; it clears it while engine speed \
+stays below the cut-on word and, with the active cut, when engine speed \
+falls below the release word"""
+level = "code"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f2f4"
+value = "c802"
+note = """
+tst #0x02,r0 skips the load of the cut delay counter while the arm is set"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f300"
+value = "cb02"
+note = "or #0x02,r0 sets the arm"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f312"
+value = "c9fd"
+note = "and #0xfd,r0 clears the arm below the cut-on word"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f2ea"
+value = "c9f9"
+note = "and #0xf9,r0 clears the arm and the active cut below the release word"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:0004f302"
+note = """
+mov.b r0,@(0x4b,gbr) with GBR = ffff244c stores the byte with the arm set"""
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:0004f314"
+note = """
+mov.b r0,@(0x4b,gbr) stores the byte with the arm clear, or with the arm and \
+the active cut clear"""
+
+[[bit]]
+bit = 2
+name = "active"
+summary = """
+Active main RPM cut: [[main_rpm_fuel_cut_state_machine/fn]] sets it while \
+the arm is set and the cut delay counter is zero, keeps it while engine \
+speed stays at or above the release word, clears it with the arm below the \
+release word, and returns it"""
+level = "code"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f2d8"
+value = "c804"
+note = "tst #0x04,r0 selects the release comparison while the cut is active"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f30e"
+value = "cf04"
+note = """
+or.b #0x04,@(r0,gbr) with r0 = 0x4b sets the active cut once the cut delay \
+counter is zero"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f2ea"
+value = "c9f9"
+note = "and #0xf9,r0 clears the arm and the active cut below the release word"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004f318"
+value = "c804"
+note = "tst #0x04,r0 derives the return value from the active cut"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:0004f30e"
+note = "or.b #0x04,@(r0,gbr) sets the bit in the byte"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:0004f316"
+note = """
+mov.b @(0x4b,gbr),r0 loads the byte whose active cut the function returns"""
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff2497"
@@ -6,6 +114,119 @@ former = ["tomato-vulture/ram/7mfk-ffff2497"]
 [[symbol]]
 layout = "jk00c"
 address = "ffff251f"
+note = """
+The state machine 00050bf8 runs the instruction sequence of 7mfk:0004f282 \
+with its own operands: it keeps the arm in bit 5 and the active cut in bit \
+6, loads the cut delay counter ffff2579 from ROM8[0x8C97] = 0, and selects \
+the threshold pair with bit 4 of ffff24ec."""
+
+[[symbol.bit]]
+bit = 5
+name = "armed"
+summary = """
+Cut arm: [[main_rpm_fuel_cut_state_machine/fn]] sets it when engine speed \
+reaches the cut-on word of the pair of [[rev_limit_fuel_cut/tbl]] that it \
+selects and loads the cut delay counter; it clears it while engine speed \
+stays below the cut-on word and, with the active cut, when engine speed \
+falls below the release word"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c6a"
+value = "c820"
+note = """
+tst #0x20,r0 skips the load of the cut delay counter while the arm is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c76"
+value = "cb20"
+note = "or #0x20,r0 sets the arm"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c88"
+value = "c9df"
+note = "and #0xdf,r0 clears the arm below the cut-on word"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c60"
+value = "c99f"
+note = "and #0x9f,r0 clears the arm and the active cut below the release word"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00c:00050c78"
+note = """
+mov.b r0,@(0x4f,gbr) with GBR = ffff24d0 stores the byte with the arm set"""
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00c:00050c8a"
+note = """
+mov.b r0,@(0x4f,gbr) stores the byte with the arm clear, or with the arm and \
+the active cut clear"""
+
+[[symbol.bit]]
+bit = 6
+name = "active"
+summary = """
+Active main RPM cut: [[main_rpm_fuel_cut_state_machine/fn]] sets it while \
+the arm is set and the cut delay counter is zero, keeps it while engine \
+speed stays at or above the release word, clears it with the arm below the \
+release word, and returns it"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c4e"
+value = "c840"
+note = "tst #0x40,r0 selects the release comparison while the cut is active"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c84"
+value = "cf40"
+note = """
+or.b #0x40,@(r0,gbr) with r0 = 0x4f sets the active cut once the cut delay \
+counter is zero"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c60"
+value = "c99f"
+note = "and #0x9f,r0 clears the arm and the active cut below the release word"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00050c8e"
+value = "c840"
+note = "tst #0x40,r0 derives the return value from the active cut"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00c:00050c84"
+note = "or.b #0x40,@(r0,gbr) sets the bit in the byte"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00c:00050c8c"
+note = """
+mov.b @(0x4f,gbr),r0 loads the byte whose active cut the function returns"""
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -18,6 +239,119 @@ value = 17
 [[symbol]]
 layout = "jk00d"
 address = "ffff2527"
+note = """
+The state machine 00050bf4 runs the instruction sequence of 7mfk:0004f282 \
+with its own operands: it keeps the arm in bit 5 and the active cut in bit \
+6, loads the cut delay counter ffff2581 from ROM8[0x8C99] = 0, and selects \
+the threshold pair with bit 4 of ffff24f4."""
+
+[[symbol.bit]]
+bit = 5
+name = "armed"
+summary = """
+Cut arm: [[main_rpm_fuel_cut_state_machine/fn]] sets it when engine speed \
+reaches the cut-on word of the pair of [[rev_limit_fuel_cut/tbl]] that it \
+selects and loads the cut delay counter; it clears it while engine speed \
+stays below the cut-on word and, with the active cut, when engine speed \
+falls below the release word"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c66"
+value = "c820"
+note = """
+tst #0x20,r0 skips the load of the cut delay counter while the arm is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c72"
+value = "cb20"
+note = "or #0x20,r0 sets the arm"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c84"
+value = "c9df"
+note = "and #0xdf,r0 clears the arm below the cut-on word"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c5c"
+value = "c99f"
+note = "and #0x9f,r0 clears the arm and the active cut below the release word"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00d:00050c74"
+note = """
+mov.b r0,@(0x4f,gbr) with GBR = ffff24d8 stores the byte with the arm set"""
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00d:00050c86"
+note = """
+mov.b r0,@(0x4f,gbr) stores the byte with the arm clear, or with the arm and \
+the active cut clear"""
+
+[[symbol.bit]]
+bit = 6
+name = "active"
+summary = """
+Active main RPM cut: [[main_rpm_fuel_cut_state_machine/fn]] sets it while \
+the arm is set and the cut delay counter is zero, keeps it while engine \
+speed stays at or above the release word, clears it with the arm below the \
+release word, and returns it"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c4a"
+value = "c840"
+note = "tst #0x40,r0 selects the release comparison while the cut is active"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c80"
+value = "cf40"
+note = """
+or.b #0x40,@(r0,gbr) with r0 = 0x4f sets the active cut once the cut delay \
+counter is zero"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c5c"
+value = "c99f"
+note = "and #0x9f,r0 clears the arm and the active cut below the release word"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00050c8a"
+value = "c840"
+note = "tst #0x40,r0 derives the return value from the active cut"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00d:00050c80"
+note = "or.b #0x40,@(r0,gbr) sets the bit in the byte"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk00d:00050c88"
+note = """
+mov.b @(0x4f,gbr),r0 loads the byte whose active cut the function returns"""
 
 [[symbol.evidence]]
 kind = "masked-match"

@@ -496,7 +496,10 @@ mov #0x5,r1
                     index for index, (actual, stock) in
                     enumerate(zip(fixture, image)) if actual != stock
                 }
-                allowed = set(range(region.end, region.end + 4))
+                allowed = (
+                    set(range(region.end, region.end + 4))
+                    if region.boundary else set()
+                )
                 for address in region.ram_literals:
                     allowed.update(range(address, address + 4))
                     value = int.from_bytes(image[address:address + 4], "big")
@@ -511,28 +514,62 @@ mov #0x5,r1
                 )
                 self.assertEqual(
                     fixture[region.end:region.end + 4],
-                    STOCK_VERIFIER.RETURN_STUB,
+                    STOCK_VERIFIER.RETURN_STUB if region.boundary
+                    else image[region.end:region.end + 4],
                 )
 
     def test_stock_harness_takes_the_symbols_of_the_entity_files(self):
-        [region] = STOCK_VERIFIER.REGIONS
-        image = STOCK_VERIFIER.stock_image(region.rom)
-
-        self.assertEqual(
-            STOCK_VERIFIER.harness_defines(region, image),
-            {
+        regions = {region.key: region for region in STOCK_VERIFIER.REGIONS}
+        fuel_cut = {
+            "ARMED_MASK": 0x20,
+            "ACTIVE_MASK": 0x40,
+            "ENGINE_SPEED": 0xFFFF11CA,
+        }
+        expected = {
+            "jk78c-ascd-main": {
+                "REGION_ENTRY": 0x000FCBB0,
                 "ASCD_FLAGS": 0xFFFF450B,
                 "ASCD_MAIN_MASK": 0x10,
                 "BUTTON_STATE": 0xFFFF29A1,
                 "REGION_R12": 0xFFFF4506,
             },
-        )
-        harness = (
-            ROOT / "tools/sh-elf-run" / region.harness
-        ).read_text(encoding="utf-8")
-        cases = harness[harness.index("stock_cases[] = {"):]
-        cases = cases[:cases.index("};")]
-        self.assertEqual(cases.count('{"'), region.cases)
+            "jk00c-rpm-fuel-cut": {
+                **fuel_cut,
+                "REGION_ENTRY": 0x00050BF8,
+                "FUEL_INHIBIT": 0xFFFF251F,
+                "FUEL_CUT_TABLE": 0x000093E6,
+                "DELAY_COUNTER": 0xFFFF2579,
+                "PAIR_SELECTOR": 0xFFFF24EC,
+                "CUT_CONFIG": 0x00008B6B,
+                "CUT_DELAY": 0x00008C97,
+            },
+            "jk00d-rpm-fuel-cut": {
+                **fuel_cut,
+                "REGION_ENTRY": 0x00050BF4,
+                "FUEL_INHIBIT": 0xFFFF2527,
+                "FUEL_CUT_TABLE": 0x000093F4,
+                "DELAY_COUNTER": 0xFFFF2581,
+                "PAIR_SELECTOR": 0xFFFF24F4,
+                "CUT_CONFIG": 0x00008B6C,
+                "CUT_DELAY": 0x00008C99,
+            },
+        }
+        self.assertEqual(set(regions), set(expected))
+        for key, region in regions.items():
+            with self.subTest(region=key):
+                image = STOCK_VERIFIER.stock_image(region.rom)
+                self.assertEqual(
+                    STOCK_VERIFIER.harness_defines(region, image),
+                    expected[key],
+                )
+                harness = (
+                    ROOT / "tools/sh-elf-run" / region.harness
+                ).read_text(encoding="utf-8")
+                cases = harness[harness.index("stock_cases[] = {"):]
+                cases = cases[:cases.index("};")]
+                self.assertEqual(cases.count('{"'), region.cases)
+        region = regions["jk78c-ascd-main"]
+        image = STOCK_VERIFIER.stock_image(region.rom)
         with self.assertRaisesRegex(
             STOCK_VERIFIER.VerificationError, "no MOV.L"
         ):
@@ -540,6 +577,32 @@ mov #0x5,r1
                 region, image[:region.base_load] + b"\x00\x09"
                 + image[region.base_load + 2:]
             )
+
+    def test_fuel_cut_regions_address_the_symbols_through_their_pools(self):
+        # The state machine points GBR at its first pool word and stores the
+        # state byte at GBR + 0x4f and the delay counter at GBR + 0xa9, reads
+        # the selector at GBR + 0x1c and the engine speed at 0x22 past the
+        # word of its single pool, and loads the configuration byte, the
+        # table, and the delay byte through the other three words.
+        for region in STOCK_VERIFIER.REGIONS:
+            if not region.key.endswith("-rpm-fuel-cut"):
+                continue
+            with self.subTest(region=region.key):
+                image = STOCK_VERIFIER.stock_image(region.rom)
+                defines = STOCK_VERIFIER.harness_defines(region, image)
+                (speed, _), (pool, _) = region.pools
+
+                def word(address):
+                    return int.from_bytes(image[address:address + 4], "big")
+
+                gbr = word(pool)
+                self.assertEqual(defines["FUEL_INHIBIT"], gbr + 0x4F)
+                self.assertEqual(defines["DELAY_COUNTER"], gbr + 0xA9)
+                self.assertEqual(defines["PAIR_SELECTOR"], gbr + 0x1C)
+                self.assertEqual(defines["ENGINE_SPEED"], word(speed) + 0x22)
+                self.assertEqual(defines["CUT_CONFIG"], word(pool + 4))
+                self.assertEqual(defines["FUEL_CUT_TABLE"], word(pool + 8))
+                self.assertEqual(defines["CUT_DELAY"], word(pool + 12))
 
     def test_top_level_gate_registers_stock_code(self):
         source = MODULE_PATH.read_text(encoding="utf-8")
