@@ -97,7 +97,8 @@ The common handler performs these operations in one invocation:
     enabled component write sets and the checksum fields.
 
 The builder preserves calibration and configuration outside its declared
-ranges, including the Developer Immobilizer bit edited through the matching
+ranges, including the Developer Immobilizer bit and the cruise control
+configuration byte of the Cruise Control Switch edited through the matching
 `defs/<ROM>.xml` or `defs/<ROM>.xdf`. Map 1 and every newly initialized Map 2
 through Map 5 copy come from the selected input, never from JK08A. The builder
 does not call an Immobilizer patcher. Historical image identities and hardware

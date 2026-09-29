@@ -159,6 +159,19 @@ state transitions and arithmetic boundaries; the exact-ROM p-code harness in
 `../ghidra/EmulateThrottleLimiter.java` remains the independent executable
 reference, including the baseline lookup and downstream target projection.
 
+## Stock-code execution
+
+`sh2_interpreter.py` is a minimal SH-2 integer interpreter that executes the
+stock instructions of an exact image in place. It implements only the
+instructions of the paths its gates execute and rejects any other opcode, any
+store into the image, and any branch or PC-relative load in a delay slot; a
+read of a cell outside the image that no seed or store has set fails unless the
+machine is created with a value for such cells. The gates of
+`tests/test_vq37_intake_duty_scheme.py` and
+`../../patches/tests/test_cruise_control_switch.py` run on it. Instructions
+that a patch adds, removes, or replaces run in the GNU SH-2E gate of
+`../sh-elf-run/`.
+
 ## Generator invariants
 
 - A visible table must pass geometry, axis, scaling, and presentation gates.

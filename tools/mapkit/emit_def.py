@@ -582,6 +582,34 @@ def dtc_switches(rom, image=None, manifest_path=None, records=None):
     return entries
 
 
+def stock_state_first(switches, image):
+    """Put first in each switch the state that holds the stock bytes of the image.
+
+    TunerPro takes the first state as the base data of its patch, and the base
+    data is the stock image. A switch whose stock bytes match no state, such as
+    a control in erased runtime space, keeps its order.
+    """
+    ordered = []
+    for entry in switches:
+        try:
+            states = entry["state"]
+            address = int(str(entry["storageaddress"]), 16)
+            data = [bytes.fromhex(" ".join(str(state["data"]).split()))
+                    for state in states]
+        except (KeyError, TypeError, ValueError):
+            ordered.append(entry)
+            continue
+        stock = [index for index, raw in enumerate(data)
+                 if raw and image.data[address:address + len(raw)] == raw]
+        if len(stock) == 1 and stock[0] != 0:
+            entry = dict(entry)
+            entry["state"] = [states[stock[0]]] + [
+                state for index, state in enumerate(states) if index != stock[0]
+            ]
+        ordered.append(entry)
+    return ordered
+
+
 def switch_xml(entry, index):
     """Build a TableSwitch from overrides or the DTC registry with named states."""
     if not isinstance(entry, dict):
@@ -1339,9 +1367,9 @@ def emit_target(
     if not isinstance(native_switches, list):
         sys.exit(f"{os.path.basename(ovr_path)}: switch must be a table "
                  "or an array of tables")
-    native_switches = list(native_switches)
-    native_bitwise_switches = bitwise_switches(ovr)
     image = target.image
+    native_switches = stock_state_first(native_switches, image)
+    native_bitwise_switches = bitwise_switches(ovr)
     dtc_rom = rom if target.definition_projection is not None else source_rom
     dtc_manifest = os.path.join(DEFS, f"{dtc_rom}.dtc.csv")
     records = dtc_records(

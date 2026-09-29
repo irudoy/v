@@ -348,7 +348,8 @@ class DefinitionAdapterTest(unittest.TestCase):
         self.assertEqual(sorted(target.props["images"]), ["1ND0A", "1ND3B"])
         self.assertEqual(target.props["images"]["1ND3B"]["switch"],
                          {"developer_immobilizer": "00008668",
-                          "can_telemetry_startup": "00134e03"})
+                          "can_telemetry_startup": "00134e03",
+                          "cruise_control_switch": "00008a11"})
         self.assertEqual([item["variant"] for item in target.props["variants"]],
                          ["default", "default"])
         self.assertEqual([issue for issue in m.issues if issue.check == "schema"], [])
@@ -935,7 +936,8 @@ class OverridesAdapterTest(unittest.TestCase):
         self.assertEqual((entry["rom"]["xmlid"], entry["map_switching"], entry["rolling_launch"]),
                          ("JK08A", True, True))
         self.assertEqual(entry["switch"], {"developer_immobilizer": "00008725",
-                                           "can_telemetry_startup": "000d4e03"})
+                                           "can_telemetry_startup": "000d4e03",
+                                           "cruise_control_switch": "00008b28"})
         self.assertEqual([(item["type"], item["start"], item["end"], item.get("skiploc"))
                           for item in entry["checksums"]],
                          [("alt", "0002040c", "0002259c", None),

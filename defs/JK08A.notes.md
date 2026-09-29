@@ -122,6 +122,8 @@ The following documents own complete current subsystem models:
 - `patches/map-switching-selector.md` - current five-slot runtime and gates;
 - `patches/rolling-launch.md` - current Rolling Launch behavior and safety;
 - `patches/immo-off-developer-flag.md` - Developer Immobilizer execution path;
+- `patches/cruise-control-switch.md` - Cruise Control Switch sites, decoders,
+  and hardware checks;
 - `tools/map-analysis-pipeline.md` - current discovery, graph, provenance, and
   definition projection contract.
 

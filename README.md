@@ -19,7 +19,10 @@ engines.
 - The unified builder composes the current capability-specific runtime for
   JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
   Map Switching, Rolling Launch, and custom CAN telemetry are available on all
-  ten targets. VQ37 targets use their native fuel-cut caps and interpolated
+  ten targets. Map Switching and Rolling Launch take their input from the
+  steering switch buttons, which JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and
+  1ND3B decode only once the Cruise Control Switch of their definitions selects
+  the ICC switch. VQ37 targets use their native fuel-cut caps and interpolated
   curves for map slots, while Rolling Launch adds an exact all-cylinder
   request after the stock final-mask coordinator. The builder preserves target
   calibration state, closes each ROM's checksum domains, and emits a
@@ -74,6 +77,7 @@ engines.
 - Production ROM composition: [`patches/rom-builder.md`](patches/rom-builder.md)
 - Map-switching runtime: [`patches/map-switching-selector.md`](patches/map-switching-selector.md)
 - Rolling Launch runtime: [`patches/rolling-launch.md`](patches/rolling-launch.md)
+- Cruise Control Switch: [`patches/cruise-control-switch.md`](patches/cruise-control-switch.md)
 - Custom CAN telemetry design: [`patches/can-telemetry.md`](patches/can-telemetry.md)
 - PCAN dashboard: [`tools/can_dashboard/README.md`](tools/can_dashboard/README.md)
 - CAN and MLVLG logging tools: [`tools/logs/README.md`](tools/logs/README.md)

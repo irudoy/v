@@ -68,7 +68,12 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SWITCH_NAMES = {
     "developer_immobilizer": "Developer Immobilizer",
     "can_telemetry_startup": "CAN Telemetry at Startup",
+    "cruise_control_switch": "Cruise Control Switch",
 }
+# The switches whose first state is the stock bytes of every relocated target.
+STOCK_FIRST_STATE_SWITCHES = frozenset(
+    {"developer_immobilizer", "cruise_control_switch"}
+)
 
 
 class DefinitionProjectionError(ValueError):
@@ -462,7 +467,7 @@ def _target_switches(projection, source_switches, image):
             )
         entry = copy.deepcopy(source)
         entry["storageaddress"] = f"0x{address:X}"
-        if key == "developer_immobilizer":
+        if key in STOCK_FIRST_STATE_SWITCHES:
             expected = bytes.fromhex(entry["state"][0]["data"])
             actual = image.data[address : address + len(expected)]
             if actual != expected:

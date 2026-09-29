@@ -79,6 +79,13 @@ stock previous/current one-hot button pair:
 | `0x20` | all buttons released |
 | `0x00` | invalid, fail closed |
 
+The pair exists only while bit 0 of the cruise control configuration byte
+enables the steering switch decoder. Stock JK08A holds `0x2B`. JK00A, JK03A,
+JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold `0x00`, so their decoder stores no
+button code and the selector stays on Map 1 until the Cruise Control Switch of
+their definitions selects ICC Switch (5 Buttons); `cruise-control-switch.md`
+states the byte, the decoders, and the retrofit of the ICC steering switch.
+
 Selection is enabled only while the MAIN switch bit of the stock ASCD flag
 byte is clear, Rolling Launch does not own the selector host, the selector
 state is structurally valid, and visual feedback is idle. On JK08A, the MAIN
@@ -170,8 +177,9 @@ coordinator reads through a lookup and an adapter of their own. The selector
 aborts on the MAIN switch bit of the ASCD flag byte, which the entity files
 state per layout as the named bit `main` of `ascd_state/ram`: bit 4 of
 `0xFFFF450B` in JK78C, bit 5 in 1ND0A and 1ND3B, and bit 1 in 1ME3B. The stock
-calibration of 1ND0A and 1ND3B disables the MAIN switch block of their ASCD
-task: bit 0 of `ROM8[0x8A11]` is clear. The VQ37
+calibration of 1ND0A and 1ND3B clears bit 0 of `ROM8[0x8A11]`, which disables
+the steering switch decoder and the MAIN switch block of their ASCD task until
+the Cruise Control Switch sets it. The VQ37
 layout retains the four DFCO rows and two ignition surfaces, provides a default
 and an alternate family for both warm-idle timing and fuel compensation, and
 replaces the canonical 2x2 fuel-cut table with two uint16 caps plus independent

@@ -446,6 +446,10 @@ The Developer Immobilizer flag is a definition-controlled data edit, not a
 standalone instruction patch. Its execution path and safety boundary are in
 `../patches/immo-off-developer-flag.md`.
 
+The Cruise Control Switch is a definition-controlled data edit of the cruise
+control configuration byte, not a standalone instruction patch. Its sites,
+decoders, and hardware checks are in `../patches/cruise-control-switch.md`.
+
 ## Reference submodules
 
 `reference/` contains pinned public Nissan definition repositories for

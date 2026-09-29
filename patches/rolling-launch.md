@@ -79,6 +79,12 @@ are not gate inputs. The CANCEL hold is therefore made with the cruise MAIN
 state off, under the rule that `map-switching-selector.md` states for the
 selector gestures.
 
+Gate 7 needs the CANCEL code of the steering switch decoder, which exists only
+while bit 0 of the cruise control configuration byte is set. JK00A, JK03A,
+JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold `0x00` there, so Rolling Launch
+never arms on them until the Cruise Control Switch of their definitions
+selects ICC Switch (5 Buttons) (`cruise-control-switch.md`).
+
 While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents
 both runtimes from modifying shared state during one gesture.

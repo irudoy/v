@@ -69,6 +69,7 @@ evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation c
 [projection.1ND0A.switch]
 developer_immobilizer = 0x00008668
 can_telemetry_startup = 0x00134E03
+cruise_control_switch = 0x00008A11
 
 [projection.1ND3B]
 source = "JK08A"
@@ -101,6 +102,7 @@ evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-
 [projection.1ND3B.switch]
 developer_immobilizer = 0x00008668
 can_telemetry_startup = 0x00134E03
+cruise_control_switch = 0x00008A11
 
 [projection.JK00C]
 source = "JK08A"
@@ -125,6 +127,7 @@ evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normal
 [projection.JK00C.switch]
 developer_immobilizer = 0x0000873F
 can_telemetry_startup = 0x000E1503
+cruise_control_switch = 0x00008B59
 
 [projection.JK00D]
 source = "JK08A"
@@ -149,6 +152,7 @@ evidence = "Reviewed interpolation operands, matched function references, target
 [projection.JK00D.switch]
 developer_immobilizer = 0x00008740
 can_telemetry_startup = 0x000E1503
+cruise_control_switch = 0x00008B5A
 
 [projection.JK78C]
 source = "JK08A"

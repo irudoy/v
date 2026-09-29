@@ -15,6 +15,7 @@ def romraider_category(category):
 
 COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
+    "Cruise Control Switch": "Cruise Control / Steering Switch",
     "MAF Factor": "Fuelling / MAF Scaling",
     "Target Mixture - Main": "Fuelling / Target Mixture",
     "Target Mixture Multiplier - High-Detonation State": "Fuelling / Target Mixture",
@@ -521,6 +522,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             set(switches) - set(actual),
             {
                 "Developer Immobilizer",
+                "Cruise Control Switch",
                 "CAN Telemetry at Startup",
                 "Rolling Launch Require Accelerator Pedal",
             },

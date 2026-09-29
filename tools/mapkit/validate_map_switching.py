@@ -102,6 +102,7 @@ def validate():
     native_switches = projection.overrides.get("switch", [])
     if isinstance(native_switches, dict):
         native_switches = [native_switches]
+    native_switches = emit_def.stock_state_first(native_switches, image)
     for index, entry in enumerate(native_switches, 1):
         romraider_fragments.extend(emit_def.switch_xml(entry, index))
     romraider_model = "\n".join(romraider_fragments)

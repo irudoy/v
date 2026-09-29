@@ -55,6 +55,13 @@
       <state name="Enabled" data="01"/>
     </table>
 
+    <table type="Switch" name="Cruise Control Switch" category="Cruise Control//Steering Switch"
+           storageaddress="0x8A11" storagetype="uint8" sizex="1" endian="big" userlevel="5">
+      <description>Exact 1ND3B only. Selects the cruise control steering switch that the ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so the Map Switching gestures and the Rolling Launch CANCEL hold have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch with DISTANCE, as stock JK08A does. The switch changes only this byte: cruise control itself also needs an ICC unit and the ICC CAN mailboxes of JK08A, which this byte does not configure. Hardware evidence covers stock JK08A only.</description>
+      <state name="Not Installed" data="00"/>
+      <state name="ICC Switch (5 Buttons)" data="2B"/>
+    </table>
+
     <table type="Switch" name="Developer Immobilizer" category="NATS//Immobilizer"
            storageaddress="0x8668" storagetype="uint8" sizex="1" endian="big" userlevel="5">
       <description>Exact 1ND3B only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result.</description>

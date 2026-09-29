@@ -14,6 +14,7 @@ TARGETS = {
         "exhaust_cvtc_correction": "0x0AECE",
         "switches": {
             "Developer Immobilizer": "0x873F",
+            "Cruise Control Switch": "0x8B59",
             "CAN Telemetry at Startup": "0xE1503",
             "Rolling Launch Require Accelerator Pedal": "0xE066C",
         },
@@ -27,6 +28,7 @@ TARGETS = {
         "exhaust_cvtc_correction": "0x0AEDE",
         "switches": {
             "Developer Immobilizer": "0x8740",
+            "Cruise Control Switch": "0x8B5A",
             "CAN Telemetry at Startup": "0xE1503",
             "Rolling Launch Require Accelerator Pedal": "0xE066C",
         },
@@ -279,8 +281,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 215
-        assert len(tables) == 215
+        assert len(target.findall("table")) == 216
+        assert len(tables) == 216
         # The ignition families select the two executed 16x16 surfaces and the
         # four 8x8 state-code surfaces; the canonical trio reaches only the
         # gated coordinator half.
@@ -324,6 +326,9 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert tables["CAN Telemetry at Startup"].get(
             "storageaddress"
         ) == "0x134E03"
+        assert tables["Cruise Control Switch"].get(
+            "storageaddress"
+        ) == "0x8A11"
         assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
         assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
         assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
@@ -359,6 +364,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         }
         assert non_dtc_patches == {
             "Developer Immobilizer",
+            "Cruise Control Switch",
             "CAN Telemetry at Startup",
             "Rolling Launch Require Accelerator Pedal",
         }

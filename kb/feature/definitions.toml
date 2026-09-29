@@ -207,6 +207,7 @@ target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da97
 
 [target.images.1ND0A.switch]
 can_telemetry_startup = "00134e03"
+cruise_control_switch = "00008a11"
 developer_immobilizer = "00008668"
 
 [target.images.1ND3B]
@@ -240,6 +241,7 @@ target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7
 
 [target.images.1ND3B.switch]
 can_telemetry_startup = "00134e03"
+cruise_control_switch = "00008a11"
 developer_immobilizer = "00008668"
 
 [[target.omitted]]
@@ -587,6 +589,7 @@ target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb6928
 
 [target.images.JK00C.switch]
 can_telemetry_startup = "000e1503"
+cruise_control_switch = "00008b59"
 developer_immobilizer = "0000873f"
 
 [[target]]
@@ -915,6 +918,7 @@ target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d
 
 [target.images.JK00D.switch]
 can_telemetry_startup = "000e1503"
+cruise_control_switch = "00008b5a"
 developer_immobilizer = "00008740"
 
 [[target]]
