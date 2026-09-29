@@ -351,27 +351,52 @@ own keys, then its feature tables, then the arrays `[[symbol]]`, `[[status]]`,
 - Levels are ordered `pattern` < `candidate` < `code` < `silicon`.
 - Claims with a level: the identity of a meaning (`level`) and of a symbol
   (`level`), a scale (`scale_level`), a contract (`contract_level`), a named
-  bit or value, and a diagnostic binding.
-- A `candidate` claim needs at least one evidence item. A `code` claim needs
-  evidence of a kind that grounds `code` ([Evidence](#76-evidence)). A
-  `silicon` claim needs `hardware` evidence whose `key` names a record of
-  `patches/hardware-results.toml` with a passing result.
+  bit or value, and a diagnostic binding. A symbol claims its identity or
+  its scale when it states `level` or `scale_level`, and a symbol that the
+  files own on another layout than the home of its meaning claims its
+  identity at the `level` of the meaning. A claim of a meaning takes the
+  evidence of its symbols that supports it, except homology evidence and the
+  scale evidence of a symbol with a scale claim of its own; a symbol claim
+  takes the evidence of its symbol, and its identity is grounded as the
+  `homology` check grounds the symbol.
+- A `candidate` claim needs at least one evidence item or dependency. A
+  `code` claim needs grounding: evidence of a kind that grounds `code`
+  ([Evidence](#76-evidence)), or a `relies` dependency on a claim with
+  grounding or on a structure that the program holds; a dependency grounds
+  no more than `code`. A `silicon` claim needs `hardware` evidence whose
+  `key` names a record of `patches/hardware-results.toml` whose
+  `hardware_status` is `pass`. A `hardware` item without such a record and
+  an `arithmetic` item whose equation does not hold ground nothing.
 - `relies` on a link or an evidence item names the property of its `to` end
   that the owning claim rests on:
 
 | `relies` | Bound on the owning claim | Legacy suffix |
 |---|---|---|
-| `structure` | `code` when L0 of the layout holds the `to` symbol as the code object the claim uses, `pattern` otherwise | `@structural` |
+| `structure` | None when the program holds the `to` symbol as the code object the claim uses, `pattern` otherwise | `@structural` |
 | `level` | The effective level of the `to` entity | `@confidence` |
 | `contract` | The effective `contract_level` of the `to` function | `@contract_conf` |
 | `scale` | The effective `scale_level` of the `to` entity | `@scale_conf` |
 
+- The program holds a `fn` symbol that is a function entry of L0, and
+  another symbol that an L0 reference names at an address of its storage,
+  that typed `indirect` evidence places, or that the `source` link of a
+  `did` symbol names in a DID table entry of the images. The facts of L0 and
+  of the images are exact facts of the program that the ECU runs, so a held
+  structure does not bound the claim.
+- The `to` symbol of a link is the symbol of its `to` end on the home layout
+  of the owning meaning, or else the home symbol of the `to` end; a `trace`
+  item names its `to` symbol. `level`, `scale`, and `contract` name the
+  claim of the `to` symbol when it states one, else the claim of its
+  meaning, and a `to` end without that claim bounds at `pattern`.
 - The effective level of a claim is the minimum of its declared level and
   the bounds of the links and evidence items of that claim that carry
   `relies`. Links and evidence without `relies` state facts and do not bound
   the claim. Mutual dependencies resolve to the greatest fixed point, so a
   cycle takes the minimum of its members.
-- The `levels` check fails when a declared level exceeds its effective level.
+- The `levels` check fails when a declared level exceeds its effective
+  level, and names the dependency that bounds the claim and the end of the
+  chain of such dependencies: a claim declared at that level, a `to` end
+  without the claim, or a structure that the program does not hold.
 
 ### 7.2 Meanings
 
@@ -596,8 +621,12 @@ A link is stored at one end and read in both directions.
   PC-relative load, as the target of a call, or as one operand of a census
   call. Homologous functions are the symbols of one `fn` meaning or two
   functions whose hash of one class is unique on both layouts.
-- `kb check` evaluates every `arithmetic` equation and compares every
-  `rom-bytes` value with the images of the layout.
+- The `levels` check evaluates every `arithmetic` equation
+  `<expression>=<number>`: the expression of numbers, `+`, `-`, `*`, `/`,
+  `^` with an integer exponent, and parentheses, evaluated exactly, rounds
+  to the number at the decimal places that the number states. The
+  `image-bytes` check compares every typed `rom-bytes` value with the images
+  of the layout.
 - An `indirect` base item places a datum or a slot that no instruction
   touches: at the first load of VBR when the symbol lies in the vector table
   that VBR bases, else at the first instruction that touches the nearest
@@ -1176,7 +1205,7 @@ Options common to the read commands:
 | `kb log <ref>` | The history of the entity through renames and redirects |
 | `kb raw <ref>` | The canonical file of the entity |
 | `kb cypher <query>` | A read-only Cypher query over the working tree's instance after the fingerprint check |
-| `kb audit` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2) |
+| `kb audit [--section <s>]` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes |
 | `kb bench [--all] [--only <id>]` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) |
 | `kb check [--changed]` | The gates of [Checks](#13-checks) |
 
@@ -1355,7 +1384,7 @@ until the stage that replaces them.
 | `references` | Every stored reference and every `[[...]]` citation resolves, and none uses a former name | 2 |
 | `symbols` | At most one symbol per layout, kind, and address; at most one symbol or status per meaning and layout; every address lies in the address space of its kind on the MCU of the layout; every `fn` symbol is a function entry of L0 | 2 |
 | `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol | 3 |
-| `levels` | No declared level exceeds its effective level; `code` and `silicon` claims carry grounding evidence; every `hardware` key names a passing record; every `arithmetic` equation holds | Reported by `kb audit` from 2; a gate from 5 |
+| `levels` | No declared level exceeds its effective level; `candidate` claims carry evidence, and `code` and `silicon` claims grounding; every `hardware` key names a record whose `hardware_status` is `pass`; every `arithmetic` equation holds ([Levels](#71-levels)) | Reported by `kb audit` from 3; a gate from 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source | Fields from 4; symbols from 8 |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
@@ -1376,8 +1405,9 @@ those that only files state and those whose file entry states evidence. A
 file entry that only names a symbol of a registry joins the file with the
 meaning, and the registry keeps the symbol's evidence. The `statuses` check
 covers the statuses that the files state. The conversion of each registry
-extends both. The `image-bytes` and `writers` checks cover the whole
-model.
+extends both. The `image-bytes`, `writers`, and `levels` checks cover the
+whole model; the symbol claims of the `levels` check follow the symbols that
+the files own.
 
 An evidence item that an adapter maps from a legacy token keeps the token in
 `legacy`. The `schema` check does not require the keys of its kind, and the
@@ -2822,9 +2852,9 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | 0. Specification | This document | The specification is agreed |
 | 1. L0 in git | The layouts of `rom-images/homology.toml`; normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts, and the instance limit of `tools/kb/config.toml` set from the measurement | Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0 |
 | 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
-| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`; named bits of bit fields; the writer gate over L0 | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
+| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`; named bits of bit fields; the writer gate over L0; `kb audit` reports the `levels` check | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
 | 4. Features on L2 | Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix | Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green |
-| 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
+| 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note; the `levels` check becomes a gate | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
 | 6. Architecture | Stages, blocks, endpoints, and chains become entities, and a step note keeps only its arithmetic; romviz reads the graph and builds the atlas from the symbols of each layout; the atlas searches symbols by name and shows the symbols of a meaning across layouts, statuses, and analogs; block candidates for unplaced functions come from communities over the call graph and shared RAM | The numbers of `architecture.py check` reproduce; every layout with symbols has an atlas |
 | 7. Graph readers | `mapkit/emit_def.py` with its gate `validate_map_switching.py`, `mapkit/show.py`, `maps/build_tracker.py`, `diagnostics/query.py`, `memgraph/provenance_report.py`, and their tests read the graph through the `kb` API with the fingerprint check; the loaders of `tools/memgraph/` move into the compiler; `make setup` starts Memgraph and loads the graph from git in one command | No tool reads the graph without the fingerprint check; a fresh clone passes `make verify` after `make setup`; the graph is rebuilt from git without a backup |
 | 8. Code reconciliation | Declared links are checked against L0; writers without an L0 reference are resolved by indirect access kind: pointer, GBR, the `FFFF128C` window, block copy, each with its own evidence kind; ROM symbols are checked against image bytes | Zero unexplained differences; every exception carries a reason |

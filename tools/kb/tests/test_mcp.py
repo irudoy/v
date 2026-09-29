@@ -33,7 +33,7 @@ class ToolTest(unittest.TestCase):
         self.assertEqual(path["properties"]["no_sync"]["type"], "boolean")
         self.assertEqual(tools["kb_find"]["required"], ["words"])
         self.assertEqual(tools["kb_audit"]["properties"]["section"]["items"]["enum"],
-                         ["disagreements", "names", "untyped", "unsplit"])
+                         ["disagreements", "names", "untyped", "unsplit", "levels"])
         self.assertNotIn("required", tools["kb_brief"])
 
     def test_a_call_gives_the_command_line_of_its_command(self):

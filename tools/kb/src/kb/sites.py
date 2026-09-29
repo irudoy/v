@@ -99,6 +99,13 @@ def references(layout_id, root=repo.ROOT):
 
 
 @lru_cache(maxsize=None)
+def referenced(layout_id, root=repo.ROOT):
+    """Every address that an L0 reference of the layout names."""
+    return frozenset(address for found in references(layout_id, root).values()
+                     for address in found)
+
+
+@lru_cache(maxsize=None)
 def bodies(layout_id, root=repo.ROOT):
     """{function entry: sorted instruction addresses of its body}."""
     return derive.bodies(layout_id, root)

@@ -60,7 +60,7 @@ class FilesTest(unittest.TestCase):
         self.assertEqual(meaning.symbols["jk00d"].former, ("bouncing-badger",))
         self.assertEqual(meaning.other_names, [("normalized_load", "former",
                                                 "kb/ram/normalized_bfs.toml")])
-        self.assertEqual(checks.audit(model)["names"], [])
+        self.assertEqual(checks.audit(model, ("names",))["names"], [])
         self.assertEqual(b.issues, [])
 
     def test_a_file_symbol_merges_with_the_symbol_of_a_registry(self):

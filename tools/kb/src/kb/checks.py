@@ -555,22 +555,24 @@ NOTES = {
 }
 
 
-AUDIT_SECTIONS = ("disagreements", "names", "untyped", "unsplit")
+AUDIT_SECTIONS = ("disagreements", "names", "untyped", "unsplit", "levels")
+# The model issues that each section reports.
+AUDIT_ISSUES = {"audit": "disagreements", "untyped": "untyped", "unsplit": "unsplit"}
 
 
-def audit(model):
-    """{section: issues}: disagreements of one fact between registries, other
-    registry names of a named meaning, legacy evidence without the keys of its
-    kind under the registry that states it, which the conversion of its
-    registry types, and the scales of telemetry fields that the conversion
-    cannot split into their meanings."""
-    found = {section: set() for section in AUDIT_SECTIONS}
+def audit(model, sections=AUDIT_SECTIONS):
+    """{section: issues} of the requested sections: disagreements of one fact
+    between registries, other registry names of a named meaning, legacy
+    evidence without the keys of its kind under the registry that states it,
+    which the conversion of its registry types, the scales of telemetry
+    fields that the conversion cannot split into their meanings, and the
+    levels of the claims (`kb.levels`)."""
+    found = {section: set() for section in AUDIT_SECTIONS if section in sections}
     for issue in model.issues:
-        if issue.check in ("untyped", "unsplit"):
-            found[issue.check].add(issue)
-        elif issue.check == "audit":
-            found["disagreements"].add(issue)
-    for meaning in model.meanings:
+        section = AUDIT_ISSUES.get(issue.check)
+        if section in found:
+            found[section].add(issue)
+    for meaning in model.meanings if "names" in found else ():
         others = defaultdict(set)
         for name, tier, src in meaning.other_names:
             if tier != "former":
@@ -578,4 +580,9 @@ def audit(model):
         for (name, tier), srcs in others.items():
             found["names"].add(Issue("audit", ";".join(sorted(srcs)), meaning.key,
                                      f"the {tier} name {name} names the same meaning"))
+    if "levels" in found:
+        # kb.levels reads the helpers of this module.
+        from kb import levels
+
+        found["levels"].update(levels.check(model))
     return {section: sorted(issues) for section, issues in found.items()}

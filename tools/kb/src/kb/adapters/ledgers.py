@@ -3,7 +3,9 @@
 Every row is a symbol of layout `7mfk` whose meaning takes the row's keys.
 Terminal evidence tokens become evidence items of the symbol, and dependency
 tokens become links stored at the end that the link type names, or `trace`
-evidence. A token target without a row becomes an implicit symbol.
+evidence. A token target without a row becomes an implicit symbol. An axis
+that a call of the accessor census passes is `code` with `l0` identity
+evidence at the first such call, and `candidate` otherwise.
 
 The `units` of a `vars` row becomes `unit` unless the telemetry profile states
 the unit of the symbol's meaning, which the scale of its field does
@@ -14,6 +16,7 @@ import csv
 from pathlib import Path
 
 from kb import tokens, vocab
+from kb.adapters import native
 
 LAYOUT = "7mfk"
 PATHS = {
@@ -22,7 +25,6 @@ PATHS = {
 }
 DATUM = ("ram", "reg", "tbl", "axis", "const")
 LEGACY_KINDS = {"Func": ("fn",), "Reg": ("ram", "reg"), "Map": ("tbl",), "Axis": ("axis",)}
-CENSUS_OPERANDS = ("bt_r4", "bt_r5", "bt_r6", "df_r4", "df_r5", "df_r6", "df_r7")
 UNITS = f"{__name__}.units"
 
 
@@ -45,19 +47,6 @@ def _integer(text):
 
 def _level(text):
     return text or None
-
-
-def census_operands(root, layout):
-    """Addresses that a census call of the layout passes as an operand."""
-    found = set()
-    base = root / "l0" / layout
-    for path in sorted(base.glob("accessors.*.csv")):
-        with path.open(newline="", encoding="utf-8") as source:
-            for row in csv.DictReader(source):
-                for column in CENSUS_OPERANDS:
-                    if row[column]:
-                        found.add(int(row[column], 16))
-    return found
 
 
 def declare(b, root):
@@ -135,17 +124,17 @@ def declare(b, root):
             pending.append((key, "accessor", _address(row["accessor"]), src))
 
     src = PATHS["axes"].as_posix()
-    bound = census_operands(root, LAYOUT)
     for row in rows(root, "axes"):
         address = _address(row["addr"])
-        key = b.symbol(LAYOUT, "axis", address, src)
+        call = native.census_call(LAYOUT, root, {address})
+        key = b.symbol(LAYOUT, "axis", address, src, evidence=[call] if call else [])
         b.props(key, {
             "quantity": row["kind"],
             "unit": row["units"],
             "scale": row["scale_expr"],
             "to_raw": row["to_byte"],
             "scale_level": _level(row["scale_conf"]),
-            "level": "code" if address in bound else "candidate",
+            "level": "code" if call else "candidate",
             "note": row["note"],
         }, src)
         record(key, row, ("scale_evidence",), src)

@@ -163,7 +163,7 @@ def census(layout, root=repo.ROOT):
     return tuple(sorted(calls))
 
 
-def _call(layout, root, operands, accessor=None):
+def census_call(layout, root, operands, accessor=None):
     """The `l0` identity item at the first census call of a layout that passes
     every address of `operands`, or, with `accessor`, that the accessor makes
     with one of them; None when no call does."""
@@ -370,7 +370,7 @@ def declare_fuel_cut(b, root, document, src, catalog):
                 "kind": "l0", "supports": "identity", "at": _location(layout, reference)}])
         if "curves_address" in keys and "axis_address" in keys:
             curves, axis = keys["curves_address"], keys["axis_address"]
-            item = _call(layout, root, {curves.address, axis.address})
+            item = census_call(layout, root, {curves.address, axis.address})
             if item is None:
                 b.issue("references", src, f"{subject}.axis_address", "no census call of "
                         f"{layout} passes the curves and the axis")
@@ -423,7 +423,7 @@ def relate(b, root):
                 b.issue("references", src, key.key, f"accessor {accessor:08x} is no function "
                         "entry")
                 continue
-            call = _call(key.layout, root, bound[(key.layout, accessor)], accessor)
+            call = census_call(key.layout, root, bound[(key.layout, accessor)], accessor)
             if call is None:
                 b.issue("references", src, to.key, "no census call of the accessor passes an "
                         "entry bound to it")
@@ -435,7 +435,7 @@ def relate(b, root):
             if to is None:
                 b.issue("references", src, key.key, f"axis_{slot} {address:08x} is no axis")
                 continue
-            call = _call(key.layout, root, {key.address, address})
+            call = census_call(key.layout, root, {key.address, address})
             if call is None:
                 b.issue("references", src, key.key, f"no census call of {key.layout} passes "
                         f"it with axis_{slot} {address:08x}")

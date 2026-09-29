@@ -14,7 +14,8 @@ uv run kb instance status            # instances of the repository and their sta
 uv run kb cypher "MATCH (m:Meaning {name: \$n}) RETURN m" --param n=hcan1_init
 uv run kb check                      # every active check; exit 1 on a failure
 uv run kb check --only l0            # one check
-uv run kb audit                      # disagreements between registries
+uv run kb audit                      # disagreements between registries and the levels of claims
+uv run kb audit --section levels     # one section, which the audit alone computes
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
 uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocation or datum that holds it, and its L0 facts
@@ -63,13 +64,18 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   query parameter, `--json` prints the records as JSON without a budget.
 - `kb instance up|down|status|prune` manages the graph instance of the working
   tree ([Graph](#graph)).
-- `kb audit` prints four sections: `disagreements`, where two registries
+- `kb audit` prints five sections: `disagreements`, where two registries
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
   that lack the keys of their evidence kind, under the registry that states
-  each; and `unsplit`, the scales of
-  telemetry fields that the adapter cannot split into the keys of their
-  source meanings.
+  each; `unsplit`, the scales of telemetry fields that the adapter cannot
+  split into the keys of their source meanings; and `levels`, the claims
+  above their effective level with the dependency that bounds each and the
+  end of its chain, the `candidate` claims without evidence, the `code` and
+  `silicon` claims without grounding, the `hardware` keys without a passing
+  record, and the `arithmetic` equations that do not hold (SPEC, section
+  7.1). `--section` computes only the named sections, and the write
+  commands compute only `disagreements`.
 - `kb code` resolves an address to the function whose L0 body holds it and
   calls `tools/ghidra/decompile.sh` for that function's layout image. The
   decompilations and listings stay in the local export directory as the cache
@@ -542,6 +548,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
 | `kb.compile` | The compiler from the tracked inputs, or from those with an overlay of changed files, to the model |
 | `kb.checks` | The model checks and the audit |
+| `kb.levels` | Claims, effective levels, grounding, and the `levels` section of the audit |
 | `kb.fingerprint` | Input paths, git blob hashes, and the fingerprint |
 | `kb.lock` | `.kb/lock` |
 | `kb.instance` | Graph instances by working tree |

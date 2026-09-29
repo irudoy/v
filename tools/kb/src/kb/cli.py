@@ -288,10 +288,8 @@ def command_bench(args, root=repo.ROOT):
 
 
 def command_audit(args, root=repo.ROOT):
-    found = checks.audit(compile.cached(root))
+    found = checks.audit(compile.cached(root), args.section or checks.AUDIT_SECTIONS)
     for section, issues in found.items():
-        if args.section and section not in args.section:
-            continue
         for issue in issues:
             print(f"{section}: {issue.path}: {issue.subject}: {issue.message}")
     print("audit: " + ", ".join(f"{len(issues)} {section}" for section, issues in found.items()))
@@ -407,9 +405,10 @@ def build_parser():
                         help="fail instead of syncing a stale graph")
     cypher.set_defaults(handler=command_cypher)
 
-    audit = commands.add_parser("audit", help="disagreements between registries")
+    audit = commands.add_parser(
+        "audit", help="disagreements between registries and the levels of claims")
     audit.add_argument("--section", action="append", choices=checks.AUDIT_SECTIONS,
-                       help="print one section; repeatable")
+                       help="compute and print one section; repeatable")
     audit.set_defaults(handler=command_audit)
 
     def reader(name, help_text, *positional, layout=True):

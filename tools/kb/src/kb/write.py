@@ -1053,7 +1053,7 @@ def _issues(model):
         for check in checks.CHECKS.values():
             for issue in check(model):
                 found.setdefault((issue.check, issue.subject, issue.message), issue)
-        for issue in checks.audit(model)["disagreements"]:
+        for issue in checks.audit(model, ("disagreements",))["disagreements"]:
             found.setdefault(("audit", issue.subject, issue.message), issue)
         _CHECKED[model] = found
     return _CHECKED[model]

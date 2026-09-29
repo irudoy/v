@@ -30,6 +30,22 @@ class LedgerAdapterTest(unittest.TestCase):
                     self.assertEqual(len(found), 1, f"{ledger} {address:08x}")
                     self.assertFalse(m.symbols[found[0]].implicit)
 
+    def test_an_axis_that_the_census_passes_has_identity_evidence_at_its_first_call(self):
+        m = model()
+        calls = native.census("7mfk")
+        with (repo.ROOT / ledgers.PATHS["axes"]).open(newline="", encoding="utf-8") as src:
+            rows = list(csv.DictReader(src))
+        self.assertEqual(len(rows), 79)
+        for row in rows:
+            address = int(row["addr"], 16)
+            symbol = m.symbols[SymbolKey("7mfk", "axis", address)]
+            first = next(site for site, _, passed in calls if address in passed)
+            item = {"kind": "l0", "supports": "identity", "at": f"7mfk:{first:08x}"}
+            with self.subTest(axis=row["addr"]):
+                self.assertIn(item, symbol.evidence)
+                self.assertIsNone(match.verify(m, symbol, item))
+                self.assertEqual(symbol.meaning.props["level"], "code")
+
     def test_links_follow_the_token_table(self):
         m = model()
         table = m.meaning_of(SymbolKey("7mfk", "tbl", 0xA4AA))
@@ -193,13 +209,13 @@ class ProfileAdapterTest(unittest.TestCase):
                 "legacy": "rom_const:1"}
         for src in ("one.csv", "two.csv"):
             b.symbol("7mfk", "tbl", 0x9000, src, evidence=[item, {**item, "at": 0x9000}])
-        found = checks.audit(b.finish())["untyped"]
+        found = checks.audit(b.finish(), ("untyped",))["untyped"]
         self.assertEqual([(issue.path, issue.subject, issue.message) for issue in found],
                          [(src, "7mfk-00009000/tbl",
                            "token rom_const:1 gives rom-bytes evidence without at")
                           for src in ("one.csv", "two.csv")])
-        self.assertEqual({issue.path.count(";") for issue in checks.audit(model())["untyped"]},
-                         {0})
+        self.assertEqual({issue.path.count(";")
+                          for issue in checks.audit(model(), ("untyped",))["untyped"]}, {0})
 
     def test_an_unsupported_map_row_gives_way_to_a_target_specific_surface(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "tbl", 0x00009A1A))
@@ -835,7 +851,7 @@ class TelemetryAdapterTest(unittest.TestCase):
         m = model()
         field = m.entities[("field", "injection_end_angle_raw")]
         self.assertTrue(field.props["scale"].startswith("raw * 2 - 590 deg"))
-        unsplit = {issue.subject for issue in checks.audit(m)["unsplit"]}
+        unsplit = {issue.subject for issue in checks.audit(m, ("unsplit",))["unsplit"]}
         self.assertLessEqual({"field.injection_end_angle_raw", "field.af_adjustment_b1_raw",
                               "field.final_timing_raw"}, unsplit)
         self.assertNotIn("field.maf_b1_raw", unsplit)
