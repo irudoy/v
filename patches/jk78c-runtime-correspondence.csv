@@ -129,7 +129,7 @@ telemetry,injection_2_raw,ffff23cc,ffff2320,,,mapped,Channel-indexed producer pr
 telemetry,injection_3_raw,ffff23ce,ffff2322,,,mapped,Channel-indexed producer preserves the two-byte stride
 telemetry,injection_4_raw,ffff23d0,ffff2324,,,mapped,Channel-indexed producer preserves the two-byte stride
 telemetry,injection_5_raw,ffff23d2,ffff2326,,,mapped,Channel-indexed producer preserves the two-byte stride
-telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,The JK08A accesses of ffff121a have no match in the target; the knock function 00062780 stores the signed Q8 state ffff1204 at 00062e9e only while bit 5 of 00008965 is clear and the stock byte 0xba sets it
+telemetry,knock_timing_state_raw,ffff121a,ffff1204,,,mapped,"The only store of the word, in the knock function 00062780, as 00049656 stores the 7mfk word; 00062eb0 publishes its rounded high byte to ffff2252"
 telemetry,knock_surface_state,ffff2466,ffff23c6,,,mapped,Ignition and correction consumers test bit 0x40 to select the surface
 telemetry,app1_raw,ffff269e,ffff25f8,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,app2_raw,ffff26a2,ffff25fc,,,mapped,Aligned diagnostic pointer table and direct references agree

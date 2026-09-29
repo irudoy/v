@@ -191,7 +191,7 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
         ),
         (
             "patches/rom-address-profiles.toml",
-            "54 of the 60 ECU-RAM fields bind to 1ND0A sources",
+            "55 of the 60 ECU-RAM fields bind to 1ND0A sources",
             "57 of the 60 ECU-RAM fields bind to 1ND0A sources",
         ),
         (

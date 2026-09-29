@@ -56,7 +56,6 @@ def test_1nd_telemetry_correspondence_covers_the_complete_schema():
     assert unsupported == [
         "request_flow_raw",
         "normalized_load_raw",
-        "knock_timing_state_raw",
         "alpha_n_flow_raw",
         "intake_cvtc_duty_command_b1_raw",
         "intake_cvtc_duty_command_b2_raw",

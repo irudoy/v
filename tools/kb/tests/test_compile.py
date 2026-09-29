@@ -65,9 +65,15 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(meaning.symbols["jk78c"].address, 0xFFFF1032)
 
     def test_an_unavailable_field_states_absent_or_unresolved_by_its_evidence(self):
-        knock = model().meaning_of(SymbolKey("7mfk", "ram", 0xFFFF121A))
+        m = model()
+        knock = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF121A))
         self.assertEqual({layout: status.state for layout, status in knock.statuses.items()},
-                         {"jk78c": "unresolved", "1nd": "unresolved", "1me3b": "absent"})
+                         {"1me3b": "absent"})
+        self.assertEqual((knock.symbols["jk78c"].address, knock.symbols["1nd"].address),
+                         (0xFFFF1204, 0xFFFE8214))
+        flow = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1170))
+        self.assertEqual({layout: status.state for layout, status in flow.statuses.items()},
+                         {"1nd": "unresolved", "1me3b": "unresolved"})
         # The status of the source meaning states the unavailable field; the
         # target holds no list of the fields.
         self.assertNotIn("unavailable", model().targets[("can_telemetry", "1nd")].props)

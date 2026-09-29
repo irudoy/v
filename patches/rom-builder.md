@@ -210,9 +210,9 @@ same addresses. The file distinguishes direct mappings from target-specific
 adapters and unsupported source semantics.
 
 The 1ND knock function `0x06D948` stores the signed Q8 knock timing state
-`0xFFFE8214` at `0x06DD78` only while bit 5 of `ROM8[0x8A2B]` is clear, so the
-stock configuration never executes that store and `knock_timing_state_raw` is
-unavailable. Bit 6 of `0xFFFE9488`, which the target
+`0xFFFE8214` at `0x06DD78` only while bit 5 of `ROM8[0x8A2B]` is clear.
+`knock_timing_state_raw` reads that word, which the stock configuration never
+stores and so leaves at its start value. Bit 6 of `0xFFFE9488`, which the target
 correction paths also consume, selects the high- or low-octane surface only
 inside the gated half of the ignition coordinator `0x074D98`. Stock `ROM8[0x8A2B]` = `0xBA` (bit 5 set) executes the
 mode-selected half instead, which picks its surface by the state code derived
@@ -249,13 +249,11 @@ The 1ND address profile binds eighteen switched families: four DFCO rows, the
 two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
 surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
-curves, and the throttle-limiter scalar. Custom CAN telemetry binds 54 of the
-60 schema fields. The unavailable knock timing field, the normalized load
-snapshot, the two intake CVTC duty command fields, and the requested-torque and
-Fuel Compensation Main column coordinates are encoded from cleared reserved RAM
-and remain identified as unavailable in metadata: the stock configuration never
-executes the store of the signed Q8 state, the 32-instruction JK08A producer of
-the normalized load snapshot at `0x03BD1C` has no match in the image with
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds 55 of the
+60 schema fields. The normalized load snapshot, the two intake CVTC duty command
+fields, and the requested-torque and Fuel Compensation Main column coordinates
+are encoded from cleared reserved RAM and remain identified as unavailable in
+metadata: the 32-instruction JK08A producer of the normalized load snapshot at `0x03BD1C` has no match in the image with
 PC-relative displacements masked, both stock images set bit 2 of
 `ROM8[0x8561]`, so the BFR programmer `0x1108D0` writes BFR7B and BFR7A from
 the 16-bit duty words `0xFFFE96BC` and `0xFFFE96BE` and the 8-bit command cells
@@ -319,10 +317,10 @@ equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
 belong to no family and pass through the adapter under the same validator
 rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
 path and the gated half only, so every call through them passes through. Custom CAN telemetry
-binds 59 available schema fields. The signed Q8 knock timing field is encoded
-from cleared reserved RAM and remains identified as unavailable in metadata:
-the knock function `0x062780` stores the state `0xFFFF1204` only while bit 5 of
-`ROM8[0x8965]` is clear, and the stock byte sets that bit. The Fuel Compensation Main column field reads the high byte of
+binds 60 available schema fields. The signed Q8 knock timing field reads the
+state `0xFFFF1204`, which the knock function `0x062780` stores only while bit 5
+of `ROM8[0x8965]` is clear; the stock byte sets that bit, so the field carries
+the start value of the word. The Fuel Compensation Main column field reads the high byte of
 `0xFFFF22F8`, the column that the target Fuel Compensation surfaces take: the
 scheduler snapshot of `0xFFFF238A`, which the target producer `0x04726C` forms
 on the percent scale of the field. The homolog `0xFFFF115C` of the JK08A

@@ -1,4 +1,5 @@
 from dataclasses import replace
+import re
 import subprocess
 import sys
 
@@ -252,7 +253,12 @@ def test_vq37_sources_encode_target_variants(rom):
     assert "fuel_compensation_alternate_base" in adapters
     assert "idle_ignition_pool_2_adapter" in adapters
     assert "jmp @r0\nmov.l @r15+,r0" in completion
-    assert "0xFFFF0DE0, 0xFFFF0DE1" in tables
+    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
+    pointers = {int(word, 16) for word in re.findall(r"0x[0-9A-F]{8}", tables)}
+    assert set(profile.telemetry_source_by_name.values()) <= pointers
+    zero = profile.telemetry_zero_source
+    assert (zero is None) == (not profile.telemetry_unavailable)
+    assert zero is None or zero in pointers
     assert "rl_apply_fuel_overlay" not in rolling_engine
     assert "mov.w r0,@(0x14,r5)" in rolling_engine
     assert "or 0x3F,r0" in fuel_wrapper

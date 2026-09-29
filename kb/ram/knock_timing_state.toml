@@ -1,4 +1,39 @@
 [[symbol]]
+layout = "1nd"
+address = "fffe8214"
+note = """
+The knock function writes the word only in the block that bit 5 of \
+knock_selector_config disables; every stock image sets the bit, so the word \
+keeps its start value."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006dd78"
+to = "7mfk:ffff121a"
+note = """
+The only store of the word, in the knock function 0006d948, as 00049656 \
+stores the 7mfk word; 0006dd90 publishes its rounded high byte to fffe92f9"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1nd:00008a2b"
+value = "ba"
+note = """
+knock_selector_config: the knock function runs the block that writes the \
+word only while bit 5 is clear"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1nd:00008efc"
+value = "0500"
+note = """
+The slew step of the word, which the knock function reads at 0006dd2e, as it \
+reads ROM16[0x9078] = 0x500 on 7mfk"""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff121a"
 former = ["vegan-zebra/ram/7mfk-ffff121a"]
@@ -26,6 +61,41 @@ at = "jk00d:0004a684"
 to = "7mfk:0004963c"
 count = 1
 value = 14
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1204"
+note = """
+The knock function writes the word only in the block that bit 5 of \
+knock_selector_config disables; every stock image sets the bit, so the word \
+keeps its start value."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00062e9e"
+to = "7mfk:ffff121a"
+note = """
+The only store of the word, in the knock function 00062780, as 00049656 \
+stores the 7mfk word; 00062eb0 publishes its rounded high byte to ffff2252"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk78c:00008965"
+value = "ba"
+note = """
+knock_selector_config: the knock function runs the block that writes the \
+word only while bit 5 is clear"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "jk78c:00008dae"
+value = "0500"
+note = """
+The slew step of the word, which the knock function reads at 00062f2e, as it \
+reads ROM16[0x9078] = 0x500 on 7mfk"""
 
 [[status]]
 layout = "1me3b"
@@ -66,27 +136,3 @@ supports = "identity"
 at = "1me3b:00008a7d"
 value = "0x1c"
 note = "Bit 3 set enables the state-code selection of 000797cc"
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff121a"
-count = 0
-l0 = "8b3d18403665f8be"
-note = """
-The JK08A accesses of ffff121a have no match in the target; the knock \
-function 0006d948 stores the signed Q8 state fffe8214 at 0006dd78 only while \
-bit 5 of 00008a2b is clear and the stock byte 0xba sets it"""
-
-[[status]]
-layout = "jk78c"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff121a"
-count = 0
-l0 = "72887cc9cc504d1b"
-note = """
-The JK08A accesses of ffff121a have no match in the target; the knock \
-function 00062780 stores the signed Q8 state ffff1204 at 00062e9e only while \
-bit 5 of 00008965 is clear and the stock byte 0xba sets it"""
