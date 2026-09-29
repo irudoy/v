@@ -16,6 +16,7 @@ from patches import can_telemetry_layout
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import rolling_launch_layout
+from patches import runtime_targets
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -376,6 +377,80 @@ mov #0x5,r1
         self.assertEqual(len(written), 4)
         self.assertEqual(set(written), {f"0x{field.source:08x}"})
 
+    def test_can_telemetry_knock_surface_cases_follow_the_entity_files(self):
+        # The harness states the slot, the bank byte, and the bits of the
+        # knock surface field; they must be those of the profile and of the
+        # named bit high_detonation of each layout, and only the telemetry
+        # harness of 1ME3B, whose layout moves the bit, takes TARGET_1ME3B.
+        harness = (
+            ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
+        ).read_text(encoding="utf-8")
+        block = re.search(
+            r"#ifdef TARGET_1ME3B\n(?P<moved>(?:#define KNOCK_SURFACE_\w+ \S+\n)+)"
+            r"#else\n(?P<kept>(?:#define KNOCK_SURFACE_\w+ \S+\n)+)#endif\n",
+            harness,
+        )
+        self.assertIsNotNone(block)
+
+        def defines(text):
+            return {
+                name: int(value, 0)
+                for name, value in re.findall(
+                    r"#define (KNOCK_SURFACE_\w+) (0x[0-9a-f]+|\d+)U\n", text
+                )
+            }
+
+        common = defines(harness[: block.start()])
+        moved = defines(block.group("moved"))
+        kept = defines(block.group("kept"))
+        page, offset = runtime_targets.knock_surface_slot()
+        bits = {
+            runtime_targets.kb_targets.layout_of(rom): (
+                runtime_targets.knock_surface_bits(
+                    runtime_targets.kb_targets.layout_of(rom)
+                )
+            )
+            for rom in runtime_targets.SUPPORTED_ROMS
+        }
+        wire = 1 << bits["7mfk"][1]
+
+        self.assertEqual(
+            common,
+            {
+                "KNOCK_SURFACE_SLOT": page * 7 + offset - 1,
+                "KNOCK_SURFACE_BYTE": page * 8 + offset,
+                "KNOCK_SURFACE_WIRE": wire,
+            },
+        )
+        self.assertEqual(
+            moved,
+            {
+                "KNOCK_SURFACE_SOURCE": 1 << bits["1me3b"][0],
+                "KNOCK_SURFACE_OTHER_BITS_WIRE": 0,
+            },
+        )
+        self.assertEqual(
+            kept,
+            {
+                "KNOCK_SURFACE_SOURCE": wire,
+                "KNOCK_SURFACE_OTHER_BITS_WIRE": 0xFF ^ wire,
+            },
+        )
+        self.assertEqual(
+            {layout for layout, (source, _) in bits.items() if 1 << source != wire},
+            {"1me3b"},
+        )
+        self.assertEqual(
+            {
+                RUNTIME_VERIFIER.VQ37_MAP_HARNESS_BY_VARIANT[
+                    runtime_targets.load_runtime_target(rom).map_layout.variant
+                ][0]
+                for rom in runtime_targets.SH7059_1ME3B_ROMS
+            },
+            {"TARGET_1ME3B"},
+        )
+        self.assertEqual(harness.count("TARGET_1ME3B"), 1)
+
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
         fixture = bytearray(32)
         fixture[4:16] = bytes.fromhex(
@@ -460,7 +535,7 @@ mov #0x5,r1
         self.assertIn("verify_can_telemetry.verify", source)
         self.assertIn("can_telemetry_cases", source)
         self.assertIn("can_telemetry_harness.c", verifier)
-        self.assertIn("cases=78", verifier)
+        self.assertIn("cases=80", verifier)
         self.assertIn("trapa #0x40", exception)
         self.assertIn("entries=11", harness)
 
@@ -662,11 +737,17 @@ mov #0x5,r1
                         TELEMETRY_VERIFIER.HARNESS_SOURCE = original
 
     def test_case_counts_are_read_from_the_harness_markers(self):
-        self.assertEqual(
-            TELEMETRY_VERIFIER.marker_cases(
-                TELEMETRY_VERIFIER.REQUIRED_DYNAMIC_MARKER
-            ),
-            78,
+        cases = TELEMETRY_VERIFIER.marker_cases(
+            TELEMETRY_VERIFIER.REQUIRED_DYNAMIC_MARKER
+        )
+        published = " ".join(
+            (ROOT / "patches/can-telemetry.md").read_text(encoding="utf-8").split()
+        )
+
+        self.assertEqual(cases, 80)
+        self.assertIn(
+            f"eleven executable entries and {cases} dynamic telemetry cases",
+            published,
         )
         for output in ("no counter here", "cases=1 and cases=2"):
             with self.subTest(output=output):
@@ -679,6 +760,10 @@ mov #0x5,r1
         ).read_text(encoding="utf-8")
         self.assertNotIn("TELEMETRY_CASES", runtime_source)
         self.assertIn("can_verifier.marker_cases(marker)", runtime_source)
+        self.assertIn(
+            f'"VQ_SH_ELF_CAN_TELEMETRY status=PASS cases={cases} entries=11 "',
+            runtime_source,
+        )
 
 
 if __name__ == "__main__":

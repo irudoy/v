@@ -5,8 +5,10 @@ The canonical SH-2E sources and layouts remain in JK08A coordinates. Exact
 8MFK address profiles provide every nonuniform stock binding, while this module
 applies the audited uniform injected-ROM and injected-RAM relocations. The
 JK08A values of the key tables of the feature targets, the hook keys of each
-target, and the MAIN switch bit of the ASCD flag byte of each layout come from
-the entity files through `kb.targets`. Target machine-code payloads are tracked separately and are accepted only when their
+target, and the MAIN switch bit of the ASCD flag byte, the active cut bit of
+the RPM fuel-cut state, and the high-detonation bit of the knock surface state
+of each layout come from the entity files through `kb.targets`. Target
+machine-code payloads are tracked separately and are accepted only when their
 digests match both the projected layout and independently assembled sources.
 """
 
@@ -111,6 +113,18 @@ CANONICAL_FUEL_CUT_ACTIVE_MASK = 0x04
 # The VQ37VHR fuel coordinator wrapper extends the final six-cylinder inhibit
 # mask, which its source names by the canonical address.
 CANONICAL_FUEL_FINAL_MASK = 0xFFFF22E0
+# The telemetry field of the knock surface state carries the high-detonation
+# bit of the canonical layout, which the hosts decode. The capture of a layout
+# that keeps the state in another bit moves it into the wire bit of the bank
+# byte once the fixed pages are copied, and clears the other bits of the byte.
+KNOCK_SURFACE = "knock_surface_state/ram"
+KNOCK_SURFACE_BIT = "high_detonation"
+KNOCK_SURFACE_FIELD = "knock_surface_state"
+# A bank page holds its header byte and seven source bytes.
+BANK_PAGE_BYTES = 8
+FIXED_PAGE_LOOP_END = (
+    "add 0x1,r6\nmov r6,r0\ncmp/eq 0x9,r0\nbf telemetry_build_page_loop\n"
+)
 
 
 class RuntimeTargetError(ValueError):
@@ -530,6 +544,79 @@ def fuel_cut_active_mask(layout):
     layout."""
     meaning = _kb(kb_targets.meaning, "rolling_launch", layout, FUEL_CUT_KEY)
     return 1 << _kb(kb_targets.bit, meaning, layout, "active")
+
+
+@lru_cache(maxsize=None)
+def knock_surface_bits(layout):
+    """(source bit, wire bit) of the high-detonation state in the knock
+    surface field of a layout: the bit of the layout and the bit of the
+    canonical layout, which the wire carries."""
+    return (
+        _kb(kb_targets.bit, KNOCK_SURFACE, layout, KNOCK_SURFACE_BIT),
+        _kb(
+            kb_targets.bit, KNOCK_SURFACE, kb_targets.CANONICAL,
+            KNOCK_SURFACE_BIT,
+        ),
+    )
+
+
+def knock_surface_slot():
+    """(page, offset) of the knock surface field in the fixed pages."""
+    fields = [
+        item for item in can_telemetry_profile.load_manifest().fields
+        if item.name == KNOCK_SURFACE_FIELD
+    ]
+    if (
+        len(fields) != 1
+        or fields[0].page is None
+        or fields[0].width != 1
+        or fields[0].source != _kb(
+            kb_targets.address, KNOCK_SURFACE, kb_targets.CANONICAL
+        )
+    ):
+        raise RuntimeTargetError(
+            f"{KNOCK_SURFACE_FIELD}: expected one fixed byte field of "
+            f"{KNOCK_SURFACE}"
+        )
+    return fields[0].page, fields[0].offset
+
+
+def _move_knock_surface_bit(source, profile):
+    """Move the high-detonation bit of the knock surface byte of a bank into
+    the wire bit after the fixed pages, where the layout keeps it in another
+    bit. The fixed page loop leaves r4 at the end of the fixed pages, and the
+    context pages load r0 and r1 before they read them."""
+    context = "capture fixed page loop"
+    bit, wire = knock_surface_bits(_kb(kb_targets.layout_of, profile.rom))
+    if bit == wire:
+        return _replace_source_once(
+            source, FIXED_PAGE_LOOP_END, FIXED_PAGE_LOOP_END, context
+        )
+    page, offset = knock_surface_slot()
+    manifest = can_telemetry_profile.load_manifest()
+    displacement = (
+        page * BANK_PAGE_BYTES + offset
+        - manifest.fixed_page_count * BANK_PAGE_BYTES
+    )
+    if f"cmp/eq 0x{manifest.fixed_page_count:X},r0" not in FIXED_PAGE_LOOP_END:
+        raise RuntimeTargetError(f"{context}: fixed page count differs")
+    if not -128 <= displacement < 0:
+        raise RuntimeTargetError(f"{context}: field is out of reach")
+    shift = (
+        "shlr r0\n" * (bit - wire) if bit > wire else "shll r0\n" * (wire - bit)
+    )
+    move = (
+        f"// Move bit {bit} of the knock surface byte into wire bit {wire}.\n"
+        "mov r4,r1\n"
+        f"add -0x{-displacement:X},r1\n"
+        "mov.b @r1,r0\n"
+        f"and 0x{1 << bit:02X},r0\n"
+        f"{shift}"
+        "mov.b r0,@r1\n"
+    )
+    return _replace_source_once(
+        source, FIXED_PAGE_LOOP_END, FIXED_PAGE_LOOP_END + move, context
+    )
 
 
 def _mask_source(
@@ -1440,6 +1527,10 @@ def _project_can(
             source_texts[unit.key] = _render_source(
                 _read_source(unit.source), profile, mapping
             )
+            if unit.key == "capture":
+                source_texts[unit.key] = _move_knock_surface_bit(
+                    source_texts[unit.key], profile
+                )
     code_regions = tuple(
         replace(
             item,

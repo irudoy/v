@@ -578,6 +578,10 @@ def _run_harnesses(target, fixture, build_dir):
         ("TELEMETRY_TAIL_CHAIN",)
         if target.telemetry_layout.variant.endswith("-tail-chain")
         else ()
+    ) + (
+        (VQ37_MAP_HARNESS_BY_VARIANT[target.map_layout.variant][0],)
+        if target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT
+        else ()
     )
     markers.append(
         _compile_and_run(
@@ -587,7 +591,7 @@ def _run_harnesses(target, fixture, build_dir):
             rom_object,
             (invoke, exception),
             build_dir,
-            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
+            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=80 entries=11 "
             "profiles=1 contexts=10 isr_rte=5",
             defines=can_defines,
         )

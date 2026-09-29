@@ -332,6 +332,12 @@ on every layout; over the byte range the two scales differ by at most 0.16
 percentage points, less than half a wire step.
 [`JK78C.cvtc.md`](../defs/JK78C.cvtc.md) states the output stage.
 
+The knock surface state carries the high-detonation state in bit 6, the bit
+the hosts decode. The 1ME3B knock function `0x071D64` keeps that state in
+bit 7 of `FFFE945B`, so the 1ME3B capture moves the bit into bit 6 of the
+wire byte after it builds the fixed pages and clears the other bits of the
+byte; every other target sends its source byte unchanged.
+
 The stream carries the two column coordinates of the tuning surfaces instead
 of engine speed, which the stock bus publishes directly: `0x180` bytes 0 and 1
 hold `RPM * 8` at `10.24 ms` from serializer `FUN_000C577A`, so a host that
@@ -492,7 +498,9 @@ flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
 configuration, rejection of profile IDs 0, 6, and 8 by the capture entry and of
 profile ID 6 by the control receiver, active-group stop, corrupt-state
-fail-closed behavior, a real `TRAPA` exception entry, and the exact ISR `RTE`.
+fail-closed behavior, the knock surface byte with only its high-detonation
+bit set and with every other bit set, a real `TRAPA` exception entry, and the
+exact ISR `RTE`.
 The knock margin wrapper runs against a simulator-only evaluator stub that
 stores a staged metric and overwrites `r0..r7`, which binds the order of the
 stock call and the operand reads. Its cases cover channel 0, a channel above
@@ -504,7 +512,7 @@ beyond the signed word, the startup arming, and the rearm behind tag 4 alone.
 The locked software result is:
 
 - 720 injected instructions and 770 data bytes;
-- eleven executable entries and 78 dynamic telemetry cases;
+- eleven executable entries and 80 dynamic telemetry cases;
 - composition SHA-256
   `151d522d71c56d88a5a2dd29fc7611325dca99fb3a6ce55a039b5a0a962a674b`;
 - 1,922 changed bytes inside a 3,488-byte declared write set.

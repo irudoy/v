@@ -41,7 +41,7 @@ EXPECTED_COMPOSITION_WRITE_BYTES = 3488
 EXPECTED_INSTRUCTION_COUNT = 720
 EXPECTED_CODE_ENTRY_COUNT = 11
 REQUIRED_DYNAMIC_MARKER = (
-    "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
+    "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=80 entries=11 "
     "profiles=1 contexts=10 isr_rte=5"
 )
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"

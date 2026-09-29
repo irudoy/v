@@ -290,21 +290,23 @@ coordinator with private lookup literals; the profile table
 in which an aligned word points into that range or a PC-relative branch outside
 it targets its entry, so the hooked literals are the complete live set.
 
-Custom CAN telemetry binds 55 of the 60 ECU-RAM fields. The two intake
+Custom CAN telemetry binds 56 of the 60 ECU-RAM fields. The two intake
 solenoid duty command fields read the 8-bit command cells `0xFFFE938F` and
 `0xFFFE9390`: the stock image sets bit 2 of `ROM8[0x8576]`, so the BFR
 programmer `0x11C3A6` writes BFR7B and BFR7A from the 16-bit duty words
 `0xFFFE9692` and `0xFFFE9694`, and the cells hold their high bytes after two
 scheduler copies. In that scheme the command cells and the live duty bytes
 carry `x * 25 / 64` percent, within 0.16 percentage points of the
-`raw * 39 / 100` wire decoding. The knock timing state, the knock surface
-state, the normalized load snapshot, and the requested-torque and Fuel
-Compensation Main column coordinates are encoded from cleared reserved RAM and
-remain identified as unavailable in metadata: the knock function `0x071D64`
-keeps no signed Q8 state, the image packs the surface flag into bit 7 of
-`0xFFFE945B`, while the wire contract decodes bit 6 of the source byte, the
-JK08A producer of the normalized load snapshot has no match in the image, and
-no target homolog of the column-coordinate producers is traced.
+`raw * 39 / 100` wire decoding. The knock surface field reads `0xFFFE945B`,
+whose bit 7 the knock function `0x071D64` keeps as the high-detonation state
+while bit 7 of `ROM8[0x8A7C]` enables its hysteresis; the capture moves that
+bit into bit 6 of the wire byte, the bit that the wire contract decodes, and
+clears the other bits of the byte. The knock timing state, the normalized load
+snapshot, and the requested-torque and Fuel Compensation Main column
+coordinates are encoded from cleared reserved RAM and remain identified as
+unavailable in metadata: the knock function `0x071D64` keeps no signed Q8
+state, the JK08A producer of the normalized load snapshot has no match in the
+image, and no target homolog of the column-coordinate producers is traced.
 
 ## SH7058 JK78C correspondence
 

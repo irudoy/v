@@ -58,7 +58,6 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
         "request_flow_raw",
         "normalized_load_raw",
         "knock_timing_state_raw",
-        "knock_surface_state",
         "alpha_n_flow_raw",
     ]
     for row in rows:

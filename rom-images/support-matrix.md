@@ -22,7 +22,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 26; zero fields unavailable | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26; zero fields unavailable | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26; three fields unavailable | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26; five fields unavailable | Six fields | `UNTESTED` on bench and vehicle hardware |
+| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26; four fields unavailable | Six fields | `UNTESTED` on bench and vehicle hardware |
 
 ## Diagnostic layer
 
@@ -95,15 +95,16 @@ address profile in `../patches/rom-address-profiles.toml`: every stock address
 is recovered in the target image, the runtime occupies `0x13B108..0x13F000` of
 the audited erased region `0x139DC4..0x13FF00`, and
 `../patches/1me3b-runtime-correspondence.csv` records the evidence of every
-binding. Of the 60 telemetry fields, 55 bind to 1ME3B ECU RAM; 39 of those
+binding. Of the 60 telemetry fields, 56 bind to 1ME3B ECU RAM; 39 of those
 sources are confirmed against the DID pointer table at `0x22AE4`, whose
 indices match `0x22A70` on 1ND0A. The compiler packs flag bytes differently from `1ND`: the
 MAIN switch bit of the ASCD flag byte `0xFFFEB985` is bit 1, the native fuel-cut
 state byte `0xFFFE948A` keeps its active and armed flags in bits 3 and 2, and the knock
-surface flag sits in bit 7 of `0xFFFE945B`, outside the telemetry wire
-contract, so that field is declared unavailable beside the knock timing state,
-the normalized load snapshot, and the requested-torque and Fuel Compensation
-Main column coordinates, whose target homologs are not traced.
+surface byte `0xFFFE945B` keeps its high-detonation state in bit 7, which the
+telemetry capture moves into bit 6 of the wire byte. The knock function
+`0x071D64` keeps no signed Q8 knock timing state, and no target homolog of the
+normalized load snapshot or of the requested-torque and Fuel Compensation Main
+column coordinates is traced, so those four fields are declared unavailable.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,

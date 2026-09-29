@@ -8,7 +8,7 @@ from kb.repo import KbError
 class ConvertTest(unittest.TestCase):
     def test_a_converted_registry_converts_to_no_change(self):
         for registry, counts in (("interp", (247, 2)), ("native", (226, 23)),
-                                 ("definitions", (718, 50)), ("profiles", (458, 16))):
+                                 ("definitions", (718, 50)), ("profiles", (459, 15))):
             with self.subTest(registry=registry):
                 conversion, texts, _ = convert.plan(registry, repo.ROOT)
                 self.assertEqual(texts, {})

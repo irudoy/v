@@ -1,3 +1,212 @@
+[[bit]]
+bit = 6
+name = "high_detonation"
+summary = """
+High-detonation state: [[knock_function/fn]] sets it when the signed Q8 \
+state ffff1382 falls to ROM16[0x8F02] = -1792 or below and clears it only \
+above ROM16[0x8F00] = 8192, and its other gates force it set or clear; \
+[[cold_hot_timing_map_selector/fn]] selects \
+[[high_detonation_timing_state/tbl]] while it is set and \
+[[high_octane_timing_state/tbl]] while it is clear"""
+level = "code"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a36"
+value = "c840"
+note = """
+tst #0x40,r0 selects the set comparison with ROM16[0x8F02] while the bit is \
+clear and the release comparison with ROM16[0x8F00] while it is set"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a52"
+value = "cb40"
+note = "or #0x40,r0 sets the bit once ffff1382 is at or below ROM16[0x8F02]"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a88"
+value = "c9bf"
+note = "and #0xbf,r0 clears the bit once ffff1382 is above ROM16[0x8F00]"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a6a"
+value = "cf40"
+note = """
+or.b #0x40,@(r0,gbr) with r0 = 0x0e forces the bit set while bit 5 of \
+ffff417e is set and bit 7 of ROM8[0x870F] is clear"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a70"
+value = "cdbf"
+note = """
+and.b #0xbf,@(r0,gbr) with r0 = 0x0e forces the bit clear while bit 5 of \
+ffff417e and bit 7 of ROM8[0x870F] are set"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049a92"
+value = "cf40"
+note = """
+or.b #0x40,@(r0,gbr) with r0 = 0x0e forces the bit set while bit 7 of \
+ffff41a4 is set"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:00049778"
+value = "cdbf"
+note = """
+and.b #0xbf,@(r0,gbr) with r0 = 0x0e clears the bit while bit 7 of \
+ROM8[0x8B3D] is clear"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004e1e6"
+value = "c840"
+note = """
+tst #0x40,r0 in [[cold_hot_timing_map_selector/fn]] keeps the surface 0x9B1A \
+while the bit is set and takes 0x9A1A while it is clear"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:0004bc04"
+value = "c840"
+note = "tst #0x40,r0 in 0004bbee branches on the bit"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:00049a56"
+note = "mov.b r0,@(0xe,gbr) with GBR = ffff2458 stores the byte with the bit set"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:00049a8c"
+note = "mov.b r0,@(0xe,gbr) stores the byte with the bit clear"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe945b"
+note = """
+The knock function 00071d64 keeps the high-detonation state in bit 7, one \
+bit above 7mfk; the telemetry payload of 1ME3B moves it into bit 6 of the \
+wire byte."""
+
+[[symbol.bit]]
+bit = 7
+name = "high_detonation"
+summary = """
+High-detonation state: [[knock_function/fn]] sets it while bit 6 of \
+fffe9492, its hysteresis on the knock state word fffe8794, is set and clears \
+it once the word exceeds the threshold of that hysteresis; bit 7 of \
+ROM8[0x8A7C] enables the block, and 0007448c takes the lookups of 0x0000AC84 \
+while the bit is set and those of 0x0000A984 while it is clear"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:0007217e"
+value = "cc80"
+note = """
+tst.b #0x80,@(r0,gbr) with r0 = 0x0001F632 and GBR = fffe944a reads \
+ROM8[0x8A7C] and runs the block only while its bit 7 is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:00072186"
+value = "cd7f"
+note = """
+and.b #0x7f,@(r0,gbr) with r0 = 0x11 clears the bit while bit 7 of \
+ROM8[0x8A7C] is clear"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:00072192"
+value = "c880"
+note = """
+tst #0x80,r0 selects the set test on bit 6 of fffe9492 while the bit is \
+clear and the release comparison of fffe8794 while it is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000721a0"
+value = "cb80"
+note = "or #0x80,r0 sets the bit while bit 6 of fffe9492 is set"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000721ac"
+value = "c97f"
+note = "and #0x7f,r0 clears the bit once fffe8794 exceeds the threshold"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000721b4"
+value = "cf80"
+note = """
+or.b #0x80,@(r0,gbr) with r0 = 0x11 forces the bit set while bit 7 of the \
+flag byte that the function tests at 0007218c is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000744f4"
+value = "c880"
+note = """
+tst #0x80,r0 in 0007448c takes the lookups of 0x0000AC84 while the bit is \
+set and those of 0x0000A984 while it is clear"""
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1me3b:000721a4"
+note = """
+mov.b r0,@(0x11,gbr) with GBR = fffe944a stores the byte with the bit set"""
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1me3b:000721b0"
+note = "mov.b r0,@(0x11,gbr) stores the byte with the bit clear"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000721a4"
+to = "7mfk:ffff2466"
+note = """
+The knock function 00071d64 stores the byte after it sets the \
+high-detonation bit, as the knock function 000493e8 stores ffff2466 at \
+00049a56 after it sets bit 6"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:00008a7c"
+value = "ba"
+note = """
+Bit 7 of the calibration byte enables the hysteresis block of the knock \
+function; the stock image sets it"""
+
 [[symbol]]
 layout = "1nd"
 address = "fffe9488"
@@ -50,15 +259,3 @@ at = "jk78c:000657c0"
 to = "7mfk:0004bc84"
 value = "ffff23c6"
 note = "Ignition and correction consumers test bit 0x40 to select the surface"
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff2466"
-count = 0
-l0 = "fcabdc8a705bbb84"
-note = """
-The JK08A accesses of ffff2466 have no match in the target; the knock \
-function 00071d64 sets bit 7 of fffe945b at 000721a4 and 000721b4 and clears \
-it at 000721b0 while the wire contract decodes bit 6"""

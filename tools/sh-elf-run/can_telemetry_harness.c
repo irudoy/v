@@ -45,6 +45,20 @@
 #define MAILBOX26_MASK 0x0400U
 #define MAILBOX28_MASK 0x1000U
 #define MAILBOX31_MASK 0x8000U
+/* The knock surface field takes table slot 32 and bank byte 37, and the wire
+   carries the high-detonation bit in bit 6, which the hosts decode. The knock
+   surface state of 1ME3B keeps the bit in bit 7; its capture moves that bit
+   into the wire bit and clears the other bits of the wire byte. */
+#define KNOCK_SURFACE_SLOT 32U
+#define KNOCK_SURFACE_BYTE 37U
+#define KNOCK_SURFACE_WIRE 0x40U
+#ifdef TARGET_1ME3B
+#define KNOCK_SURFACE_SOURCE 0x80U
+#define KNOCK_SURFACE_OTHER_BITS_WIRE 0x00U
+#else
+#define KNOCK_SURFACE_SOURCE 0x40U
+#define KNOCK_SURFACE_OTHER_BITS_WIRE 0xbfU
+#endif
 
 static const uint8_t start_command[8] = {
     0x54, 0x45, 0x4c, 0x32, 0x02, 0x01, 0xb6, 0x32,
@@ -207,6 +221,14 @@ static void seed_control_command(const uint8_t *payload, uint8_t dlc)
     write_u16(ram_pointer(RXPR1), MAILBOX31_MASK);
 }
 
+static uint8_t wire_byte(size_t slot, uint8_t source)
+{
+    if (slot != KNOCK_SURFACE_SLOT
+            || KNOCK_SURFACE_SOURCE == KNOCK_SURFACE_WIRE)
+        return source;
+    return (source & KNOCK_SURFACE_SOURCE) != 0 ? KNOCK_SURFACE_WIRE : 0U;
+}
+
 static int verify_bank(const char *name, uint32_t bank, uint8_t context)
 {
     volatile uint8_t *state = ram_pointer(TELEMETRY_STATE);
@@ -223,8 +245,9 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
         for (offset = 0; offset < 7; ++offset) {
             uint32_t source = read_u32(
                 rom_pointer(TABLE + (page * 7 + offset) * 4));
-            uint8_t expected =
-                ((volatile uint8_t *)(uintptr_t)source)[0];
+            uint8_t expected = wire_byte(
+                page * 7 + offset,
+                ((volatile uint8_t *)(uintptr_t)source)[0]);
             if (actual[page * 8 + offset + 1] != expected)
                 return fail_value(
                     name, "page_source",
@@ -691,6 +714,46 @@ static int run_capture_cases(void)
     return 1;
 }
 
+static int run_knock_surface_cases(void)
+{
+    static const struct {
+        const char *name;
+        uint8_t source;
+        uint8_t wire;
+    } cases[] = {
+        {
+            "knock-surface-high-detonation",
+            KNOCK_SURFACE_SOURCE,
+            KNOCK_SURFACE_WIRE,
+        },
+        {
+            "knock-surface-other-bits",
+            (uint8_t)~KNOCK_SURFACE_SOURCE,
+            KNOCK_SURFACE_OTHER_BITS_WIRE,
+        },
+    };
+    size_t index;
+
+    for (index = 0; index < sizeof(cases) / sizeof(cases[0]); ++index) {
+        uint32_t source =
+            read_u32(rom_pointer(TABLE + KNOCK_SURFACE_SLOT * 4));
+
+        count_case();
+        reset_case();
+        ((volatile uint8_t *)(uintptr_t)source)[0] = cases[index].source;
+        (void)invoke_r4(CAPTURE, 0);
+        if (!verify_started(cases[index].name, 1, 11, BANK_B))
+            return 0;
+        if (ram_pointer(BANK_B)[KNOCK_SURFACE_BYTE] != cases[index].wire)
+            return fail_value(
+                cases[index].name, "wire_byte",
+                ram_pointer(BANK_B)[KNOCK_SURFACE_BYTE], cases[index].wire);
+        if (!verify_bank(cases[index].name, BANK_B, 0))
+            return 0;
+    }
+    return 1;
+}
+
 static int run_direct_entry_cases(void)
 {
     volatile uint8_t *state;
@@ -1107,6 +1170,8 @@ int main(void)
     if (!run_control_cases())
         return 1;
     if (!run_capture_cases())
+        return 1;
+    if (!run_knock_surface_cases())
         return 1;
     if (!run_direct_entry_cases())
         return 1;

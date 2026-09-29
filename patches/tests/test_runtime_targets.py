@@ -56,6 +56,7 @@ def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
     assert runtime_targets.CANONICAL_FUEL_FINAL_MASK == (
         runtime_targets.kb_targets.address("fuel_inhibit_mask/ram", "7mfk")
     )
+    assert runtime_targets.knock_surface_bits("7mfk") == (6, 6)
 
 
 def test_the_ignition_state_template_names_the_adapter_source_numbers():
@@ -282,9 +283,11 @@ def test_vq37_sources_encode_target_variants(rom):
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
     ).instructions == (467 if has_state_adapter else 437)
+    # The 1ME3B capture adds the six instructions that move the
+    # high-detonation bit of the knock surface byte into the wire bit.
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == 690
+    ).instructions == (696 if rom == "1ME3B" else 690)
     assert rolling_launch_assembly.validate_instruction_semantics(
         target.rolling_layout, rolling_parsed, target.rolling_payloads
     ).instructions == 872
@@ -736,3 +739,47 @@ def test_the_engine_reports_the_active_cut_bit_of_the_target(
         assert (
             f"rl_fuel_final_mask_address:\n.long 0x{final:08X}\n" in wrapper
         )
+
+
+@pytest.mark.parametrize(
+    ("rom", "bit"),
+    (
+        ("JK00C", 6),
+        ("JK00D", 6),
+        ("JK78C", 6),
+        ("1ND0A", 6),
+        ("1ND3B", 6),
+        ("1ME3B", 7),
+    ),
+)
+def test_the_capture_carries_the_high_detonation_bit_of_the_target(rom, bit):
+    # The wire carries the high-detonation bit of 7mfk in the knock surface
+    # byte, bank byte 37. The capture of a layout that keeps the bit
+    # elsewhere moves it into the wire bit once the fixed page loop leaves r4
+    # at bank byte 72, and clears the other bits of the byte.
+    target = runtime_targets.load_runtime_target(rom)
+    capture = target.telemetry_layout.source_text_by_unit["capture"]
+    canonical = (
+        runtime_targets.ROOT / "patches" / "can-telemetry-capture.s"
+    ).read_text(encoding="utf-8")
+    loop_end = runtime_targets.FIXED_PAGE_LOOP_END
+    move = (
+        "// Move bit 7 of the knock surface byte into wire bit 6.\n"
+        "mov r4,r1\nadd -0x23,r1\nmov.b @r1,r0\nand 0x80,r0\nshlr r0\n"
+        "mov.b r0,@r1\n"
+    )
+
+    assert runtime_targets.knock_surface_bits(
+        runtime_targets.kb_targets.layout_of(rom)
+    ) == (bit, 6)
+    assert runtime_targets.knock_surface_slot() == (4, 5)
+    assert canonical.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
+    if bit == 6:
+        assert capture.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
+        assert "shlr" not in capture
+    else:
+        assert capture.count(
+            loop_end + move + "\nmov.b @(0x9,r3),r0\n"
+        ) == 1
+        assert capture.count("shlr") == 1
+

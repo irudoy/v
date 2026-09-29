@@ -82,6 +82,7 @@ SH7058S_SH2E_MNEMONICS = frozenset({
     "rts",
     "shll",
     "shll2",
+    "shlr",
     "shlr8",
     "stc",
     "sts.l",

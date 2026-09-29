@@ -232,7 +232,12 @@ class BuildRomTest(unittest.TestCase):
                     result.rolling_instruction_count,
                     872 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
                 )
-                self.assertEqual(result.telemetry_instruction_count, 690)
+                # The 1ME3B capture adds the six instructions that move the
+                # high-detonation bit of the knock surface byte into the wire bit.
+                self.assertEqual(
+                    result.telemetry_instruction_count,
+                    696 if rom in runtime_targets.SH7059_1ME3B_ROMS else 690,
+                )
                 self.assertEqual(
                     target.map_layout.variant,
                     (

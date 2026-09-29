@@ -13,21 +13,23 @@ can = """
 Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
 payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-55 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic \
+56 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic \
 tables and reviewed producer-consumer evidence. The two intake solenoid duty \
 command fields read the cells 0xFFFE938F and 0xFFFE9390, which hold the high \
 bytes of the 16-bit duty words 0xFFFE9692 and 0xFFFE9694 after two scheduler \
 copies while bit 2 of ROM8[0x00008576] selects the 16-bit scheme; in that \
 scheme the command cells and the live bytes 0xFFFE942B and 0xFFFE942C carry \
 x*25/64 percent, within 0.16 percentage points of the x*39/100 wire scale. \
-The absent knock timing state, the normalized load snapshot, whose \
-32-instruction JK08A producer at 0x0003BD1C has no match in the image with \
-PC-relative displacements masked, the knock surface state, whose flag \
-occupies bit 7 of 0xFFFE945B outside the wire contract, and the \
-requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main \
-column coordinate 0xFFFF1170, whose target homologs are not traced, are \
-encoded from cleared reserved RAM and remain explicitly unavailable in \
-metadata."""
+The knock surface field reads the byte 0xFFFE945B, whose bit 7 the knock \
+function 0x00071D64 keeps as the high-detonation state while bit 7 of \
+ROM8[0x00008A7C] enables its hysteresis; the payload moves the bit into bit \
+6 of the wire byte and clears the other bits of the byte. The absent knock \
+timing state, the normalized load snapshot, whose 32-instruction JK08A \
+producer at 0x0003BD1C has no match in the image with PC-relative \
+displacements masked, and the requested-torque column coordinate 0xFFFF1980 \
+and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target \
+homologs are not traced, are encoded from cleared reserved RAM and remain \
+explicitly unavailable in metadata."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
