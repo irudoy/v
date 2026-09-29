@@ -75,7 +75,9 @@ abort. SET records a map-request abort so map selection can begin after rearm.
 On JK08A, gate 6 follows the MAIN switch itself: the MAIN switch bit is set
 only while MAIN is pressed. The MAIN state that each press toggles,
 `0xFFFF4251.bit1`, and `0xFFFF424E.bit1`, which selects ASCD display state 4,
-are not gate inputs.
+are not gate inputs. The CANCEL hold is therefore made with the cruise MAIN
+state off, under the rule that `map-switching-selector.md` states for the
+selector gestures.
 
 While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents

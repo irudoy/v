@@ -47,7 +47,7 @@ def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
     assert runtime_targets.CANONICAL_FUEL_CUT_ACTIVE_MASK == (
         runtime_targets.fuel_cut_active_mask("7mfk")
     )
-    assert rolling_launch.ASCD_ACTIVE_MASK == (
+    assert rolling_launch.MAIN_PRESSED_MASK == (
         runtime_targets.ascd_main_mask("7mfk")
     )
     assert rolling_launch.FUEL_CUT_ACTIVE_MASK == (

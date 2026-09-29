@@ -93,6 +93,13 @@ and `0xFFFF424E.bit1`, which select ASCD display states 5 and 4, are not
 selector inputs. `hardware-results.toml` records the MAIN presses of the target
 vehicle under `map_switching.ascd_main_vehicle_2026_09_21`.
 
+Gestures are made with the cruise MAIN state off. A press of MAIN turns the
+state on and lights the CRUISE lamp, and while it is on, a SET/COAST press
+between approximately 40 and 144 km/h engages cruise control (2007 G35,
+EC-57). The selector does not read the state, so with it on, the first SET of
+a gesture in that speed range both arms the selector and engages cruise
+control. The same rule covers the CANCEL hold of Rolling Launch.
+
 The user gesture is:
 
 ```text

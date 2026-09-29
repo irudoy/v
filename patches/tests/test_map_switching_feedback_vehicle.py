@@ -759,6 +759,16 @@ class AscdMainVehicleTest(unittest.TestCase):
                 self.assertEqual(symbols["ascd_state"], self.symbols["ascd_state"])
                 self.assertTrue({MAIN_STATE, DISPLAY_STATE_4}.isdisjoint(symbols.values()))
 
+    def test_gate_names_describe_the_pressed_main_switch(self):
+        bit = 1 << kb_targets.bit("ascd_state/ram", "7mfk", "main")
+        self.assertEqual(rolling_launch.MAIN_PRESSED_MASK, bit)
+        self.assertEqual(rolling_launch.AbortReason(6).name, "MAIN_PRESSED")
+        self.assertEqual(rolling_launch.Flag(1 << 4).name, "MAIN_RELEASED")
+        self.assertIn(
+            "6. The MAIN switch bit of the stock ASCD flag byte is clear.",
+            _normalized(ROLLING_LAUNCH),
+        )
+
     def test_published_statements_follow_the_record(self):
         result = self.result
         main = result["main_code"]
@@ -790,6 +800,9 @@ class AscdMainVehicleTest(unittest.TestCase):
             f"The MAIN state that each press toggles, {main_state},",
             "are not selector inputs",
             f"`{KEY_MAIN}`",
+            "Gestures are made with the cruise MAIN state off.",
+            "The selector does not read the state",
+            "The same rule covers the CANCEL hold of Rolling Launch.",
         ):
             with self.subTest(statement=statement):
                 self.assertIn(statement, selector)
@@ -799,6 +812,7 @@ class AscdMainVehicleTest(unittest.TestCase):
             "only while MAIN is pressed.",
             f"The MAIN state that each press toggles, {main_state},",
             "are not gate inputs",
+            "The CANCEL hold is therefore made with the cruise MAIN state off",
         ):
             with self.subTest(statement=statement):
                 self.assertIn(statement, launch)

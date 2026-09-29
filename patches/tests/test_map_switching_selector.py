@@ -14,12 +14,12 @@ selector = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(selector)
 
 
-def step(state, previous_code, current_code, ascd_enabled=False):
+def step(state, previous_code, current_code, main_pressed=False):
     return selector.advance_selector(
         state,
         previous_code,
         current_code,
-        ascd_enabled=ascd_enabled,
+        main_pressed=main_pressed,
     )
 
 
@@ -101,13 +101,13 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         )
         self.assertEqual(state, selector.SelectorState(active_index=1))
 
-    def test_ascd_enable_aborts_an_armed_gesture(self):
+    def test_main_press_aborts_an_armed_gesture(self):
         state = self.arm(selector.SelectorState(active_index=1))
         state = step(
             state,
             selector.SET_COAST,
             selector.SET_COAST,
-            ascd_enabled=True,
+            main_pressed=True,
         )
         self.assertEqual(state, selector.SelectorState(active_index=1))
 

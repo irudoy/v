@@ -106,7 +106,7 @@
 #define REASON_MAP_DISABLED 3U
 #define REASON_SELECTOR_BUSY 4U
 #define REASON_FEEDBACK_BUSY 5U
-#define REASON_ASCD_ACTIVE 6U
+#define REASON_MAIN_PRESSED 6U
 #define REASON_BUTTON_RELEASED 7U
 #define REASON_BUTTON_INVALID 8U
 #define REASON_SPEED_LOW 9U
@@ -431,8 +431,8 @@ enum gate_mutation {
     GATE_FEEDBACK_PHASE,
     GATE_FEEDBACK_TICKS,
     GATE_FEEDBACK_RESERVED,
-    GATE_ASCD,
-    GATE_ASCD_FOREIGN_FLAGS,
+    GATE_MAIN_PRESSED,
+    GATE_MAIN_FOREIGN_FLAGS,
     GATE_BUTTON_RELEASED,
     GATE_BUTTON_ZERO,
     GATE_BUTTON_SET,
@@ -468,8 +468,8 @@ static const struct gate_case gate_cases[] = {
     {"gate-feedback-phase", GATE_FEEDBACK_PHASE, REASON_FEEDBACK_BUSY, 0},
     {"gate-feedback-ticks", GATE_FEEDBACK_TICKS, REASON_FEEDBACK_BUSY, 0},
     {"gate-feedback-reserved", GATE_FEEDBACK_RESERVED, REASON_FEEDBACK_BUSY, 0},
-    {"gate-ascd", GATE_ASCD, REASON_ASCD_ACTIVE, 0},
-    {"gate-ascd-foreign-flags", GATE_ASCD_FOREIGN_FLAGS, REASON_NONE, 1},
+    {"gate-main-pressed", GATE_MAIN_PRESSED, REASON_MAIN_PRESSED, 0},
+    {"gate-main-foreign-flags", GATE_MAIN_FOREIGN_FLAGS, REASON_NONE, 1},
     {"gate-button-released", GATE_BUTTON_RELEASED, REASON_BUTTON_INVALID, 0},
     {"gate-button-zero", GATE_BUTTON_ZERO, REASON_BUTTON_INVALID, 0},
     {"gate-button-set", GATE_BUTTON_SET, REASON_BUTTON_INVALID, 0},
@@ -521,10 +521,10 @@ static void apply_gate_mutation(enum gate_mutation mutation)
     case GATE_FEEDBACK_RESERVED:
         selector[7] = 1;
         break;
-    case GATE_ASCD:
+    case GATE_MAIN_PRESSED:
         ram_pointer(ASCD_STATUS)[0] = ASCD_MAIN;
         break;
-    case GATE_ASCD_FOREIGN_FLAGS:
+    case GATE_MAIN_FOREIGN_FLAGS:
         ram_pointer(ASCD_STATUS)[0] = ASCD_FOREIGN_FLAGS;
         break;
     case GATE_BUTTON_RELEASED:

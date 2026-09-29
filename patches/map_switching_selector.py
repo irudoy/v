@@ -205,21 +205,22 @@ def advance_selector_decision(
     previous_code,
     current_code,
     *,
-    ascd_enabled=False,
+    main_pressed=False,
 ):
     """Evaluate one selector invocation without publishing a new map index.
 
     The caller supplies the stock debounced previous/current ASCD one-hot pair
-    and, as ``ascd_enabled``, the MAIN switch bit of the stock ASCD flag byte.
-    An armed gesture is accepted only while that bit is clear. Timeout expiration,
-    corrupt state, unexpected transitions, and count overflow retain the
-    validated active map and reset the transient state. A valid release returns
-    a commit request while the returned state still contains the old index.
+    and, as ``main_pressed``, the MAIN switch bit of the stock ASCD flag byte,
+    which is set while the MAIN switch is pressed. An armed gesture is
+    accepted only while that bit is clear. Timeout expiration, corrupt state,
+    unexpected transitions, and count overflow retain the validated active map
+    and reset the transient state. A valid release returns a commit request
+    while the returned state still contains the old index.
     """
     state, valid = _validate_state(state)
     if not valid:
         return SelectorDecision(state)
-    if ascd_enabled:
+    if main_pressed:
         return SelectorDecision(reset_transient(state.active_index))
 
     if state.phase == Phase.IDLE:
@@ -295,14 +296,14 @@ def advance_selector(
     previous_code,
     current_code,
     *,
-    ascd_enabled=False,
+    main_pressed=False,
 ):
     """Advance one complete selector invocation as an atomic state model."""
     decision = advance_selector_decision(
         state,
         previous_code,
         current_code,
-        ascd_enabled=ascd_enabled,
+        main_pressed=main_pressed,
     )
     if decision.commit_index is None:
         return decision.state
@@ -456,7 +457,7 @@ def advance_calibration_system(
     previous_code,
     current_code,
     *,
-    ascd_enabled=False,
+    main_pressed=False,
 ):
     """Advance selector and runtime with shadow preparation before publication.
 
@@ -476,7 +477,7 @@ def advance_calibration_system(
         state,
         previous_code,
         current_code,
-        ascd_enabled=ascd_enabled,
+        main_pressed=main_pressed,
     )
     if decision.commit_index is None:
         return decision.state, runtime, False
@@ -649,7 +650,7 @@ def advance_calibration_system_with_feedback(
     previous_code,
     current_code,
     *,
-    ascd_enabled=False,
+    main_pressed=False,
 ):
     """Advance selection and queue visual feedback after atomic publication.
 
@@ -684,7 +685,7 @@ def advance_calibration_system_with_feedback(
         rom,
         previous_code,
         current_code,
-        ascd_enabled=ascd_enabled,
+        main_pressed=main_pressed,
     )
     if committed:
         feedback = queue_visual_feedback(runtime.active_index)

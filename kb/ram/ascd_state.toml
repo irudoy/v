@@ -1,14 +1,16 @@
-title = "ASCD task flag byte with the MAIN switch state"
+title = "ASCD task flag byte with the MAIN switch level"
 summary = """
 Flag byte of the ASCD task 000cf020. Its MAIN switch block, which bit 0 of \
 the calibration byte ROM8[0x8B28] enables, copies bit 0 of \
 [[button_state/ram]] into the bit main while bit 7 of the calibration byte \
 is clear, and bit 4 of ffff41f9 while it is set; the task then copies main \
-into bit 0 of [[abstract-newt/ram]], the status byte of DID 0x130D. The \
-other bits hold coolant, speed, and indication flags of the ASCD functions. \
-Each layout packs the flags of the task into this byte and its neighbours at \
-its own positions, and a symbol whose layout moves the bit main states its \
-position."""
+into bit 0 of [[abstract-newt/ram]], the status byte of DID 0x130D. The bit \
+main is therefore set only while the MAIN switch is pressed; the cruise MAIN \
+state, which each press of MAIN toggles at 000cf328..000cf33a, is bit 1 of \
+[[shaggy-nyala/ram]]. The other bits hold coolant, speed, and indication \
+flags of the ASCD functions. Each layout packs the flags of the task into \
+this byte and its neighbours at its own positions, and a symbol whose layout \
+moves the bit main states its position."""
 level = "code"
 
 [[bit]]

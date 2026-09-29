@@ -24,7 +24,7 @@ SLOT_COUNT = 5
 BUTTON_RELEASED = 0x20
 BUTTON_CANCEL = 0x02
 BUTTON_SET = 0x08
-ASCD_ACTIVE_MASK = 0x80
+MAIN_PRESSED_MASK = 0x80
 FUEL_CUT_ACTIVE_MASK = 0x04
 ASCD_FEEDBACK_MASK = 0x70
 ASCD_FEEDBACK_OFF = 0x00
@@ -53,7 +53,7 @@ class Flag(IntFlag):
     MAP_ENABLED = 1 << 1
     SELECTOR_IDLE = 1 << 2
     FEEDBACK_IDLE = 1 << 3
-    ASCD_OFF = 1 << 4
+    MAIN_RELEASED = 1 << 4
     BUTTON_HELD = 1 << 5
     SPEED_OK = 1 << 6
     RPM_OK = 1 << 7
@@ -73,7 +73,7 @@ class AbortReason(IntEnum):
     MAP_DISABLED = 3
     SELECTOR_BUSY = 4
     FEEDBACK_BUSY = 5
-    ASCD_ACTIVE = 6
+    MAIN_PRESSED = 6
     BUTTON_RELEASED = 7
     BUTTON_INVALID = 8
     SPEED_LOW = 9
@@ -299,9 +299,9 @@ def evaluate_gates(inputs, calibration):
     gate(_selector_idle(inputs), Flag.SELECTOR_IDLE, AbortReason.SELECTOR_BUSY)
     gate(_feedback_idle(inputs), Flag.FEEDBACK_IDLE, AbortReason.FEEDBACK_BUSY)
     gate(
-        not inputs.ascd_status & ASCD_ACTIVE_MASK,
-        Flag.ASCD_OFF,
-        AbortReason.ASCD_ACTIVE,
+        not inputs.ascd_status & MAIN_PRESSED_MASK,
+        Flag.MAIN_RELEASED,
+        AbortReason.MAIN_PRESSED,
     )
     gate(
         inputs.button == BUTTON_CANCEL,
