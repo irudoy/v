@@ -2,7 +2,7 @@ layout = "7mfk"
 image = "JK08A"
 image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 program = "1JK08A-20260726-stock.bin"
-ghidra = "12.1.2"
+ghidra = "12.1.4"
 
 [census]
 interp = "defs/JK08A.interp.csv"
@@ -37,7 +37,7 @@ sha256 = "10d49f6f9f843dcd40b363192a0d53ac34ac689fac8e2c5f1eb8ea11355e29ba"
 rows = 246
 
 [files."accessors.26944.csv"]
-sha256 = "6afd3710eabf06a6ec0e6b444f4ac01780460db5279c6e2cb694c73606c793b8"
+sha256 = "be54166d8bddb35935eed953c734133e55bbadc09a335e8fc7851e240a6fccce"
 rows = 141
 
 [files."accessors.26984.csv"]
@@ -85,29 +85,29 @@ sha256 = "2bd63f8ff21c2a2b209591169711d3f1cfe5ea70a175dc27660fec8a98f60881"
 rows = 2
 
 [files."calls.csv"]
-sha256 = "99b527046269348c8abbce27e459eaed8ed1e94be9fc76c9f4a22479eca22253"
-rows = 3681
+sha256 = "834ff0e9ab9c4e2c1f0031010c5357a2ca223eaf3475471168150229bd4aefbc"
+rows = 3745
 
 [files."funcs.csv"]
-sha256 = "b991beda6c2d263f8e0e33a89397f2b3a853c64f7bd275954ed43298bcab9f3f"
-rows = 2315
+sha256 = "df17606fdd88fb2adae2bbd8c98c7937c384a9b02c891c0d47a961939c1072b4"
+rows = 2323
 
 [files."function_references.csv"]
-sha256 = "fac887761c611a390470ba82f6edd3944be15c2216640cb26c7cb57c7bfc1f15"
-rows = 144236
+sha256 = "022be3a4a9cb46e435ff5e45266a2e7f9054acfac6470f04ade12cb845a1d15d"
+rows = 144907
 
 [files."function_signatures.csv"]
-sha256 = "5d44c753cae2273ebe7d832d8aa70d3e5a894763998fd942c1bd0c270e0b27a2"
-rows = 2315
+sha256 = "b56820b4a4eba64259e994733699cfb605451c8aa819243b95f10aca5386b6e5"
+rows = 2323
 
 [files."function_sites.csv"]
-sha256 = "dec7db61eb16170a4891b100538feabdafed29dd8104ddb992b4d934c04a68f0"
-rows = 6892
+sha256 = "d0a9b21821749ee07b825e5c369482c63681e58c1272201078386f8656c2cd5b"
+rows = 6893
 
 [files."function_tokens.csv"]
-sha256 = "8b19142a2407a7ae141c60c926821042c331aff6032a87183a721e5454d4d591"
-rows = 311692
+sha256 = "100fbc33190fb10feccb3afbd0864f4eef9ffa7ae42ff54958f5b38fa61d495c"
+rows = 311819
 
 [files."xrefs.csv"]
-sha256 = "93278a05d84268a073dfe397e0f95e4079a3e16057e6697949c8225cf4ed379e"
-rows = 39962
+sha256 = "641f06440b5d797a92df8eaa6091ae949a4fb2086673bb7bd3ec86146910ec99"
+rows = 40410

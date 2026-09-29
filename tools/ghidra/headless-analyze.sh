@@ -16,7 +16,7 @@ set -euo pipefail
 # The tracked exports, symbol names, and decompiler output belong to one Ghidra
 # release. An unnoticed upgrade changes them silently, so the installation is
 # pinned here and `tools/README.md` carries the same version under a gate.
-GHIDRA_VERSION=12.1.2
+GHIDRA_VERSION=12.1.4
 
 GHIDRA_HOME="$(brew --prefix ghidra)/libexec"
 INSTALLED="$(sed -n 's/^application\.version=//p' \

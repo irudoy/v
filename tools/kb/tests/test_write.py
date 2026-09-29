@@ -20,6 +20,8 @@ TABLE_EVIDENCE = {"kind": "masked-match", "supports": "homology", "at": "jk00c:0
 # JK78C and that of the second none on 1ND.
 THROTTLE, THROTTLE_HOME, THROTTLE_JK78C = "throttle_runtime/ram", 0xFFFF1796, 0xFFFF17A4
 INHIBIT, INHIBIT_HOME = "fuel_inhibit/ram", 0xFFFF2497
+# Named data whose status on 1ND records a search without matches and a note.
+FLOW, FLOW_HOME = "alpha_n_flow/ram", 0xFFFF1170
 # A curated function without a file, whose symbol on 7mfk the base gives a row
 # of kb/names.csv: the search from it finds one counterpart on JK78C.
 SELECTOR, SELECTOR_HOME, SELECTOR_JK78C = "accelerator_pedal_pair_selector/fn", 0x6EC68, 0x8D384
@@ -113,6 +115,29 @@ class PlanTest(unittest.TestCase):
             f"unresolved {INHIBIT} on 1nd: masked-match search of 7mfk:{INHIBIT_HOME:08x}, "
             "0 matches",
             f"absent {INHIBIT} on 1me3b: spec path tools/kb/SPEC.md"])
+
+    def test_a_repeated_search_keeps_the_note_of_its_status(self):
+        path = Path("kb/ram/alpha_n_flow.toml")
+        held = next(entry for entry in tomllib.loads((repo.ROOT / path).read_text())["status"]
+                    if entry["layout"] == "1nd")
+        self.assertTrue(held["note"])
+
+        def status(**keys):
+            _, texts, _ = self.plan({"cmd": "unresolved", "meaning": FLOW, "layout": "1nd",
+                                     **keys})
+            # A repeat on the L0 of the held digest leaves the file unchanged.
+            text = texts[path] if path in texts else (repo.ROOT / path).read_text()
+            return next(entry for entry in tomllib.loads(text)["status"]
+                        if entry["layout"] == "1nd")
+
+        repeated = status()
+        self.assertEqual((repeated["method"], repeated["target"], repeated["count"],
+                          repeated["l0"], repeated["note"]),
+                         ("masked-match", f"7mfk:{FLOW_HOME:08x}", 0, match.l0_digest("1nd"),
+                          held["note"]))
+        self.assertEqual(status(note="probe")["note"], "probe")
+        self.assertNotIn("note", status(method="masked-match", target=f"7mfk:{FLOW_HOME:08x}",
+                                        count=2))
 
     def test_the_checks_of_the_result_refuse_evidence_that_l0_refutes(self):
         message = self.refused(bind(THROTTLE, "jk78c:ffff17a6", evidence=[{

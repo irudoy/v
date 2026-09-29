@@ -28,7 +28,8 @@ addr,size,is_thunk,is_external
 000015cc,82,false,false
 00001696,72,false,false
 00001720,28,false,false
-00001900,20,false,false
+00001900,8,false,false
+000019bc,12,false,false
 000019c8,288,false,false
 00001be8,82,false,false
 00001c3a,16,false,false
@@ -43,7 +44,8 @@ addr,size,is_thunk,is_external
 000022b0,40,false,false
 00002458,26,false,false
 00002478,74,false,false
-00002562,178,false,false
+000024c2,160,false,false
+00002562,18,false,false
 0000258c,132,false,false
 00002614,138,false,false
 000026c0,70,false,false
@@ -517,8 +519,9 @@ addr,size,is_thunk,is_external
 0004730a,142,false,false
 00047398,46,false,false
 000473ec,648,false,false
-00047814,638,false,false
+00047814,388,false,false
 00047998,294,false,false
+00047ce8,250,false,false
 00047e2a,218,false,false
 00047fac,488,false,false
 00048298,660,false,false
@@ -575,8 +578,9 @@ addr,size,is_thunk,is_external
 0004c5c8,88,false,false
 0004c620,298,false,false
 0004c74a,128,false,false
-0004c86c,210,false,false
+0004c86c,126,false,false
 0004c8ea,304,false,false
+0004ca1a,84,false,false
 0004ca6e,94,false,false
 0004cb40,576,false,false
 0004cdfc,118,false,false
@@ -596,8 +600,9 @@ addr,size,is_thunk,is_external
 0004f0a4,1056,false,false
 0004f4fc,40,false,false
 0004f524,782,false,false
-0004f860,572,false,false
+0004f860,236,false,false
 0004fad8,1160,false,false
+0004ff90,336,false,false
 00050110,330,false,false
 0005025a,92,false,false
 000502b6,90,false,false
@@ -978,7 +983,8 @@ addr,size,is_thunk,is_external
 0006f308,472,false,false
 0006f7b6,520,false,false
 0006fb06,114,false,false
-0006fc12,134,false,false
+0006fbb4,94,false,false
+0006fc12,40,false,false
 0006fc68,680,false,false
 00070008,170,false,false
 0007010a,724,false,false
@@ -1792,8 +1798,10 @@ addr,size,is_thunk,is_external
 000df238,84,false,false
 000df28c,734,false,false
 000df5f4,1040,false,false
-000dfa22,5650,false,false
-000e1334,1442,false,false
+000dfa22,5626,false,false
+000e1334,58,false,false
+000e136e,24,false,false
+000e13e4,1384,false,false
 000e1b58,1290,false,false
 000e2082,1382,false,false
 000e2738,404,false,false
@@ -2184,7 +2192,7 @@ addr,size,is_thunk,is_external
 00120618,256,false,false
 00120718,102,false,false
 001207bc,100,false,false
-00120830,1836,false,false
+00120830,1608,false,false
 00120f98,1868,false,false
 0012177a,484,false,false
 00121a08,442,false,false
@@ -2207,8 +2215,9 @@ addr,size,is_thunk,is_external
 00123b0e,392,false,false
 00123cd4,796,false,false
 0012402c,550,false,false
-00124404,1270,false,false
+00124404,818,false,false
 00124764,730,false,false
+00124a6c,452,false,false
 00124c64,312,false,false
 00124d9c,390,false,false
 001252a0,66,false,false
@@ -2217,6 +2226,7 @@ addr,size,is_thunk,is_external
 001253f8,240,false,false
 00125548,1372,false,false
 00125b08,28,false,false
+00125b2c,228,false,false
 00125ccc,80,false,false
 00125d1c,264,false,false
 00125e24,74,false,false

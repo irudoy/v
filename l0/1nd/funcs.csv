@@ -24,7 +24,8 @@ addr,size,is_thunk,is_external
 00001554,50,false,false
 000015cc,82,false,false
 00001720,28,false,false
-00001900,20,false,false
+00001900,8,false,false
+000019bc,12,false,false
 000019c8,288,false,false
 00001be8,82,false,false
 00001c3a,16,false,false
@@ -39,7 +40,8 @@ addr,size,is_thunk,is_external
 000022b0,40,false,false
 00002458,26,false,false
 00002478,74,false,false
-00002562,178,false,false
+000024c2,160,false,false
+00002562,18,false,false
 0000258c,132,false,false
 00002614,138,false,false
 000026c0,70,false,false
@@ -508,8 +510,9 @@ addr,size,is_thunk,is_external
 00043cec,142,false,false
 00043d7a,42,false,false
 00043dc8,646,false,false
-000441ec,638,false,false
+000441ec,388,false,false
 00044370,294,false,false
+000446c0,250,false,false
 00044802,218,false,false
 00044984,488,false,false
 00044c70,594,false,false
@@ -566,8 +569,9 @@ addr,size,is_thunk,is_external
 00048bc8,88,false,false
 00048c20,298,false,false
 00048d4a,128,false,false
-00048e6c,210,false,false
+00048e6c,126,false,false
 00048eea,298,false,false
+00049014,84,false,false
 00049068,94,false,false
 00049138,736,false,false
 000494a0,118,false,false
@@ -582,8 +586,9 @@ addr,size,is_thunk,is_external
 0004b13c,1074,false,false
 0004b5a4,40,false,false
 0004b5cc,792,false,false
-0004b914,572,false,false
+0004b914,236,false,false
 0004bb8c,1162,false,false
+0004c046,336,false,false
 0004c1c4,214,false,false
 0004c2b8,330,false,false
 0004c402,92,false,false
@@ -865,8 +870,9 @@ addr,size,is_thunk,is_external
 0005cc80,132,false,false
 0005cd3c,130,false,false
 0005cdbe,74,false,false
-0005ce08,206,false,false
+0005ce08,82,false,false
 0005ce5a,182,false,false
+0005cf44,124,false,false
 0005cfc0,78,false,false
 0005d00e,90,false,false
 0005d068,98,false,false
@@ -964,7 +970,8 @@ addr,size,is_thunk,is_external
 0006af08,472,false,false
 0006b3b4,520,false,false
 0006b6fe,114,false,false
-0006b80a,134,false,false
+0006b7ac,94,false,false
+0006b80a,40,false,false
 0006b860,676,false,false
 0006bcfe,724,false,false
 0006c01e,240,false,false
@@ -1007,8 +1014,9 @@ addr,size,is_thunk,is_external
 00072998,218,false,false
 00072a72,1664,false,false
 000732de,776,false,false
-000736f4,1642,false,false
+000736f4,1116,false,false
 00073dca,388,false,false
+00073f90,526,false,false
 000741d8,630,false,false
 00074498,956,false,false
 00074afa,522,false,false
@@ -1754,8 +1762,10 @@ addr,size,is_thunk,is_external
 000d4ba6,84,false,false
 000d4bfa,740,false,false
 000d4f70,998,false,false
-000d5372,5314,false,false
-000d6b08,1438,false,false
+000d5372,5290,false,false
+000d6b08,58,false,false
+000d6b42,24,false,false
+000d6ba8,1380,false,false
 000d7308,1298,false,false
 000d783c,1382,false,false
 000d7ef0,462,false,false
@@ -1983,8 +1993,10 @@ addr,size,is_thunk,is_external
 00100efc,3330,false,false
 00101d10,122,false,false
 00101dd2,100,false,false
-00101e36,1324,false,false
+00101e36,732,false,false
 00102032,54,false,false
+00102150,180,false,false
+00102208,412,false,false
 001023c6,274,false,false
 001024d8,1684,false,false
 00102c52,1030,false,false
@@ -2130,7 +2142,7 @@ addr,size,is_thunk,is_external
 00114900,228,false,false
 001149e4,102,false,false
 00114a4a,100,false,false
-00114ae0,1758,false,false
+00114ae0,1530,false,false
 001151d8,1028,false,false
 00115622,238,false,false
 001157e6,442,false,false
@@ -2152,8 +2164,9 @@ addr,size,is_thunk,is_external
 001175fe,392,false,false
 001177c4,782,false,false
 00117b0e,550,false,false
-00117ed8,1268,false,false
+00117ed8,818,false,false
 00118238,736,false,false
+00118544,450,false,false
 0011873c,312,false,false
 00118874,390,false,false
 00118d78,66,false,false
@@ -2162,6 +2175,7 @@ addr,size,is_thunk,is_external
 00118e84,240,false,false
 00118fd0,1290,false,false
 00119538,28,false,false
+0011955c,228,false,false
 001196fc,80,false,false
 0011974c,264,false,false
 00119854,74,false,false

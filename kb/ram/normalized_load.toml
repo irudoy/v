@@ -47,7 +47,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff102c"
 count = 0
-l0 = "fcabdc8a705bbb84"
+l0 = "9b67593d1ee42497"
 note = """
 No normalized load snapshot is established because the 32-instruction JK08A \
 producer at 0003bd1c has no match in the target with PC-relative \
@@ -59,7 +59,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff102c"
 count = 0
-l0 = "8b3d18403665f8be"
+l0 = "cb701875f15725a4"
 note = """
 No normalized load snapshot is established because the 32-instruction JK08A \
 producer at 0003bd1c has no match in the target with PC-relative \

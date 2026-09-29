@@ -2,7 +2,7 @@ layout = "jk00d"
 image = "JK00D"
 image_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
 program = "1JK00D_8MFK36N15-20260726-013734.bin"
-ghidra = "12.1.2"
+ghidra = "12.1.4"
 
 [census]
 interp = "defs/JK00D.interp.csv"
@@ -33,7 +33,7 @@ copy_helpers = ["000225e4"]
 "ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
 
 [files."accessors.27344.csv"]
-sha256 = "f7b85adeff6696fb23c701fa920d235f494dcd7572d6fd1008088fd394491daf"
+sha256 = "0ba66901f7dbeac6672cb3e99ea47f2b96c373e3f3eace80d42d94fe3dc5cb87"
 rows = 267
 
 [files."accessors.27548.csv"]
@@ -41,7 +41,7 @@ sha256 = "77528ff3f78d96749bce38ddf72febe432fa4bddd860fcd5bd6258edd10cfcc8"
 rows = 149
 
 [files."accessors.27588.csv"]
-sha256 = "cccb3e57a58ac2c4941925a9a96ec095fc324c98e442fb5acb15adfc39776488"
+sha256 = "b9f63803b1756583e6c5e0b947b228c3edd03a06b0afd80f3183d667c876278f"
 rows = 194
 
 [files."accessors.27660.csv"]
@@ -53,7 +53,7 @@ sha256 = "76eed538f862b7457f4efb97094bb2bd8960cb1843138296b4197e3e6122e3ea"
 rows = 13
 
 [files."accessors.27668.csv"]
-sha256 = "ddf2114d6fc99fb47cbb590794d8db0dfbc77ef2f9ede93117d3d8c2eb87cc3a"
+sha256 = "966b8fd9cb76b2663255c42b6ca3a5d5ea55f0ca3d65daa9847877fe4bb14cd9"
 rows = 19
 
 [files."accessors.27678.csv"]
@@ -65,7 +65,7 @@ sha256 = "555cb43d28e395badeecbeeb809619b774e6549f00f0c7f4c28b0eaf1eea140d"
 rows = 5
 
 [files."accessors.27684.csv"]
-sha256 = "ccd21b1eb4f0547da2b20b259a5e69e608c4eb58d855095a5d1d4d1c54987ce5"
+sha256 = "c434ece32db01fb77f9eb6d45d6d453e1e41d937d6786c933ef2fb28401917ef"
 rows = 110
 
 [files."accessors.27688.csv"]
@@ -85,29 +85,29 @@ sha256 = "9d57c35e50807b2a67d0d072c7e9c23faedfd436df75bf04dade0115d469083e"
 rows = 2
 
 [files."calls.csv"]
-sha256 = "e15d6885b3c9f3165eeec2db2f6532c631f753b7c32ee08bd7452b0ec5dd8028"
-rows = 3872
+sha256 = "98cc3f2fa2b3891f31a86dd88b7526540e8b403ade3e7affd765c503bf7267d7"
+rows = 3884
 
 [files."funcs.csv"]
-sha256 = "ec0676c61045d5e7994dcee7aac68d77af32fc4291db8e2bd1b5cef630e55854"
-rows = 2387
+sha256 = "bd735bd6181a7350b01e237019cf789f0188f5e2476131f1cbb84add972e98a4"
+rows = 2394
 
 [files."function_references.csv"]
-sha256 = "f4b52875a77e6413be39adcf1ac70833c997df1a4ef5e978eb18a2303eaa4635"
-rows = 150049
+sha256 = "bacbe8904062f2742367b68dedec3c03c85e0325a21d985c0426f6e9640689c2"
+rows = 150604
 
 [files."function_signatures.csv"]
-sha256 = "8810f7ce48c2b12a18673cb63b23179dd8e523dcd685780ab9cf05bb99fb87c2"
-rows = 2387
+sha256 = "e4111b288ebadf27bf9a35b0b6d022d4fbf8b5ebea0ab1e19b791116f8e9d78d"
+rows = 2394
 
 [files."function_sites.csv"]
-sha256 = "95c7d97fbe2a7b813874149eaed96d47671361fa611b126312c668b8268699de"
+sha256 = "b06ba8a97c99208f4bcc5a6e409ad7de6368663f66649c9d2aed5faf7a8b38fa"
 rows = 7227
 
 [files."function_tokens.csv"]
-sha256 = "229b4f045e076ab4a7161a08540c058e44d06116b858bd39ede7d911f466bc75"
+sha256 = "e3c45cf9bb1bca89885cb7996f8e47662474f92676424424d5666cf091920511"
 rows = 327110
 
 [files."xrefs.csv"]
-sha256 = "4996b7c52fc5f1b6da8458976ae9a80a81697cdf6ee2aa80fea069e7d3854be2"
-rows = 41819
+sha256 = "a36a3327f3094c0fa3477c8ce308f84a3f130b24d4c3d8e5adaff054f7c68794"
+rows = 42197

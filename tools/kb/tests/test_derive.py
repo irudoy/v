@@ -1,6 +1,6 @@
 import unittest
 
-from kb import derive, sh2
+from kb import derive, repo, sh2
 
 
 def image(code, pools=(), size=0x200):
@@ -44,6 +44,17 @@ class DecodeTest(unittest.TestCase):
                          ("call", "return"))
         self.assertEqual(sh2.decode(0x411E, 0).gbr, ("copy", 1))
         self.assertIsNone(sh2.decode(0x412E, 0).gbr)
+
+    def test_shifts_keep_their_register_and_width(self):
+        self.assertEqual(sh2.decode(0x4018, 0).value, ("shl", 8))
+        self.assertEqual(sh2.decode(0x4128, 0).value, ("shl", 16))
+        self.assertEqual(sh2.decode(0x4220, 0).value, ("shl", 1))
+        self.assertEqual(sh2.decode(0x4309, 0).value, ("shr", 2))
+        self.assertEqual(sh2.decode(0x4421, 0).value, ("sar", 1))
+        self.assertEqual(sh2.decode(0x4018, 0).dest, 0)
+        # Rotations and dt set the register without a known value.
+        self.assertIsNone(sh2.decode(0x4004, 0).value)
+        self.assertIsNone(sh2.decode(0x4010, 0).value)
 
 
 class LiteralPairTest(unittest.TestCase):
@@ -132,6 +143,100 @@ class LiteralPairTest(unittest.TestCase):
         }, (self.POOL_L,))
         self.assertEqual((found[0x102].address, found[0x102].indexed), (0xFFFF1234, True))
         self.assertEqual((found[0x106].address, found[0x106].indexed), (0xFFFF1238, False))
+
+    def test_an_index_built_by_shifts_is_known(self):
+        found = pairs({
+            0x100: 0xD107,  # mov.l @(0x120),r1
+            0x102: 0x411E,  # ldc r1,gbr
+            0x104: 0xE006,  # mov #6,r0
+            0x106: 0x4018,  # shll8 r0
+            0x108: 0x70B7,  # add #-73,r0
+            0x10A: 0xCC01,  # tst.b #1,@(r0,gbr)
+            0x10C: 0xE080,  # mov #-128,r0
+            0x10E: 0x4021,  # shar r0
+            0x110: 0x021C,  # mov.b @(r0,r1),r2
+            0x112: 0x000B,  # rts
+            0x114: 0x0009,
+        }, (self.POOL_L,))
+        self.assertEqual((found[0x10A].address, found[0x10A].literal, found[0x10A].indexed),
+                         (0xFFFF17EB, 0xFFFF1234, False))
+        self.assertEqual((found[0x110].address, found[0x110].indexed), (0xFFFF11F4, False))
+
+    def test_a_shifted_literal_is_no_base(self):
+        found = pairs({
+            0x100: 0xD107,  # mov.l @(0x120),r1
+            0x102: 0x4108,  # shll2 r1
+            0x104: 0x6010,  # mov.b @r1,r0
+            0x106: 0x000B,
+            0x108: 0x0009,
+        }, (self.POOL_L,))
+        self.assertEqual(found, {})
+
+    def test_stc_gbr_takes_the_literal_of_gbr(self):
+        found = pairs({
+            0x100: 0xD107,  # mov.l @(0x120),r1
+            0x102: 0x7104,  # add #4,r1
+            0x104: 0x411E,  # ldc r1,gbr
+            0x106: 0x0212,  # stc gbr,r2
+            0x108: 0x430B,  # jsr @r3
+            0x10A: 0x0009,
+            0x10C: 0x0312,  # stc gbr,r3 (a call keeps GBR)
+            0x10E: 0x4F17,  # ldc.l @r15+,gbr
+            0x110: 0x0412,  # stc gbr,r4 (GBR unknown)
+            0x112: 0x000B,
+            0x114: 0x0009,
+        }, (self.POOL_L,))
+        self.assertEqual(sorted(found), [0x106, 0x10C])
+        for site in (0x106, 0x10C):
+            pair = found[site]
+            self.assertEqual((pair.address, pair.literal, pair.pool, pair.base, pair.mode),
+                             (0xFFFF1238, 0xFFFF1234, 0x120, "gbr", "literal"))
+
+
+def references(layout, sites):
+    """{(site, address, reference type)} of the L0 references at `sites`."""
+    path = repo.ROOT / repo.L0 / layout / "function_references.csv"
+    return {(int(row["ins_addr"], 16), int(row["ref_addr"], 16), row["ref_type"])
+            for row in derive.read_rows(path) if int(row["ins_addr"], 16) in sites}
+
+
+def pairs_at(layout, sites):
+    return {pair.ins: pair for pair in derive.literal_pairs(layout) if pair.ins in sites}
+
+
+class StockLayoutTest(unittest.TestCase):
+    """Accesses of the VQ37VHR layouts whose addresses registers build from
+    immediates, shifts, or GBR."""
+
+    def test_peripheral_bases_built_from_immediates_reach_l0(self):
+        # mov #-10,Rn; shll8 Rn; add #-128,Rn builds the base 0xFFFFF580 of
+        # the word stores at displacements 0x12 and 0x10.
+        for layout, stores in (
+                ("1nd", {0x1109AC: 0xFFFFF592, 0x110A00: 0xFFFFF590, 0x110A26: 0xFFFFF590}),
+                ("1me3b", {0x11C482: 0xFFFFF592, 0x11C4D6: 0xFFFFF590, 0x11C4FC: 0xFFFFF590})):
+            with self.subTest(layout=layout):
+                self.assertEqual(references(layout, set(stores)),
+                                 {(site, address, "write") for site, address in stores.items()})
+
+    def test_an_index_built_by_shifts_addresses_its_gbr_cell(self):
+        # mov #6,r0; shll8 r0; add #-73,r0 indexes GBR 0xFFFE942C to 0xFFFE99E3
+        # before each tst.b #imm,@(r0,gbr).
+        sites = {0x119F68, 0x119F72, 0x119F8E}
+        self.assertEqual(references("1me3b", sites),
+                         {(site, 0xFFFE99E3, "read") for site in sites})
+        found = {site: (pair.address, pair.literal, pair.base, pair.mode, pair.indexed)
+                 for site, pair in pairs_at("1me3b", sites).items()}
+        self.assertEqual(found, {site: (0xFFFE99E3, 0xFFFE942C, "gbr", "load", False)
+                                 for site in sites})
+
+    def test_stc_gbr_takes_the_source_of_the_scheduler_copies(self):
+        # stc gbr,r2 passes the GBR block to the copy helper as its source.
+        for layout, site, block, pool in (("1nd", 0x21738, 0xFFFE93CC, 0x21560),
+                                          ("1me3b", 0x217A8, 0xFFFE939C, 0x21548)):
+            with self.subTest(layout=layout):
+                pair = pairs_at(layout, {site})[site]
+                self.assertEqual((pair.address, pair.literal, pair.pool, pair.base, pair.mode),
+                                 (block, block, pool, "gbr", "literal"))
 
 
 if __name__ == "__main__":

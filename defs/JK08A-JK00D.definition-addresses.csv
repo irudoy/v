@@ -22,11 +22,11 @@ Axis,00011cf0,00013fc5,,reviewed-target,4,l0,target-specific interpolation opera
 Axis,00011d0c,00013fe9,,homologous,25,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011d24,00014001,,homologous,22,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011d4c,00014029,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011ebe,000141ab,,homologous,12,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00011ebe,000141ab,,homologous,46,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011ece,000141bb,,homologous,10,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00012778,00014b05,,homologous,3,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00012ea2,0001524f,,reviewed-target,2,l0,load axis operand at the cold exhaust-target interpolation callsite
-Axis,00012eaa,00015257,,reviewed-target,2,l0,load axis operand at the cold intake-target interpolation callsite
+Axis,00012778,00014b05,,homologous,7,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00012ea2,0001524f,,reviewed-target,8,l0,load axis operand at the cold exhaust-target interpolation callsite
+Axis,00012eaa,00015257,,reviewed-target,8,l0,load axis operand at the cold intake-target interpolation callsite
 Axis,00012ec2,0001526f,,reviewed-target,1,l0,engine-speed axis operand at the cold exhaust-target interpolation callsite
 Axis,00012eca,00015277,,reviewed-target,1,l0,engine-speed axis operand at the cold intake-target interpolation callsite
 Axis,00012f0e,000152bb,,reviewed-target,1,l0,load axis operand at the warm exhaust-target interpolation callsite

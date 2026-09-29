@@ -54,7 +54,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:0000a9aa"
 count = 0
-l0 = "fcabdc8a705bbb84"
+l0 = "9b67593d1ee42497"
 note = """
 mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
 normalized-shape candidate in the 1ND0A export, and neither the map nor its \
@@ -66,7 +66,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:0000a9aa"
 count = 0
-l0 = "8b3d18403665f8be"
+l0 = "cb701875f15725a4"
 note = """
 mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
 normalized-shape candidate in the target export, and neither the map nor its \

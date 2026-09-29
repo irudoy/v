@@ -4,7 +4,8 @@ Literal pairing propagates register values through the control flow of each
 function body: a register holds a pool literal at an instruction when every
 path from the function entry reaches it with that literal, copied or offset by
 immediates. An access through such a register yields the accessed address,
-the literal, its pool address, and the base register.
+the literal, its pool address, and the base register, and `stc gbr,Rn` with
+such a literal in GBR yields the address that it takes into the register.
 """
 
 import csv
@@ -18,7 +19,8 @@ UNKNOWN = None
 
 @dataclass(frozen=True, order=True)
 class Pair:
-    """An access whose base register holds a pool literal on every path."""
+    """An access whose base register holds a pool literal on every path, or a
+    `stc gbr,Rn` that takes such a literal from GBR, with mode literal."""
 
     func: int
     ins: int
@@ -127,6 +129,18 @@ def _transfer(state, insn, data):
             if kind == "exts":
                 number = sh2.sext(number, bits) & sh2.MASK
             value = (number, *source[1:])
+    elif kind in ("shl", "shr", "sar"):
+        # A shifted value is known but no longer a pool literal.
+        current = state.get(insn.dest)
+        if current is not None:
+            bits = insn.value[1]
+            if kind == "shl":
+                number = current[0] << bits
+            elif kind == "shr":
+                number = current[0] >> bits
+            else:
+                number = sh2.sext(current[0], 32) >> bits
+            value = (number & sh2.MASK, None, None)
     if value is not None:
         out[insn.dest] = value
     return out
@@ -178,9 +192,19 @@ def function_pairs(func, addresses, data):
     for address in addresses:
         insn = insns[address]
         access = insn.access
-        if access is None or address not in entering:
+        if address not in entering:
             continue
         state = entering[address]
+        if insn.value == ("gbr",):
+            # `stc gbr,Rn` takes the block that GBR addresses into a register,
+            # which passes it on, for example as the source of a block copy.
+            held = state.get("gbr")
+            if held is not None and held[1] is not None:
+                pairs.append(Pair(func, address, held[0], held[2], held[1], "gbr",
+                                  "literal", 4, False))
+            continue
+        if access is None:
+            continue
         base = state.get(access.base)
         if base is None or base[1] is None:
             continue

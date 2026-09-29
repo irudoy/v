@@ -50,7 +50,7 @@ state = "unresolved"
 method = "interp-contract"
 target = "7mfk:000261b8"
 count = 0
-l0 = "8b3d18403665f8be"
+l0 = "cb701875f15725a4"
 note = """
 complete-1ND0A-interpolation-library-census-has-no-matching-standard-finisher-contract"""
 
@@ -60,6 +60,6 @@ state = "unresolved"
 method = "interp-contract"
 target = "7mfk:000261b8"
 count = 0
-l0 = "72887cc9cc504d1b"
+l0 = "fd713dabb05caef6"
 note = """
 complete-JK78C-interpolation-library-census-has-no-matching-standard-finisher-contract"""

@@ -30,11 +30,12 @@ class Insn:
     `writes` lists the general registers the instruction sets. `value`
     states how `dest` gets its value when propagation can follow it:
     ("const", v), ("pool", address, size), ("mova", address), ("copy", m),
-    ("addi", imm), ("add", m), ("sub", m), ("gbr",), ("extu", bits, m), or
-    ("exts", bits, m). `flow` is branch, cbranch, call, jump, or return;
-    `target` is set when the word encodes it, and `delayed` marks a transfer
-    with a delay slot. `gbr` is ("copy", m) for `ldc Rm,GBR` and ("unknown",)
-    for any other GBR load.
+    ("addi", imm), ("add", m), ("sub", m), ("gbr",), ("extu", bits, m),
+    ("exts", bits, m), or a shift of `dest` by `bits`: ("shl", bits),
+    ("shr", bits), or ("sar", bits). `flow` is branch, cbranch, call, jump,
+    or return; `target` is set when the word encodes it, and `delayed` marks
+    a transfer with a delay slot. `gbr` is ("copy", m) for `ldc Rm,GBR` and
+    ("unknown",) for any other GBR load.
     """
 
     word: int
@@ -105,6 +106,12 @@ def _group3(word, n, m, low):
 _G4_SET = {(0x0, 0x0), (0x1, 0x0), (0x4, 0x0), (0x5, 0x0), (0x8, 0x0),
            (0x9, 0x0), (0x0, 0x1), (0x8, 0x1), (0x9, 0x1), (0x0, 0x2),
            (0x1, 0x2), (0x4, 0x2), (0x5, 0x2), (0x8, 0x2), (0x9, 0x2)}
+# The shifts among them: shll, shal, shll2, shll8, shll16, shlr, shlr2,
+# shlr8, shlr16, and shar.
+_G4_SHIFTS = {(0x0, 0x0): ("shl", 1), (0x0, 0x2): ("shl", 1), (0x8, 0x0): ("shl", 2),
+              (0x8, 0x1): ("shl", 8), (0x8, 0x2): ("shl", 16), (0x1, 0x0): ("shr", 1),
+              (0x9, 0x0): ("shr", 2), (0x9, 0x1): ("shr", 8), (0x9, 0x2): ("shr", 16),
+              (0x1, 0x2): ("sar", 1)}
 
 
 def _group4(word, n, m, low):
@@ -128,7 +135,7 @@ def _group4(word, n, m, low):
     if low == 0xF:
         return Insn(word, writes=frozenset({n, m}), access=Access(m, 0, 2, "load"))
     if (low, m) in _G4_SET:
-        return Insn(word, **_set(n))
+        return Insn(word, **_set(n, _G4_SHIFTS.get((low, m))))
     return Insn(word)
 
 

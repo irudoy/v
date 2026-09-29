@@ -76,7 +76,7 @@ and fails when the table or another tool document carries a different value.
 
 | Component | Version | Local location or source |
 |---|---|---|
-| Ghidra | 12.1.2 with JDK 21 and ARM native libraries | Homebrew; `$(brew --prefix ghidra)/libexec`; pinned in `ghidra/headless-analyze.sh` |
+| Ghidra | 12.1.4 with JDK 21 and ARM native libraries | Homebrew, held by `brew pin ghidra`; `$(brew --prefix ghidra)/libexec`; pinned in `ghidra/headless-analyze.sh` |
 | Ghidra project | Local project | `~/tools/ghidra-projects/vq-hr` |
 | Memgraph MAGE | 3.11.0 | `memgraph/docker-compose.yml` |
 | Memgraph Lab | 3.11.0 | `memgraph/docker-compose.yml` |

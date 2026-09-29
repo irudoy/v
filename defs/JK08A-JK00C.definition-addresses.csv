@@ -22,11 +22,11 @@ Axis,00011cf0,00013fb5,,reviewed-target,4,l0,target-specific interpolation opera
 Axis,00011d0c,00013fd9,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011d24,00013ff1,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011d4c,00014019,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011ebe,0001419b,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011ebe,0001419b,,homologous,46,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011ece,000141ab,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012778,00014ae5,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00012ea2,0001522f,,reviewed-target,2,l0,load axis operand at the cold exhaust-target interpolation callsite
-Axis,00012eaa,00015237,,reviewed-target,2,l0,load axis operand at the cold intake-target interpolation callsite
+Axis,00012778,00014ae5,,homologous,7,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00012ea2,0001522f,,reviewed-target,8,l0,load axis operand at the cold exhaust-target interpolation callsite
+Axis,00012eaa,00015237,,reviewed-target,8,l0,load axis operand at the cold intake-target interpolation callsite
 Axis,00012ec2,0001524f,,reviewed-target,1,l0,engine-speed axis operand at the cold exhaust-target interpolation callsite
 Axis,00012eca,00015257,,reviewed-target,1,l0,engine-speed axis operand at the cold intake-target interpolation callsite
 Axis,00012f0e,0001529b,,reviewed-target,1,l0,load axis operand at the warm exhaust-target interpolation callsite

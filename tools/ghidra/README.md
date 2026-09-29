@@ -28,6 +28,23 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 filesystem path. Ghidra projects and local export directories remain outside
 Git; the normalized L0 exports of every layout live in `l0/`.
 
+## Version change
+
+The wrapper refuses an installation whose version differs from its pin, and
+`brew pin ghidra` holds the Homebrew formula at that version. A new pin
+reanalyzes every program of the project before the L0 export:
+
+```bash
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process <program-name>
+```
+
+Without `-noanalysis` and `-readOnly`, HeadlessAnalyzer reruns the
+auto-analysis of the installed version over the whole program and saves it.
+`export-l0.sh` then re-exports every layout; each manifest records the pinned
+version, and the `l0` check of `kb check` fails on a manifest of another
+version.
+
 ## On-demand decompilation and listings
 
 `decompile.sh` decompiles functions and, with `-l`, dumps their complete

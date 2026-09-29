@@ -455,7 +455,8 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   reference to RAM or a register with its reference type as mode, every data
   or parameter reference to ROM, and every pool literal that names RAM or a
   register, with mode `literal`. `ACCESS` with producer `derived` comes from
-  literal pairing, with modes `load`, `store`, and `update`. One `ACCESS` per
+  literal pairing, with modes `load`, `store`, and `update`, and `literal`
+  for a `stc gbr` that takes the literal of GBR. One `ACCESS` per
   producer joins a function and a location, and its `sites` list holds one
   map per instruction.
 - A writer link of a symbol is verified by a store access of the function to
@@ -548,10 +549,14 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 Literal pairing propagates register values through the control flow of each
 function body. A register holds a pool literal at an instruction when every
 path from the function entry reaches the instruction with that literal,
-copied or offset by immediates; a call clears r0 through r7 after its delay
-slot. An access through such a register yields the accessed address, the
-literal, its pool address, and the base register. An R0-indexed access whose
-index is unknown yields the table base.
+copied or offset by immediates or by registers of known value; a call clears
+r0 through r7 after its delay slot. Immediates and shifts of known values
+give a register a known value without a literal, so an index built by
+`mov #imm`, `shll8`, and `add #imm` resolves. An access through a register
+that holds a literal yields the accessed address, the literal, its pool
+address, and the base register. An R0-indexed access whose index is unknown
+yields the table base. `stc gbr,Rn` with a literal in GBR yields that literal
+with mode `literal`, since the register passes the block on.
 
 `kb.sites` classifies each `site:` token of a ledger row by the first relation
 that connects it to the row in L0: a reference at the site, the body of a

@@ -25,7 +25,8 @@ become `former` references.
 - `absent` states with evidence that the mechanism does not exist on a layout.
 - `unresolved` records the method, the target, and the count of the search
   from a symbol of the meaning, which finds no unique candidate, or of a
-  stated search, with the L0 digest of the layout.
+  stated search, with the L0 digest of the layout. A repeat of the search of
+  the held status keeps its note unless the operation states one.
 - `merge` joins another meaning into a meaning, or another file of one meaning
   into its file. Each symbol of the other meaning takes the evidence of the
   join, stated or found as `bind` finds it, and its entry moves into the file
@@ -553,10 +554,20 @@ class Change:
                     f"candidate, {layout}:{address:08x}; `kb bind {meaning.key} "
                     f"{layout}:{address:08x}` records it", code=3)
             method, target, count = found.method, found.target, found.count
+        note = op.get("note")
+        if note is None:
+            # A repeat of the held search on a new L0 keeps the note of its status.
+            _, document = self.document(meaning)
+            held = next((entry for entry in document.get("status", ())
+                         if entry.get("layout") == layout), {})
+            if held.get("state") == "unresolved" and (
+                    held.get("method"), held.get("target"), held.get("count")) == (
+                    method, target, count):
+                note = held.get("note")
         self._status(meaning, {"layout": layout, "state": "unresolved", "method": method,
                                "target": target, "count": count,
                                "l0": match.l0_digest(layout, self.root),
-                               "note": op.get("note")})
+                               "note": note})
         self.lines.append(f"unresolved {meaning.key} on {layout}: {method} search of {target}, "
                           f"{count} matches")
 

@@ -878,11 +878,17 @@ The compiler derives, as `derived` elements:
   every path from the function entry reaches the instruction with that
   literal, loaded by a PC-relative `mov.l` or `mov.w`, copied by `mov`,
   `extu`, or `exts`, offset by `add #imm` or by a register of known value, or
-  moved into GBR by `ldc`. A delay slot executes on the path of its branch,
-  and a call clears r0 through r7 after its delay slot. An access through
-  such a register yields the accessed address, the literal, its pool address,
-  and the base register; an R0-indexed access whose index is unknown yields
-  the table base.
+  moved into GBR by `ldc` and out of it by `stc`. A register holds a known
+  value without a literal after `mov #imm` or `mova`, and after a shift of a
+  known value by `shll`, `shal`, `shlr`, `shar`, `shll2`, `shll8`, `shll16`,
+  `shlr2`, `shlr8`, or `shlr16`; a shifted literal is no longer a literal. A
+  delay slot executes on the path of its branch, and a call clears r0 through
+  r7 after its delay slot. An access through such a register yields the
+  accessed address, the literal, its pool address, and the base register; an
+  R0-indexed access whose index is unknown yields the table base. `stc
+  gbr,Rn` with a literal in GBR yields the literal as the address that it
+  takes, with mode `literal` and base `gbr`: the register passes the block
+  on, for example as the source of a block copy or a table argument.
 - The function that contains an instruction address, and the table that
   contains a ROM address, from the `tbl` symbols and their dimensions.
 
@@ -1070,7 +1076,7 @@ writes carries the label `:Kb` in addition to its own label.
   parameter reference to ROM, and every pool literal that names RAM or a
   register, with mode `literal`. `ACCESS` with producer `derived` records the
   literal pairs of [Derivations](#85-derivations), with modes `load`, `store`,
-  and `update`.
+  and `update`, and `literal` for a `stc gbr` that takes the literal of GBR.
 
 ### 10.3 Constraints and indexes
 
@@ -1229,7 +1235,8 @@ references.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
   and `--count` state together. A search that finds one candidate is refused
-  with the `kb bind` that records it.
+  with the `kb bind` that records it. A repeat with the `method`, `target`,
+  and `count` of the held status keeps its `note` unless `--note` states one.
 - `kb merge <meaning> <other>` keeps the name and the file of the meaning.
   Each symbol of the other meaning takes the evidence of the join: the
   `--evidence` items at its layout, or else the evidence of the candidate at
