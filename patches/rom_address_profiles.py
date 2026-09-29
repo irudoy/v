@@ -292,6 +292,7 @@ ROLLING_SYMBOL_KEYS = frozenset(
 
 VQ37_ROLLING_SYMBOL_KEYS = ROLLING_SYMBOL_KEYS | {
     "fuel_cut_coordinator",
+    "fuel_inhibit_mask",
 }
 
 ROLLING_SYMBOL_KEYS_BY_VARIANT = {

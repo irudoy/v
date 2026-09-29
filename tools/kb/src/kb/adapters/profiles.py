@@ -24,8 +24,9 @@ and 20.3).
   key in its target, the text of an allocation or a target number the entry
   of `notes`, and the text of a capability the `note` of the target; the
   sources of the allocation rows give the `7mfk` bounds of `runtime`.
-- A `target-specific` row whose target a `mapped` row of another key of the
-  same file places binds a role of its feature: the key and the symbol enter
+- A `target-specific` row whose target a `mapped` row, or a row that enters
+  `requires`, of another key of the same file places binds a role of its
+  feature: the key and the symbol enter
   `roles` of the feature target of the layout, and neither the row nor the
   profile entry of the key on that layout joins a meaning. A `target-specific`
   telemetry row binds the role of its field in the same way: the telemetry
@@ -249,16 +250,21 @@ class Profiles:
 
     def _roles(self):
         """{(layout, key): (target, row)} of the `target-specific` symbol rows
-        whose target a `mapped` row of another key of the same file places,
-        and of the `target-specific` telemetry rows: there the key fills a
-        role of its feature with the symbol of another meaning, as the VQ37
-        rolling launch drives the final inhibit mask and the JK78C telemetry
-        reads the Fuel Compensation Main column that the target maps take."""
+        whose target a `mapped` row, or a row that enters `requires`, of
+        another key of the same file places, and of the `target-specific`
+        telemetry rows: there the key fills a role of its feature with the
+        symbol of another meaning, as the native rev-limit state byte of a
+        VQ37VHR layout fills the fuel inhibit state of the rolling launch and
+        the JK78C telemetry reads the Fuel Compensation Main column that the
+        target maps take."""
         found = {}
         for layout, (path, rows) in self.rows.items():
+            profile = self.profiles.get(layout, (None, {}))[1]
+            keys = {key for table in SYMBOL_TABLES for key in profile.get(table, {})}
             placed = defaultdict(set)
             for row in rows:
-                if row["status"] == "mapped" and row["target"]:
+                if row["target"] and (row["status"] == "mapped" or (
+                        row["domain"] in REQUIRING and row["key"] not in keys)):
                     placed[_hex(row["target"])].add(row["key"])
             for row in rows:
                 target = _hex(row["target"])

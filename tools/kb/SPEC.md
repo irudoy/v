@@ -759,9 +759,11 @@ Features:
   meaning, which fills the role of the key there. The target of that layout
   lists such keys in `roles`, a table of key names whose entries hold the
   `symbol` and a `note`; the symbol keeps its own meaning, and the key names
-  no symbol on that layout. The VQ37VHR rolling launch drives the final
-  six-cylinder inhibit mask, a meaning of its own, in the role that the fuel
-  inhibit state byte fills on the dual-CVTC layouts. A register is physical:
+  no symbol on that layout. On the VQ37VHR layouts the state byte of the
+  native rev-limit fuel cut, a meaning of its own, fills the role of the fuel
+  inhibit state, whose named bit `active` the rolling launch reports, and the
+  final six-cylinder inhibit mask that the rolling launch extends there is a
+  key of its own. A register is physical:
   a key whose register lies at another address on a layout than on `7mfk`
   takes there the meaning of that register in its role. A telemetry field
   reads on a layout the cell that the consumers there take: a cell of another
@@ -2232,8 +2234,9 @@ stay the owners of the patch design.
 | `status` | For a symbol: `mapped` gives homology evidence, `target-specific` an anchor with evidence of its own layout, and `unsupported` a status; an `unsupported` `map` or `map_native` row also enters `unsupported` of the target with the `7mfk` symbol of its source and its evidence as `note`, and its status gives way to a symbol that another row places in the meaning on the layout. For an allocation: `mapped` where the target is the source plus the relocation of the profile; for a capability `target-specific` |
 | `evidence` | The `note` of the typed evidence item; the evidence of a hook row of a later feature than the first that redirects its word is the `note` of its hook key in the target of its feature, of an allocation or a `can_telemetry` number the entry of `notes` of its target, and of a capability the `note` of the target |
 
-A `target-specific` symbol row whose target a `mapped` row of another key of
-the same file places fills a role ([Designed entities](#79-designed-entities)):
+A `target-specific` symbol row whose target a `mapped` row, or a row that
+enters `requires`, of another key of the same file places fills a role
+([Designed entities](#79-designed-entities)):
 the key enters `roles` of the target of its feature on the layout with the
 symbol at the target and the evidence as `note`, and neither the row nor the
 address profile entry of the key on that layout joins the meaning of the key.
@@ -2440,7 +2443,11 @@ replaces. The selector host and the Rolling Launch engine test the named bit
 `main` of `ascd_state/ram`, whose number on each layout `kb.targets` reads
 from the `[[bit]]` of the symbol entry of the layout, or else of the meaning;
 the canonical sources test the `7mfk` bit, and a target whose bit differs
-tests its own.
+tests its own. The Rolling Launch engine reports its fuel-cut flag from the
+named bit `active` of the meaning that fills the key `fuel_inhibit` of the
+`rolling_launch` target of each layout, which `kb.targets` reads from the
+`symbols` of the target, or else from its role, and the VQ37VHR fuel
+coordinator wrapper extends the symbol of the key `fuel_inhibit_mask`.
 
 ### 20.4 VQ37VHR native registries
 

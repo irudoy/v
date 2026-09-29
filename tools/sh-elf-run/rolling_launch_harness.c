@@ -18,6 +18,9 @@
 #define FUEL_CUT_WRAPPER 0x000d5000U
 #define FUEL_REQUEST_OFFSET 20U
 #define FUEL_REQUEST_MASK 0x003fU
+/* The final six-cylinder inhibit mask that the stock coordinator publishes
+   and the wrapper extends. */
+#define FUEL_FINAL_MASK 0xffff22e0U
 #else
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
@@ -40,6 +43,20 @@
 #define ASCD_MAIN 0x80U
 #endif
 #define ASCD_FOREIGN_FLAGS ((uint8_t)~ASCD_MAIN)
+/* The stock RPM fuel-cut state keeps its active cut in one bit, at the
+   position of the layout; the engine reports that bit in the fuel-cut flag,
+   and the other bits of the byte leave the flag clear. */
+#ifdef TARGET_1ND
+#define FUEL_CUT_ACTIVE 0x20U
+#elif defined(TARGET_1ME3B)
+#define FUEL_CUT_ACTIVE 0x08U
+#elif defined(TARGET_JK78)
+#define FUEL_CUT_ACTIVE 0x10U
+#elif defined(TARGET_8MFK)
+#define FUEL_CUT_ACTIVE 0x40U
+#else
+#define FUEL_CUT_ACTIVE 0x04U
+#endif
 #define SPEED 0xffff110eU
 #define RPM 0xffff11bcU
 #define PEDAL 0xffff2672U
@@ -247,6 +264,9 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     ram_pointer(COOLANT)[0] = 100;
     ram_pointer(FORMER_BRAKE_STATUS)[0] = 0;
     ram_pointer(FUEL_CUT_STATUS)[0] = 0;
+#ifdef TARGET_VQ37_ROLLING
+    ram_pointer(FUEL_FINAL_MASK)[0] = 0;
+#endif
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
     write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
@@ -825,13 +845,28 @@ static int run_activation_cases(void)
 
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
-    ram_pointer(FUEL_CUT_STATUS)[0] = 0x04;
+    ram_pointer(FUEL_CUT_STATUS)[0] = FUEL_CUT_ACTIVE;
     run_engine();
     state = ram_pointer(RL_STATE);
     if (read_u16(state + 2) != FLAGS_RPM_FUEL_CUT_ACTIVE)
         return fail_value(
             "activate-fuel-cut", "flags", read_u16(state + 2),
             FLAGS_RPM_FUEL_CUT_ACTIVE);
+
+    /* Every other bit of the state byte leaves the flag clear, and on the
+       VQ37VHR layouts so does a final mask that inhibits all six cylinders,
+       as the wrapper leaves it after a Rolling Launch request. */
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    ram_pointer(FUEL_CUT_STATUS)[0] = (uint8_t)~FUEL_CUT_ACTIVE;
+#ifdef TARGET_VQ37_ROLLING
+    ram_pointer(FUEL_FINAL_MASK)[0] = 0x3fU;
+#endif
+    run_engine();
+    if (read_u16(state + 2) != FLAGS_RPM_ACTIVE)
+        return fail_value(
+            "activate-fuel-cut-other-bits", "flags", read_u16(state + 2),
+            FLAGS_RPM_ACTIVE);
     return 1;
 }
 
@@ -1368,15 +1403,20 @@ static int run_fuel_wrapper_cases(void)
         reset_case(MODE_RPM_HOLD, 0x01);
         state = ram_pointer(RL_STATE);
         write_u16(state + FUEL_REQUEST_OFFSET, test->request);
-        ram_pointer(FUEL_CUT_STATUS)[0] = 0x12U;
+        ram_pointer(FUEL_FINAL_MASK)[0] = 0x12U;
+        ram_pointer(FUEL_CUT_STATUS)[0] = FUEL_CUT_ACTIVE;
         returned = invoke_r0(FUEL_CUT_WRAPPER);
         if (returned != 0x80U)
             return fail_value(
                 test->name, "stock_return", returned, 0x80U);
-        if (ram_pointer(FUEL_CUT_STATUS)[0] != test->expected_mask)
+        if (ram_pointer(FUEL_FINAL_MASK)[0] != test->expected_mask)
             return fail_value(
                 test->name, "fuel_mask",
-                ram_pointer(FUEL_CUT_STATUS)[0], test->expected_mask);
+                ram_pointer(FUEL_FINAL_MASK)[0], test->expected_mask);
+        if (ram_pointer(FUEL_CUT_STATUS)[0] != FUEL_CUT_ACTIVE)
+            return fail_value(
+                test->name, "fuel_cut_state",
+                ram_pointer(FUEL_CUT_STATUS)[0], FUEL_CUT_ACTIVE);
         if (read_u16(state + FUEL_REQUEST_OFFSET) != test->request)
             return fail_value(
                 test->name, "fuel_request",
@@ -1413,22 +1453,22 @@ int main(void)
 #ifdef TARGET_VQ37_ROLLING
     if (!run_fuel_wrapper_cases())
         return 1;
-    if (case_count != 125U)
-        return fail_value("summary", "case_count", case_count, 125);
+    if (case_count != 126U)
+        return fail_value("summary", "case_count", case_count, 126);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=27 config=24 threshold=4 activation=5 "
+        "structural=11 gates=27 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 entries=9\n",
         (unsigned long)case_count);
 #else
-    if (case_count != 122U)
-        return fail_value("summary", "case_count", case_count, 122);
+    if (case_count != 123U)
+        return fail_value("summary", "case_count", case_count, 123);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=27 config=24 threshold=4 activation=5 "
+        "structural=11 gates=27 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "entries=8\n",
         (unsigned long)case_count);

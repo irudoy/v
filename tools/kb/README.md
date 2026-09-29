@@ -398,9 +398,10 @@ model and with the standard library alone, since the firmware gate imports
 the module with the Python of its container: the addresses of the `symbols`
 of the `7mfk` targets with the `can_telemetry` numbers and record words, the
 per-layout key of each hook of a `map_switching` target by the `7mfk` word of
-its meaning, the keys of a target, and the number of a named bit on a
-layout, which the `[[bit]]` of the symbol entry of the layout gives, or else
-that of the meaning. The adapter of the address profiles reads the same key
+its meaning, the keys of a target, the meaning that fills a key of a target
+on a layout, which the `symbols` of the target give, or else its role, and
+the number of a named bit on a layout, which the `[[bit]]` of the symbol
+entry of the layout gives, or else that of the meaning. The adapter of the address profiles reads the same key
 tables and hooks for the model before a conversion.
 
 ## Matchers

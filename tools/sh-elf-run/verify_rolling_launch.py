@@ -35,7 +35,7 @@ EXPECTED_COMPOSITION_WRITE_BYTES = 2328
 EXPECTED_INSTRUCTION_COUNT = 878
 EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 122
+EXPECTED_DYNAMIC_CASES = 123
 RETURN_STUB = bytes.fromhex("000b0009")
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
@@ -235,8 +235,8 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=122 "
-        "structural=11 gates=27 config=24 threshold=4 activation=5 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=123 "
+        "structural=11 gates=27 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 entries=8"
     )
     if marker not in result.stdout:

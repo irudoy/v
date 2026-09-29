@@ -80,7 +80,8 @@ rolling_symbol,ascd_state,ffff41ae,fffeb823,,,mapped,Selector reads this ASCD st
 rolling_symbol,button_state,ffff2a85,fffe9ad3,,,mapped,Selector reads this button byte
 rolling_symbol,coolant_index,ffff1077,fffe8077,,,mapped,Coolant activation index is recovered from target consumers
 rolling_symbol,fuel_cut_coordinator,,000760cc,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
-rolling_symbol,fuel_inhibit,ffff2497,fffe92e4,,,target-specific,Sole coordinator 000760cc publishes the final six-cylinder inhibit mask here
+rolling_symbol,fuel_inhibit,ffff2497,fffe94ba,,,target-specific,The rev-limit fuel-cut state machine 00076ad2 keeps the arm and the active cut in this byte
+rolling_symbol,fuel_inhibit_mask,ffff22e0,fffe92e4,,,mapped,Multiple homologous fuel-control functions use this mask
 rolling_symbol,pedal,ffff2672,fffe96c8,,,mapped,Pedal activation source is recovered from target consumers
 rolling_symbol,periodic_task_slot,00021970,0002205c,,,mapped,Entry 1 of the homologous 148-entry scheduler table at 00022058 binds the periodic wrapper
 rolling_symbol,periodic_task_table,0002196c,00022058,,,mapped,Homologous 148-entry periodic task table walked by the scheduler

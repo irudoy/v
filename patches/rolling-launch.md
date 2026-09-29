@@ -441,6 +441,15 @@ observed stock and effective ignition commands, and the captured retard-band
 start. VQ37 extends the record to 24 bytes with the exact fuel request and one
 cleared reserved word. The nine diagnostic views retain the same offsets.
 
+The fuel-cut flag of an active state reports the active cut bit of the stock
+RPM fuel-cut state of the target: bit 2 of the main RPM fuel-cut state byte
+on JK00A, JK03A, JK03B, and JK08A, bit 6 on JK00C and JK00D, and the active
+bit of the native rev-limit state byte on VQ37: bit 4 on JK78C, bit 5 on 1ND0A
+and 1ND3B, and bit 3 on 1ME3B. The other bits of the byte leave the flag
+clear. On VQ37 the Rolling Launch request reaches the final six-cylinder mask
+through the coordinator wrapper and leaves the state byte unchanged, so the
+flag reports only the stock rev-limit cut.
+
 Raw engineering DIDs expose nine two-byte views:
 
 | DID | View |

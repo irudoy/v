@@ -75,7 +75,8 @@ rolling_symbol,ascd_state,ffff41ae,ffff450b,,,mapped,"The MAIN switch block of 0
 rolling_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
 rolling_symbol,coolant_index,ffff1077,ffff106d,,,mapped,Coolant activation index is recovered from target consumers
 rolling_symbol,fuel_cut_coordinator,,0006a9b0,,,target-specific,Complete coordinator aggregates stock conditions before its sole final-mask store
-rolling_symbol,fuel_inhibit,ffff2497,ffff223c,,,target-specific,Sole coordinator 0006a9b0 publishes the final six-cylinder inhibit mask here
+rolling_symbol,fuel_inhibit,ffff2497,ffff23f5,,,target-specific,The rev-limit fuel-cut state machine 0006aeb8 keeps the arm and the active cut in this byte
+rolling_symbol,fuel_inhibit_mask,ffff22e0,ffff223c,,,mapped,Aligned diagnostic pointer table preserves the inhibit mask position
 rolling_symbol,pedal,ffff2672,ffff25d0,,,mapped,Pedal activation source is recovered from target consumers
 rolling_symbol,periodic_task_slot,00021970,00021a4c,,,mapped,Entry 0 of the homologous 144-entry scheduler table at 00021a4c binds the periodic wrapper
 rolling_symbol,periodic_task_table,0002196c,00021a4c,,,mapped,Homologous 144-entry periodic task table walked by the scheduler

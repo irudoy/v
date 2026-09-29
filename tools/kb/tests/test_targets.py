@@ -46,6 +46,33 @@ class TargetsTest(unittest.TestCase):
             targets.address("exhaust_cvtc_target_lookup/hook", "7mfk")],
             "intake_cvtc_target_lookup")
 
+    def test_the_meaning_of_a_key_is_that_of_its_symbol_or_its_role(self):
+        m = model()
+        layouts = sorted(layout for feature, layout in m.targets
+                         if feature == "rolling_launch")
+        self.assertEqual(layouts, ["1me3b", "1nd", "7mfk", "jk00c", "jk00d", "jk78c"])
+        for layout in layouts:
+            props = m.targets[("rolling_launch", layout)].props
+            held = dict(props.get("symbols", {}))
+            held.update((key, role["symbol"])
+                        for key, role in props.get("roles", {}).items())
+            for key, symbol in held.items():
+                with self.subTest(layout=layout, key=key):
+                    self.assertEqual(targets.meaning("rolling_launch", layout, key),
+                                     m.meaning_of(symbol).key)
+        # On the VQ37VHR layouts the state byte of the native rev-limit fuel
+        # cut fills the key of the fuel inhibit state, and the final inhibit
+        # mask is a key of its own.
+        self.assertEqual(targets.meaning("rolling_launch", "7mfk", "fuel_inhibit"),
+                         "fuel_inhibit/ram")
+        self.assertEqual(targets.meaning("rolling_launch", "1nd", "fuel_inhibit"),
+                         "rev_fuel_cut_state/ram")
+        self.assertEqual(targets.meaning("rolling_launch", "1nd", "fuel_inhibit_mask"),
+                         "fuel_inhibit_mask/ram")
+        with self.assertRaises(KbError) as missing:
+            targets.meaning("rolling_launch", "7mfk", "no_such_key")
+        self.assertEqual(missing.exception.code, 3)
+
     def test_an_image_has_the_layout_of_its_family(self):
         self.assertEqual(targets.layout_of("1ND3B"), "1nd")
         self.assertEqual(targets.layout_of("JK08A"), "7mfk")

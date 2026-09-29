@@ -111,12 +111,15 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(m.meaning_of(target).symbols["7mfk"].address, 0xFFFF22E0)
         self.assertNotIn("1nd", m.meaning_of(state).symbols)
 
-    def test_a_target_specific_row_onto_a_mapped_symbol_binds_a_role(self):
+    def test_a_key_that_another_meaning_fills_on_a_layout_binds_a_role(self):
         m = model()
-        role = m.targets[("rolling_launch", "1nd")].props["roles"]["fuel_inhibit"]
-        self.assertEqual(role["symbol"], SymbolKey("1nd", "ram", 0xFFFE92E4))
-        self.assertIn("final six-cylinder inhibit mask", role["note"])
-        self.assertEqual(m.meaning_of(role["symbol"]).key, "fuel_inhibit_mask/ram")
+        rolling = m.targets[("rolling_launch", "1nd")].props
+        role = rolling["roles"]["fuel_inhibit"]
+        self.assertEqual(role["symbol"], SymbolKey("1nd", "ram", 0xFFFE94BA))
+        self.assertIn("the arm and the active cut", role["note"])
+        self.assertEqual(m.meaning_of(role["symbol"]).key, "rev_fuel_cut_state/ram")
+        self.assertEqual(rolling["symbols"]["fuel_inhibit_mask"],
+                         SymbolKey("1nd", "ram", 0xFFFE92E4))
         state = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF2497))
         self.assertEqual((state.key, sorted(state.symbols)),
                          ("fuel_inhibit/ram", ["7mfk", "jk00c", "jk00d"]))

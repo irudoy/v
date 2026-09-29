@@ -4,8 +4,9 @@ files without compiling the model (tools/kb/SPEC.md, section 20.3).
 `patches/runtime_targets.py` relocates the canonical runtime, whose sources
 and layouts use `7mfk` addresses, onto every other layout. It takes here the
 `7mfk` values of the key tables of the feature targets, the per-layout keys
-of the hooks of a target by their `7mfk` words, the keys of a target, and
-the named bits that its payloads test.
+of the hooks of a target by their `7mfk` words, the keys of a target, the
+meaning that fills a key on a layout, and the named bits that its payloads
+test.
 The functions read only the files they name and use only the standard
 library and the modules of this package that do, since the firmware gate
 imports them with the Python of its container.
@@ -64,6 +65,18 @@ def symbol(ref, layout, root=repo.ROOT, overlay=None):
 
 def address(ref, layout, root=repo.ROOT, overlay=None):
     return int(symbol(ref, layout, root, overlay)["address"], 16)
+
+
+def meaning(feature, layout, key, root=repo.ROOT, overlay=None):
+    """The meaning that fills a key of the target of a feature on a layout:
+    that of the key in `symbols`, or else that of its role."""
+    held = target(feature, layout, root, overlay)
+    if key in held.get("symbols", {}):
+        return held["symbols"][key]
+    role = held.get("roles", {}).get(key)
+    if role is None:
+        raise KbError(f"{feature}: no key {key} on {layout}", code=3)
+    return role["symbol"]
 
 
 def bit(ref, layout, name, root=repo.ROOT, overlay=None):

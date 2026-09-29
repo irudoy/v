@@ -6,6 +6,7 @@ import pytest
 
 from patches import can_telemetry_assembly
 from patches import map_switching_assembly
+from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
@@ -34,6 +35,26 @@ def test_the_module_reads_kb_with_the_standard_library_alone():
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
+    # The canonical sources and the reference contract of the JK08A runtime
+    # test the named bits of 7mfk and extend the 7mfk final inhibit mask.
+    assert runtime_targets.CANONICAL_ASCD_MAIN_MASK == (
+        runtime_targets.ascd_main_mask("7mfk")
+    )
+    assert runtime_targets.CANONICAL_FUEL_CUT_ACTIVE_MASK == (
+        runtime_targets.fuel_cut_active_mask("7mfk")
+    )
+    assert rolling_launch.ASCD_ACTIVE_MASK == (
+        runtime_targets.ascd_main_mask("7mfk")
+    )
+    assert rolling_launch.FUEL_CUT_ACTIVE_MASK == (
+        runtime_targets.fuel_cut_active_mask("7mfk")
+    )
+    assert runtime_targets.CANONICAL_FUEL_FINAL_MASK == (
+        runtime_targets.kb_targets.address("fuel_inhibit_mask/ram", "7mfk")
+    )
 
 
 def test_the_ignition_state_template_names_the_adapter_source_numbers():
@@ -665,3 +686,47 @@ def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
     assert engine.count(
         f"mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n"
     ) == 1
+
+
+@pytest.mark.parametrize(
+    ("rom", "mask", "state", "final"),
+    (
+        ("JK00C", 0x40, 0xFFFF251F, None),
+        ("JK00D", 0x40, 0xFFFF2527, None),
+        ("JK78C", 0x10, 0xFFFF23F5, 0xFFFF223C),
+        ("1ND0A", 0x20, 0xFFFE94BA, 0xFFFE92E4),
+        ("1ME3B", 0x08, 0xFFFE948A, 0xFFFE92B0),
+    ),
+)
+def test_the_engine_reports_the_active_cut_bit_of_the_target(
+    rom, mask, state, final
+):
+    # The fuel-cut flag follows the active cut of the stock RPM fuel-cut
+    # state of the layout: the 8MFK state machine on the dual-CVTC layouts
+    # and the native rev-limit state machine on the VQ37VHR layouts, whose
+    # coordinator wrapper extends the final inhibit mask instead.
+    target = runtime_targets.load_runtime_target(rom)
+    layout = runtime_targets.kb_targets.layout_of(rom)
+    engine = target.rolling_layout.source_text_by_unit["engine"]
+    wrapper = target.rolling_layout.source_text_by_unit.get(
+        "fuel_cut_wrapper"
+    )
+    meaning = runtime_targets.kb_targets.meaning(
+        "rolling_launch", layout, runtime_targets.FUEL_CUT_KEY
+    )
+
+    assert runtime_targets.fuel_cut_active_mask(layout) == mask
+    assert runtime_targets.kb_targets.address(meaning, layout) == state
+    assert engine.count(
+        f"mov.b @r4,r0\nand 0x{mask:02X},r0\ntst r0,r0\n"
+        "bt rl_active_flags_store\n"
+    ) == 1
+    assert f"rl_helper_fuel_cut_status:\n.long 0x{state:08X}\n" in engine
+    assert (wrapper is None) == (final is None)
+    if final is not None:
+        assert runtime_targets.kb_targets.address(
+            "fuel_inhibit_mask/ram", layout
+        ) == final
+        assert (
+            f"rl_fuel_final_mask_address:\n.long 0x{final:08X}\n" in wrapper
+        )

@@ -186,6 +186,23 @@ class RollingLaunchTest(unittest.TestCase):
             saturated.state.retard_band_start_native, 0xFFF8
         )
 
+    def test_the_fuel_cut_flag_follows_the_active_cut_bit_alone(self):
+        for status, expected in (
+            (rl.FUEL_CUT_ACTIVE_MASK, True),
+            (0xFF, True),
+            (0xFF ^ rl.FUEL_CUT_ACTIVE_MASK, False),
+            (0x00, False),
+        ):
+            with self.subTest(status=status):
+                inputs = dataclasses.replace(
+                    self.inputs, fuel_cut_status=status
+                )
+                result = rl.step(rl.RuntimeState(), inputs, self.calibration)
+                self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
+                self.assertEqual(
+                    bool(result.state.flags & rl.Flag.FUEL_CUT), expected
+                )
+
     def test_adaptive_hysteresis_and_retard_ramp_use_min_ratio_and_max(self):
         calibration = dataclasses.replace(
             self.calibration,

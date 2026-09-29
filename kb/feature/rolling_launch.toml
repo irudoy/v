@@ -85,9 +85,9 @@ replacement = "0013c8a0"
 
 [target.roles.fuel_inhibit]
 note = """
-Sole coordinator 0007a740 publishes the final six-cylinder inhibit mask \
-here"""
-symbol = "fuel_inhibit_mask/ram"
+The rev-limit fuel-cut state machine 0007b1a0 keeps the arm and the active \
+cut in this byte"""
+symbol = "rev_fuel_cut_state/ram"
 
 [target.symbols]
 apc_mode = "apc_mode/ram"
@@ -96,6 +96,7 @@ ascd_state = "ascd_state/ram"
 button_state = "button_state/ram"
 coolant_index = "coolant_index/ram"
 fuel_cut_coordinator = "fuel_cut_coordinator/fn"
+fuel_inhibit_mask = "fuel_inhibit_mask/ram"
 pedal = "pedal/ram"
 periodic_task_slot = "displaced_periodic_task/hook"
 periodic_task_table = "periodic_task_table/const"
@@ -192,9 +193,9 @@ replacement = "001338a0"
 
 [target.roles.fuel_inhibit]
 note = """
-Sole coordinator 000760cc publishes the final six-cylinder inhibit mask \
-here"""
-symbol = "fuel_inhibit_mask/ram"
+The rev-limit fuel-cut state machine 00076ad2 keeps the arm and the active \
+cut in this byte"""
+symbol = "rev_fuel_cut_state/ram"
 
 [target.symbols]
 apc_mode = "apc_mode/ram"
@@ -203,6 +204,7 @@ ascd_state = "ascd_state/ram"
 button_state = "button_state/ram"
 coolant_index = "coolant_index/ram"
 fuel_cut_coordinator = "fuel_cut_coordinator/fn"
+fuel_inhibit_mask = "fuel_inhibit_mask/ram"
 pedal = "pedal/ram"
 periodic_task_slot = "displaced_periodic_task/hook"
 periodic_task_table = "periodic_task_table/const"
@@ -500,9 +502,9 @@ replacement = "0001e2a0"
 
 [target.roles.fuel_inhibit]
 note = """
-Sole coordinator 0006a9b0 publishes the final six-cylinder inhibit mask \
-here"""
-symbol = "fuel_inhibit_mask/ram"
+The rev-limit fuel-cut state machine 0006aeb8 keeps the arm and the active \
+cut in this byte"""
+symbol = "rev_fuel_cut_state/ram"
 
 [target.symbols]
 apc_mode = "apc_mode/ram"
@@ -511,6 +513,7 @@ ascd_state = "ascd_state/ram"
 button_state = "button_state/ram"
 coolant_index = "coolant_index/ram"
 fuel_cut_coordinator = "fuel_cut_coordinator/fn"
+fuel_inhibit_mask = "fuel_inhibit_mask/ram"
 pedal = "pedal/ram"
 periodic_task_slot = "displaced_periodic_task/hook"
 periodic_task_table = "periodic_task_table/const"

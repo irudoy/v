@@ -264,7 +264,7 @@ def _install_stock_stubs(fixture, target):
                 target.rom
             )
             mask_alias = base_verifier.alias_high_ram(
-                profile.rolling_symbol_by_key["fuel_inhibit"]
+                profile.rolling_symbol_by_key["fuel_inhibit_mask"]
             )
             coordinator = rolling_hooks["fuel_cut_coordinator"].stock
             stubs[coordinator] = _fuel_coordinator_stub(
@@ -543,14 +543,14 @@ def _run_harnesses(target, fixture, build_dir):
             target.rolling_layout.variant == "vq37-fuel-coordinator"
         )
         rolling_marker = (
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=125 "
-            "structural=11 gates=27 config=24 threshold=4 activation=5 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=126 "
+            "structural=11 gates=27 config=24 threshold=4 activation=6 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "fuel_coordinator=3 entries=9"
             if vq37_rolling
             else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=122 "
-            "structural=11 gates=27 config=24 threshold=4 activation=5 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=123 "
+            "structural=11 gates=27 config=24 threshold=4 activation=6 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "entries=8"
         )
@@ -564,6 +564,10 @@ def _run_harnesses(target, fixture, build_dir):
             rolling_marker,
             defines=(
                 ("TARGET_VQ37_ROLLING",) if vq37_rolling else ()
+            ) + (
+                ("TARGET_8MFK",)
+                if target.rom in runtime_targets.RELOCATED_8MFK_ROMS
+                else ()
             ) + (
                 (VQ37_MAP_HARNESS_BY_VARIANT[target.map_layout.variant][0],)
                 if target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT

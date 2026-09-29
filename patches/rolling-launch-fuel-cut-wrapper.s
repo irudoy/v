@@ -37,4 +37,4 @@ rl_fuel_stock_coordinator:
 rl_fuel_state_address:
 .long 0xFFFF5D40
 rl_fuel_final_mask_address:
-.long 0xFFFF2497
+.long 0xFFFF22E0

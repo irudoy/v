@@ -56,7 +56,14 @@ The gate performs these checks:
    ASCD flag byte at the position of its layout: bit 7 on JK08A, JK00C, and
    JK00D, bit 4 on JK78C, bit 5 on 1ND, and bit 1 on 1ME3B. One selector case
    and one Rolling Launch gate case set every other bit of the byte, which
-   neither aborts the selector nor fails the gate. The
+   neither aborts the selector nor fails the gate. The Rolling Launch
+   fuel-cut flag cases set the active cut bit of the stock RPM fuel-cut state
+   of each target: bit 2 on JK08A, bit 6 on JK00C and JK00D, and the active
+   bit of the native rev-limit state byte on the VQ37 targets, bit 4 on
+   JK78C, bit 5 on 1ND, and bit 3 on 1ME3B. One case sets every other bit of
+   the byte, and on the VQ37 targets a final mask that inhibits all six
+   cylinders, and requires the flag clear; the VQ37 fuel coordinator cases
+   require the state byte unchanged. The
    VQ37 ignition cases select all five slots of the two executed 16x16
    surfaces. The 1ND and JK78C cases pass the three equal-byte surfaces of the
    gated coordinator half, which the 1ME3B coordinator does not carry, through

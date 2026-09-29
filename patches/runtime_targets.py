@@ -101,6 +101,16 @@ IGNITION_STATE_FAMILY_NAMES = {
 # canonical layout, and each target tests the bit of its own layout.
 ASCD_STATE = "ascd_state/ram"
 CANONICAL_ASCD_MAIN_MASK = 0x80
+# The Rolling Launch engine reports the fuel-cut flag while the active cut bit
+# of the stock RPM fuel-cut state is set, in the meaning that fills the key
+# fuel_inhibit of the rolling_launch target of each layout. The canonical
+# engine tests the bit of the canonical layout, and each target tests the bit
+# of its own layout.
+FUEL_CUT_KEY = "fuel_inhibit"
+CANONICAL_FUEL_CUT_ACTIVE_MASK = 0x04
+# The VQ37VHR fuel coordinator wrapper extends the final six-cylinder inhibit
+# mask, which its source names by the canonical address.
+CANONICAL_FUEL_FINAL_MASK = 0xFFFF22E0
 
 
 class RuntimeTargetError(ValueError):
@@ -514,18 +524,26 @@ def ascd_main_mask(layout):
     return 1 << _kb(kb_targets.bit, ASCD_STATE, layout, "main")
 
 
-def _ascd_mask_source(source, profile, canonical, template, context):
-    """Bind the test of the ASCD MAIN switch bit, which the canonical source
-    makes at the bit of the canonical layout, to the bit of the target
+@lru_cache(maxsize=None)
+def fuel_cut_active_mask(layout):
+    """The mask of the active cut bit of the stock RPM fuel-cut state on a
     layout."""
-    home = ascd_main_mask(kb_targets.CANONICAL)
-    if home != CANONICAL_ASCD_MAIN_MASK:
+    meaning = _kb(kb_targets.meaning, "rolling_launch", layout, FUEL_CUT_KEY)
+    return 1 << _kb(kb_targets.bit, meaning, layout, "active")
+
+
+def _mask_source(
+    source, profile, mask_of, canonical_mask, canonical, template, context
+):
+    """Bind a bit test, which the canonical source makes at the bit of the
+    canonical layout, to the bit of the target layout."""
+    home = mask_of(kb_targets.CANONICAL)
+    if home != canonical_mask:
         raise RuntimeTargetError(
-            f"{context}: the canonical source tests "
-            f"0x{CANONICAL_ASCD_MAIN_MASK:02X}, and the MAIN bit of "
-            f"{kb_targets.CANONICAL} is 0x{home:02X}"
+            f"{context}: the canonical source tests 0x{canonical_mask:02X}, "
+            f"and the bit of {kb_targets.CANONICAL} is 0x{home:02X}"
         )
-    mask = ascd_main_mask(_kb(kb_targets.layout_of, profile.rom))
+    mask = mask_of(_kb(kb_targets.layout_of, profile.rom))
     if mask == home:
         return _replace_source_once(source, canonical, canonical, context)
     return _replace_source_once(
@@ -534,9 +552,11 @@ def _ascd_mask_source(source, profile, canonical, template, context):
 
 
 def _render_selector_host(profile, mapping):
-    source = _ascd_mask_source(
+    source = _mask_source(
         _read_source("map-switching-selector-host.s"),
         profile,
+        ascd_main_mask,
+        CANONICAL_ASCD_MAIN_MASK,
         "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n",
         "mov #0x{mask:02X},r1\ntst r1,r0\nbf host_abort_selector\n",
         "selector host ASCD MAIN bit",
@@ -565,12 +585,24 @@ def _render_rolling_engine(profile, mapping, source_name, vq37):
     source = _read_source(source_name)
     if vq37:
         source = _vq37_rolling_engine_source(source)
-    source = _ascd_mask_source(
+    source = _mask_source(
         source,
         profile,
+        ascd_main_mask,
+        CANONICAL_ASCD_MAIN_MASK,
         "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n",
         "mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n",
         "Rolling Launch ASCD MAIN bit",
+    )
+    source = _mask_source(
+        source,
+        profile,
+        fuel_cut_active_mask,
+        CANONICAL_FUEL_CUT_ACTIVE_MASK,
+        "mov.b @r4,r0\nand 0x04,r0\ntst r0,r0\nbt rl_active_flags_store\n",
+        "mov.b @r4,r0\nand 0x{mask:02X},r0\ntst r0,r0\n"
+        "bt rl_active_flags_store\n",
+        "Rolling Launch fuel-cut active bit",
     )
     return _render_source(source, profile, mapping)
 
@@ -1234,7 +1266,10 @@ def _project_rolling(
             {
                 0x000A0000: profile.rolling_symbol_by_key[
                     "fuel_cut_coordinator"
-                ]
+                ],
+                CANONICAL_FUEL_FINAL_MASK: profile.rolling_symbol_by_key[
+                    "fuel_inhibit_mask"
+                ],
             },
         )
     code_regions = [
