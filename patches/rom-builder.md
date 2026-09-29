@@ -150,11 +150,10 @@ application-RAM sources. The audited erased ROM envelope is
 `0xFFFF0C00..0xFFFF0F00`. The adapter, limiter, Rolling Launch, and telemetry
 contract equals the 1ND contract. The compiler lays out the bitfield status
 bytes of this image independently: the active and armed flags of the native
-fuel-cut state byte are bits 3 and 2, and the ASCD-enabled flag is bit 3 of
-`0xFFFEB985`, which the profile declares as `ascd_enabled_mask`. Bytes tested
-through explicit masks keep the 1ND layout. Rolling Launch wraps the final-mask
-coordinator `0x07A740`. Telemetry uses mailbox 26 and the same
-register-preserving completion wrapper.
+fuel-cut state byte are bits 3 and 2, and the MAIN switch bit of the ASCD flag
+byte `0xFFFEB985` is bit 1. Bytes tested through explicit masks keep the 1ND
+layout. Rolling Launch wraps the final-mask coordinator `0x07A740`. Telemetry
+uses mailbox 26 and the same register-preserving completion wrapper.
 
 The JK78C runtime uses a uniform ROM relocation of `-0xB5600` from the VQ37
 assembly layout and a RAM relocation of `-0x5100`, with explicit nonuniform
@@ -188,6 +187,9 @@ of JK08A and the stock alternate selection of the other targets:
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. The JK08A values of the key tables of the feature targets and the
 hook keys of each map target come from the entity files through `kb.targets`.
+The selector host and the Rolling Launch engine test the named bit `main` of
+`ascd_state/ram` on each layout: bit 7 on JK08A, JK00C, and JK00D, bit 4 of
+`0xFFFF450B` on JK78C, bit 5 on 1ND0A and 1ND3B, and bit 1 on 1ME3B.
 `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
 the capability-specific stage hashes for each exact relocated stock image.
 Regenerate the registry only through:

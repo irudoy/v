@@ -60,7 +60,7 @@ Activation requires every gate to pass in this order:
 3. Rolling Launch is enabled for the active map.
 4. Selector phase, count, and elapsed time are idle.
 5. Visual-feedback pulse, phase, tick, and reserved fields are idle.
-6. Stock ASCD is inactive.
+6. The MAIN switch bit of the stock ASCD flag byte is clear.
 7. The stable button is CANCEL.
 8. Vehicle speed meets the configured minimum; zero disables this gate.
 9. Engine speed meets the configured minimum.

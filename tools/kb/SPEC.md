@@ -291,6 +291,15 @@ for another layout, translates an address whose meaning has a symbol there.
 - `kb merge <a> <b>` joins two symbols at the same layout, kind, and address,
   or two meanings found to be one. The survivor keeps its name; the other name
   becomes a redirect.
+- `kb move <symbol> <layout>:<address>` corrects the address of a symbol on
+  its layout. The entry takes the address and the evidence of the candidate
+  at it that the search of `kb.match` finds from the symbol on the layout of
+  `--from` or from the home symbol, or the stated evidence; its previous full
+  reference becomes its first `former` reference, and every reference and
+  `[[...]]` citation of the entity files to that reference names the new one.
+  The move refuses another layout, the home symbol as the start of its own
+  search, and a location that holds a symbol of another meaning, which `kb
+  merge` joins.
 - `kb move <symbol> <meaning>` corrects a wrong homology. The symbol takes the
   target meaning's name if it has one and keeps its generated name otherwise;
   its previous reference becomes a redirect.
@@ -386,7 +395,7 @@ Keys by kind:
 | `ram`, `reg` | `width` | Access width in bits: 8, 16, or 32 |
 | | `signed` | Two's complement when true |
 | | `unit`, `scale`, `to_raw`, `scale_level` | [Scale](#scale) |
-| | `[[bit]]` | Named bits of a bit field: `bit`, `name`, `summary`, `level`, and `[[bit.evidence]]` |
+| | `[[bit]]` | Named bits of a bit field: `bit`, `name`, `summary`, `level`, and `[[bit.evidence]]`; the `[[bit]]` of a symbol replaces the bits of the meaning on its layout |
 | | `[[value]]` | Named values of an enumeration: `value`, `name`, `summary`, `reachable`, `level`, and `[[value.evidence]]` |
 | `tbl` | `access` | Lookup form: `explicit`, `implicit-2d`, `direct-scalar`, `direct-row-major`, `direct-indexed`, or `compare` |
 | | `cols`, `rows` | Dimensions; a scalar or a flag byte is 1 by 1 |
@@ -1158,7 +1167,7 @@ Options common to the read commands:
 |---|---|
 | `kb new <kind> <layout>:<address>` | A meaning with one symbol, named or with a generated name |
 | `kb new <kind> <slug>` | A designed entity |
-| `kb set <ref> <key>=<value>...` | Keys of an entity or a symbol |
+| `kb set <ref> [--layout <l>] <key>=<value>...` | Keys of an entity, a symbol, or a feature target |
 | `kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>]` | A symbol of an existing meaning on another layout, with evidence |
 | `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>]` | Status `absent` with the evidence that removes the mechanism |
 | `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>]` | Status `unresolved` with the method and target of the search |
@@ -1203,6 +1212,17 @@ references.
   with the candidates. A new symbol of an unnamed meaning draws a generated
   name, and `home` keeps the home of the meaning when the symbol would move
   it. The status of the layout leaves the file.
+- `kb set` writes the keys of a meaning, of the entry of its symbol that the
+  reference or `--layout` names, of a designed entity, or of the target of a
+  feature on `--layout`. A value is a TOML value or else a string, an empty
+  value unsets its key and the tables that the removal empties, and a dotted
+  key names a key of a table; a table joins the held table key by key, and an
+  array of tables such as `[[bit]]` replaces the held one. A meaning takes
+  the keys of its schema besides `former` and its symbols, statuses, links,
+  and analogs; a symbol entry takes the keys of a symbol besides `layout`,
+  `address`, `name`, and `former`; a feature target takes every key besides
+  its layout. A key outside those, a value against its schema, and an unset
+  key that the table lacks are refused.
 - `kb absent` requires evidence.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
@@ -1233,8 +1253,9 @@ references.
   "jk00c:00043f10"`, with the keys of its kind ([Evidence](#76-evidence)).
 
 A batch is a TOML file of `[[op]]` tables, each with `cmd` and the arguments
-of one command under their names: `meaning`, `other`, `symbol`, `layout`,
-`evidence` as an array of tables, `from`, `level`, `method`, `target`,
+of one command under their names: `meaning`, `other`, `symbol`, `ref`,
+`layout`, `to`, `keys` as a table and `unset` as an array of dotted keys for
+`set`, `evidence` as an array of tables, `from`, `level`, `method`, `target`,
 `count`, and `note`. `kb apply` applies all operations or none. Each
 operation resolves its references and searches on the working tree, not on
 the result of an earlier operation of the batch, and edits the files as the
@@ -1307,16 +1328,16 @@ until the stage that replaces them.
 | Check | Requires | Active from stage |
 |---|---|---|
 | `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form | 1 |
-| `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind | 2 |
+| `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name | 2 |
 | `canonical` | Every entity file equals the canonical rendering of its parse | 3 |
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn | 2 |
 | `references` | Every stored reference and every `[[...]]` citation resolves, and none uses a former name | 2 |
 | `symbols` | At most one symbol per layout, kind, and address; at most one symbol or status per meaning and layout; every address lies in the address space of its kind on the MCU of the layout; every `fn` symbol is a function entry of L0 | 2 |
-| `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)) | 3 |
+| `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol | 3 |
 | `levels` | No declared level exceeds its effective level; `code` and `silicon` claims carry grounding evidence; every `hardware` key names a passing record; every `arithmetic` equation holds | Reported by `kb audit` from 2; a gate from 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source | Fields from 4; symbols from 8 |
-| `image-bytes` | `rom-bytes` values, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
+| `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
 | `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
@@ -2415,7 +2436,11 @@ table symbols of the four state-code families in `families` of the `1nd`
 target, and the pointer tables of their `ignition_state_storage` less the
 `rom_delta` of the `1nd` `runtime` target, are the numbers of the adapter
 template before relocation, which the address profile of each target
-replaces.
+replaces. The selector host and the Rolling Launch engine test the named bit
+`main` of `ascd_state/ram`, whose number on each layout `kb.targets` reads
+from the `[[bit]]` of the symbol entry of the layout, or else of the meaning;
+the canonical sources test the `7mfk` bit, and a target whose bit differs
+tests its own.
 
 ### 20.4 VQ37VHR native registries
 
@@ -2771,7 +2796,7 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | 0. Specification | This document | The specification is agreed |
 | 1. L0 in git | The layouts of `rom-images/homology.toml`; normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts, and the instance limit of `tools/kb/config.toml` set from the measurement | Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0 |
 | 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
-| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb bind`, `kb absent`, and `kb unresolved`; the writer gate over L0 | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
+| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`; named bits of bit fields; the writer gate over L0 | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
 | 4. Features on L2 | Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix | Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green |
 | 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
 | 6. Architecture | Stages, blocks, endpoints, and chains become entities, and a step note keeps only its arithmetic; romviz reads the graph and builds the atlas from the symbols of each layout; the atlas searches symbols by name and shows the symbols of a meaning across layouts, statuses, and analogs; block candidates for unplaced functions come from communities over the call graph and shared RAM | The numbers of `architecture.py check` reproduce; every layout with symbols has an atlas |

@@ -38,7 +38,7 @@ EXPECTED_COMPOSITION_CHANGED_BYTES = 5803
 EXPECTED_COMPOSITION_WRITE_BYTES = 6316
 EXPECTED_INSTRUCTION_COUNT = 435
 EXPECTED_CODE_ENTRY_COUNT = 12
-EXPECTED_DYNAMIC_CASES = 131
+EXPECTED_DYNAMIC_CASES = 132
 TEST_RAM_BASE = 0x01000000
 HIGH_RAM_BASE = 0xFFFE8000
 ROM_SIZE = 0x00100000
@@ -383,7 +383,7 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=120,
     )
     marker = (
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=131 selector=17 "
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 "
         "adapters=91 limiter=14 feedback=9 feedback_invocations=17 "
         "entries=12"
     )
@@ -526,6 +526,14 @@ def verify(verbose=False):
         raise VerificationError(
             f"relocated runtime-target executable gate failed: {error}"
         ) from error
+    try:
+        import verify_stock_code
+
+        stock_result = verify_stock_code.verify(verbose=verbose)
+    except Exception as error:
+        raise VerificationError(
+            f"stock-code executable gate failed: {error}"
+        ) from error
     print(
         "VQ_SH_ELF_VERIFY status=PASS"
         f" simulator={EXPECTED_SIMULATOR_VERSION}"
@@ -547,6 +555,9 @@ def verify(verbose=False):
         f" runtime_targets={len(runtime_results)}"
         f" runtime_target_cases="
         f"{sum(item['dynamic_cases'] for item in runtime_results)}"
+        f" stock_code_regions={stock_result['regions']}"
+        f" stock_code_instructions={stock_result['instructions']}"
+        f" stock_code_cases={stock_result['dynamic_cases']}"
         f" ram_literals_relocated={relocated}"
         f" differentiated_bytes={differentiated}"
         f" stock_stubs={stubs}"

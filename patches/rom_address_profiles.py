@@ -84,8 +84,6 @@ IGNITION_STATE_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b"})
 # through the hooked 16x16 literals.
 GATED_IGNITION_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
 SH7059_FAMILIES = frozenset({"sh7059_1nd", "sh7059_1me3b"})
-# Bit of the ASCD state byte that reports an enabled stock cruise control.
-DEFAULT_ASCD_ENABLED_MASK = 0x80
 
 VQ37_MAP_FAMILY_KEYS = frozenset(
     {
@@ -490,7 +488,6 @@ class AddressProfile:
     extra_cvtc_storage: ExtraCvtcStorage | None
     ignition_state_storage: IgnitionStateStorage | None
     evidence: tuple[tuple[str, str], ...]
-    ascd_enabled_mask: int = DEFAULT_ASCD_ENABLED_MASK
     ignition_unreferenced_routine: AddressRange | None = None
 
     @property
@@ -670,13 +667,6 @@ def _extra_storage(row, context):
     return result
 
 
-def _ascd_enabled_mask(value, context):
-    mask = _uint(value, context, maximum=0xFF)
-    if mask == 0 or mask & (mask - 1):
-        raise AddressProfileError(f"{context}: expected a single-bit mask")
-    return mask
-
-
 def _unreferenced_routine(row, context):
     _require_table(row, UNREFERENCED_ROUTINE_KEYS, context)
     result = AddressRange(
@@ -763,9 +753,7 @@ def _profile_fields(capabilities, map_variant, telemetry_unavailable):
     if map_variant in IGNITION_STATE_MAP_VARIANTS:
         expected.add("ignition_state_storage")
     if map_variant == "sh7059-1me3b":
-        expected.update(
-            {"ascd_enabled_mask", "ignition_unreferenced_routine"}
-        )
+        expected.add("ignition_unreferenced_routine")
     if telemetry_unavailable:
         expected.add("telemetry_zero_source")
     return frozenset(expected)
@@ -991,13 +979,6 @@ def _parse_profile(rom, row, context):
             else None
         ),
         evidence=tuple(sorted(evidence.items())),
-        ascd_enabled_mask=(
-            _ascd_enabled_mask(
-                row["ascd_enabled_mask"], f"{context}.ascd_enabled_mask"
-            )
-            if map_variant == "sh7059-1me3b"
-            else DEFAULT_ASCD_ENABLED_MASK
-        ),
         ignition_unreferenced_routine=(
             _unreferenced_routine(
                 row["ignition_unreferenced_routine"],

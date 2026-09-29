@@ -40,14 +40,19 @@
 #define THROTTLE_RUNTIME 0xffff1796U
 #define CURRENT_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
-#ifdef TARGET_1ME3B
-/* 1ME3B packs the ASCD-enabled flag into bit 3 of the status byte; bit 7 of
-   the same byte is an unrelated flag that must not abort the selector. */
-#define ASCD_ENABLED 0x08U
-#define ASCD_FOREIGN_FLAG 0x80U
+/* The ASCD task keeps the MAIN switch state in one bit of this flag byte, at
+   the position of the layout; the other bits hold flags of other ASCD
+   functions, which neither abort the selector nor fail the launch gate. */
+#ifdef TARGET_1ND
+#define ASCD_MAIN 0x20U
+#elif defined(TARGET_1ME3B)
+#define ASCD_MAIN 0x02U
+#elif defined(TARGET_JK78)
+#define ASCD_MAIN 0x10U
 #else
-#define ASCD_ENABLED 0x80U
+#define ASCD_MAIN 0x80U
 #endif
+#define ASCD_FOREIGN_FLAGS ((uint8_t)~ASCD_MAIN)
 #define DIAGNOSTIC_STATUS 0xffff2a84U
 #define PAYLOAD 0xffff3ad5U
 
@@ -386,16 +391,14 @@ static const struct selector_case selector_cases[] = {
         {2, 0, 0, 0, 0, 0, 0, 0},
     },
     {
-        "ascd-abort", {2, 1, 2, 9, 0, 0, 0, 0}, 8, 8, ASCD_ENABLED,
+        "ascd-abort", {2, 1, 2, 9, 0, 0, 0, 0}, 8, 8, ASCD_MAIN,
         {2, 0, 0, 0, 0, 0, 0, 0},
     },
-#ifdef TARGET_1ME3B
     {
-        "ascd-foreign-flag", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 8,
-        ASCD_FOREIGN_FLAG,
+        "ascd-foreign-flags", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 8,
+        ASCD_FOREIGN_FLAGS,
         {1, 1, 2, 8, 0, 0, 0, 0},
     },
-#endif
     {
         "feedback-blocks", {2, 1, 2, 9, 3, 1, 4, 0}, 8, 0, 0,
         {2, 0, 0, 0, 3, 1, 4, 0},
@@ -959,20 +962,20 @@ int main(void)
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
 #ifdef TARGET_1ND
-    if (total_cases != 196U)
-        return fail_value("summary", "case_count", total_cases, 196);
+    if (total_cases != 197U)
+        return fail_value("summary", "case_count", total_cases, 197);
 #elif defined(TARGET_1ME3B)
     if (total_cases != 195U)
         return fail_value("summary", "case_count", total_cases, 195);
 #elif defined(TARGET_VQ37)
-    if (total_cases != 167U)
-        return fail_value("summary", "case_count", total_cases, 167);
+    if (total_cases != 168U)
+        return fail_value("summary", "case_count", total_cases, 168);
 #elif defined(TARGET_DUAL_CVTC)
-    if (total_cases != 139U)
-        return fail_value("summary", "case_count", total_cases, 139);
+    if (total_cases != 140U)
+        return fail_value("summary", "case_count", total_cases, 140);
 #else
-    if (total_cases != 131U)
-        return fail_value("summary", "case_count", total_cases, 131);
+    if (total_cases != 132U)
+        return fail_value("summary", "case_count", total_cases, 132);
 #endif
     if (feedback_invocations != 17U)
         return fail_value(
@@ -980,11 +983,7 @@ int main(void)
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu "
-#ifdef TARGET_1ME3B
         "selector=18 "
-#else
-        "selector=17 "
-#endif
 #ifdef TARGET_1ND
         "adapters=136 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=%lu entries=14\n",

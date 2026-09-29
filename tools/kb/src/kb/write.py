@@ -1,6 +1,6 @@
-"""Write commands (tools/kb/SPEC.md, section 12.3): `bind`, `absent`,
-`unresolved`, `merge`, and `apply`, which applies a batch of them as one
-change.
+"""Write commands (tools/kb/SPEC.md, section 12.3): `set`, `bind`, `absent`,
+`unresolved`, `merge`, `move`, and `apply`, which applies a batch of them as
+one change.
 
 A change edits entity files as documents over the working tree. An operation
 reads the file of its meaning from the change or from the disk, or starts it
@@ -10,6 +10,13 @@ form. A symbol that a file takes leaves `kb/names.csv`: its generated name
 becomes the `name` of its entry in an unnamed meaning, and its other names
 become `former` references.
 
+- `set` writes keys of a meaning, of the entry of one of its symbols, of a
+  designed entity, or of the target of a feature on a layout, after it
+  removes the keys that `unset` names. A table joins the table of its key key
+  by key, another value replaces the value of its key, and a dotted key names
+  a key of a table. The names, symbols, statuses, links, and analogs of a
+  meaning and the place and names of a symbol entry belong to the other
+  commands.
 - `bind` adds the symbol of a meaning on a layout without one. Its evidence is
   stated, or it is the evidence of the candidate that `match.search` finds at
   the address from a symbol of the meaning; a `to` that names a symbol becomes
@@ -27,6 +34,12 @@ become `former` references.
   file join those of the file where they agree, the other file leaves the
   store, and every reference of the entity files to a name of the other
   meaning names the meaning.
+- `move` corrects the address of a symbol on its layout. Its evidence is
+  stated, or it is the evidence of the candidate that `match.search` finds at
+  the address from another symbol of the meaning. The entry keeps its other
+  keys, its previous full reference becomes its first `former` reference, and
+  every reference and `[[...]]` citation of the entity files to that
+  reference names the new one.
 
 `plan` compiles the model with the rendered files in place of those on disk
 and refuses the change with exit code 3 when the result has an issue of a
@@ -47,14 +60,23 @@ from kb.repo import KbError
 
 # The keys of each operation of a batch besides `cmd`, and those it requires.
 COMMANDS = {
+    "set": ("ref", "layout", "keys", "unset"),
     "bind": ("meaning", "symbol", "evidence", "from", "level", "note"),
     "absent": ("meaning", "layout", "evidence", "note"),
     "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
     "merge": ("meaning", "other", "evidence", "from"),
+    "move": ("symbol", "to", "evidence", "from", "level", "note"),
 }
-REQUIRED = {"bind": ("meaning", "symbol"), "absent": ("meaning", "layout", "evidence"),
-            "unresolved": ("meaning", "layout"), "merge": ("meaning", "other")}
+REQUIRED = {"set": ("ref",), "bind": ("meaning", "symbol"),
+            "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
+            "merge": ("meaning", "other"), "move": ("symbol", "to")}
 SEARCH = ("method", "target", "count")
+# The keys that commands other than `set` write: the former names, symbols,
+# statuses, links, and analogs of a meaning, and the place and the names of a
+# symbol entry. A feature target takes every key besides its layout.
+MEANING_OWNED = ("former", *(name for name, _ in store.ARRAYS))
+ENTRY_OWNED = ("layout", "address", "name", "former")
+SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other
 # keys move into a file that lacks them.
 JOINED = ("symbol", "status", "link", "analog", "former", "home")
@@ -77,6 +99,35 @@ def parse_evidence(text):
         return tomllib.loads(f"item = {body}")["item"]
     except tomllib.TOMLDecodeError as error:
         raise KbError(f"evidence {text!r} is no TOML inline table: {error}", code=2) from None
+
+
+def parse_assignments(texts):
+    """(keys, unset) of `<key>=<value>` arguments: a value is a TOML value or
+    else a string, an empty value unsets its key, and a dotted key names a key
+    of a table."""
+    keys, unset = {}, []
+    for text in texts:
+        name, sign, value = text.partition("=")
+        parts = name.strip().split(".")
+        if not sign or not all(store.BARE_KEY.fullmatch(part) for part in parts):
+            raise KbError(f"{text!r} is not <key>=<value> with a bare or dotted key", code=2)
+        if not value:
+            unset.append(".".join(parts))
+            continue
+        try:
+            value = tomllib.loads(f"value = {value}")["value"]
+        except tomllib.TOMLDecodeError:
+            pass
+        table = keys
+        for part in parts[:-1]:
+            table = table.setdefault(part, {})
+            if not isinstance(table, dict):
+                raise KbError(f"{text!r} names a key of {part}, which another argument sets",
+                              code=2)
+        if parts[-1] in table:
+            raise KbError(f"{text!r} sets {'.'.join(parts)} again", code=2)
+        table[parts[-1]] = value
+    return keys, unset
 
 
 def read_batch(path):
@@ -164,6 +215,106 @@ def renamed(value, others, kind, target, key=None):
         return found.group(0)
 
     return CITATION.sub(cite, value), count
+
+
+def relocated(value, old, new, key=None):
+    """(value, count): a value of an entity file with each full reference
+    `old`, a whole string or a `[[...]]` citation, naming `new`, and the count
+    of the references it rewrites; `former` records references and stays."""
+    if key == "former":
+        return value, 0
+    if isinstance(value, dict):
+        found, count = {}, 0
+        for name, item in value.items():
+            found[name], added = relocated(item, old, new, name)
+            count += added
+        return found, count
+    if isinstance(value, list):
+        found, count = [], 0
+        for item in value:
+            item, added = relocated(item, old, new, key)
+            found.append(item)
+            count += added
+        return found, count
+    if not isinstance(value, str):
+        return value, 0
+    if value == old:
+        return new, 1
+    count = 0
+
+    def cite(found):
+        nonlocal count
+        if found.group("ref").strip() != old:
+            return found.group(0)
+        count += 1
+        return f"[[{new}]]"
+
+    return CITATION.sub(cite, value), count
+
+
+def checked(spec, name, value):
+    """A value of the key `name` by the spec of its schema: an array of tables
+    holds tables of its schema, a table takes the keys of its schema and an
+    evidence item those of section 7.6, a hexadecimal or DID key takes an
+    integer, and a level key a level; exit code 2 otherwise."""
+    if isinstance(spec, store.Array):
+        if not isinstance(value, list):
+            raise KbError(f"{name} is an array of tables", code=2)
+        return [checked(spec.table, name, item) for item in value]
+    if isinstance(spec, store.Table):
+        if not isinstance(value, dict):
+            raise KbError(f"{name} is a table", code=2)
+        if spec is store.EVIDENCE:
+            return evidence_item(value)
+        known = [key for key, _ in spec.keys]
+        unknown = sorted(set(value) - set(known))
+        if unknown:
+            raise KbError(f"{name} takes no {', '.join(unknown)}; its keys are "
+                          f"{', '.join(known)}", code=2)
+        return {key: checked(spec.spec(key), f"{name}.{key}", item)
+                for key, item in value.items()}
+    if spec in (store.HEX, store.DID) and (isinstance(value, bool) or not isinstance(value, int)):
+        raise KbError(f"{name} is an integer", code=2)
+    if name.rpartition(".")[2] in checks.LEVEL_KEYS and value not in vocab.LEVELS:
+        raise KbError(f"{name} {value!r}; the levels are {', '.join(vocab.LEVELS)}", code=2)
+    return value
+
+
+def _merged(held, value):
+    """`value` over `held`: two tables join key by key, and another value
+    replaces the held one."""
+    if isinstance(held, dict) and isinstance(value, dict):
+        return {**held, **{key: _merged(held.get(key), item) for key, item in value.items()}}
+    return value
+
+
+def _paths(keys, prefix=""):
+    """The dotted paths of the values that a table of keys writes."""
+    found = []
+    for name, value in keys.items():
+        path = f"{prefix}{name}"
+        found += _paths(value, f"{path}.") if isinstance(value, dict) and value else [path]
+    return found
+
+
+def _unset(table, path, subject):
+    """Remove the key of a dotted path from a table, and the tables that the
+    removal empties; exit code 3 when the table lacks the key."""
+    parts = path.split(".")
+    tables = [table]
+    for part in parts[:-1]:
+        held = tables[-1].get(part)
+        if not isinstance(held, dict):
+            raise KbError(f"{subject} has no {path}", code=3)
+        tables.append(held)
+    if parts[-1] not in tables[-1]:
+        raise KbError(f"{subject} has no {path}", code=3)
+    del tables[-1][parts[-1]]
+    for part, parent, held in zip(reversed(parts[:-1]), reversed(tables[:-1]),
+                                  reversed(tables[1:])):
+        if held:
+            break
+        del parent[part]
 
 
 def _union(items, added):
@@ -275,6 +426,71 @@ class Change:
                 raise
             raise KbError(f"op {number}: {error}", code=error.code) from None
 
+    def set(self, op):
+        keys, unset = op.get("keys") or {}, op.get("unset") or []
+        if not isinstance(keys, dict) or not isinstance(unset, list) \
+                or not all(isinstance(path, str) and path for path in unset):
+            raise KbError("set takes keys as a table and unset as an array of dotted keys",
+                          code=2)
+        if not keys and not unset:
+            raise KbError("set needs keys or unset", code=2)
+        written = _paths(keys)
+        both = sorted(set(written) & set(unset))
+        if both:
+            raise KbError(f"set writes and unsets {', '.join(both)}", code=2)
+        table, specs, subject = self._settable(op["ref"], op.get("layout"))
+        for name in [path.split(".", 1)[0] for path in unset] + list(keys):
+            refused = name == "layout" if specs is None else name not in specs
+            if refused:
+                allowed = "every key besides layout" if specs is None else ", ".join(specs)
+                raise KbError(f"set writes no {name} of {subject}; it writes {allowed}", code=2)
+        for path in unset:
+            _unset(table, path, subject)
+        for name, value in keys.items():
+            spec = specs.get(name) if specs is not None else None
+            table[name] = _merged(table.get(name), checked(spec, name, value))
+        parts = [", ".join(sorted(written))] if written else []
+        parts += [f"unset {', '.join(sorted(unset))}"] if unset else []
+        self.lines.append(f"set {subject}: {'; '.join(parts)}")
+
+    def _settable(self, text, layout):
+        """(table, {key: spec}, subject) of a reference of `set`: a designed
+        entity, the target of a feature on `layout`, whose specs are None
+        since it takes every key besides its layout, a meaning, or the entry
+        of the symbol that the reference or `layout` names."""
+        found = MEANING_REF.fullmatch(str(text).strip())
+        if found and found.group("kind") in store.DESIGNED:
+            kind, slug = found.group("kind"), found.group("name")
+            if (kind, slug) not in self.model.entities:
+                raise KbError(f"no designed entity {slug}/{kind}", code=5)
+            _, document = self.designed(kind, slug)
+            if layout is None:
+                return document, {name: spec for name, spec in store.DESIGNED[kind].keys
+                                  if not isinstance(spec, store.Array)}, f"{slug}/{kind}"
+            if kind != "feature":
+                raise KbError(f"a layout names a target of a feature; {slug}/{kind} is a {kind}",
+                              code=2)
+            layout = self._layout(layout)
+            targets = [entry for entry in document.get("target", ())
+                       if entry.get("layout") == layout]
+            if not targets:
+                raise KbError(f"{slug}/feature has no target on {layout}", code=5)
+            return targets[0], None, f"{slug}/feature on {layout}"
+        meaning, named = self.resolve(text)
+        if layout is not None:
+            layout = self._layout(layout)
+            if named is not None and named.layout != layout:
+                raise KbError(f"{self._ref(named)} lies on {named.layout}, not on {layout}",
+                              code=2)
+            named = meaning.symbols.get(layout)
+            if named is None:
+                raise KbError(f"{meaning.key} has no symbol on {layout}", code=5)
+        _, document = self.document(meaning)
+        if named is None:
+            return document, {name: spec for name, spec in store.schema(meaning.kind).keys
+                              if name not in MEANING_OWNED}, meaning.key
+        return self._entry(meaning, document, named), SYMBOL_KEYS, self._ref(named)
+
     def bind(self, op):
         meaning, named = self.resolve(op["meaning"])
         layout, address = self._location(op["symbol"])
@@ -290,16 +506,7 @@ class Change:
         if op.get("evidence"):
             evidence = [evidence_item(item) for item in op["evidence"]]
         else:
-            source = self._source(meaning, named, op.get("from"))
-            found = match.search(self.model, source, layout)
-            candidate = found.candidates.get(address)
-            if candidate is None:
-                listed = ", ".join(f"{layout}:{other:08x}" for other in sorted(found.candidates))
-                raise KbError(
-                    f"the {found.method} search from {source.key.location} finds "
-                    f"{listed or 'no candidate'} on {layout}, not {key.location}; state the "
-                    "evidence", code=3)
-            evidence = [self._stored(candidate.evidence)]
+            evidence = self._found(self._source(meaning, named, op.get("from")), key)
         path, document = self.document(meaning)
         name = meaning.name if meaning.semantic else self._draw()
         entry = {"layout": layout, "address": f"{address:08x}"}
@@ -478,15 +685,20 @@ class Change:
     def _joining(self, meaning, named, layout, symbol):
         """The evidence of the candidate at the address of a symbol that the
         search from a symbol of the meaning finds on the symbol's layout."""
-        source = self._source(meaning, named, layout)
-        found = match.search(self.model, source, symbol.layout)
-        candidate = found.candidates.get(symbol.address)
+        return self._found(self._source(meaning, named, layout), symbol.key)
+
+    def _found(self, source, key):
+        """The evidence of the candidate at the location of `key` that the
+        search from the symbol `source` finds on its layout; exit code 3 with
+        the candidates when the location is none."""
+        found = match.search(self.model, source, key.layout)
+        candidate = found.candidates.get(key.address)
         if candidate is None:
-            listed = ", ".join(f"{symbol.layout}:{other:08x}" for other in sorted(found.candidates))
+            listed = ", ".join(f"{key.layout}:{other:08x}" for other in sorted(found.candidates))
             raise KbError(
                 f"the {found.method} search from {source.key.location} finds "
-                f"{listed or 'no candidate'} on {symbol.layout}, not {symbol.key.location}; "
-                "state the evidence", code=3)
+                f"{listed or 'no candidate'} on {key.layout}, not {key.location}; state the "
+                "evidence", code=3)
         return [self._stored(candidate.evidence)]
 
     @staticmethod
@@ -573,6 +785,75 @@ class Change:
     @staticmethod
     def _renames(count):
         return f"; {count} reference{'' if count == 1 else 's'} rewritten" if count else ""
+
+    def move(self, op):
+        meaning, named = self.resolve(op["symbol"])
+        if named is None:
+            raise KbError(f"{op['symbol']} names the meaning {meaning.key}; `kb move` takes one "
+                          "of its symbols", code=2)
+        layout, address = self._location(op["to"])
+        if layout != named.layout:
+            raise KbError(f"{self._ref(named)} lies on {named.layout}, not on {layout}; a symbol "
+                          "moves within its layout", code=2)
+        if address == named.address:
+            raise KbError(f"{self._ref(named)} lies at {op['to']}", code=2)
+        key = SymbolKey(layout, meaning.kind, address)
+        held = self.model.symbols.get(key)
+        if held is not None and held.meaning is not None:
+            raise KbError(f"{key.location} is {self._ref(held)}; `kb merge` joins two "
+                          "meanings", code=3)
+        level = op.get("level")
+        if level is not None and level not in vocab.LEVELS:
+            raise KbError(f"level {level!r}; the levels are {', '.join(vocab.LEVELS)}", code=2)
+        if op.get("evidence"):
+            evidence = [evidence_item(item) for item in op["evidence"]]
+        else:
+            source = self._source(meaning, None, op.get("from"))
+            if source is named:
+                raise KbError(f"{self._ref(named)} is the home symbol of {meaning.key}; `from` "
+                              "names the symbol that the search starts from, or the evidence "
+                              "is stated", code=2)
+            evidence = self._found(source, key)
+        path, document = self.document(meaning)
+        entry = self._entry(meaning, document, named)
+        name = entry.get("name") or meaning.name
+        old = f"{name}/{meaning.kind}/{layout}-{entry['address']}"
+        new = f"{name}/{meaning.kind}/{layout}-{address:08x}"
+        entry["address"] = f"{address:08x}"
+        entry["former"] = _union([old], entry.get("former", []))
+        entry["evidence"] = evidence
+        entry.update({item: op[item] for item in ("level", "note") if op.get(item) is not None})
+        count = self._relocate(old, new)
+        self.lines.append(f"move {old} to {key.location}: "
+                          f"{'; '.join(summary(item) for item in evidence)}"
+                          f"{self._renames(count)}")
+
+    def _entry(self, meaning, document, symbol):
+        """The entry of a symbol in the document of its meaning, the one entry
+        of its layout, which an earlier operation of the change may have
+        moved; the symbol of a registry enters the document."""
+        for entry in document.get("symbol", ()):
+            if entry.get("layout") == symbol.layout:
+                return entry
+        entry = self.adopt(meaning, symbol)
+        document["symbol"] = [*document.get("symbol", ()), entry]
+        return entry
+
+    def _relocate(self, old, new):
+        """Rewrite the references of the entity files to the full reference
+        `old` as references to `new`; returns their count."""
+        paths = {path for _, _, path in store.files(self.root, self.model.overlay)}
+        total = 0
+        for path in sorted((paths | set(self.documents)) - self.removed,
+                           key=lambda item: item.as_posix()):
+            document = self.documents.get(path)
+            if document is None:
+                document = store.load(self.root, path, self.model.overlay)
+            document, count = relocated(document, old, new)
+            if count:
+                self.documents[path] = document
+            total += count
+        return total
 
     # Documents -------------------------------------------------------------
 

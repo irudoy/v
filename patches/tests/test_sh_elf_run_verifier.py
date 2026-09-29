@@ -1,6 +1,7 @@
 import importlib.util
 import re
 from pathlib import Path
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -45,6 +46,16 @@ RUNTIME_SPEC = importlib.util.spec_from_file_location(
 )
 RUNTIME_VERIFIER = importlib.util.module_from_spec(RUNTIME_SPEC)
 RUNTIME_SPEC.loader.exec_module(RUNTIME_VERIFIER)
+
+STOCK_MODULE_PATH = ROOT / "tools/sh-elf-run/verify_stock_code.py"
+STOCK_SPEC = importlib.util.spec_from_file_location(
+    "verify_stock_code_sh_elf", STOCK_MODULE_PATH
+)
+STOCK_VERIFIER = importlib.util.module_from_spec(STOCK_SPEC)
+# The dataclasses of the module resolve their annotations through the module
+# registry.
+sys.modules[STOCK_SPEC.name] = STOCK_VERIFIER
+STOCK_SPEC.loader.exec_module(STOCK_VERIFIER)
 
 
 class ShElfRunVerifierTest(unittest.TestCase):
@@ -475,6 +486,66 @@ mov #0x5,r1
         self.assertIn("vq37_native_fuel_cut", verifier)
         self.assertIn("TELEMETRY_TAIL_CHAIN", telemetry_harness)
         self.assertIn("RTE_STUB", verifier)
+
+    def test_stock_fixture_keeps_the_region_and_aliases_its_pool(self):
+        for region in STOCK_VERIFIER.REGIONS:
+            with self.subTest(region=region.key):
+                image = STOCK_VERIFIER.stock_image(region.rom)
+                fixture = STOCK_VERIFIER.build_fixture(region, image)
+                changed = {
+                    index for index, (actual, stock) in
+                    enumerate(zip(fixture, image)) if actual != stock
+                }
+                allowed = set(range(region.end, region.end + 4))
+                for address in region.ram_literals:
+                    allowed.update(range(address, address + 4))
+                    value = int.from_bytes(image[address:address + 4], "big")
+                    self.assertEqual(
+                        fixture[address:address + 4],
+                        VERIFIER.alias_high_ram(value).to_bytes(4, "big"),
+                    )
+                self.assertLessEqual(changed, allowed)
+                self.assertEqual(
+                    fixture[region.start:region.end],
+                    image[region.start:region.end],
+                )
+                self.assertEqual(
+                    fixture[region.end:region.end + 4],
+                    STOCK_VERIFIER.RETURN_STUB,
+                )
+
+    def test_stock_harness_takes_the_symbols_of_the_entity_files(self):
+        [region] = STOCK_VERIFIER.REGIONS
+        image = STOCK_VERIFIER.stock_image(region.rom)
+
+        self.assertEqual(
+            STOCK_VERIFIER.harness_defines(region, image),
+            {
+                "ASCD_FLAGS": 0xFFFF450B,
+                "ASCD_MAIN_MASK": 0x10,
+                "BUTTON_STATE": 0xFFFF29A1,
+                "REGION_R12": 0xFFFF4506,
+            },
+        )
+        harness = (
+            ROOT / "tools/sh-elf-run" / region.harness
+        ).read_text(encoding="utf-8")
+        cases = harness[harness.index("stock_cases[] = {"):]
+        cases = cases[:cases.index("};")]
+        self.assertEqual(cases.count('{"'), region.cases)
+        with self.assertRaisesRegex(
+            STOCK_VERIFIER.VerificationError, "no MOV.L"
+        ):
+            STOCK_VERIFIER.base_register(
+                region, image[:region.base_load] + b"\x00\x09"
+                + image[region.base_load + 2:]
+            )
+
+    def test_top_level_gate_registers_stock_code(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("verify_stock_code.verify", source)
+        self.assertIn("stock_code_cases", source)
 
     def test_harness_configuration_fixture_is_the_manifest_record(self):
         manifest = can_telemetry_profile.load_manifest()

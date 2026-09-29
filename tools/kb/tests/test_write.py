@@ -6,7 +6,7 @@ import tomllib
 import unittest
 from unittest import mock
 
-from kb import adapters, checks, cli, compile, match, names, repo, store, vocab, write
+from kb import adapters, checks, cli, compile, match, names, repo, store, targets, vocab, write
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
 from kb.repo import KbError
@@ -167,9 +167,9 @@ class PlanTest(unittest.TestCase):
         self.assertIn("no meaning 'nothing/tbl'", self.refused(bind("nothing/tbl", "jk00c:0"),
                                                                 code=5))
         self.assertTrue(self.refused({"cmd": "unresolved", "meaning": TABLE, "layout": "jk00c",
-                                      "count": 2}, {"cmd": "move"}, code=2).startswith("op 1: "))
-        self.assertTrue(self.refused(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"), {"cmd": "move"},
-                                     code=2).startswith("op 2: cmd 'move'"))
+                                      "count": 2}, {"cmd": "retire"}, code=2).startswith("op 1: "))
+        self.assertTrue(self.refused(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"), {"cmd": "retire"},
+                                     code=2).startswith("op 2: cmd 'retire'"))
 
 
 def merge(meaning, other, **keys):
@@ -289,7 +289,189 @@ class MergeTest(unittest.TestCase):
             merge(self.FOX, self.MARMOT, evidence=[SPEC]), code=2))
 
 
+def assign(ref, keys=None, unset=None, layout=None):
+    op = {"cmd": "set", "ref": ref, "keys": keys, "unset": unset, "layout": layout}
+    return {key: value for key, value in op.items() if value is not None}
+
+
+class SetTest(unittest.TestCase):
+    """`set` over a base with the feature PROBE, whose target on JK00C holds
+    a table of two keys."""
+
+    PROBE = "probe_feature/feature"
+    PROBE_FILE = store.path_of("feature", "probe_feature")
+    INHIBIT_FILE = store.path_of("ram", "fuel_inhibit")
+    INHIBIT_JK00C = "fuel_inhibit/ram/jk00c-ffff251f"
+
+    @classmethod
+    def setUpClass(cls):
+        probe = {"title": "Probe", "target": [{"layout": "jk00c", "status": "planned",
+                                                "basis": {"maps": "stock", "timing": "stock"}}]}
+        cls.base = compile.build(repo.ROOT, {cls.PROBE_FILE: store.render("feature", probe)})
+
+    def change(self, *ops):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        for number, op in enumerate(ops, 1):
+            change.run(op, number)
+        return change
+
+    def refused(self, *ops, code=3):
+        with self.assertRaises(KbError) as caught:
+            self.change(*ops)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def target(self, texts):
+        [target] = tomllib.loads(texts[self.PROBE_FILE])["target"]
+        return target
+
+    def test_set_writes_the_bits_of_a_meaning_and_the_override_of_a_symbol(self):
+        change, texts, result = write.plan([
+            assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "code"}]}),
+            assign(INHIBIT, {"bit": [{"bit": 6, "name": "active"}], "note": "probe"},
+                   layout="jk00c")], self.base, write.model_resolver(self.base))
+        document = tomllib.loads(texts[self.INHIBIT_FILE])
+        self.assertEqual(document["bit"], [{"bit": 2, "name": "active", "level": "code"}])
+        entry = next(entry for entry in document["symbol"] if entry["layout"] == "jk00c")
+        self.assertEqual((entry["bit"], entry["note"]), ([{"bit": 6, "name": "active"}], "probe"))
+        overlay = {**self.base.overlay, **texts}
+        self.assertEqual([targets.bit(INHIBIT, layout, "active", overlay=overlay)
+                          for layout in ("7mfk", "jk00c")], [2, 6])
+        symbol = result.symbols[SymbolKey("jk00c", "ram", 0xFFFF251F)]
+        self.assertEqual(symbol.value("bit"), [{"bit": 6, "name": "active"}])
+        self.assertEqual(change.lines, [f"set {INHIBIT}: bit",
+                                        f"set {self.INHIBIT_JK00C}: bit, note"])
+
+    def test_tables_join_and_an_unset_key_leaves_no_empty_table(self):
+        texts = self.change(assign(self.PROBE, {"basis": {"notes": "x", "maps": "native"}},
+                                   layout="jk00c")).texts()
+        self.assertEqual(self.target(texts)["basis"],
+                         {"maps": "native", "timing": "stock", "notes": "x"})
+        change = self.change(assign(self.PROBE, {"basis": {"notes": "x"}}, ["basis"],
+                                    layout="jk00c"))
+        self.assertEqual(self.target(change.texts())["basis"], {"notes": "x"})
+        self.assertEqual(change.lines, [f"set {self.PROBE} on jk00c: basis.notes; unset basis"])
+        texts = self.change(assign(self.PROBE, unset=["basis.maps", "basis.timing"],
+                                   layout="jk00c")).texts()
+        self.assertNotIn("basis", self.target(texts))
+
+    def test_set_refuses_keys_and_values_outside_its_schema(self):
+        cases = [
+            (assign(INHIBIT, {"symbol": []}), 2, f"set writes no symbol of {INHIBIT}"),
+            (assign(INHIBIT, {"address": "ffff2520"}, layout="jk00c"), 2,
+             f"set writes no address of {self.INHIBIT_JK00C}"),
+            (assign(self.PROBE, unset=["layout"], layout="jk00c"), 2,
+             f"set writes no layout of {self.PROBE} on jk00c"),
+            (assign(INHIBIT, unset=["to_raw"]), 3, f"{INHIBIT} has no to_raw"),
+            (assign(INHIBIT, {"title": "x"}, ["title"]), 2, "set writes and unsets title"),
+            (assign(INHIBIT), 2, "set needs keys or unset"),
+            (assign(INHIBIT, {"bit": [{"bit": 2, "evidence": [
+                {"kind": "rom-bytes", "at": "7mfk:0"}]}]}), 2, "rom-bytes evidence needs value"),
+            (assign(INHIBIT, {"bit": [{"bit": 2, "mask": 4}]}), 2, "bit takes no mask"),
+            (assign(INHIBIT, {"bit": {"bit": 2}}), 2, "bit is an array of tables"),
+            (assign(INHIBIT, {"level": "sure"}), 2, "level 'sure'; the levels are"),
+            (assign("nothing/feature", {"title": "x"}), 5, "no designed entity nothing/feature"),
+            (assign(self.PROBE, {"note": "x"}, layout="jk00d"), 5,
+             f"{self.PROBE} has no target on jk00d"),
+            (assign(INHIBIT, {"note": "x"}, layout="1nd"), 5, f"{INHIBIT} has no symbol on 1nd"),
+            (assign(f"jk00c:ffff251f", {"note": "x"}, layout="jk00d"), 2,
+             f"{self.INHIBIT_JK00C} lies on jk00c, not on jk00d"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+
+    def test_assignments_are_toml_values_or_strings(self):
+        self.assertEqual(write.parse_assignments(
+            ["level=code", 'bit=[{bit = 7, name = "main"}]', "basis.maps=a b", "count=3",
+             "note="]),
+            ({"level": "code", "bit": [{"bit": 7, "name": "main"}], "basis": {"maps": "a b"},
+              "count": 3}, ["note"]))
+        for texts in (["level"], ["=x"], ["a..b=1"], ["a=1", "a.b=2"], ["a=1", "a=2"]):
+            with self.subTest(texts=texts), self.assertRaises(KbError) as caught:
+                write.parse_assignments(texts)
+            self.assertEqual(caught.exception.code, 2)
+
+
+def move(symbol, to, **keys):
+    return {"cmd": "move", "symbol": symbol, "to": to, **keys}
+
+
+class MoveTest(unittest.TestCase):
+    """`move` over a base whose file states the JK78C symbol of THROTTLE two
+    bytes above the counterpart that the search from its 7mfk symbol finds,
+    with a note that cites the symbol."""
+
+    WRONG = THROTTLE_JK78C + 2
+    FILE = store.path_of("ram", "throttle_runtime")
+
+    @classmethod
+    def setUpClass(cls):
+        document = tomllib.loads((repo.ROOT / cls.FILE).read_text(encoding="utf-8"))
+        document["symbol"].append({
+            "layout": "jk78c", "address": f"{cls.WRONG:08x}",
+            "note": f"probe of [[{THROTTLE}/jk78c-{cls.WRONG:08x}]]",
+            "evidence": [{**TABLE_EVIDENCE, "at": "jk78c:0002ffb8", "to": "7mfk:0002ce62",
+                          "value": 12}]})
+        cls.base = compile.build(repo.ROOT, {cls.FILE: store.render("ram", document)})
+
+    def refused(self, *ops, code=3):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        with self.assertRaises(KbError) as caught:
+            for op in ops:
+                change.run(op)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def test_move_corrects_the_address_with_the_evidence_of_the_search(self):
+        home = self.base.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
+        found = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
+        evidence = write.Change._stored(found)
+        change, texts, result = write.plan(
+            [move(f"jk78c:{self.WRONG:08x}", f"jk78c:{THROTTLE_JK78C:08x}")], self.base,
+            write.model_resolver(self.base))
+        old, new = (f"{THROTTLE}/jk78c-{address:08x}" for address in (self.WRONG, THROTTLE_JK78C))
+        entry = next(entry for entry in tomllib.loads(texts[self.FILE])["symbol"]
+                     if entry["layout"] == "jk78c")
+        self.assertEqual(entry, {"layout": "jk78c", "address": f"{THROTTLE_JK78C:08x}",
+                                 "former": [old], "note": f"probe of [[{new}]]",
+                                 "evidence": [evidence]})
+        symbol = result.symbols[SymbolKey("jk78c", "ram", THROTTLE_JK78C)]
+        self.assertEqual((symbol.meaning.key, symbol.former), (THROTTLE, ("throttle_runtime",)))
+        self.assertNotIn(SymbolKey("jk78c", "ram", self.WRONG), result.symbols)
+        self.assertEqual(change.lines, [f"move {old} to jk78c:{THROTTLE_JK78C:08x}: "
+                                        f"{write.summary(evidence)}; 1 reference rewritten"])
+
+    def test_moves_refuse_what_the_model_contradicts(self):
+        wrong = f"jk78c:{self.WRONG:08x}"
+        cases = [
+            (move(THROTTLE, f"jk78c:{THROTTLE_JK78C:08x}"), 2, f"names the meaning {THROTTLE}"),
+            (move(wrong, "jk00c:ffff17e8"), 2, "lies on jk78c, not on jk00c; a symbol moves "
+             "within its layout"),
+            (move(wrong, wrong), 2, f"lies at {wrong}"),
+            (move(wrong, "jk78c:ffff107b"), 3,
+             "jk78c:ffff107b is absolute_throttle/ram/jk78c-ffff107b; `kb merge`"),
+            (move(wrong, "jk78c:ffff17a8"), 3,
+             f"finds jk78c:{THROTTLE_JK78C:08x} on jk78c, not jk78c:ffff17a8; state the evidence"),
+            (move(f"7mfk:{THROTTLE_HOME:08x}", "7mfk:ffff1797"), 2,
+             f"is the home symbol of {THROTTLE}"),
+            (move(wrong, f"jk78c:{THROTTLE_JK78C:08x}", level="sure"), 2, "level 'sure'"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+
+
 class RenameTest(unittest.TestCase):
+    def test_relocated_references_name_the_new_address(self):
+        document = {"to": "x/ram/jk78c-ffff450c", "note": "[[x/ram/jk78c-ffff450c]] and "
+                    "[[x/ram/jk78c]]", "former": ["x/ram/jk78c-ffff450c"],
+                    "evidence": [{"kind": "l0", "to": "jk78c:ffff450c"}]}
+        found, count = write.relocated(document, "x/ram/jk78c-ffff450c", "x/ram/jk78c-ffff450b")
+        self.assertEqual(count, 2)
+        self.assertEqual(found, {**document, "to": "x/ram/jk78c-ffff450b",
+                                 "note": "[[x/ram/jk78c-ffff450b]] and [[x/ram/jk78c]]"})
+
     def test_references_and_citations_to_the_other_names_name_the_target(self):
         document = {"to": "gentle-otter/fn", "via": ["gentle-otter/fn/jk00c"],
                     "note": "[[gentle-otter/fn]], [[gentle-otter]], and [[gentle-otter/ram]]",
@@ -414,6 +596,20 @@ class ArgumentsTest(unittest.TestCase):
         self.assertEqual(applied.call_args.args[0], [{"cmd": "merge", "meaning": "x/fn",
                                                       "other": "y/fn", "evidence": [],
                                                       "from": "7mfk"}])
+
+    def test_set_and_move_pass_their_operations_to_apply(self):
+        stub = write.Change(mock.Mock(names=[]), None)
+        with mock.patch.object(write, "apply", return_value=(stub, {})) as applied:
+            with contextlib.redirect_stdout(io.StringIO()):
+                cli.main(["set", "x/ram", "level=code", "note=", "--layout", "jk00c"])
+                cli.main(["move", "x/ram/jk78c", "jk78c:ffff450b", "--evidence",
+                          'kind = "l0", at = "jk78c:000fcbec"', "--level", "code"])
+        self.assertEqual([call.args[0] for call in applied.call_args_list], [
+            [{"cmd": "set", "ref": "x/ram", "layout": "jk00c", "keys": {"level": "code"},
+              "unset": ["note"]}],
+            [{"cmd": "move", "symbol": "x/ram/jk78c", "to": "jk78c:ffff450b",
+              "evidence": [{"kind": "l0", "at": "jk78c:000fcbec"}], "from": None,
+              "level": "code", "note": None}]])
 
 
 class ApplyTest(unittest.TestCase):

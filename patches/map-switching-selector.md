@@ -78,9 +78,12 @@ stock previous/current one-hot button pair:
 | `0x20` | all buttons released |
 | `0x00` | invalid, fail closed |
 
-Selection is enabled only while stock ASCD is inactive, Rolling Launch does not
-own the selector host, the selector state is structurally valid, and visual
-feedback is idle.
+Selection is enabled only while the MAIN switch bit of the stock ASCD flag
+byte is clear, Rolling Launch does not own the selector host, the selector
+state is structurally valid, and visual feedback is idle. On JK08A, the MAIN
+switch block of the stock ASCD task copies bit 0 of the stable switch code into
+the MAIN switch bit: bit 0 of the calibration byte `ROM8[0x8B28]` enables the
+block, and its clear bit 7 selects the switch code as the source.
 
 The user gesture is:
 
@@ -97,7 +100,7 @@ not commit a map.
 The selector resets its transient state and retains the validated active map
 for any of these conditions:
 
-- ASCD becomes active;
+- the MAIN switch bit of the stock ASCD flag byte is set;
 - RESUME, zero, or another unexpected code appears while armed;
 - a transition does not match the current phase;
 - the count exceeds the slot count;
@@ -149,8 +152,11 @@ limiter outside those episodes.
 JK78C uses fourteen target-specific families; 1ND0A, 1ND3B, and 1ME3B use
 eighteen, adding the four 8x8 state-code ignition surfaces that their
 coordinator reads through a lookup and an adapter of their own. The selector
-aborts on the ASCD-enabled flag through the profile mask `ascd_enabled_mask`:
-bit 7 of the status byte in JK78C and 1ND, bit 3 in 1ME3B. The VQ37
+aborts on the MAIN switch bit of the ASCD flag byte, which the entity files
+state per layout as the named bit `main` of `ascd_state/ram`: bit 4 of
+`0xFFFF450B` in JK78C, bit 5 in 1ND0A and 1ND3B, and bit 1 in 1ME3B. The stock
+calibration of 1ND0A and 1ND3B disables the MAIN switch block of their ASCD
+task: bit 0 of `ROM8[0x8A11]` is clear. The VQ37
 layout retains the four DFCO rows and two ignition surfaces, provides a default
 and an alternate family for both warm-idle timing and fuel compensation, and
 replaces the canonical 2x2 fuel-cut table with two uint16 caps plus independent

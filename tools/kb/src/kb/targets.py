@@ -4,7 +4,8 @@ files without compiling the model (tools/kb/SPEC.md, section 20.3).
 `patches/runtime_targets.py` relocates the canonical runtime, whose sources
 and layouts use `7mfk` addresses, onto every other layout. It takes here the
 `7mfk` values of the key tables of the feature targets, the per-layout keys
-of the hooks of a target by their `7mfk` words, and the keys of a target.
+of the hooks of a target by their `7mfk` words, the keys of a target, and
+the named bits that its payloads test.
 The functions read only the files they name and use only the standard
 library and the modules of this package that do, since the firmware gate
 imports them with the Python of its container.
@@ -63,6 +64,22 @@ def symbol(ref, layout, root=repo.ROOT, overlay=None):
 
 def address(ref, layout, root=repo.ROOT, overlay=None):
     return int(symbol(ref, layout, root, overlay)["address"], 16)
+
+
+def bit(ref, layout, name, root=repo.ROOT, overlay=None):
+    """The number of the named bit `name` of the meaning `<name>/<kind>` on a
+    layout: that of the `[[bit]]` of its symbol entry, which replaces the bits
+    of the meaning on the layout, or else that of the meaning."""
+    meaning, _, kind = ref.rpartition("/")
+    document = _document(kind, meaning, root, overlay)
+    entries = [entry for entry in document.get("symbol", ()) if entry.get("layout") == layout]
+    if len(entries) != 1:
+        raise KbError(f"{ref}: {len(entries)} symbols on {layout}", code=3)
+    found = [item.get("bit") for item in entries[0].get("bit", document.get("bit", ()))
+             if item.get("name") == name]
+    if len(found) != 1:
+        raise KbError(f"{ref}: {len(found)} bits {name} on {layout}", code=3)
+    return found[0]
 
 
 def record_word(ref, layout, root=repo.ROOT, overlay=None):

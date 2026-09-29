@@ -35,6 +35,8 @@ uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning 
 uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
 uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
 uv run kb merge <meaning> <other> --dry-run   # two meanings, or two files of one meaning, as one
+uv run kb set <ref> <key>=<value> --dry-run   # keys of a meaning, a symbol, a designed entity, or a feature target
+uv run kb move <symbol> <layout>:<address> --dry-run   # the address of a symbol on its layout
 uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
@@ -136,24 +138,32 @@ name resolves with a note that names the current reference.
 
 ## Write commands
 
-`kb bind`, `kb absent`, `kb unresolved`, and `kb merge` write one operation,
-and `kb apply` the operations of a TOML file of `[[op]]` tables, as one change
-under
-`.kb/lock` (section 12.3 of the specification). A change resolves its
-references on a current graph, edits the entity files in memory, and compiles
-the model with them in place of the files on disk (`compile.build` with an
-overlay). When the result has an issue of a model check or a registry
-disagreement that the working tree lacks, the change is refused with exit
-code 3 and the issues, and nothing is written; otherwise the files are written
-through temporary files and renames, and the graph loads the compiled result.
-`--dry-run` prints the diff instead of writing; the write draws the generated
-names of the diff anew.
+`kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`
+write one operation, and `kb apply` the operations of a TOML file of `[[op]]`
+tables, as one change under `.kb/lock` (section 12.3 of the specification). A
+change resolves its references on a current graph, edits the entity files in
+memory, and compiles the model with them in place of the files on disk
+(`compile.build` with an overlay). When the result has an issue of a model
+check or a registry disagreement that the working tree lacks, the change is
+refused with exit code 3 and the issues, and nothing is written; otherwise the
+files are written through temporary files and renames, and the graph loads the
+compiled result. `--dry-run` prints the diff instead of writing; the write
+draws the generated names of the diff anew.
 
 - The file of a meaning without one starts with the entry of the home symbol,
   so that the file joins the meaning that the registries state. The row of
   `kb/names.csv` of that symbol moves into its entry: the generated name of a
   symbol of an unnamed meaning becomes its `name`, and the other names become
   `former` references.
+- `kb set <ref> <key>=<value>...` writes keys of a meaning, of the entry of
+  the symbol that the reference or `--layout` names, of a designed entity, or
+  of the target of a feature on `--layout`. A value is a TOML value or else a
+  string, an empty value unsets the key, and a dotted key names a key of a
+  table; a table joins the held one key by key, and an array of tables such
+  as `[[bit]]` replaces it. A batch states the keys as `[op.keys]` and the
+  removed ones as `unset`. The keys that other commands own, such as the
+  symbols, statuses, links, analogs, and former names of a meaning and the
+  layout, address, and names of a symbol entry, are refused.
 - `kb bind <meaning> <layout>:<address>` records the evidence of the
   candidate that `match.search` finds at the address, from the symbol on the
   layout of `--from`, the symbol that the reference names, or the home
@@ -177,6 +187,14 @@ names of the diff anew.
   citations, name the meaning. The two files of one meaning, which the `names`
   check reports, join entry by entry, and the name that the other file gives
   a symbol becomes its `former` reference.
+- `kb move <symbol> <layout>:<address>` corrects the address of a symbol on
+  its layout. The entry takes the evidence of the candidate at the new address
+  that the search finds from the symbol on the layout of `--from` or from the
+  home symbol, or the `--evidence` items, and keeps its previous full
+  reference as its first `former` reference; every reference and `[[...]]`
+  citation of the entity files to that reference names the new one. It
+  refuses another layout, the home symbol as the start of its own search, and
+  a location of another meaning.
 - An evidence item is a TOML inline table, for example `--evidence 'kind =
   "l0", at = "jk00c:00043f10"'`, and a batch states it as an `[[op.evidence]]`
   table.
@@ -380,8 +398,10 @@ model and with the standard library alone, since the firmware gate imports
 the module with the Python of its container: the addresses of the `symbols`
 of the `7mfk` targets with the `can_telemetry` numbers and record words, the
 per-layout key of each hook of a `map_switching` target by the `7mfk` word of
-its meaning, and the keys of a target. The adapter of the address profiles
-reads the same key tables and hooks for the model before a conversion.
+its meaning, the keys of a target, and the number of a named bit on a
+layout, which the `[[bit]]` of the symbol entry of the layout gives, or else
+that of the meaning. The adapter of the address profiles reads the same key
+tables and hooks for the model before a conversion.
 
 ## Matchers
 

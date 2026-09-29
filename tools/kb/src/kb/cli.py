@@ -324,6 +324,12 @@ def _write(args, ops, root=repo.ROOT):
     return 0
 
 
+def command_set(args, root=repo.ROOT):
+    keys, unset = write.parse_assignments(args.assignments)
+    return _write(args, [{"cmd": "set", "ref": args.ref, "layout": args.layout, "keys": keys,
+                          "unset": unset}], root)
+
+
 def command_bind(args, root=repo.ROOT):
     return _write(args, [{
         "cmd": "bind", "meaning": args.meaning, "symbol": args.symbol,
@@ -350,6 +356,13 @@ def command_merge(args, root=repo.ROOT):
         "cmd": "merge", "meaning": args.meaning, "other": args.other,
         "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
         "from": args.source}], root)
+
+
+def command_move(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "move", "symbol": args.symbol, "to": args.to,
+        "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
+        "from": args.source, "level": args.level, "note": args.note}], root)
 
 
 def command_apply(args, root=repo.ROOT):
@@ -474,6 +487,14 @@ def build_parser():
     meaning = ("meaning", "the meaning, or its symbol that a search starts from")
     evidence = "an evidence item as a TOML inline table; repeatable"
     source = "the layout of the symbol of the meaning that the search starts from"
+    assign = writer("set", "keys of a meaning, a symbol, a designed entity, or a feature target",
+                    ("ref", "the meaning, its symbol, or the designed entity"))
+    assign.add_argument("assignments", nargs="+", metavar="key=value",
+                        help="a TOML value or else a string; an empty value unsets the key, "
+                        "and a dotted key names a key of a table")
+    assign.add_argument("--layout", help="the symbol of a meaning, or the target of a feature, "
+                        "on this layout")
+    assign.set_defaults(handler=command_set)
     bind = writer("bind", "a symbol of a meaning on another layout, with evidence", meaning,
                   ("symbol", "<layout>:<address> of the symbol"))
     bind.add_argument("--evidence", action="append",
@@ -507,6 +528,14 @@ def build_parser():
                        "default the evidence of the search")
     merge.add_argument("--from", dest="source", help=source)
     merge.set_defaults(handler=command_merge)
+    move = writer("move", "correct the address of a symbol on its layout",
+                  ("symbol", "the symbol"), ("to", "<layout>:<address> of the symbol"))
+    move.add_argument("--evidence", action="append",
+                      help=f"{evidence}; by default the evidence of the search")
+    move.add_argument("--from", dest="source", help=source + "; by default the home symbol")
+    move.add_argument("--level", choices=vocab.LEVELS, help="the level of the symbol")
+    move.add_argument("--note", help="prose about the symbol")
+    move.set_defaults(handler=command_move)
     writer("apply", "a batch of write operations as one change",
            ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
 

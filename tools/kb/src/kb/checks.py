@@ -93,6 +93,35 @@ def _key_issues(props, kind, path, subject, quantities):
                     "quantity of tools/kb/config.toml")
 
 
+def _bit_issues(bits, width, path, subject):
+    """Named bits of a bit field: a number below the access width in bits, a
+    name, numbers and names that no other bit of the list repeats, a level
+    from the vocabulary, and evidence items of section 7.6."""
+    if not isinstance(bits, list) or not all(isinstance(bit, dict) for bit in bits):
+        yield Issue("schema", path, subject, "bit is no array of tables")
+        return
+    numbers = Counter(bit.get("bit") for bit in bits)
+    named = Counter(bit.get("name") for bit in bits)
+    for bit in bits:
+        number, name = bit.get("bit"), bit.get("name")
+        where = f"{subject} bit {name}"
+        if isinstance(number, bool) or not isinstance(number, int) or not 0 <= number < width:
+            yield Issue("schema", path, where, f"bit {number!r} outside 0 to {width - 1}")
+        elif numbers[number] > 1:
+            yield Issue("schema", path, where, f"{numbers[number]} bits name bit {number}")
+        if not isinstance(name, str) or not vocab.SEMANTIC_NAME.fullmatch(name):
+            yield Issue("schema", path, where, f"bit name {name!r}")
+        elif named[name] > 1:
+            yield Issue("schema", path, where, f"{named[name]} bits share the name")
+        if bit.get("level") not in (None, *vocab.LEVELS):
+            yield Issue("schema", path, where, f"level {bit['level']!r}")
+        yield from _evidence_issues(bit.get("evidence", ()), path, where, True)
+
+
+def _width(value):
+    return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else 8
+
+
 def schema(model):
     issues = [issue for issue in model.issues if issue.check == "schema"]
     quantities = tuple(model.config.get("vocab", {}).get("quantity", ()))
@@ -103,10 +132,15 @@ def schema(model):
         roles = {"fn": vocab.FN_ROLES, "tbl": vocab.TBL_ROLES}.get(meaning.kind)
         if role is not None and (roles is None or role not in roles):
             issues.append(Issue("schema", path, subject, f"role {role!r} of a {meaning.kind}"))
+        if "bit" in props:
+            issues.extend(_bit_issues(props["bit"], _width(props.get("width")), path, subject))
         for symbol in meaning.symbols.values():
             issues.extend(_key_issues(symbol.props, meaning.kind, path, symbol.key.key,
                                       quantities))
             issues.extend(_evidence_issues(symbol.evidence, path, symbol.key.key, True))
+            if "bit" in symbol.props:
+                issues.extend(_bit_issues(symbol.props["bit"], _width(symbol.value("width")),
+                                          path, symbol.key.key))
         for binding in meaning.tables.get("diagnostic", ()):
             if binding.get("level") not in (None, *vocab.LEVELS):
                 issues.append(Issue("schema", path, subject,
@@ -255,15 +289,55 @@ def _item(item):
     return f"{item.get('kind')} evidence" + (f" at {where}" if where else "")
 
 
+def _bit_evidence(meaning):
+    """(path, subject, symbol, item) of each evidence item of the named bits
+    of a meaning and of the bits that its symbols override; the symbol is
+    that of the meaning on the layout of the item's `at`, or None."""
+    owners = [(_subject(meaning), meaning.props.get("bit"))]
+    owners += [(symbol.key.key, symbol.props.get("bit"))
+               for _, symbol in sorted(meaning.symbols.items())]
+    for subject, bits in owners:
+        for bit in bits if isinstance(bits, list) else ():
+            if not isinstance(bit, dict):
+                continue
+            for item in bit.get("evidence", ()):
+                at = match.location(item.get("at"))
+                yield (_sources(meaning), f"{subject} bit {bit.get('name')}",
+                       meaning.symbols.get(at[0]) if at else None, item)
+
+
+def _bits(model):
+    """Each typed evidence item of a named bit whose kind L0 decides holds
+    for the symbol of the meaning on the layout of its `at`."""
+    issues = []
+    for meaning in model.meanings:
+        for path, subject, symbol, item in _bit_evidence(meaning):
+            if "legacy" in item:
+                continue
+            if symbol is None:
+                issues.append(Issue("homology", path, subject,
+                                    f"{_item(item)}: `at` lies on no layout of a symbol of the "
+                                    "meaning"))
+                continue
+            if item.get("kind") == "rom-bytes":
+                continue
+            failure = match.verify(model, symbol, item)
+            if failure:
+                issues.append(Issue("homology", path, subject, f"{_item(item)}: {failure}"))
+    return issues
+
+
 def homology(model):
     """Every symbol that the files own is an anchor or reaches one through
     verified homology evidence, and each of its typed identity and homology
-    evidence items that L0 or the images decide holds (section 7.3)."""
+    evidence items that L0 or the images decide holds (section 7.3); each
+    typed evidence item of a named bit that L0 decides holds for the symbol
+    of its layout."""
+    issues = _bits(model)
     keys = sorted(key for key, symbol in model.symbols.items() if _owned(model, symbol))
     if not keys:
-        return []
+        return issues
     ranks = match.grounded(model, keys)
-    issues = []
     for key in keys:
         symbol = model.symbols[key]
         path = _files(symbol.sources)
@@ -363,6 +437,12 @@ def image_bytes(model):
                 if failure:
                     issues.append(Issue("image-bytes", path, symbol.key.key,
                                         f"{_item(item)}: {failure}"))
+        for path, subject, symbol, item in _bit_evidence(meaning):
+            if item.get("kind") != "rom-bytes" or "legacy" in item or symbol is None:
+                continue
+            failure = match.verify(model, symbol, item)
+            if failure:
+                issues.append(Issue("image-bytes", path, subject, f"{_item(item)}: {failure}"))
     return issues
 
 

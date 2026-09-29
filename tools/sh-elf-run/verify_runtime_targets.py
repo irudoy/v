@@ -33,7 +33,7 @@ from tools.mapkit import vq37_native_fuel_cut
 VQ37_MAP_HARNESS_BY_VARIANT = {
     "sh7059-1nd": (
         "TARGET_1ND",
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=196 selector=17 "
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=197 selector=18 "
         "adapters=136 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=17 entries=14",
     ),
@@ -45,7 +45,7 @@ VQ37_MAP_HARNESS_BY_VARIANT = {
     ),
     "sh7058-jk78": (
         "TARGET_JK78",
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=168 selector=18 "
         "adapters=107 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=17 entries=13",
     ),
@@ -507,7 +507,7 @@ def _run_harnesses(target, fixture, build_dir):
     )
     if target.map_layout.variant == "dual-cvtc":
         map_marker = (
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=139 selector=17 "
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=140 selector=18 "
             "adapters=99 limiter=14 feedback=9 feedback_invocations=17 "
             "entries=13"
         )
@@ -543,14 +543,14 @@ def _run_harnesses(target, fixture, build_dir):
             target.rolling_layout.variant == "vq37-fuel-coordinator"
         )
         rolling_marker = (
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=124 "
-            "structural=11 gates=26 config=24 threshold=4 activation=5 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=125 "
+            "structural=11 gates=27 config=24 threshold=4 activation=5 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "fuel_coordinator=3 entries=9"
             if vq37_rolling
             else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=121 "
-            "structural=11 gates=26 config=24 threshold=4 activation=5 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=122 "
+            "structural=11 gates=27 config=24 threshold=4 activation=5 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "entries=8"
         )
@@ -565,8 +565,8 @@ def _run_harnesses(target, fixture, build_dir):
             defines=(
                 ("TARGET_VQ37_ROLLING",) if vq37_rolling else ()
             ) + (
-                ("TARGET_1ME3B",)
-                if target.map_layout.variant == "sh7059-1me3b"
+                (VQ37_MAP_HARNESS_BY_VARIANT[target.map_layout.variant][0],)
+                if target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT
                 else ()
             ),
         ))

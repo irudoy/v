@@ -60,6 +60,10 @@ class TargetsTest(unittest.TestCase):
         with self.assertRaises(KbError) as absent:
             targets.symbol("no_such_meaning/ram", "7mfk")
         self.assertIn("no entity file", str(absent.exception))
+        with self.assertRaises(KbError) as unnamed:
+            targets.bit("ascd_state/ram", "7mfk", "no_such_bit")
+        self.assertEqual(unnamed.exception.code, 3)
+        self.assertIn("0 bits no_such_bit on 7mfk", str(unnamed.exception))
 
 
 if __name__ == "__main__":

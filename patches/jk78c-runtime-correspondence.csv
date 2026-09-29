@@ -44,7 +44,7 @@ map_hook,rev_fuel_cut_release_cap_base,,0006b06c,00009042,,target-specific,Nativ
 map_hook,rev_throttle_scalar_base,00077bac,00097170,0000911e,,target-specific,Target consumer owns one scalar instead of the source container
 map_hook,selector_host_call,000ce8dc,000fb260,000fd40c,,mapped,Literal call target identifies the exact selector host
 map_hook,startup_initializer,00027d28,0002a6fc,0002f596,,mapped,Literal jump target identifies the startup initializer
-map_symbol,ascd_state,ffff41ae,ffff450c,,,mapped,Selector reads this ASCD state byte
+map_symbol,ascd_state,ffff41ae,ffff450b,,,mapped,"The MAIN switch block of 000fb9c0 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 4, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
 map_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
 map_symbol,dfco_lookup,00026388,000281b0,,,mapped,Exact-byte target function serves both DFCO hooks
 map_symbol,diagnostic_state,ffff2a84,ffff29a0,,,mapped,Selector reads this adjacent diagnostic byte
@@ -71,7 +71,7 @@ rolling_hook,selector_arbitration,000ce8dc,000fb260,000fd40c,,mapped,Rolling arb
 rolling_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Runtime clear chains from the startup literal
 rolling_symbol,apc_mode,ffff24c9,ffff241e,,,mapped,APC control path binds the mode byte
 rolling_symbol,apc_output,ffff2022,ffff11cf,,,mapped,Aligned diagnostic pointer table and homologous producer agree
-rolling_symbol,ascd_state,ffff41ae,ffff450c,,,mapped,Selector reads this ASCD state byte
+rolling_symbol,ascd_state,ffff41ae,ffff450b,,,mapped,"The MAIN switch block of 000fb9c0 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 4, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
 rolling_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
 rolling_symbol,coolant_index,ffff1077,ffff106d,,,mapped,Coolant activation index is recovered from target consumers
 rolling_symbol,fuel_cut_coordinator,,0006a9b0,,,target-specific,Complete coordinator aggregates stock conditions before its sole final-mask store

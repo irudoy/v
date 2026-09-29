@@ -502,6 +502,40 @@ class FileChecksTest(unittest.TestCase):
         self.assertEqual([issue.message for issue in checks.schema(model)],
                          ["rom-bytes evidence lacks value"])
 
+    def test_named_bits_follow_their_schema_and_hold_on_l0_and_the_images(self):
+        site = f"7mfk:{APC_STORE:08x}"
+        home, other = self.symbols(APC_JK00D)
+        other["bit"] = [{"bit": 8, "name": "latch"}, {"bit": 3, "name": "Latch"}]
+        model = self.model({"symbol": [home, other], "bit": [
+            {"bit": 6, "name": "latch", "level": "code", "evidence": [
+                {"kind": "l0", "supports": "role", "at": site},
+                {"kind": "rom-bytes", "supports": "role", "at": site, "value": "c02e"}]},
+            {"bit": 6, "name": "spare", "level": "sure", "evidence": [
+                {"kind": "l0", "supports": "role", "at": "7mfk:0004e072"},
+                {"kind": "l0", "supports": "role", "at": "jk78c:000e5942"},
+                {"kind": "rom-bytes", "supports": "role", "at": site, "value": "c02f"}]}]})
+
+        def found(check):
+            return sorted(f"{issue.subject}: {issue.message}" for issue in check(model))
+
+        self.assertEqual(found(checks.schema), [
+            "apc_probe/ram bit latch: 2 bits name bit 6",
+            "apc_probe/ram bit spare: 2 bits name bit 6",
+            "apc_probe/ram bit spare: level 'sure'",
+            "jk00d-ffff11f5/ram bit Latch: bit name 'Latch'",
+            "jk00d-ffff11f5/ram bit latch: bit 8 outside 0 to 7",
+        ])
+        self.assertEqual(found(checks.homology), [
+            "apc_probe/ram bit spare: l0 evidence at 7mfk:0004e072: L0 of 7mfk holds no "
+            "reference to ffff2022 at 0004e072",
+            "apc_probe/ram bit spare: l0 evidence at jk78c:000e5942: `at` lies on no layout of "
+            "a symbol of the meaning",
+        ])
+        self.assertEqual(found(checks.image_bytes), [
+            "apc_probe/ram bit spare: rom-bytes evidence at 7mfk:0004e070: JK00A holds c02e at "
+            "0004e070, not c02f",
+        ])
+
 
 if __name__ == "__main__":
     unittest.main()

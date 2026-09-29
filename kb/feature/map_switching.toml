@@ -5,7 +5,6 @@ note = """
 Requires four DFCO families two fuel compensation surfaces two warm-idle \
 timing tables two ignition hooks one state-code ignition hook native \
 fuel-cut caps and curves and a throttle-scalar commit"""
-ascd_enabled_mask = 8
 requires = [
     "ignition_unreferenced_routine/const",
     "over_run_channel_multiplier/tbl",
@@ -28,8 +27,7 @@ surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The \
 literal 0x00079994 is the only pointer through which FUN_000797CC calls the \
 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at \
 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer \
-or branch; its private literals stay stock. The ASCD-enabled flag is bit 3 \
-of 0xFFFEB985 by the 1ME3B packing of the flag byte."""
+or branch; its private literals stay stock."""
 
 [target.families]
 cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"

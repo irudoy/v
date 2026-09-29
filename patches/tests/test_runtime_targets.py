@@ -638,20 +638,30 @@ def test_1me3b_state_code_ignition_base_must_stay_in_the_hooked_pool():
         runtime_targets._validate_ignition_state_pool(damaged, profile)
 
 
-def test_1me3b_sources_test_the_target_ascd_flag():
-    target = runtime_targets.load_runtime_target("1ME3B")
-    reference = runtime_targets.load_runtime_target("1ND0A")
-    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
-
-    assert profile.ascd_enabled_mask == 0x08
+@pytest.mark.parametrize(
+    ("rom", "mask"),
+    (
+        ("JK00C", 0x80),
+        ("JK00D", 0x80),
+        ("JK78C", 0x10),
+        ("1ND0A", 0x20),
+        ("1ME3B", 0x02),
+    ),
+)
+def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
+    target = runtime_targets.load_runtime_target(rom)
     host = target.map_layout.source_text_by_unit["selector_host"]
     engine = target.rolling_layout.source_text_by_unit["engine"]
-    assert "mov #0x08,r1\ntst r1,r0\nbf host_abort_selector\n" in host
-    assert "mov #-0x80,r1" not in host
-    assert "mov.b @r4,r0\ntst 0x08,r0\nbf rl_gate_ascd_fail\n" in engine
-    assert "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n" in (
-        reference.map_layout.source_text_by_unit["selector_host"]
-    )
-    assert "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n" in (
-        reference.rolling_layout.source_text_by_unit["engine"]
-    )
+
+    assert runtime_targets.ascd_main_mask(
+        runtime_targets.kb_targets.layout_of(rom)
+    ) == mask
+    assert runtime_targets.ascd_main_mask("7mfk") == 0x80
+    immediate = "#-0x80" if mask == 0x80 else f"#0x{mask:02X}"
+    assert host.count(
+        "mov.b @r1,r0\n"
+        f"mov {immediate},r1\ntst r1,r0\nbf host_abort_selector\n"
+    ) == 1
+    assert engine.count(
+        f"mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n"
+    ) == 1

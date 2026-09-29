@@ -32,7 +32,6 @@ telemetry_unavailable = [
     "request_flow_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
-ascd_enabled_mask = 0x08
 
 [profile.1ME3B.capabilities]
 map_switching = true
@@ -245,7 +244,7 @@ end = 0x000797CC
 [profile.1ME3B.evidence]
 free_rom = "AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with no recovered stock ownership; scalar-alias references begin at 0x0013ffec, above the declared end. Runtime uses the bounded 0x0013b108..0x0013efff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B executable census: no stock access reaches the allocation."
-maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock. The ASCD-enabled flag is bit 3 of 0xFFFEB985 by the 1ME3B packing of the flag byte."
+maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock."
 rolling = "The scheduler task behind periodic task-list word 0x000220C8, the sole final-mask coordinator 31 words above it, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "53 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the normalized load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image with PC-relative displacements masked, the two intake solenoid duty command cells 0xFFFE938F and 0xFFFE9390, which hold the high bytes of the 16-bit duty words 0xFFFE9692 and 0xFFFE9694 after two scheduler copies while bit 2 of ROM8[0x00008576] selects the 16-bit scheme, the knock surface state, whose flag occupies bit 7 of 0xFFFE945B outside the wire contract, and the requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target homologs are not traced, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
@@ -995,7 +994,7 @@ selector_host_call = [0x000FB260, 0x000FD40C, 0x0001CB08]
 startup_initializer = [0x0002A6FC, 0x0002F596, 0x0001CCA0]
 
 [profile.JK78C.map_symbols]
-ascd_state = 0xFFFF450C
+ascd_state = 0xFFFF450B
 button_state = 0xFFFF29A1
 dfco_lookup = 0x000281B0
 diagnostic_state = 0xFFFF29A0
@@ -1033,7 +1032,7 @@ stock_effective_ignition_command = [0x1229, 0x000229BC, 0xFFFF0C50, 2]
 [profile.JK78C.rolling_symbols]
 apc_mode = 0xFFFF241E
 apc_output = 0xFFFF11CF
-ascd_state = 0xFFFF450C
+ascd_state = 0xFFFF450B
 button_state = 0xFFFF29A1
 coolant_index = 0xFFFF106D
 fuel_cut_coordinator = 0x0006A9B0

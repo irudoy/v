@@ -52,9 +52,11 @@ The gate performs these checks:
    independent SH7058 addresses, stock hooks, RAM sources, and checksums.
    1ME3B executes them through its own SH7059 addresses with the target bit
    layout: the native fuel-cut state byte keeps the active and armed flags in
-   bits 3 and 2, and the ASCD-enabled flag is bit 3 of its status byte, so the
-   selector and Rolling Launch ASCD cases set `0x08` and one extra selector
-   case proves that bit 7 of the same byte does not abort. The
+   bits 3 and 2. The ASCD cases of every target set the MAIN switch bit of the
+   ASCD flag byte at the position of its layout: bit 7 on JK08A, JK00C, and
+   JK00D, bit 4 on JK78C, bit 5 on 1ND, and bit 1 on 1ME3B. One selector case
+   and one Rolling Launch gate case set every other bit of the byte, which
+   neither aborts the selector nor fails the gate. The
    VQ37 ignition cases select all five slots of the two executed 16x16
    surfaces. The 1ND and JK78C cases pass the three equal-byte surfaces of the
    gated coordinator half, which the 1ME3B coordinator does not carry, through
@@ -67,7 +69,7 @@ The gate performs these checks:
    reach the stock 8x8 lookup unchanged. The harness names the four bases by
    the placeholders `0x0000f610`, `0x0000f710`, `0x0000f690`, and `0x0000f6d0`,
    and the stock 8x8 lookup is a return stub of the dynamic fixture. The three
-   targets differ in selector width, adapter count, and entry count; each
+   targets differ in adapter count and entry count; each
    marker carries its own values, and the verifier sums the case counts the
    markers report.
 5. Apply only the documented simulator transformations after exact byte
@@ -95,12 +97,30 @@ The gate performs these checks:
 6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
+7. Execute the stock instruction regions whose behavior the entity files state
+   (`verify_stock_code.py`). The JK78C region `0x000fcbb0..0x000fcbed` of the
+   ASCD task `0x000fb9c0` holds the coolant flag and the MAIN switch block.
+   The verifier links its GNU reconstruction `stock_jk78c_ascd_main.s` at the
+   region start and requires byte identity with the stock image for the region
+   and the four pool words that it loads. The fixture aliases the two high-RAM
+   pool words, places an RTS/NOP pair at `0x000fcbee` directly after the
+   region, and keeps the region bytes stock. `stock_invoke.s` calls the region
+   with R12 set to the stock pool literal that `0x000fc9ca` loads and with GBR
+   0, as the stock firmware runs. The harness takes the address of
+   `ascd_state/ram`, the mask of its named bit `main`, and the address of
+   `button_state/ram` on the layout from the entity files and executes every
+   branch outcome: the button source, the alternative source that bit 7 of the
+   calibration byte `0x0000894f` selects, which the harness sets in the fixture
+   for two cases and then restores, and both outcomes of the coolant threshold.
+   Each case requires the MAIN bit to follow its source, the other bits of the
+   flag byte to keep their values, and every other byte of the flag window to
+   stay unchanged.
 
 A successful run prints `VQ_SH_ELF_MAP_SWITCHING`,
 `VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`,
-`VQ_SH_ELF_CAN_TELEMETRY`, `VQ_SH_ELF_CAN_TELEMETRY_VERIFY`, and
-`VQ_SH_ELF_RUNTIME_TARGET`, `VQ_SH_ELF_RUNTIME_TARGETS`, and
-`VQ_SH_ELF_VERIFY` markers with `status=PASS`. The markers calculate current
+`VQ_SH_ELF_CAN_TELEMETRY`, `VQ_SH_ELF_CAN_TELEMETRY_VERIFY`,
+`VQ_SH_ELF_RUNTIME_TARGET`, `VQ_SH_ELF_RUNTIME_TARGETS`,
+`VQ_SH_ELF_STOCK_CODE`, and `VQ_SH_ELF_VERIFY` markers with `status=PASS`. The markers calculate current
 instruction, case, branch, relocation, and composition values at runtime; this
 document does not duplicate them.
 

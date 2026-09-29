@@ -247,10 +247,8 @@ def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles):
     profile = profiles["1ME3B"]
     routine = profile.ignition_unreferenced_routine
 
-    assert profile.ascd_enabled_mask == 0x08
     assert (routine.start, routine.end) == (0x000791A4, 0x000797CC)
     assert profiles["1ND0A"].ignition_unreferenced_routine is None
-    assert profiles["1ND0A"].ascd_enabled_mask == 0x80
 
     pointed = bytearray(images["1ME3B"].data)
     pointed[0x00100000:0x00100004] = (routine.start + 0x40).to_bytes(4, "big")

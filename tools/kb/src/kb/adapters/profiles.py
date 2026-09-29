@@ -116,7 +116,7 @@ RUNTIME_KEYS = ("rom_size", "rom_delta", "ram_delta", "free_rom_start", "free_ro
                 "injected_ram_start", "injected_ram_end", "map_variant",
                 "telemetry_completion_variant", "telemetry_zero_source",
                 "ignition_unreferenced_routine")
-MAP_KEYS = ("ascd_enabled_mask", "extra_cvtc_storage", "ignition_state_storage")
+MAP_KEYS = ("extra_cvtc_storage", "ignition_state_storage")
 # Target keys whose values are addresses, or tables and lists of addresses; the
 # other keys hold sizes, deltas, masks, indices, and names.
 ADDRESS_KEYS = frozenset({"free_rom_start", "free_rom_end", "injected_rom_start",
@@ -705,7 +705,7 @@ SCALAR_ORDER = ("family", "layout_source", "inherits", "rom_size", "rom_delta", 
                 "free_rom_start", "free_rom_end", "injected_rom_start", "injected_rom_end",
                 "free_ram_start", "free_ram_end", "injected_ram_start", "injected_ram_end",
                 "map_variant", "telemetry_completion_variant", "telemetry_unavailable",
-                "telemetry_zero_source", "ascd_enabled_mask")
+                "telemetry_zero_source")
 TABLE_ORDER = ("capabilities", "map_families", "map_hooks", "map_symbols", "rolling_hooks",
                "rolling_diagnostics", "rolling_symbols", "can_hooks", "can_symbols",
                "telemetry_sources", "extra_cvtc_storage", "ignition_state_storage",
@@ -717,8 +717,7 @@ STORAGE_ORDER = ("adapter_start", "adapter_end", "pointer_table", "copies", "sta
 # Numbers that are no 32-bit words; a negative delta is decimal, since TOML
 # has no signed hexadecimal integers.
 NUMBER_FORMAT = {"rom_size": "0x{:X}", "feedback_payload_offset": "0x{:X}",
-                 "ascd_enabled_mask": "0x{:02X}", "mailbox_mask": "0x{:04X}",
-                 "mailbox_index": "{}"}
+                 "mailbox_mask": "0x{:04X}", "mailbox_index": "{}"}
 # Lists of names that sort by name.
 SORTED = ("telemetry_unavailable",)
 LINE = 79

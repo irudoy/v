@@ -4,9 +4,9 @@
 The canonical SH-2E sources and layouts remain in JK08A coordinates. Exact
 8MFK address profiles provide every nonuniform stock binding, while this module
 applies the audited uniform injected-ROM and injected-RAM relocations. The
-JK08A values of the key tables of the feature targets and the hook keys of
-each target come from the entity files through `kb.targets`. Target
-machine-code payloads are tracked separately and are accepted only when their
+JK08A values of the key tables of the feature targets, the hook keys of each
+target, and the MAIN switch bit of the ASCD flag byte of each layout come from
+the entity files through `kb.targets`. Target machine-code payloads are tracked separately and are accepted only when their
 digests match both the projected layout and independently assembled sources.
 """
 
@@ -95,6 +95,12 @@ IGNITION_STATE_FAMILY_NAMES = {
         "Ignition Timing Surface - VVEL State Codes 6 and 7"
     ),
 }
+
+# The selector host and the Rolling Launch engine abort while the MAIN switch
+# bit of the ASCD flag byte is set. Their canonical sources test the bit of the
+# canonical layout, and each target tests the bit of its own layout.
+ASCD_STATE = "ascd_state/ram"
+CANONICAL_ASCD_MAIN_MASK = 0x80
 
 
 class RuntimeTargetError(ValueError):
@@ -502,17 +508,28 @@ def _replace_source_once(source, old, new, context):
     return source.replace(old, new)
 
 
+@lru_cache(maxsize=None)
+def ascd_main_mask(layout):
+    """The mask of the MAIN switch bit of the ASCD flag byte on a layout."""
+    return 1 << _kb(kb_targets.bit, ASCD_STATE, layout, "main")
+
+
 def _ascd_mask_source(source, profile, canonical, template, context):
-    """Bind the ASCD-enabled bit test to the target flag layout."""
-    if profile.ascd_enabled_mask == (
-        rom_address_profiles.DEFAULT_ASCD_ENABLED_MASK
-    ):
-        return source
+    """Bind the test of the ASCD MAIN switch bit, which the canonical source
+    makes at the bit of the canonical layout, to the bit of the target
+    layout."""
+    home = ascd_main_mask(kb_targets.CANONICAL)
+    if home != CANONICAL_ASCD_MAIN_MASK:
+        raise RuntimeTargetError(
+            f"{context}: the canonical source tests "
+            f"0x{CANONICAL_ASCD_MAIN_MASK:02X}, and the MAIN bit of "
+            f"{kb_targets.CANONICAL} is 0x{home:02X}"
+        )
+    mask = ascd_main_mask(_kb(kb_targets.layout_of, profile.rom))
+    if mask == home:
+        return _replace_source_once(source, canonical, canonical, context)
     return _replace_source_once(
-        source,
-        canonical,
-        template.format(mask=profile.ascd_enabled_mask),
-        context,
+        source, canonical, template.format(mask=mask), context
     )
 
 
@@ -522,7 +539,7 @@ def _render_selector_host(profile, mapping):
         profile,
         "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n",
         "mov #0x{mask:02X},r1\ntst r1,r0\nbf host_abort_selector\n",
-        "selector host ASCD-enabled mask",
+        "selector host ASCD MAIN bit",
     )
     return _render_source(source, profile, mapping)
 
@@ -544,8 +561,21 @@ def _render_vq37_rolling_wrappers(profile, mapping):
     return _render_source(source, profile, mapping)
 
 
-def _render_vq37_rolling_engine(profile, mapping):
-    source = _read_source("rolling-launch-engine.s")
+def _render_rolling_engine(profile, mapping, source_name, vq37):
+    source = _read_source(source_name)
+    if vq37:
+        source = _vq37_rolling_engine_source(source)
+    source = _ascd_mask_source(
+        source,
+        profile,
+        "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n",
+        "mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n",
+        "Rolling Launch ASCD MAIN bit",
+    )
+    return _render_source(source, profile, mapping)
+
+
+def _vq37_rolling_engine_source(source):
     source = _replace_source_once(
         source,
         "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 "
@@ -614,14 +644,7 @@ def _render_vq37_rolling_engine(profile, mapping):
         "",
         "VQ37 fuel-shadow literal removal",
     )
-    source = _ascd_mask_source(
-        source,
-        profile,
-        "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n",
-        "mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n",
-        "Rolling Launch ASCD-enabled mask",
-    )
-    return _render_source(source, profile, mapping)
+    return source
 
 
 def _source_literals(source_texts, units):
@@ -1195,9 +1218,9 @@ def _project_rolling(
             source_texts[unit.key] = _render_vq37_rolling_wrappers(
                 profile, mapping
             )
-        elif vq37 and unit.key == "engine":
-            source_texts[unit.key] = _render_vq37_rolling_engine(
-                profile, mapping
+        elif unit.key == "engine":
+            source_texts[unit.key] = _render_rolling_engine(
+                profile, mapping, unit.source, vq37
             )
         else:
             source_texts[unit.key] = _render_source(

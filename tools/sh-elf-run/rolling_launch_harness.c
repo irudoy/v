@@ -27,12 +27,19 @@
 #define RL_CONFIG 0x000d3f60U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
-#ifdef TARGET_1ME3B
-/* 1ME3B packs the ASCD-enabled flag into bit 3 of the status byte. */
-#define ASCD_ENABLED 0x08U
+/* The ASCD task keeps the MAIN switch state in one bit of this flag byte, at
+   the position of the layout; the other bits hold flags of other ASCD
+   functions, which neither abort the selector nor fail the launch gate. */
+#ifdef TARGET_1ND
+#define ASCD_MAIN 0x20U
+#elif defined(TARGET_1ME3B)
+#define ASCD_MAIN 0x02U
+#elif defined(TARGET_JK78)
+#define ASCD_MAIN 0x10U
 #else
-#define ASCD_ENABLED 0x80U
+#define ASCD_MAIN 0x80U
 #endif
+#define ASCD_FOREIGN_FLAGS ((uint8_t)~ASCD_MAIN)
 #define SPEED 0xffff110eU
 #define RPM 0xffff11bcU
 #define PEDAL 0xffff2672U
@@ -396,6 +403,7 @@ enum gate_mutation {
     GATE_FEEDBACK_TICKS,
     GATE_FEEDBACK_RESERVED,
     GATE_ASCD,
+    GATE_ASCD_FOREIGN_FLAGS,
     GATE_BUTTON_RELEASED,
     GATE_BUTTON_ZERO,
     GATE_BUTTON_SET,
@@ -432,6 +440,7 @@ static const struct gate_case gate_cases[] = {
     {"gate-feedback-ticks", GATE_FEEDBACK_TICKS, REASON_FEEDBACK_BUSY, 0},
     {"gate-feedback-reserved", GATE_FEEDBACK_RESERVED, REASON_FEEDBACK_BUSY, 0},
     {"gate-ascd", GATE_ASCD, REASON_ASCD_ACTIVE, 0},
+    {"gate-ascd-foreign-flags", GATE_ASCD_FOREIGN_FLAGS, REASON_NONE, 1},
     {"gate-button-released", GATE_BUTTON_RELEASED, REASON_BUTTON_INVALID, 0},
     {"gate-button-zero", GATE_BUTTON_ZERO, REASON_BUTTON_INVALID, 0},
     {"gate-button-set", GATE_BUTTON_SET, REASON_BUTTON_INVALID, 0},
@@ -484,7 +493,10 @@ static void apply_gate_mutation(enum gate_mutation mutation)
         selector[7] = 1;
         break;
     case GATE_ASCD:
-        ram_pointer(ASCD_STATUS)[0] = ASCD_ENABLED;
+        ram_pointer(ASCD_STATUS)[0] = ASCD_MAIN;
+        break;
+    case GATE_ASCD_FOREIGN_FLAGS:
+        ram_pointer(ASCD_STATUS)[0] = ASCD_FOREIGN_FLAGS;
         break;
     case GATE_BUTTON_RELEASED:
         ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
@@ -1401,22 +1413,22 @@ int main(void)
 #ifdef TARGET_VQ37_ROLLING
     if (!run_fuel_wrapper_cases())
         return 1;
-    if (case_count != 124U)
-        return fail_value("summary", "case_count", case_count, 124);
+    if (case_count != 125U)
+        return fail_value("summary", "case_count", case_count, 125);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=26 config=24 threshold=4 activation=5 "
+        "structural=11 gates=27 config=24 threshold=4 activation=5 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 entries=9\n",
         (unsigned long)case_count);
 #else
-    if (case_count != 121U)
-        return fail_value("summary", "case_count", case_count, 121);
+    if (case_count != 122U)
+        return fail_value("summary", "case_count", case_count, 122);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=26 config=24 threshold=4 activation=5 "
+        "structural=11 gates=27 config=24 threshold=4 activation=5 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "entries=8\n",
         (unsigned long)case_count);

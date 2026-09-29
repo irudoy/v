@@ -1,18 +1,139 @@
+title = "ASCD task flag byte with the MAIN switch state"
+summary = """
+Flag byte of the ASCD task 000cf020. Its MAIN switch block, which bit 0 of \
+the calibration byte ROM8[0x8B28] enables, copies bit 0 of \
+[[button_state/ram]] into the bit main while bit 7 of the calibration byte \
+is clear, and bit 4 of ffff41f9 while it is set; the task then copies main \
+into bit 0 of [[abstract-newt/ram]], the status byte of DID 0x130D. The \
+other bits hold coolant, speed, and indication flags of the ASCD functions. \
+Each layout packs the flags of the task into this byte and its neighbours at \
+its own positions, and a symbol whose layout moves the bit main states its \
+position."""
+level = "code"
+
+[[bit]]
+bit = 7
+name = "main"
+summary = """
+MAIN switch state: the MAIN switch block sets it while bit 0 of \
+[[button_state/ram]] is set and clears it otherwise"""
+level = "code"
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:000d01f0"
+value = "cb80"
+note = """
+or #0x80,r0 in the delay slot of the branch to the store 000d0200 sets the \
+bit while bit 0 of [[button_state/ram]] is set"""
+
+[[bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "7mfk:000d01fe"
+value = "c97f"
+note = "and #0x7f,r0 clears the bit otherwise"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:000d0200"
+note = "mov.b r0,@(0x9,r12) with r12 = ffff41a5 stores the byte"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeb985"
+note = """
+Bit 3 holds the ASCD failure flag, which 00134820 sets while bit 7 of \
+fffed58f, fffed592, or fffed5a1 is set; 00021240 writes bit 7. Bit 0 of \
+ROM8[0x8A62] enables the MAIN switch block."""
+
+[[symbol.bit]]
+bit = 1
+name = "main"
+summary = """
+MAIN switch state: the MAIN switch block sets it while bit 0 of \
+[[button_state/ram]] is set and clears it otherwise"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:001361ce"
+value = "cb02"
+note = "or #0x02,r0 sets the bit while bit 0 of [[button_state/ram]] is set"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:001361d4"
+value = "c9fd"
+note = "and #0xfd,r0 clears the bit otherwise"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1me3b:001361d2"
+note = "mov.b r0,@(0x7,r13) with r13 = fffeb97e stores the byte with the bit set"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1me3b:001361d8"
+note = "mov.b r0,@(0x7,r13) stores the byte with the bit clear"
 
 [[symbol.evidence]]
 kind = "l0"
-supports = "identity"
-at = "1me3b:000216a2"
+supports = "homology"
+at = "1me3b:001361d2"
+to = "7mfk:ffff41ae"
 note = """
-ASCD functions set and test the enabled flag as bit 3 of this byte; bit 7 of \
-the byte is an unrelated flag of the periodic list walker"""
+The MAIN switch block of 00134ec8 stores the byte after it copies bit 0 of \
+[[button_state/ram]] into bit 1, as the block of 7mfk:000cf020 stores \
+7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"""
 
 [[symbol]]
 layout = "1nd"
 address = "fffeb823"
+note = """
+Bit 0 of ROM8[0x8A11] enables the MAIN switch block and the writer 001274b0 \
+of the ASCD failure flag in bit 7; 1ND0A and 1ND3B store 0x00, so neither \
+runs on the stock calibration."""
+
+[[symbol.bit]]
+bit = 5
+name = "main"
+summary = """
+MAIN switch state: the MAIN switch block sets it while bit 0 of \
+[[button_state/ram]] is set and clears it otherwise"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1nd:00128dae"
+value = "cb20"
+note = "or #0x20,r0 sets the bit while bit 0 of [[button_state/ram]] is set"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1nd:00128db4"
+value = "c9df"
+note = "and #0xdf,r0 clears the bit otherwise"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1nd:00128db2"
+note = "mov.b r0,@(0x5,r13) with r13 = fffeb81e stores the byte with the bit set"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "1nd:00128db8"
+note = "mov.b r0,@(0x5,r13) stores the byte with the bit clear"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -24,6 +145,9 @@ note = "Selector reads this ASCD state byte"
 [[symbol]]
 layout = "7mfk"
 address = "ffff41ae"
+note = """
+Bit 0 of ROM8[0x8B28] enables the MAIN switch block: JK08A stores 0x2B, and \
+JK00A, JK03A, and JK03B store 0x00, which skips the block."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -56,13 +180,49 @@ value = 52
 
 [[symbol]]
 layout = "jk78c"
-address = "ffff450c"
+address = "ffff450b"
+former = ["ascd_state/ram/jk78c-ffff450c"]
+note = """
+The task 000fb9c0 packs its flags three bits below 7mfk: bit b of \
+ffff41ad..ffff41af on 7mfk is bit b-3 of ffff450a..ffff450c. Bit 0 of \
+ROM8[0x894F] enables the MAIN switch block."""
+
+[[symbol.bit]]
+bit = 4
+name = "main"
+summary = """
+MAIN switch state: the MAIN switch block sets it while bit 0 of \
+[[button_state/ram]] is set and clears it otherwise"""
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk78c:000fcbe6"
+value = "cb10"
+note = """
+or #0x10,r0 in the delay slot of the branch to the store 000fcbec sets the \
+bit while bit 0 of [[button_state/ram]] is set"""
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk78c:000fcbea"
+value = "c9ef"
+note = "and #0xef,r0 clears the bit otherwise"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "jk78c:000fcbec"
+note = "mov.b r0,@(0x5,r12) with r12 = ffff4506 stores the byte"
 
 [[symbol.evidence]]
-kind = "function-match"
+kind = "l0"
 supports = "homology"
-at = "jk78c:0008cddc"
-to = "7mfk:0006e700"
-count = 1
-value = "mnemonic"
-note = "Selector reads this ASCD state byte"
+at = "jk78c:000fcbec"
+to = "7mfk:ffff41ae"
+note = """
+The MAIN switch block of 000fb9c0 stores the byte after it copies bit 0 of \
+[[button_state/ram]] into bit 4, as the block of 7mfk:000cf020 stores \
+7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"""

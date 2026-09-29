@@ -47,7 +47,7 @@ map_hook,rev_fuel_cut_release_curve_base,,0007b334,000172c6,,target-specific,Nat
 map_hook,rev_throttle_scalar_base,00077bac,000b31d0,0000935e,,target-specific,Target consumer owns one scalar instead of the source container
 map_hook,selector_host_call,000ce8dc,001344c8,001370dc,,mapped,Literal call target identifies the exact selector host
 map_hook,startup_initializer,00027d28,0002e18c,0003357c,,mapped,Literal call target identifies the exact startup initializer
-map_symbol,ascd_state,ffff41ae,fffeb985,,,target-specific,ASCD functions set and test the enabled flag as bit 3 of this byte; bit 7 of the byte is an unrelated flag of the periodic list walker
+map_symbol,ascd_state,ffff41ae,fffeb985,,,mapped,"The MAIN switch block of 00134ec8 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 1, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
 map_symbol,button_state,ffff2a85,fffe9b8f,,,mapped,Selector reads this button byte and the target keeps the 1ND explicit-mask layout
 map_symbol,dfco_lookup,00026388,0002aa48,,,mapped,Target DFCO hooks share this lookup
 map_symbol,diagnostic_state,ffff2a84,fffe9b8e,,,mapped,Selector reads this adjacent diagnostic byte
@@ -72,7 +72,7 @@ rolling_hook,selector_arbitration,000ce8dc,001344c8,001370dc,,mapped,Rolling arb
 rolling_hook,startup_state_clear,00027d28,0002e18c,0003357c,,mapped,Runtime clear can chain from the startup literal
 rolling_symbol,apc_mode,ffff24c9,fffe94b6,,,mapped,Primary ignition command builder tests bit 6 of this mode byte at the 1ND instruction positions
 rolling_symbol,apc_output,ffff2022,fffe81c3,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-rolling_symbol,ascd_state,ffff41ae,fffeb985,,,target-specific,ASCD functions set and test the enabled flag as bit 3 of this byte; bit 7 of the byte is an unrelated flag of the periodic list walker
+rolling_symbol,ascd_state,ffff41ae,fffeb985,,,mapped,"The MAIN switch block of 00134ec8 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 1, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
 rolling_symbol,button_state,ffff2a85,fffe9b8f,,,mapped,Selector reads this button byte and the target keeps the 1ND explicit-mask layout
 rolling_symbol,coolant_index,ffff1077,fffe8077,,,mapped,Coolant activation index is recovered from target consumers
 rolling_symbol,fuel_cut_coordinator,,0007a740,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store

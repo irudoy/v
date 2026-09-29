@@ -209,8 +209,9 @@ def advance_selector_decision(
 ):
     """Evaluate one selector invocation without publishing a new map index.
 
-    The caller supplies the stock debounced previous/current ASCD one-hot pair.
-    An armed gesture is accepted only while ASCD is off. Timeout expiration,
+    The caller supplies the stock debounced previous/current ASCD one-hot pair
+    and, as ``ascd_enabled``, the MAIN switch bit of the stock ASCD flag byte.
+    An armed gesture is accepted only while that bit is clear. Timeout expiration,
     corrupt state, unexpected transitions, and count overflow retain the
     validated active map and reset the transient state. A valid release returns
     a commit request while the returned state still contains the old index.

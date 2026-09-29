@@ -84,7 +84,7 @@ or r3,r0
 cmp/eq 0x0,r0
 bf host_abort_selector
 
-// Any ASCD-enabled state aborts an armed gesture.
+// The MAIN switch bit of the stock ASCD flag byte aborts an armed gesture.
 host_check_ascd:
 mov.l @(host_ascd_status,pc),r1
 mov.b @r1,r0
