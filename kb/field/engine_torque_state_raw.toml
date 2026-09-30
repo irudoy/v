@@ -1,0 +1,8 @@
+signal = "engine_torque_state/signal"
+source = "engine_torque_state/ram"
+origin = "ecu_ram"
+width = 2
+signed = true
+profiles = ["tuning"]
+page = 7
+offset = 0x3

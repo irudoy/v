@@ -1,0 +1,7 @@
+signal = "intake_cvtc_duty_bytes/signal"
+source = "intake_cvtc_duty_b1/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+context = "short_fuel_trim_cvtc_duty"
+position = 2

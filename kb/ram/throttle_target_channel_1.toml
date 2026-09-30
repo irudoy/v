@@ -1,3 +1,9 @@
+note = """
+The percentage is the throttle opening above the learned closed position of \
+the throttle position sensor."""
+unit = "percent"
+scale = "x*34285/1114112"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeb80e"

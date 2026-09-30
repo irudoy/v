@@ -1,0 +1,8 @@
+signal = "calculated_load/signal"
+source = "calculated_load/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 6
+offset = 0x7

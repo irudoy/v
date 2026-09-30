@@ -16,6 +16,9 @@ which own the patch design of `7mfk`.
 - The `[[diagnostic]]` entries of the rolling layout give the `7mfk` DID slots
   with `number` and the allocations of the `rolling_launch` target.
 - A hook word links to the meaning at its stock value with `target`.
+- The `[[active_ram]]` entries of `patches/jk08a-runtime-reservations.toml`
+  give the RAM that each feature allocates on `7mfk` (`feature_ram` of the
+  stash), whose addresses name allocations and no meanings.
 
 The address profiles state the same facts of the other layouts with the
 helpers of this module.
@@ -32,6 +35,7 @@ LAYOUTS = {
     "rolling_launch": Path("patches/rolling-launch-layout.toml"),
     "can_telemetry": Path("patches/can-telemetry-layout.toml"),
 }
+RESERVATIONS = Path("patches/jk08a-runtime-reservations.toml")
 CANONICAL = "7mfk"
 # Features in build order: a later feature redirects the replacement of an
 # earlier one, and the first feature's key names a word without canonical key.
@@ -57,7 +61,7 @@ class Hook:
 
 
 def inputs(root):
-    return [path.as_posix() for path in LAYOUTS.values()]
+    return [path.as_posix() for path in (*LAYOUTS.values(), RESERVATIONS)]
 
 
 def documents(root):
@@ -158,6 +162,9 @@ def link_words(b, found):
 
 def declare(b, root):
     found = documents(root)
+    ledger = tomllib.loads((root / RESERVATIONS).read_text(encoding="utf-8"))
+    b.stash["feature_ram"] = [(row["start"], row["end"], row["owner"])
+                              for row in ledger.get("active_ram", ())]
     chains = words(canonical_hooks(found))
     b.stash[__name__] = chains
     targets = {}

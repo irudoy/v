@@ -1,0 +1,8 @@
+signal = "requested_torque_column/signal"
+source = "request_flow/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 0
+offset = 0x3

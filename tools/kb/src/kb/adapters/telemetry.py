@@ -28,12 +28,21 @@
   state addresses become keys of its `7mfk` target. The feature `requires`
   every field it declares, so the source meaning of each is required on every
   layout that the feature targets.
+
+From stage 4 the profile is a projection of the fields and of `can_telemetry`
+(`profile`): the stream fields by page and offset, the fields of each context
+by position, the source of an `ecu_ram` field at the address of its `7mfk`
+symbol with the scale of its meaning, and the source of another field at its
+allocation.
 """
 
 from pathlib import Path
 import re
 import tomllib
 
+from kb import repo, store
+from kb.model import SymbolKey
+from kb.repo import KbError
 from kb.values import hexed
 
 PROFILE = Path("patches/can-telemetry-profile.toml")
@@ -100,7 +109,7 @@ def _regions(b, root):
     ledger = tomllib.loads((root / RESERVATIONS).read_text(encoding="utf-8"))
     ram = layout["ram"]
     active = [(row["start"], row["end"], row["owner"]) for row in ledger["active_ram"]]
-    b.stash["feature_ram"] = active
+    b.stash.setdefault("feature_ram", active)
     configuration = layout["configuration_address"]
     return {
         "telemetry_state": [(ram["state_start"], ram["state_start"] + ram["state_size"],
@@ -243,3 +252,201 @@ def _allocation(b, item, spans, src, subject):
 
 def relate(b, root):
     pass
+
+
+# Projection ----------------------------------------------------------------
+
+HEADER = """\
+# Authoritative wire schema and exact JK08A producer binding.
+#
+# The generator expands every multi-byte field to byte-source pointers used by
+# the SH-2E capture loop and emits a ROM-neutral host decoder schema. Producer
+# addresses, mailbox ownership, and ROM identity are not part of the host
+# contract. The profile CRC covers the wire layout alone: protocol version,
+# profile ID, page count, and the placement, width, and signedness of every
+# slot. Names and scale strings are outside it, and a slot that carries a
+# different quantity takes a new profile ID. The host decodes the current
+# profile ID alone. Runtime arbitrary-address interpretation is intentionally
+# unsupported.
+"""
+# The keys of the profile, its profiles, its fields, and its contexts in the
+# order of the file.
+TOP = ("schema_version", "rom", "protocol_version", "byte_order", "mailbox",
+       "candidate_can_id", "candidate_tick_divisor", "base_tick_numerator", "pphi_hz",
+       "fixed_page_count", "context_pages", "context_count", "header_sequence_bits",
+       *ADDRESS_KEYS)
+PROFILE_ORDER = ("name", "id", "page_count")
+STREAM_ORDER = ("name", "page", "offset", "width", "source", "profiles", "kind", "signed",
+                "scale")
+CONTEXT_ORDER = ("page", "tag", "name")
+FIELD_ORDER = ("name", "width", "source", "kind", "signed", "scale")
+# The integer keys that the file writes in hexadecimal.
+HEXADECIMAL = {"candidate_can_id": "0x{:X}", "source": "0x{:08X}",
+               **{key: "0x{:08X}" for key in ADDRESS_KEYS}}
+TOKEN = re.compile(r"x|\d+(?:\.\d+)?|[-+*/]")
+
+
+def fields(model):
+    """The field entities in the order of the profile: the stream fields by
+    page and offset, then the fields of each context of `can_telemetry` by
+    position."""
+    feature = model.entities.get(("feature", FEATURE))
+    contexts = [item.get("name") for item in (feature.props if feature else {}).get(
+        "contexts", ())]
+    found = [entity for (kind, _), entity in sorted(model.entities.items()) if kind == "field"]
+    stream = [entity for entity in found if "context" not in entity.props]
+    held = [entity for entity in found if "context" in entity.props]
+    for entity in held:
+        if entity.props["context"] not in contexts:
+            raise KbError(f"{entity.key}: context {entity.props['context']!r} is no context of "
+                          f"{FEATURE}", code=3)
+    return (sorted(stream, key=lambda entity: (entity.props.get("page", -1),
+                                                entity.props.get("offset", -1)))
+            + sorted(held, key=lambda entity: (contexts.index(entity.props["context"]),
+                                               entity.props.get("position", -1))))
+
+
+def scale_text(props):
+    """The profile string of the scale of a meaning: its arithmetic in `raw`
+    with its unit, after `candidate` for a candidate scale, or its values as
+    an enumeration; None for a meaning without either or with arithmetic
+    that the string cannot state."""
+    scale, unit = props.get("scale"), props.get("unit")
+    if isinstance(scale, str) and isinstance(unit, str):
+        tokens = TOKEN.findall(scale)
+        if "".join(tokens) != re.sub(r"\s+", "", scale):
+            return None
+        text = " ".join("raw" if token == "x" else token for token in tokens) + f" {unit}"
+        return f"candidate {text}" if props.get("scale_level") == "candidate" else text
+    if props.get("value"):
+        return ENUMERATION + ", ".join(f"{item['value']} {item['name'].upper()}"
+                                       for item in props["value"])
+    return None
+
+
+def profile_document(model):
+    """The document of the profile from the fields, the `can_telemetry`
+    feature, and its `7mfk` target."""
+    feature = model.entities.get(("feature", FEATURE))
+    target = model.targets.get((FEATURE, CANONICAL))
+    if feature is None or target is None:
+        raise KbError(f"the model holds no {FEATURE} feature with a {CANONICAL} target", code=3)
+    allocations = {f"{owner}.{name}": entry
+                   for (owner, layout), held in sorted(model.targets.items())
+                   if layout == CANONICAL
+                   for name, entry in held.props.get("allocations", {}).items()}
+    document = {"schema_version": SCHEMA_VERSION, "rom": model.layouts[CANONICAL].image,
+                "mailbox": target.props.get("mailbox_index"),
+                **{key: feature.props.get(key) for key in WIRE_KEYS},
+                **{key: int(target.props[key], 16) for key in ADDRESS_KEYS
+                   if key in target.props},
+                "profile": [dict(item) for item in feature.props.get("profiles", ())],
+                "field": []}
+    contexts = {item["name"]: {**item, "field": []} for item in feature.props.get("contexts", ())}
+    for entity in fields(model):
+        props = entity.props
+        item = {"name": entity.slug, "width": props.get("width"), "kind": props.get("origin"),
+                "signed": props.get("signed"), **_source(model, entity, allocations)}
+        if "context" in props:
+            contexts[props["context"]]["field"].append(item)
+        else:
+            document["field"].append({**item, "page": props.get("page"),
+                                      "offset": props.get("offset"),
+                                      "profiles": props.get("profiles")})
+    document["context"] = list(contexts.values())
+    return document
+
+
+def _source(model, entity, allocations):
+    """{source, scale} of a field: the address of the `7mfk` symbol of an
+    `ecu_ram` field with its own scale or else the scale of its meaning, or
+    the address of the allocation of another field with its own scale."""
+    props = entity.props
+    if props.get("origin") != "ecu_ram":
+        entry = allocations.get(props.get("source"))
+        if entry is None:
+            raise KbError(f"{entity.key}: source {props.get('source')!r} is no allocation of a "
+                          f"{CANONICAL} target", code=3)
+        return {"source": int(entry["address"], 16), "scale": props.get("scale")}
+    keys = entity.refs.get("source", ())
+    if len(keys) != 1 or not isinstance(keys[0], SymbolKey) or keys[0].layout != CANONICAL:
+        raise KbError(f"{entity.key}: the source names no {CANONICAL} symbol", code=3)
+    meaning = model.meaning_of(keys[0])
+    scale = props.get("scale") or (scale_text(meaning.props) if meaning else None)
+    return {"source": keys[0].address, "scale": scale}
+
+
+def _toml(key, value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return HEXADECIMAL.get(key, "{}").format(value)
+    if isinstance(value, str):
+        return f'"{store.escape(value)}"'
+    if isinstance(value, list):
+        return "[" + ", ".join(_toml(key, item) for item in value) + "]"
+    raise KbError(f"no profile form of {key} = {value!r}", code=3)
+
+
+def _block(header, item, order, subject):
+    """The lines of one table of the profile with the keys of `order`."""
+    unknown = sorted(set(item) - set(order) - {"field"})
+    missing = [key for key in order if item.get(key) is None]
+    if unknown or missing:
+        raise KbError(f"{subject}: unknown keys {unknown}, no value of {missing}", code=3)
+    return "\n".join(([header] if header else []) +
+                     [f"{key} = {_toml(key, item[key])}" for key in order])
+
+
+def render_profile(document):
+    """The text of `patches/can-telemetry-profile.toml` from its document."""
+    top = {key: value for key, value in document.items()
+           if key not in ("profile", "field", "context")}
+    blocks = [HEADER + "\n" + _block(None, top, TOP, "profile")]
+    blocks += [_block("[[profile]]", item, PROFILE_ORDER, f"profile.{item.get('name')}")
+               for item in document.get("profile", ())]
+    blocks += [_block("[[field]]", item, STREAM_ORDER, f"field.{item.get('name')}")
+               for item in document.get("field", ())]
+    for context in document.get("context", ()):
+        blocks.append(_block("[[context]]", context, CONTEXT_ORDER,
+                             f"context.{context.get('name')}"))
+        blocks += [_block("[[context.field]]", item, FIELD_ORDER, f"field.{item.get('name')}")
+                   for item in context.get("field", ())]
+    return "\n\n".join(blocks) + "\n"
+
+
+def _scales(document):
+    """(document without the `ecu_ram` scales, {field: its `ecu_ram` scale})."""
+    scales = {}
+
+    def strip(item):
+        if item.get("kind") != "ecu_ram":
+            return item
+        scales[item.get("name")] = item.get("scale")
+        return {key: value for key, value in item.items() if key != "scale"}
+
+    found = {**document, "field": [strip(item) for item in document.get("field", ())],
+             "context": [{**context, "field": [strip(item) for item in context.get("field", ())]}
+                         for context in document.get("context", ())]}
+    return found, scales
+
+
+def scale_changes(text, document):
+    """[(field, scale of `text`, scale of `document`)] of the `ecu_ram` scales
+    that the profile document changes in the profile text; a text outside the
+    form of the projection or another change refuses."""
+    held = tomllib.loads(text)
+    if render_profile(held) != text:
+        raise KbError(f"{PROFILE.as_posix()} is not in the form of its projection", code=3)
+    before, old = _scales(held)
+    after, new = _scales(document)
+    if before != after:
+        raise KbError(f"the model changes {PROFILE.as_posix()} beyond the scales of its "
+                      "ecu_ram fields", code=3)
+    return [(name, old[name], new[name]) for name in old if old[name] != new.get(name)]
+
+
+def profile(root=repo.ROOT):
+    """The text of `patches/can-telemetry-profile.toml` from the model."""
+    from kb import compile
+    return render_profile(profile_document(compile.cached(root)))

@@ -1,0 +1,9 @@
+source = "rolling_launch.rolling_launch_abort_reason"
+origin = "runtime_state"
+width = 1
+signed = false
+scale = """
+enumeration: the latest Rolling Launch abort reason, 0 NONE through 18 \
+MODE_CHANGED"""
+context = "launch_abort_voltage_and_trim_terms"
+position = 0

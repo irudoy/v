@@ -218,6 +218,14 @@ vehicle_speed = "vehicle_speed/ram"
 layout = "7mfk"
 status = "supported"
 
+[target.allocations.rolling_launch_abort_reason]
+address = "ffff5d41"
+width = 1
+
+[target.allocations.rolling_launch_phase]
+address = "ffff5d40"
+width = 1
+
 [target.symbols]
 apc_mode = "apc_mode/ram"
 apc_output = "apc_output/ram"

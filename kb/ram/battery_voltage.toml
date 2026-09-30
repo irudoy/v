@@ -1,3 +1,6 @@
+unit = "V"
+scale = "x*0.08"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe8164"

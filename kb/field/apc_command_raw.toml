@@ -1,0 +1,8 @@
+signal = "apc_ignition_command/signal"
+source = "apc_output/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 0
+offset = 0x6

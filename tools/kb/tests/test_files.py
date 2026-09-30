@@ -182,6 +182,33 @@ class FilesTest(unittest.TestCase):
         self.assertEqual(target.needs(), [SymbolKey("jk00d", "tbl", 0xF100)])
         self.assertEqual(b.issues, [])
 
+    def test_a_field_file_names_its_signal_and_the_7mfk_symbol_of_its_source(self):
+        self.write("ram", "probe", {"title": "Probe", "unit": "V", "scale": "x/200",
+                                    "symbol": [{"layout": "7mfk", "address": "ffff11f4"}]})
+        self.write("field", "probe_raw", {
+            "signal": "probe/signal", "source": "probe/ram", "origin": "ecu_ram", "width": 2,
+            "signed": False, "profiles": ["tuning"], "page": 0, "offset": 1})
+        self.write("field", "tick16", {
+            "source": "can_telemetry.tick16", "origin": "telemetry_state", "width": 2,
+            "signed": False, "scale": "raw ticks", "profiles": ["tuning"], "page": 0,
+            "offset": 3})
+        self.write("field", "loose_raw", {
+            "source": "probe/ram", "origin": "ecu_ram", "width": 2, "signed": False,
+            "scale": "Q14 factor", "context": "trims", "position": 0})
+        b, model = self.build(lambda b: b.entity("signal", "probe", "probe.toml"))
+        field = model.entities[("field", "probe_raw")]
+        self.assertEqual((field.refs["source"], field.refs["signal"]),
+                         ([SymbolKey("7mfk", "ram", 0xFFFF11F4)], [("signal", "probe")]))
+        self.assertNotIn("source", field.props)
+        self.assertEqual(model.entities[("field", "tick16")].props["source"],
+                         "can_telemetry.tick16")
+        self.assertEqual(sorted(model.entities[("feature", "can_telemetry")].refs["requires"]),
+                         [("field", "loose_raw"), ("field", "probe_raw"), ("field", "tick16")])
+        self.assertEqual(b.stash["telemetry_units"], {SymbolKey("7mfk", "ram", 0xFFFF11F4)})
+        self.assertEqual(sorted((issue.check, issue.subject, issue.message) for issue in b.issues),
+                         [("schema", "field.loose_raw", "an ecu_ram field without signal"),
+                          ("unsplit", "field.loose_raw", "scale 'Q14 factor'")])
+
 
 if __name__ == "__main__":
     unittest.main()

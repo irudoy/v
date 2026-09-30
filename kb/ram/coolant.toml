@@ -1,3 +1,6 @@
+unit = "degC"
+scale = "x-50"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe8079"

@@ -10,7 +10,7 @@
 # over the registries. A baseline step runs `run` from the repository root and
 # counts its output, or with `read = true` counts the files whose paths it
 # prints. Tokens are UTF-8 bytes divided by three, rounded up.
-stage = 3
+stage = 4
 converted = ["Ghidra export directories"]
 
 [[question]]

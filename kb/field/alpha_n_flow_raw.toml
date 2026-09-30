@@ -1,0 +1,7 @@
+signal = "fuel_compensation_column/signal"
+source = "alpha_n_flow/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+context = "long_fuel_trim_map_index_flow"
+position = 3

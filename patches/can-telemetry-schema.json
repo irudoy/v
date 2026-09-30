@@ -109,7 +109,7 @@
             },
             {
               "name": "alpha_n_flow_raw",
-              "scale": "candidate raw * 0.390625 percent QH0 flow quantity, the column coordinate of Fuel Compensation Main",
+              "scale": "candidate raw * 0.390625 percent",
               "signed": false,
               "width": 1
             }
@@ -246,13 +246,13 @@
           "fields": [
             {
               "name": "front_af_sensor_b1_word_raw",
-              "scale": "raw / 200 V A/F sensor 1 voltage",
+              "scale": "raw / 200 V",
               "signed": false,
               "width": 2
             },
             {
               "name": "front_af_sensor_b2_word_raw",
-              "scale": "raw / 200 V A/F sensor 1 voltage",
+              "scale": "raw / 200 V",
               "signed": false,
               "width": 2
             },
@@ -332,7 +332,7 @@
           "name": "request_flow_raw",
           "offset": 3,
           "page": 0,
-          "scale": "candidate raw * 0.00152588 percent QH0 flow potential, the column coordinate of the requested-torque conversion surfaces",
+          "scale": "candidate raw * 0.00152588 percent",
           "signed": false,
           "width": 2
         },
@@ -348,7 +348,7 @@
           "name": "apc_command_raw",
           "offset": 6,
           "page": 0,
-          "scale": "110 - raw degBTDC, the ignition advance that J1979 PID 0x0E reports",
+          "scale": "110 - raw degBTDC",
           "signed": false,
           "width": 1
         },
@@ -388,7 +388,7 @@
           "name": "normalized_load_raw",
           "offset": 7,
           "page": 1,
-          "scale": "raw * 100 / 128 percent of the Base Fuel Schedule reference, saturated at raw 255",
+          "scale": "raw * 100 / 128 percent",
           "signed": false,
           "width": 1
         },
@@ -580,7 +580,7 @@
           "name": "throttle_request_bounded_raw",
           "offset": 1,
           "page": 7,
-          "scale": "candidate raw * 0.1 Nm requested torque",
+          "scale": "candidate raw * 0.1 Nm",
           "signed": true,
           "width": 2
         },
@@ -612,7 +612,7 @@
           "name": "throttle_target_shared_raw",
           "offset": 1,
           "page": 8,
-          "scale": "candidate raw * 0.0008 cm2 target opening area of both throttle bodies",
+          "scale": "candidate raw * 0.0008 cm2",
           "signed": false,
           "width": 2
         },
@@ -620,7 +620,7 @@
           "name": "throttle_target_channel_0_raw",
           "offset": 3,
           "page": 8,
-          "scale": "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor",
+          "scale": "raw * 34285 / 1114112 percent",
           "signed": false,
           "width": 2
         },
@@ -628,7 +628,7 @@
           "name": "throttle_target_channel_1_raw",
           "offset": 5,
           "page": 8,
-          "scale": "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor",
+          "scale": "raw * 34285 / 1114112 percent",
           "signed": false,
           "width": 2
         },

@@ -1,4 +1,5 @@
 from collections import defaultdict
+import copy
 import csv
 import re
 import tomllib
@@ -8,7 +9,8 @@ import unittest
 from kb import adapters, checks, compile, match, names, repo
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
-from kb.model import Builder, SymbolKey
+from kb.model import Builder, Ref, SymbolKey
+from kb.repo import KbError
 
 
 def model():
@@ -224,7 +226,7 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(meaning.statuses["1me3b"].state, "absent")
 
     def test_the_registries_are_their_canonical_rendering(self):
-        fields = profiles.telemetry_fields(repo.ROOT)
+        fields = profiles.telemetry_fields(model())
         text = (repo.ROOT / profiles.PROFILES).read_text(encoding="utf-8")
         self.assertEqual(profiles.render_profiles(tomllib.loads(text), fields), text)
         for path, rows in profiles.correspondence(repo.ROOT).values():
@@ -756,6 +758,20 @@ class SignalAdapterTest(unittest.TestCase):
         signals.declare(b, repo.ROOT)
         self.assertEqual(b.stash["signal_fields"]["knock_count_latched"], "knock_event_latches")
 
+    def test_current_fields_that_differ_from_the_fields_of_a_signal_go_to_the_audit(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        signals.declare_signals(b, _probe([_signal(current_fields=["probe_raw"]),
+                                           _signal(id="exact", current_fields=["exact_raw"])]),
+                                "probe.toml")
+        for name in ("probe_raw", "exact_raw"):
+            b.entity("field", name, "p.toml", refs={"signal": [Ref("exact/signal", "p.toml")]})
+        signals.relate(b, repo.ROOT)
+        self.assertEqual([(issue.check, issue.subject, issue.message) for issue in b.issues], [
+            ("audit", "signal.probe", "current_fields ['probe_raw'] differ from the fields "
+             "whose signal it is: []"),
+            ("audit", "signal.exact", "current_fields ['exact_raw'] differ from the fields "
+             "whose signal it is: ['exact_raw', 'probe_raw']")])
+
     def test_a_width_that_another_registry_states_differently_disagrees(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
         signals.declare_signals(b, _probe([_signal(), _signal(id="other", widths=[1])]),
@@ -916,6 +932,55 @@ class TelemetryAdapterTest(unittest.TestCase):
                          {"map": {"address": "ffff5d00", "width": 1}})
         self.assertEqual(sorted(slug for kind, slug in b.entities if kind == "field"),
                          ["listed_raw", "map", "unlisted_raw"])
+
+    def test_the_profile_is_its_canonical_rendering(self):
+        text = (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8")
+        self.assertEqual(telemetry.render_profile(tomllib.loads(text)), text)
+
+    def test_the_profile_is_the_projection_of_the_files(self):
+        m = model()
+        self.assertEqual(telemetry.render_profile(telemetry.profile_document(m)),
+                         (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8"))
+        self.assertNotIn(telemetry, adapters.ADAPTERS)
+        self.assertEqual(m.entities[("field", "maf_b1_raw")].sources,
+                         {"kb/field/maf_b1_raw.toml"})
+        self.assertEqual(sorted(m.entities[("feature", "can_telemetry")].refs["requires"]),
+                         sorted(key for key in m.entities if key[0] == "field"))
+
+    def test_a_scale_renders_from_the_keys_of_its_meaning(self):
+        cases = [({"scale": "x/200", "unit": "V"}, "raw / 200 V"),
+                 ({"scale": "110-x", "unit": "degBTDC"}, "110 - raw degBTDC"),
+                 ({"scale": "x*0.1", "unit": "Nm", "scale_level": "candidate"},
+                  "candidate raw * 0.1 Nm"),
+                 ({"value": [{"value": 0, "name": "idle"}, {"value": 1, "name": "active"}]},
+                  "enumeration: 0 IDLE, 1 ACTIVE"),
+                 ({"scale": "x*(1/4)", "unit": "V"}, None),
+                 ({"unit": "V"}, None)]
+        units = frozenset(repo.config()["vocab"]["unit"])
+        for props, text in cases:
+            with self.subTest(props=props):
+                self.assertEqual(telemetry.scale_text(props), text)
+                if text is not None:
+                    self.assertEqual(telemetry.parse_scale(text, units), props)
+
+    def test_the_projection_changes_only_the_scales_of_ecu_ram_fields(self):
+        text = (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8")
+        document = tomllib.loads(text)
+        self.assertEqual(telemetry.scale_changes(text, document), [])
+        scaled = copy.deepcopy(document)
+        item = next(item for item in scaled["field"] if item["kind"] == "ecu_ram")
+        old, item["scale"] = item["scale"], "raw / 2 V"
+        self.assertEqual(telemetry.scale_changes(text, scaled),
+                         [(item["name"], old, "raw / 2 V")])
+        other = copy.deepcopy(document)
+        next(item for item in other["field"] if item["kind"] != "ecu_ram")["scale"] = "raw"
+        moved = copy.deepcopy(document)
+        moved["field"][0]["offset"] += 1
+        for changed, form in ((other, text), (moved, text), (document, text + "\n")):
+            with self.subTest(canonical=form == text):
+                with self.assertRaises(KbError) as error:
+                    telemetry.scale_changes(form, changed)
+                self.assertEqual(error.exception.code, 3)
 
 
 def _overrides():

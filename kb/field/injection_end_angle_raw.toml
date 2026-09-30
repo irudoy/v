@@ -1,0 +1,11 @@
+signal = "injection_end_angle/signal"
+source = "injection_end_angle/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+scale = """
+raw * 2 - 590 deg after intake TDC of the injected cylinder; raw * 2 degCA \
+after the reference tooth"""
+profiles = ["tuning"]
+page = 7
+offset = 0x5

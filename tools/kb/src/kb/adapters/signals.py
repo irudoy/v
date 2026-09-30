@@ -12,7 +12,9 @@
 - `dids` is derived: the DIDs whose `source` is an observed meaning. A stored
   set that differs goes to the audit. `current_fields` gives each field the
   signal it serves, which the telemetry fields read from `signal_fields` of
-  the stash.
+  the stash; from the conversion of the profile the field files state
+  `signal`, and `current_fields` that differ from the fields whose `signal`
+  names the signal go to the audit.
 - `telemetry_profile`, `full_rate_hz`, and `rotating_divisor` become keys of
   the `can_telemetry` feature.
 """
@@ -20,6 +22,8 @@
 from collections import defaultdict
 from pathlib import Path
 import tomllib
+
+from kb.model import MEANING_REF, Ref
 
 SIGNALS = Path("defs/JK08A.tuning-signals.toml")
 SCHEMA_VERSION = 1
@@ -81,7 +85,7 @@ def declare_signals(b, document, src):
                 continue
             owners[name] = item["id"]
         pending.append((item["id"], tuple(zip(item["sources"], item["widths"])),
-                        frozenset(item["dids"])))
+                        frozenset(item["dids"]), frozenset(item["current_fields"])))
     b.stash["signals"] = (src, pending)
     b.stash["signal_fields"] = owners
 
@@ -97,6 +101,21 @@ def _allocations(b):
     return found
 
 
+def _served(b):
+    """{signal slug: the fields whose `signal` names it}."""
+    found = defaultdict(set)
+    for (kind, name), entity in b.entities.items():
+        if kind != "field":
+            continue
+        for ref in entity.refs.get("signal", ()):
+            match = MEANING_REF.fullmatch(ref.text) if isinstance(ref, Ref) else None
+            if match and match.group("kind") == "signal":
+                found[match.group("name")].add(name)
+            elif isinstance(ref, tuple) and ref[0] == "signal":
+                found[ref[1]].add(name)
+    return found
+
+
 def relate(b, root):
     """Resolve the observed symbols and allocations; the DIDs come from
     `did_sources` of the stash, which the DID table fills first."""
@@ -104,7 +123,8 @@ def relate(b, root):
     returned = b.stash.get("did_sources", {})
     allocations = _allocations(b)
     feature_ram = b.stash.get("feature_ram", ())
-    for slug, sources, dids in pending:
+    served = _served(b)
+    for slug, sources, dids, current in pending:
         subject = f"signal.{slug}"
         observed, allocated = [], []
         for address, width in sources:
@@ -133,3 +153,6 @@ def relate(b, root):
         if derived != dids:
             b.issue("audit", src, subject, f"dids {_dids(dids)} differ from the DIDs that "
                     f"return an observed meaning: {_dids(derived)}")
+        if served[slug] != current:
+            b.issue("audit", src, subject, f"current_fields {sorted(current)} differ from the "
+                    f"fields whose signal it is: {sorted(served[slug])}")

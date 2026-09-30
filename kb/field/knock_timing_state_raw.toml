@@ -1,0 +1,9 @@
+signal = "knock_control_state/signal"
+source = "knock_timing_state/ram"
+origin = "ecu_ram"
+width = 2
+signed = true
+scale = "Q8 software state"
+profiles = ["tuning"]
+page = 4
+offset = 0x3

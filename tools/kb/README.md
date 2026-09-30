@@ -82,14 +82,14 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
   that lack the keys of their evidence kind, under the registry that states
-  each; `unsplit`, the scales of telemetry fields that the adapter cannot
-  split into the keys of their source meanings; and `levels`, the claims
-  above their effective level with the dependency that bounds each and the
-  end of its chain, the `candidate` claims without evidence, the `code` and
-  `silicon` claims without grounding, the `hardware` keys without a passing
-  record, and the `arithmetic` equations that do not hold (SPEC, section
-  7.1). `--section` computes only the named sections, and the write
-  commands compute only `disagreements`.
+  each; `unsplit`, the scales that the files of `ecu_ram` fields state
+  because the keys of their source meanings cannot give them; and `levels`,
+  the claims above their effective level with the dependency that bounds
+  each and the end of its chain, the `candidate` claims without evidence,
+  the `code` and `silicon` claims without grounding, the `hardware` keys
+  without a passing record, and the `arithmetic` equations that do not hold
+  (SPEC, section 7.1). `--section` computes only the named sections, and the
+  write commands compute only `disagreements`.
 - `kb code` shows the function whose L0 body holds a location
   `<layout>:<address>`, the function symbol that a reference names, or the
   symbol of a meaning on `--layout` or else on its home layout, and calls
@@ -306,13 +306,12 @@ a reference that names nothing fails the `references` check.
 
 | Adapter | Registry | Symbols |
 |---|---|---|
-| `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the targets of the features |
+| `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the features with their targets; the telemetry fields with the `7mfk` symbols of their source meanings, which `can_telemetry` requires, and the source symbols whose unit their files state |
 | `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
-| `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch` |
+| `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch`; the RAM that each feature allocates on `7mfk`, whose addresses name no meaning |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
-| `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry` |
-| `telemetry` | `patches/can-telemetry-profile.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | `field` entities that carry `7mfk` meanings with their scales and units or name feature allocations; the wire keys of `can_telemetry` and the addresses of its `7mfk` target |
+| `signals` | `defs/JK08A.tuning-signals.toml` | `signal` entities that observe `7mfk` meanings or feature allocations, the widths of those meanings, and the catalog keys of `can_telemetry`; `current_fields` that differ from the fields whose `signal` names the signal go to the audit |
 | `overrides` | `defs/JK08A.overrides.toml`, `tools/mapkit/definition_projections.py` | `[editor]` of `7mfk` tables and axes with their masked views, `[logparam]` of `7mfk` RAM; the presentation keys and switches of `definitions` and the JK08A entry of its `7mfk` target |
 | `architecture` | `defs/JK08A.architecture.toml` | `stage`, `block`, `endpoint`, and `chain` entities with the chain steps; the `block` key of the `7mfk` functions and signals of each block |
 
@@ -332,6 +331,7 @@ a projection of the files.
 | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | 3 | `tbl`, `axis`, `fn`, `ram`, and `const` meanings with symbols on `jk78c`, `1nd`, and `1me3b`: the keys and `[editor]` of the native tables, the evidence of their symbols, their `reader` and `axis` links, and their `absent` statuses | `kb.adapters.native:tables`, `kb.adapters.native:fuel_cut` |
 | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | 3 | `tbl` and `axis` meanings with the row items of their symbols and the `absent` and `unresolved` statuses of the rows; the `definitions` targets of `kb/feature/definitions.toml` with `images`, `requires`, `variants`, and `omitted` | `kb.adapters.definitions:addresses`, `kb.adapters.definitions:projections` |
 | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, the symbol and hook-key tables of `patches/runtime_targets.py` | 3 | `hook`, `fn`, `ram`, `reg`, `tbl`, `const`, and `did` meanings with the row items of their symbols, the `target` links of the hook words, and the `absent` and `unresolved` statuses of the rows; the targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` in `kb/feature/` with their key tables, roles, `requires`, `variants`, `unsupported`, `notes`, and `basis` | `kb.adapters.profiles:address_profiles`, `kb.adapters.profiles:correspondences` |
+| `patches/can-telemetry-profile.toml` | 4 | `field` entities with their keys, `signal`, and `source`; the unit, scale, and scale level of the source meanings of the `ecu_ram` fields; the wire constants, `profiles`, and `contexts` of `kb/feature/can_telemetry.toml`, the addresses of its `7mfk` target, and the allocations of the `7mfk` targets of `can_telemetry`, `map_switching`, and `rolling_launch` | `kb.adapters.telemetry:profile` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -475,8 +475,37 @@ per-layout key of each hook of a `map_switching` target by the `7mfk` word of
 its meaning, the keys of a target, the meaning that fills a key of a target
 on a layout, which the `symbols` of the target give, or else its role, and
 the number of a named bit on a layout, which the `[[bit]]` of the symbol
-entry of the layout gives, or else that of the meaning. The adapter of the address profiles reads the same key
-tables and hooks for the model before a conversion.
+entry of the layout gives, or else that of the meaning. The adapter of the
+address profiles reads the same key tables and hooks for the model before a
+conversion.
+
+The rules of the telemetry profile:
+
+- Each field takes `kb/field/<name>.toml` with its keys, its `signal` as the
+  reference of its signal, and its `source`: for an `ecu_ram` field the
+  reference of the meaning of its `7mfk` symbol, whose entry must hold
+  evidence where only the profile and the entity files state the symbol, and
+  for another field its allocation as `<feature>.<allocation>`.
+- The file of a source meaning takes the unit, the scale, and the scale
+  level that the scale of its field gives, which must equal the keys of the
+  meaning. The remaining text of the scale becomes the summary of a meaning
+  whose summary in the model it is and whose file states no other, and
+  otherwise a note of its file; the names that only the profile states
+  become `former` names.
+- `kb/feature/can_telemetry.toml` takes the wire constants, `profiles`, and
+  `contexts`, and the existing `7mfk` target of each feature takes the keys
+  and the allocations that the profile gives it.
+
+`patches/can-telemetry-profile.toml` has the wire constants of
+`can_telemetry`, the mailbox and the addresses of its `7mfk` target, its
+`profiles`, the stream fields by page and offset, and the fields of each
+context by position. The `source` of an `ecu_ram` field is the address of
+the `7mfk` symbol of its meaning, and its `scale` the scale that its file
+states or else the string that the unit, the scale, and the scale level of
+the meaning give, or its values as an enumeration; another field has the
+address of its allocation on a `7mfk` target and the scale of its file. The
+conversion lists each `ecu_ram` scale that the projection renders in
+another string and refuses any other change of the file.
 
 ## Matchers
 
@@ -556,12 +585,13 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 `projections.toml` registers every generated file of the repository with its
 generator, inputs, consumers, stage, and read mode, as section 14 of the
 specification states. `uv run kb project` renders under `.kb/lock` the
-projections of `kb` functions whose stage the transition has reached, such as the `AGENTS.md#kb`
-section, the interpolation registries, the native registries, and the
-definition registries; the generator of a pattern returns the text of each of
+projections of `kb` functions whose stage the transition has reached, such
+as the `AGENTS.md#kb` section, the interpolation, native, and definition
+registries, the address profiles with the correspondence files, and the
+telemetry profile; the generator of a pattern returns the text of each of
 its files; `--check` writes nothing and exits with 1 when a projection
-differs from its rendering. A projection of
-another generator keeps that generator and its gate. The `projections` check requires every entry to
+differs from its rendering. A projection of another generator keeps that
+generator and its gate. The `projections` check requires every entry to
 match tracked files that no other entry claims and to name existing paths,
 compares each projection of `kb` with its rendering and the tracked files of
 a pattern with the files of its rendering, and requires every tracked file

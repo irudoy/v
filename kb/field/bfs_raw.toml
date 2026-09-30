@@ -1,0 +1,8 @@
+signal = "base_fuel_schedule/signal"
+source = "bfs/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 2
+offset = 0x1

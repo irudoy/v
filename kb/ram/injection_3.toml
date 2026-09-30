@@ -1,3 +1,6 @@
+unit = "ms"
+scale = "x/100"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe93ac"

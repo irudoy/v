@@ -1,0 +1,11 @@
+signal = "fuel_output_inhibit/signal"
+source = "fuel_inhibit_mask/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+scale = """
+bit mask; bit k inhibits injector output k, cylinder k + 1 by the diagnostic \
+profile"""
+profiles = ["tuning"]
+page = 0
+offset = 0x7

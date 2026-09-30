@@ -1,0 +1,7 @@
+source = "can_telemetry.protocol_version"
+origin = "rom_configuration"
+width = 1
+signed = false
+scale = "identity"
+context = "health"
+position = 0

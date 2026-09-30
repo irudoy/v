@@ -1,0 +1,11 @@
+signal = "knock_margin/signal"
+source = "can_telemetry.knock_margin_min_ch5"
+origin = "telemetry_state"
+width = 2
+signed = true
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+context = "knock_margin_channels_4_to_6"
+position = 1

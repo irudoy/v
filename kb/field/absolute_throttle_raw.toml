@@ -1,0 +1,8 @@
+signal = "primary_throttle_feedback/signal"
+source = "absolute_throttle/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 5
+offset = 0x7

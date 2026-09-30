@@ -1,0 +1,8 @@
+signal = "injection_calculation/signal"
+source = "injection_0/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 2
+offset = 0x4

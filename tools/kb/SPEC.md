@@ -783,7 +783,10 @@ Features:
   in `notes`; its `7mfk` target holds the envelope that the other layouts
   relocate. `can_telemetry` holds the wire constants, profiles, and
   contexts; its targets hold the telemetry mailbox, its mask, and the
-  payload offset of the feedback record, with the prose of each in `notes`.
+  payload offset of the feedback record, with the prose of each in `notes`,
+  and its `7mfk` target the addresses of the capture table, the
+  configuration record, and the state record. `can_telemetry` requires every
+  field; its `requires` is derived from the field files, not stored.
   A field is unavailable on a layout where its source meaning has a status
   and no symbol fills the role of the field; the list of those fields is
   derived, not stored.
@@ -2178,7 +2181,7 @@ that no registry states.
 | `defs/1ND0A-1ME3B.census-correspondence.csv` | Census output | generated | Input of `kb family new` and `kb suggest` from stage 9 | Generated research output |
 | `defs/<ROM>.xml`, `defs/<ROM>.xdf`, RomRaider plugin files, the host decoder | Editor and logger definitions | generated | Their generators, which read `kb` from the stages of their inputs | Projections with `read = "open"` |
 | `patches/hardware-results.toml` | Hardware records | not converted | itself; `hardware` evidence cites it | |
-| `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml`, `patches/checksum-layouts.toml`, `patches/runtime-target-payloads.toml` | Patch design; the `7mfk` hook words, map families, and DID slots that the adapters read from stage 2 | not converted | themselves | |
+| `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml`, `patches/checksum-layouts.toml`, `patches/runtime-target-payloads.toml` | Patch design; the `7mfk` hook words, map families, DID slots, and the RAM that each feature allocates, which the adapters read from stage 2 | not converted | themselves | |
 | Source packs under `refs/` | External corpora | not converted | themselves; `manual` and `diagnostic` evidence cites them | |
 | Narrow specifications under `defs/` | Mechanisms in prose | not converted | themselves; `specs` keys and `spec` evidence cite them | |
 
@@ -2262,7 +2265,7 @@ tests on the regenerated files.
 |---|---|
 | `addr` | `ram` symbol, or `reg` symbol for an address in the peripheral space of the MCU |
 | `semantics` | `summary`; proposed `title` |
-| `units` | `unit`, unless the scale of a telemetry field states the unit of the meaning |
+| `units` | `unit`, unless the meaning is the source of an `ecu_ram` field and its file states the unit |
 | `confidence` | `level` |
 | `evidence` | Links and evidence with `supports = "identity"` |
 | `note` | `note` |
@@ -2760,12 +2763,16 @@ The service 0x22 table of `7mfk`:
   meaning: the arithmetic in `raw` becomes `scale` in `x` with its `unit`,
   which `[vocab] unit` of `tools/kb/config.toml` lists; a leading `candidate`
   sets `scale_level = "candidate"`; an enumeration `enumeration: <n> <NAME>,
-  ...` becomes `[[value]]` entries; and the remaining text joins the summary.
+  ...` becomes `[[value]]` entries; and the remaining text becomes the
+  summary of a meaning that has none, or else a note of the meaning.
   The arithmetic holds `raw` once, and remaining text that holds arithmetic
   in `raw` states a second scale. A string with a second scale, a unit
   outside the vocabulary, or no arithmetic stays the `scale` of the field,
   and the `unsplit` section of `kb audit` lists it for review. A meaning that
   already has a scale must agree.
+- The field name without the `_raw` suffix names the source meaning where
+  no name of higher precedence does, and becomes a `former` name of a
+  meaning that another name names.
 - `[[context]]` becomes a context of `can_telemetry` with `name`, `page`, and
   `tag`, and each `[[context.field]]` a field with `context` and `position`.
 - The wire constants, `[[profile]]`, and the contexts become keys of

@@ -1,0 +1,7 @@
+source = "can_telemetry.snapshot_overrun_count"
+origin = "telemetry_state"
+width = 1
+signed = false
+scale = "saturating count"
+context = "health"
+position = 3

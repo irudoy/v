@@ -53,7 +53,7 @@ source = 0xFFFF1980
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.00152588 percent QH0 flow potential, the column coordinate of the requested-torque conversion surfaces"
+scale = "candidate raw * 0.00152588 percent"
 
 [[field]]
 name = "final_timing_raw"
@@ -75,7 +75,7 @@ source = 0xFFFF2022
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "110 - raw degBTDC, the ignition advance that J1979 PID 0x0E reports"
+scale = "110 - raw degBTDC"
 
 [[field]]
 name = "fuel_inhibit_mask"
@@ -130,7 +130,7 @@ source = 0xFFFF102C
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 100 / 128 percent of the Base Fuel Schedule reference, saturated at raw 255"
+scale = "raw * 100 / 128 percent"
 
 [[field]]
 name = "bfs_raw"
@@ -394,7 +394,7 @@ source = 0xFFFF19C6
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "candidate raw * 0.1 Nm requested torque"
+scale = "candidate raw * 0.1 Nm"
 
 [[field]]
 name = "engine_torque_state_raw"
@@ -438,7 +438,7 @@ source = 0xFFFF19B2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.0008 cm2 target opening area of both throttle bodies"
+scale = "candidate raw * 0.0008 cm2"
 
 [[field]]
 name = "throttle_target_channel_0_raw"
@@ -449,7 +449,7 @@ source = 0xFFFF28BC
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor"
+scale = "raw * 34285 / 1114112 percent"
 
 [[field]]
 name = "throttle_target_channel_1_raw"
@@ -460,7 +460,7 @@ source = 0xFFFF28BE
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 34285 / 1114112 percent of throttle opening above the learned closed position of the throttle position sensor"
+scale = "raw * 34285 / 1114112 percent"
 
 [[field]]
 name = "exhaust_cvtc_actual_b2_raw"
@@ -590,7 +590,7 @@ width = 1
 source = 0xFFFF1170
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.390625 percent QH0 flow quantity, the column coordinate of Fuel Compensation Main"
+scale = "candidate raw * 0.390625 percent"
 
 [[context]]
 page = 9
@@ -751,7 +751,7 @@ width = 2
 source = 0xFFFF2780
 kind = "ecu_ram"
 signed = false
-scale = "raw / 200 V A/F sensor 1 voltage"
+scale = "raw / 200 V"
 
 [[context.field]]
 name = "front_af_sensor_b2_word_raw"
@@ -759,7 +759,7 @@ width = 2
 source = 0xFFFF2782
 kind = "ecu_ram"
 signed = false
-scale = "raw / 200 V A/F sensor 1 voltage"
+scale = "raw / 200 V"
 
 [[context.field]]
 name = "af_adjustment_b1_raw"

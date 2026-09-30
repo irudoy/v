@@ -1,0 +1,8 @@
+signal = "airflow_banks/signal"
+source = "maf_b2/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 1
+offset = 0x3

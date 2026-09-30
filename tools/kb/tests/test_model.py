@@ -134,6 +134,19 @@ class LinkTest(unittest.TestCase):
         self.assertTrue(b.symbols[SymbolKey("7mfk", "fn", 0x26740)].implicit)
         self.assertFalse(b.symbols[SymbolKey("7mfk", "axis", 0x125EA)].implicit)
 
+    def test_a_table_of_named_entries_of_a_target_takes_the_entries_of_every_source(self):
+        b = builder()
+        b.target("rolling_launch", "7mfk", "a.toml", status="supported", props={
+            "allocations": {"flags": {"address": "ffff5d42", "width": 2}}})
+        b.target("rolling_launch", "7mfk", "b.toml", props={
+            "allocations": {"phase": {"address": "ffff5d40", "width": 1},
+                            "flags": {"address": "ffff5d44", "width": 2}}})
+        self.assertEqual(b.targets[("rolling_launch", "7mfk")].props["allocations"],
+                         {"flags": {"address": "ffff5d42", "width": 2},
+                          "phase": {"address": "ffff5d40", "width": 1}})
+        self.assertEqual([(issue.check, issue.subject) for issue in b.issues],
+                         [("audit", "rolling_launch@7mfk allocations")])
+
 
 
 class RequiredTest(unittest.TestCase):

@@ -1,3 +1,7 @@
+note = "The scaled value is the voltage of A/F sensor 1."
+unit = "V"
+scale = "x/200"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe9812"

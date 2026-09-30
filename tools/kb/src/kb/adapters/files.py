@@ -19,12 +19,20 @@
 - A feature file `feature/<slug>.toml` gives the feature entity with its keys
   and each `[[target]]` the target of its layout; the keys of a feature and of
   its targets are those of the feature (section 7.9).
+- A field file `field/<name>.toml` gives the field entity with its keys; its
+  `signal` and the `source` of an `ecu_ram` field are references, and the
+  source names the `7mfk` symbol of its meaning. An `ecu_ram` field without
+  a signal fails the `schema` check, and one with a scale goes to the
+  `unsplit` section of the audit. The `can_telemetry` feature requires every
+  field, and `telemetry_units` of the stash holds the `7mfk` symbols of the
+  source meanings whose files state their unit, whose unit the ledgers leave
+  to the file.
 """
 
 import tomllib
 
 from kb import store, vocab
-from kb.model import Ref
+from kb.model import MEANING_REF, Ref
 
 ADDRESS_KEYS = ("layout", "address", "name", "former", "evidence")
 MEANING_ARRAYS = ("symbol", "status", "link", "analog")
@@ -37,7 +45,11 @@ TARGET_ARRAYS = {"variants": "symbol", "omitted": "symbol", "unsupported": "symb
 TARGET_TABLES = ("families", "symbols")
 TARGET_LISTS = ("requires",)
 # Designed kinds that the store holds from the stage that converts them.
-CONVERTED_KINDS = ("feature",)
+CONVERTED_KINDS = ("feature", "field")
+# The feature that transmits the fields, and the layout of the symbol that the
+# source of an `ecu_ram` field names.
+TELEMETRY = "can_telemetry"
+FIELD_LAYOUT = "7mfk"
 
 
 def inputs(root):
@@ -45,6 +57,10 @@ def inputs(root):
 
 
 def declare(b, root):
+    # {(kind, name): (symbol keys by layout, whether the file states a unit)}
+    # of the meaning files, and [(name, source reference)] of the `ecu_ram`
+    # fields.
+    meanings, sources, fields = {}, [], []
     for kind, name, path in store.files(root, b.overlay):
         src = path.as_posix()
         try:
@@ -54,12 +70,29 @@ def declare(b, root):
             continue
         if kind in vocab.MEANING_KINDS:
             _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
-            _meaning(b, kind, name, document, src)
-        elif kind in CONVERTED_KINDS:
+            keys = _meaning(b, kind, name, document, src)
+            meanings[(kind, name)] = (keys, "unit" in document)
+        elif kind == "feature":
             _feature(b, name, document, src)
+        elif kind == "field":
+            _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
+            source = _field(b, name, document, src)
+            fields.append(("field", name))
+            if source is not None:
+                sources.append(source)
         else:
             b.issue("schema", src, f"{name}/{kind}",
                     f"the store holds no {kind} entities before their conversion stage")
+    if fields:
+        b.entity("feature", TELEMETRY, store.path_of("feature", TELEMETRY).as_posix(),
+                 refs={"requires": fields})
+    units = b.stash.setdefault("telemetry_units", set())
+    for text in sources:
+        found = MEANING_REF.fullmatch(text)
+        place = (found["kind"], found["name"]) if found else None
+        keys, unit = meanings.get(place, ({}, False))
+        if unit and FIELD_LAYOUT in keys:
+            units.add(keys[FIELD_LAYOUT])
 
 
 def relate(b, root):
@@ -125,7 +158,9 @@ def _keys(props, src, layout=None):
 
 
 def _meaning(b, kind, name, document, src):
+    """Declare a meaning file; returns {layout: symbol key} of its entries."""
     group = (kind, "file", name)
+    keys = {}
     subject = f"{name}/{kind}"
     b.files[(kind, name)] = (group, src)
     semantic = bool(vocab.SEMANTIC_NAME.fullmatch(name))
@@ -153,6 +188,7 @@ def _meaning(b, kind, name, document, src):
         key = b.symbol(layout, kind, address, src, group=group, strength="file",
                        props=_keys(props, src, layout),
                        evidence=_evidence(entry.get("evidence", ()), src))
+        keys.setdefault(layout, key)
         if entry.get("evidence"):
             b.file_evidence.add(key)
         generated = entry.get("name")
@@ -190,11 +226,37 @@ def _meaning(b, kind, name, document, src):
                   if isinstance(item.get("at"), str) and ":" in item["at"]}
         b.link(group, entry["type"], Ref(entry["to"], src), src, props=props,
                evidence=evidence, layouts=stated or None)
+    return keys
 
 
 def _former_name(text):
     """The name of a former full reference, or a former name."""
     return text.split("/", 1)[0]
+
+
+def _field(b, name, document, src):
+    """Declare a field file; returns the source reference of an `ecu_ram`
+    field, or None."""
+    subject = f"field.{name}"
+    props = {key: value for key, value in document.items() if key != "signal"}
+    refs = {}
+    if isinstance(document.get("signal"), str):
+        refs["signal"] = [Ref(document["signal"], src)]
+    if document.get("origin") != "ecu_ram":
+        b.entity("field", name, src, props=props, refs=refs)
+        return None
+    source = props.pop("source", None)
+    if isinstance(source, str):
+        refs["source"] = [Ref(source, src, FIELD_LAYOUT)]
+    else:
+        b.issue("schema", src, subject, "an ecu_ram field without source")
+        source = None
+    if "signal" not in refs:
+        b.issue("schema", src, subject, "an ecu_ram field without signal")
+    if "scale" in props:
+        b.issue("unsplit", src, subject, f"scale {props['scale']!r}")
+    b.entity("field", name, src, props=props, refs=refs)
+    return source
 
 
 def _feature(b, slug, document, src):

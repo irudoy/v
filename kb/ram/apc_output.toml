@@ -1,3 +1,8 @@
+note = "The scaled value is the ignition advance that J1979 PID 0x0E reports."
+former = ["apc_command"]
+unit = "degBTDC"
+scale = "110-x"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe81c3"

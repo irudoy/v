@@ -1,0 +1,8 @@
+signal = "exhaust_cvtc_actual/signal"
+source = "exhaust_cvtc_actual_b1/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 7
+offset = 0x7

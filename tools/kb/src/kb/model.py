@@ -436,6 +436,14 @@ class Builder:
                            f"status {status} disagrees with {target.status}")
             target.status = target.status or status
         for name, value in (props or {}).items():
+            current = target.props.get(name)
+            if isinstance(value, dict) and (current is None or isinstance(current, dict)):
+                # A table of named entries, as `allocations`, takes the entries
+                # of every source; an entry that two sources state must agree.
+                held = target.props.setdefault(name, {})
+                for key, item in value.items():
+                    self._merge(held, key, item, src, f"{feature}@{layout} {name}")
+                continue
             self._merge(target.props, name, value, src, f"{feature}@{layout}")
         return target
 
@@ -620,6 +628,9 @@ class Builder:
             target.props = value(target.props)
         for entity in self.entities.values():
             entity.props = value(entity.props)
+            entity.refs = {name: [resolver.entity(item) if isinstance(item, Ref) else item
+                                  for item in items]
+                           for name, items in entity.refs.items()}
 
     def _lift(self, model, same):
         stated = defaultdict(dict)
@@ -811,6 +822,19 @@ class Resolver:
             self.builder.issue("references", ref.src, ref.text, "names no meaning")
             return ref.text
         return symbol.key
+
+    def entity(self, ref):
+        """The key that a reference of an entity names: (kind, slug) of a
+        designed entity, or else the symbol key of a meaning, on the layout
+        of the reference where it has one; the text for none."""
+        match = MEANING_REF.fullmatch(ref.text)
+        if match and match.group("kind") in vocab.DESIGNED_KINDS:
+            key = (match.group("kind"), match.group("name"))
+            if key in self.builder.entities:
+                return key
+            self.builder.issue("references", ref.src, ref.text, "names no designed entity")
+            return ref.text
+        return self._symbol(ref)
 
     def value(self, item):
         """A value with each reference replaced by the symbol key it names."""

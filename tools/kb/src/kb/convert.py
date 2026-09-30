@@ -101,14 +101,33 @@ The address profiles and the correspondence files (section 20.3):
 - `feature/<feature>.toml` of `runtime`, `map_switching`, `rolling_launch`,
   and `can_telemetry` takes a `[[target]]` for each layout with the keys of
   its target, each symbol as the key of its meaning.
+
+The telemetry profile (section 20.5):
+
+- Each field takes `field/<name>.toml` with its keys, its `signal` as the
+  reference of its signal, and its `source` as the reference of the meaning
+  of its `7mfk` symbol for an `ecu_ram` field, or else as its allocation; the
+  entry of the symbol must hold evidence where only the profile and the
+  entity files state the symbol.
+- The file of a source meaning takes the keys that its scale gives, which
+  must equal those of the meaning; the remaining text becomes the summary of
+  a meaning that it summarizes and no file does, or else a note of its file.
+  The names that only the profile states become `former` names.
+- `feature/can_telemetry.toml` takes the wire constants, `profiles`, and
+  `contexts`, and the existing `7mfk` target of each feature takes the keys
+  and the allocations that the profile gives it.
+- The profile becomes the projection of the fields; the conversion lists each
+  `ecu_ram` scale that the projection renders from its meaning in another
+  string, and refuses any other change of the file.
 """
 
 import argparse
 from collections import defaultdict
+from pathlib import Path
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import definitions, interp, native, profiles
+from kb.adapters import definitions, interp, native, profiles, telemetry
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
@@ -208,11 +227,19 @@ class Conversion:
         self.adapter, self.before, self.root = adapter, before, root
         self.inputs = set(adapter.inputs(root))
         self.facts = compile.builder_of(root, before.overlay)
+        if adapter is telemetry:
+            # The fields take the signals whose current fields list them.
+            self.facts.stash["signal_fields"] = {
+                slug: entity.refs["signal"][0][1]
+                for (kind, slug), entity in before.entities.items()
+                if kind == "field" and entity.refs.get("signal")}
         adapter.declare(self.facts, root)
         adapter.relate(self.facts, root)
         # Legacy evidence without the keys of its kind is what a conversion
-        # types.
-        issues = [issue for issue in self.facts.issues if issue.check != "untyped"]
+        # types, and a scale that the parser cannot split stays the scale of
+        # its field.
+        issues = [issue for issue in self.facts.issues
+                  if issue.check not in ("untyped", "unsplit")]
         if issues:
             lines = [f"the registry has {len(issues)} issues; nothing is written"]
             lines += [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
@@ -230,6 +257,10 @@ class Conversion:
         # {meaning id: document}, and {symbol key: items that a conversion
         # plans for the entry of the symbol after its row item}.
         self.documents, self.planned = {}, defaultdict(list)
+        # {meaning key: notes of its file that precede those of the
+        # registries}, and [(field, scale before, scale after)] of the
+        # strings that a projection renders from the model.
+        self.meaning_notes, self.changed = {}, []
 
     def run(self):
         getattr(self, self.adapter.__name__.rsplit(".", 1)[1])()
@@ -586,7 +617,8 @@ class Conversion:
         for slug, targets in sorted(slugs.items()):
             _, feature = self.change.designed("feature", slug)
             held = {entry.get("layout"): entry for entry in feature.get("target", ())}
-            held.update(targets)
+            for layout, entry in targets.items():
+                held[layout] = _over(held.get(layout, {}), entry)
             feature["target"] = [held[layout] for layout in sorted(held)]
 
     def _row_evidence(self, symbol, entry, rows):
@@ -867,6 +899,66 @@ class Conversion:
                         for item in props.get("omitted", ())],
         }
 
+    def telemetry(self):
+        before, facts = self.before, self.facts
+        for key in sorted(facts.symbols):
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f"{key.key} has no meaning in the model", code=3)
+            if _alone(symbol, self.inputs) and key not in before.file_evidence:
+                raise KbError(f"{key.key}: only the profile and the entity files state the "
+                              "source, and its entry holds no evidence", code=3)
+            self._entry(self._document(symbol.meaning), symbol)
+        for anchor, props, _ in facts.meaning_props:
+            meaning = before.by_node[anchor]
+            document = self._document(meaning)
+            for name, value in props.items():
+                if name == "summary":
+                    self._rest(meaning, document, value)
+                    continue
+                if meaning.props.get(name) != value:
+                    raise KbError(f"{meaning.key}: {name} = {value!r} of the profile disagrees "
+                                  f"with {meaning.props.get(name)!r}", code=3)
+                document[name] = value
+        self._profile_names()
+        for (kind, name), entity in sorted(facts.entities.items()):
+            if kind == "field":
+                _, document = self.change.designed(kind, name)
+                _agree(document, self._field(entity), f"{name}/field")
+        _, document = self.change.designed("feature", telemetry.FEATURE)
+        _agree(document, facts.entities[("feature", telemetry.FEATURE)].props,
+               f"{telemetry.FEATURE}/feature")
+        for (slug, layout), target in sorted(facts.targets.items()):
+            _, document = self.change.designed("feature", slug)
+            entry = next((item for item in document.get("target", ())
+                          if item.get("layout") == layout), None)
+            if entry is None:
+                raise KbError(f"{slug}/feature has no {layout} target for the keys of the "
+                              "profile", code=3)
+            _agree(entry, target.props, f"{slug}/feature@{layout}")
+
+    def _field(self, entity):
+        """The document of a field: its keys, its signal, and its source."""
+        found = dict(entity.props)
+        if entity.refs.get("signal"):
+            found["signal"] = "{1}/{0}".format(*entity.refs["signal"][0])
+        if entity.refs.get("source"):
+            [key] = entity.refs["source"]
+            found["source"] = self.before.symbols[key].meaning.key
+        return found
+
+    def _rest(self, meaning, document, text):
+        """The remaining text of a scale: the summary of a meaning that it
+        summarizes and no file does, or else a note of its file."""
+        if meaning.props.get("summary") == text and document.get("summary") in (None, text):
+            document["summary"] = text
+            return
+        notes = _notes(document.get("note"))
+        if text not in notes:
+            notes.append(text)
+            document["note"] = notes[0] if len(notes) == 1 else notes
+        self.meaning_notes[meaning.key] = notes
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -911,6 +1003,12 @@ class Conversion:
         for key, (leaving, added) in self.names.items():
             entry = found["meanings"][key]
             entry["names"] = tuple(sorted((set(entry["names"]) - leaving) | added))
+        for key, notes in self.meaning_notes.items():
+            entry = found["meanings"][key]
+            props = dict(entry["props"])
+            props["note"] = tuple(notes) + tuple(note for note in props.get("note", ())
+                                                 if note not in notes)
+            entry["props"] = tuple(sorted(props.items()))
         for key, items in self.linked.items():
             props, evidence, stated, roles = found["links"][key]
             found["links"][key] = (props, evidence | {_value(before, item) for item in items},
@@ -928,6 +1026,33 @@ class Conversion:
             listed[layout] = (state, props, evidence)
             entry["statuses"] = tuple(sorted(listed.items()))
         return found
+
+
+def _over(held, entry):
+    """The target entry of a registry over the entry of its file: a key of
+    the registry replaces that of the file, and a table of named entries keeps
+    the entries of the file that the registry lacks, which a later conversion
+    owns."""
+    found = dict(held)
+    for name, value in entry.items():
+        current = found.get(name)
+        found[name] = ({**current, **value} if isinstance(value, dict)
+                       and isinstance(current, dict) else value)
+    return found
+
+
+def _agree(document, props, subject):
+    """Merge keys into a document; a key that holds another value refuses, and
+    a table of named entries takes the entries that it lacks."""
+    for name, value in props.items():
+        held = document.get(name)
+        if isinstance(held, dict) and isinstance(value, dict):
+            _agree(held, value, f"{subject}.{name}")
+        elif held is None:
+            document[name] = value
+        elif held != value:
+            raise KbError(f"{subject}: {name} = {value!r} of the registry disagrees with "
+                          f"{held!r} of its file", code=3)
 
 
 def _value(model, value):
@@ -976,7 +1101,10 @@ def dump(model):
             tuple(sorted(link.stated)), tuple(sorted(link.roles)))
     targets = {key: (target.status, _value(model, _target_props(model, target.props)))
                for key, target in model.targets.items()}
-    entities = {key: _value(model, entity.props) for key, entity in model.entities.items()}
+    entities = {key: (_value(model, entity.props), tuple(sorted(
+        (name, frozenset(_value(model, item) for item in items))
+        for name, items in entity.refs.items())))
+        for key, entity in model.entities.items()}
     return {"symbols": symbols, "meanings": meanings, "links": links, "targets": targets,
             "entities": entities}
 
@@ -1034,9 +1162,18 @@ def plan(name, root=repo.ROOT):
             [f"the conversion adds {len(refused)} issues; nothing is written"]
             + [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
                for issue in refused[:SHOWN]]), code=3)
-    differ = [path for path, text in projections(adapter, result).items()
-              if not (root / path).exists()
-              or (root / path).read_text(encoding="utf-8") != text]
+    rendered = projections(adapter, result)
+    if adapter is telemetry:
+        # The projection renders each ecu_ram scale from its meaning.
+        path = telemetry.PROFILE
+        conversion.changed = telemetry.scale_changes(
+            (root / path).read_text(encoding="utf-8"), telemetry.profile_document(result))
+        if conversion.changed:
+            texts = {**texts, path: rendered[path.as_posix()]}
+    differ = [path for path, text in rendered.items()
+              if Path(path) not in texts and (not (root / path).exists()
+                                              or (root / path).read_text(encoding="utf-8")
+                                              != text)]
     if differ:
         raise KbError(f"the projections of {', '.join(differ)} differ from their files; "
                       "nothing is written", code=3)
@@ -1056,6 +1193,9 @@ def projections(adapter, model):
                 definitions.PROJECTIONS.as_posix(): definitions.render_projections(model)}
     if adapter is profiles:
         return profiles.render_registries(model)
+    if adapter is telemetry:
+        return {telemetry.PROFILE.as_posix(): telemetry.render_profile(
+            telemetry.profile_document(model))}
     return {}
 
 
@@ -1076,6 +1216,8 @@ def main(argv=None):
         return error.code
     for path in texts:
         print(f"{path.as_posix()}: {'planned' if args.dry_run else 'written'}")
+    for name, old, new in conversion.changed:
+        print(f"{name}: {old!r} -> {new!r}")
     print(f"{args.registry}: {len(conversion.evidence)} symbols, {len(conversion.statuses)} "
           f"statuses, {len(texts)} files")
     return 0

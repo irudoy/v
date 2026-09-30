@@ -1,0 +1,7 @@
+signal = "secondary_throttle_feedback/signal"
+source = "secondary_tps_b1/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "secondary_throttle_and_adjustment_b2"
+position = 0

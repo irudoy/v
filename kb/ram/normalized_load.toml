@@ -1,3 +1,9 @@
+note = """
+The percentage is relative to the Base Fuel Schedule reference and saturates \
+at raw 255."""
+unit = "percent"
+scale = "x*100/128"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff102c"

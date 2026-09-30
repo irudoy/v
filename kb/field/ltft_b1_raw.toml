@@ -1,0 +1,7 @@
+signal = "fuel_trims/signal"
+source = "ltft_b1/ram"
+origin = "ecu_ram"
+width = 2
+signed = true
+context = "long_fuel_trim_map_index_flow"
+position = 0

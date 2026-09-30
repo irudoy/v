@@ -1,0 +1,7 @@
+source = "can_telemetry.profile_crc16"
+origin = "rom_configuration"
+width = 2
+signed = false
+scale = "CRC-16/CCITT-FALSE"
+context = "health"
+position = 2

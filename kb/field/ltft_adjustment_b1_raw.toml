@@ -1,0 +1,7 @@
+signal = "long_fuel_trim_terms/signal"
+source = "ltft_adjustment_b1/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "launch_abort_voltage_and_trim_terms"
+position = 3

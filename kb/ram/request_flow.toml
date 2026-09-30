@@ -1,3 +1,10 @@
+note = """
+The percentage is the QH0 flow potential, the column coordinate of the \
+requested-torque conversion surfaces."""
+unit = "percent"
+scale = "x*0.00152588"
+scale_level = "candidate"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff1980"

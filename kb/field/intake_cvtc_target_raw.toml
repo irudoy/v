@@ -1,0 +1,8 @@
+signal = "common_cvtc_targets/signal"
+source = "intake_cvtc_target/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 6
+offset = 0x5

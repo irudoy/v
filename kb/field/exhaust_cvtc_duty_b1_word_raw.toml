@@ -1,0 +1,7 @@
+signal = "high_resolution_cvtc_duty/signal"
+source = "exhaust_cvtc_duty_b1_word/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "exhaust_cvtc_duty_and_intake_duty_command"
+position = 0

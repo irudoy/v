@@ -1,3 +1,6 @@
+unit = "percent"
+scale = "x*39/100"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe938f"

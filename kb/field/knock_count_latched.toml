@@ -1,0 +1,9 @@
+signal = "knock_event_latches/signal"
+source = "can_telemetry.knock_count_latched"
+origin = "telemetry_state"
+width = 1
+signed = false
+scale = "saturating event count"
+profiles = ["tuning"]
+page = 4
+offset = 0x6

@@ -421,6 +421,10 @@ variant = "zero_delay"
 layout = "7mfk"
 status = "supported"
 
+[target.allocations.active_map_index]
+address = "ffff5d00"
+width = 1
+
 [target.symbols]
 ascd_state = "ascd_state/ram"
 button_state = "button_state/ram"

@@ -1,0 +1,7 @@
+signal = "battery_voltage/signal"
+source = "battery_voltage/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+context = "launch_abort_voltage_and_trim_terms"
+position = 1

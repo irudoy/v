@@ -1,0 +1,9 @@
+source = "map_switching.active_map_index"
+origin = "runtime_state"
+width = 1
+signed = false
+scale = """
+raw + 1 map number; 0 through 4 select Maps 1 through 5, and any other value \
+selects Map 1"""
+context = "long_fuel_trim_map_index_flow"
+position = 2

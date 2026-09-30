@@ -1,3 +1,6 @@
+unit = "g/s"
+scale = "x/100"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeae4e"

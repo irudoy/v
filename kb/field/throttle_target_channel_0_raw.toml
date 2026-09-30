@@ -1,0 +1,8 @@
+signal = "throttle_request_path/signal"
+source = "throttle_target_channel_0/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 8
+offset = 0x3

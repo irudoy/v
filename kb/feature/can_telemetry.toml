@@ -1,3 +1,14 @@
+base_tick_numerator = 204800
+byte_order = "big"
+candidate_can_id = 1776
+candidate_tick_divisor = 1
+context_count = 5
+context_pages = [9, 10]
+fixed_page_count = 9
+header_sequence_bits = 4
+pphi_hz = 20000000
+protocol_version = 2
+
 [[target]]
 layout = "1me3b"
 status = "supported"
@@ -176,8 +187,72 @@ stock_sle1_isr = "stock_sle1_isr/fn"
 [[target]]
 layout = "7mfk"
 status = "supported"
+configuration_address = "000d4e00"
 mailbox_index = 26
 mailbox_mask = 1024
+state_address = "ffff5e00"
+table_address = "000d4c00"
+table_end = "000d4e00"
+
+[target.allocations.knock_channel_mask_latched]
+address = "ffff5e0d"
+width = 1
+
+[target.allocations.knock_count_latched]
+address = "ffff5e0c"
+width = 1
+
+[target.allocations.knock_margin_min_ch1]
+address = "ffff5e10"
+width = 2
+
+[target.allocations.knock_margin_min_ch2]
+address = "ffff5e12"
+width = 2
+
+[target.allocations.knock_margin_min_ch3]
+address = "ffff5e14"
+width = 2
+
+[target.allocations.knock_margin_min_ch4]
+address = "ffff5e16"
+width = 2
+
+[target.allocations.knock_margin_min_ch5]
+address = "ffff5e18"
+width = 2
+
+[target.allocations.knock_margin_min_ch6]
+address = "ffff5e1a"
+width = 2
+
+[target.allocations.profile_crc16]
+address = "000d4e0a"
+width = 2
+
+[target.allocations.profile_id]
+address = "000d4e04"
+width = 1
+
+[target.allocations.protocol_version]
+address = "000d4e02"
+width = 1
+
+[target.allocations.snapshot_overrun_count]
+address = "ffff5e0e"
+width = 1
+
+[target.allocations.telemetry_status]
+address = "ffff5e07"
+width = 1
+
+[target.allocations.tick16]
+address = "ffff5e08"
+width = 2
+
+[target.allocations.tx_abort_count]
+address = "ffff5e0f"
+width = 1
 
 [target.symbols]
 coherent_snapshot = "coherent_snapshot/fn"
@@ -461,3 +536,58 @@ mailbox_data = "mailbox_data/reg"
 mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[contexts]]
+name = "temperatures_af"
+page = 9
+tag = 0
+
+[[contexts]]
+name = "short_fuel_trim_cvtc_duty"
+page = 9
+tag = 1
+
+[[contexts]]
+name = "long_fuel_trim_map_index_flow"
+page = 9
+tag = 2
+
+[[contexts]]
+name = "health"
+page = 9
+tag = 3
+
+[[contexts]]
+name = "knock_margin_channels_1_to_3"
+page = 9
+tag = 4
+
+[[contexts]]
+name = "launch_abort_voltage_and_trim_terms"
+page = 10
+tag = 0
+
+[[contexts]]
+name = "exhaust_cvtc_duty_and_intake_duty_command"
+page = 10
+tag = 1
+
+[[contexts]]
+name = "front_af_and_adjustment_b1"
+page = 10
+tag = 2
+
+[[contexts]]
+name = "secondary_throttle_and_adjustment_b2"
+page = 10
+tag = 3
+
+[[contexts]]
+name = "knock_margin_channels_4_to_6"
+page = 10
+tag = 4
+
+[[profiles]]
+id = 7
+name = "tuning"
+page_count = 11

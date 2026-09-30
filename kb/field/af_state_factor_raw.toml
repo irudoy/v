@@ -1,0 +1,8 @@
+signal = "commanded_mixture/signal"
+source = "af_state_factor/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+scale = "Q14 factor"
+context = "temperatures_af"
+position = 4

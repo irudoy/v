@@ -10,3 +10,4 @@
 /defs/definition-projections.toml
 /patches/rom-address-profiles.toml
 /patches/*-runtime-correspondence.csv
+/patches/can-telemetry-profile.toml

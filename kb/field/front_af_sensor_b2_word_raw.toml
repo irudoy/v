@@ -1,0 +1,7 @@
+signal = "front_af_sensor_words/signal"
+source = "front_af_sensor_b2_word/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "front_af_and_adjustment_b1"
+position = 1

@@ -1,0 +1,8 @@
+signal = "af_adjustment_states/signal"
+source = "af_adjustment_b1/ram"
+origin = "ecu_ram"
+width = 2
+signed = true
+scale = "candidate raw * 0.002 A/F ADJ factor, bounded -1..1"
+context = "front_af_and_adjustment_b1"
+position = 2

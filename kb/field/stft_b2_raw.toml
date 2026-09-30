@@ -1,0 +1,7 @@
+signal = "fuel_trims/signal"
+source = "stft_b2/ram"
+origin = "ecu_ram"
+width = 2
+signed = true
+context = "short_fuel_trim_cvtc_duty"
+position = 1

@@ -1,0 +1,8 @@
+signal = "accelerator_pedal_sensors/signal"
+source = "app2/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 5
+offset = 0x3

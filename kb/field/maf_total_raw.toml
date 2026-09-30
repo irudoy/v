@@ -1,0 +1,8 @@
+signal = "airflow_total/signal"
+source = "maf_total/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+profiles = ["tuning"]
+page = 1
+offset = 0x5

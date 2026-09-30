@@ -734,14 +734,11 @@ DOMAIN_ORDER = ("allocation", "map", "map_hook", "map_symbol", "rolling_hook",
 BLOCK = {"map_native": "map"}
 
 
-def telemetry_fields(root):
+def telemetry_fields(model):
     """The `ecu_ram` fields of the CAN telemetry profile in its order: the
     stream fields, then the fields of each context."""
-    document = tomllib.loads((root / telemetry.PROFILE).read_text(encoding="utf-8"))
-    fields = [*document.get("field", ()),
-              *(field for context in document.get("context", ())
-                for field in context.get("field", ()))]
-    return [field["name"] for field in fields if field.get("kind") == "ecu_ram"]
+    return [entity.slug for entity in telemetry.fields(model)
+            if entity.props.get("origin") == "ecu_ram"]
 
 
 def render_profiles(document, fields):
@@ -1227,7 +1224,7 @@ def render_registries(model):
     """{path: text} of the address profiles and of the correspondence file of
     each layout whose `runtime` target states the notes of its allocation
     rows."""
-    fields = telemetry_fields(model.root)
+    fields = telemetry_fields(model)
     targets = _targets(model)
     stocks = _stocks(model)
     found = {PROFILES.as_posix(): render_profiles(

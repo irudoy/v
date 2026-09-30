@@ -1,0 +1,8 @@
+source = "can_telemetry.telemetry_status"
+origin = "telemetry_state"
+width = 1
+signed = false
+scale = "bit mask"
+profiles = ["tuning"]
+page = 3
+offset = 0x7
