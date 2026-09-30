@@ -285,9 +285,16 @@ for another layout, translates an address whose meaning has a symbol there.
 
 ### 5.5 Renames, merges, and moves
 
-- `kb rename <meaning> <semantic-name>` names a meaning. Each symbol's
-  previous full reference moves to its `former` list, every `[[...]]`
-  citation is rewritten, and the file is renamed, all in one write.
+- `kb rename <meaning> <semantic-name>` names a meaning with a name that no
+  other meaning of the kind holds as its name, another name, or a former name
+  of it or of one of its symbols. The file takes the name; each entry drops
+  its generated name and keeps its previous full reference as its first
+  `former` reference; a previous semantic name becomes a former name of the
+  meaning; and every reference and `[[...]]` citation of the entity files to
+  a previous name names the new one, all in one write. The rename refuses a
+  meaning with two files until `kb merge` joins them, and a meaning whose
+  name a registry states until that registry converts, since the registry
+  owns its facts until its conversion.
 - `kb merge <a> <b>` joins two symbols at the same layout, kind, and address,
   or two meanings found to be one. The survivor keeps its name; the other name
   becomes a redirect.
@@ -300,9 +307,27 @@ for another layout, translates an address whose meaning has a symbol there.
   The move refuses another layout, the home symbol as the start of its own
   search, and a location that holds a symbol of another meaning, which `kb
   merge` joins.
-- `kb move <symbol> <meaning>` corrects a wrong homology. The symbol takes the
-  target meaning's name if it has one and keeps its generated name otherwise;
-  its previous reference becomes a redirect.
+- `kb move <symbol> <meaning>` corrects a wrong homology. The entry of the
+  symbol leaves the file of its meaning, or its row leaves `kb/names.csv`,
+  and the symbol enters the file of the target with its keys besides its
+  level and note. The symbol takes the target meaning's name if it has one
+  and keeps its generated name otherwise, which it draws when it has none;
+  its previous full reference becomes its first `former` reference. The
+  evidence is stated, or it is that of the candidate at the address of the
+  symbol that the search of `kb.match` finds from the symbol of the target on
+  the layout of `--from`, the symbol that the target reference names, or the
+  home symbol of the target. Every reference and `[[...]]` citation of the
+  entity files to the previous full reference, or to the symbol of the former
+  meaning on its layout, names the symbol in the target, and a reference to
+  its generated name names a named target. The move refuses a target with a
+  symbol on the layout, the only symbol of a meaning, which `kb merge` joins,
+  the home symbol of an unnamed meaning, which `kb rename` names first, and
+  the layout of a stated `home`. A registry that states the symbol with its
+  former meaning joins them again when the model compiles, and a name that a
+  registry gives the symbol names the meaning that holds it; the move is
+  refused with exit code 3 when the compiled model does not join the symbol
+  with the target alone or changes the key of either meaning, until that
+  registry converts.
 - Two sessions that create the same symbol produce two names. The uniqueness
   gate on layout, kind, and address fails, and `kb merge` resolves it.
 
@@ -1219,18 +1244,18 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 
 | Command | Effect | Stage |
 |---|---|---|
-| `kb new <kind> <layout>:<address> [--dry-run]` | A meaning with one symbol, named or with a generated name | 4 |
-| `kb new <kind> <slug> [--dry-run]` | A designed entity | 4 |
+| `kb new <kind> <layout>:<address> --evidence <item>... [--name <semantic-name>] [--level <level>] [--note <text>] [--dry-run]` | A meaning with the symbol at a location that holds none and the evidence of its identity, named or with a generated name | 3 |
+| `kb new <kind> <slug> [--dry-run]` | A designed entity of a kind that the store holds | 3 |
 | `kb set <ref> [--layout <l>] <key>=<value>... [--dry-run]` | Keys of an entity, a symbol, or a feature target | 3 |
 | `kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | A symbol of an existing meaning on another layout, with evidence | 3 |
 | `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>] [--dry-run]` | Status `absent` with the evidence that removes the mechanism | 3 |
 | `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]` | Status `unresolved` with the method and target of the search | 3 |
-| `kb link <from> <type> <to> [--evidence <item>]... [--dry-run]` | A typed link and its evidence | 4 |
-| `kb unlink <from> <type> <to> [--dry-run]` | Removes a typed link | 4 |
+| `kb link <from> <type> <to> [<key>=<value>]... [--evidence <item>]... [--dry-run]` | A typed link with its keys and evidence | 3 |
+| `kb unlink <from> <type> <to> [<key>=<value>]... [--dry-run]` | Removes a typed link of the file of a meaning | 3 |
 | `kb merge <meaning> <other> [--evidence <item>]... [--from <l>] [--dry-run]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
-| `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 4 |
+| `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
-| `kb move <symbol> <meaning> [--evidence <item>]... [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 4 |
+| `kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 5 |
 | `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) | 9 |
 | `kb apply <batch> [--dry-run]` | A batch of the operations above as one change | 3 |
@@ -1247,7 +1272,9 @@ Every write:
    in place of those on disk;
 3. refuses the whole change with exit code 3 when the result has an issue of
    a model check of [Checks](#13-checks) or a registry disagreement of `kb
-   audit` that the working tree lacks, and prints those issues;
+   audit` that the working tree lacks, or contradicts what an operation
+   expects of it, such as the meaning of a moved symbol, and prints those
+   issues and contradictions;
 4. writes the files in canonical form through temporary files and renames,
    updates the graph, and writes `:Meta`;
 5. prints the changed files and one line per change.
@@ -1281,6 +1308,14 @@ references.
   `address`, `name`, and `former`; a feature target takes every key besides
   its layout. A key outside those, a value against its schema, and an unset
   key that the table lacks are refused.
+- `kb new <kind> <layout>:<address>` starts the file of a meaning with the
+  symbol at a location that holds no symbol of a meaning. The `--evidence`
+  items state the identity of the symbol on its layout, which makes it an
+  anchor ([Symbols](#73-symbols)). `--name` gives the meaning a semantic
+  name by the rules of `kb rename`; otherwise the symbol keeps the generated
+  name of its row of `kb/names.csv`, whose other names become `former`
+  references, or draws one. `kb new <kind> <slug>` starts the empty file of a
+  designed entity of a kind that the store holds, from stage 3 a `feature`.
 - `kb absent` requires evidence.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
@@ -1303,6 +1338,18 @@ references.
   `[[...]]` citation of the entity files to a name of the other meaning names
   the meaning, links of one type, target, slot, and offset whose keys agree
   join, and a link of the meaning to itself leaves its file.
+- `kb link <from> <type> <to>` writes a link of [Links](#75-links) into the
+  file of `<from>` with the keys of a link besides `type`, `to`, and
+  `evidence` as `<key>=<value>` and the `--evidence` items; `to` is stored as
+  the reference of its meaning. A link of the file with the same type,
+  target, `slot`, and `offset` takes the new keys and evidence: `via`,
+  `layouts`, `supports`, and `reverse_supports` join, and another key agrees
+  with the held value or the link is refused. A link that adds nothing is
+  refused.
+- `kb unlink <from> <type> <to>` removes a link of that type and target from
+  the file of `<from>`; `slot=` and `offset=` choose among several, and more
+  than one match exits with 4. A link that only a registry states is
+  refused, since the registry owns its facts until its conversion.
 - `kb merge` of the two files of one meaning, which the `names` check
   reports, takes `<name>/<kind>` as the file of that name and joins the
   entries of each symbol that both files state: the name that the other file
@@ -1312,14 +1359,17 @@ references.
   "jk00c:00043f10"`, with the keys of its kind ([Evidence](#76-evidence)).
 
 A batch is a TOML file of `[[op]]` tables, each with `cmd` and the arguments
-of one command under their names: `meaning`, `other`, `symbol`, `ref`,
-`layout`, `to`, `keys` as a table and `unset` as an array of dotted keys for
-`set`, `evidence` as an array of tables, `from`, `level`, `method`, `target`,
-`count`, and `note`. `kb apply` applies all operations or none. Each
-operation resolves its references and searches on the working tree, not on
-the result of an earlier operation of the batch, and edits the files as the
-earlier operations leave them; an operation that names a file that an
-earlier one removes is refused. Subagents write only through batches, so the
+of one command under their names: `kind`, `meaning`, `other`, `symbol` as a
+location for `new`, `slug`, `name` as a semantic name, `ref`, `layout`,
+`type`, `to`, `keys` as a table for `set`, `link`, and `unlink`, `unset` as
+an array of dotted keys for `set`, `evidence` as an array of tables, `from`,
+`level`, `method`, `target`, `count`, and `note`. `kb apply` applies all
+operations or none. Each operation resolves its references and searches on
+the working tree, not on the result of an earlier operation of the batch,
+and edits the files as the earlier operations leave them; an operation that
+names a file that an earlier one removes is refused, and so is an operation
+on a meaning that an earlier one renames, since a batch renames a meaning
+after its other operations. Subagents write only through batches, so the
 parent reviews one diff.
 
 ### 12.4 Output
@@ -2889,7 +2939,7 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | 0. Specification | This document | The specification is agreed |
 | 1. L0 in git | The layouts of `rom-images/homology.toml`; normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts, and the instance limit of `tools/kb/config.toml` set from the measurement | Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0 |
 | 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
-| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`; named bits of bit fields; the writer gate over L0; `kb audit` reports the `levels` check | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
+| 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`, `kb unlink`, `kb merge`, `kb rename`, and `kb move`; named bits of bit fields; the writer gate over L0; `kb audit` reports the `levels` check | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
 | 4. Features on L2 | Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix | Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green |
 | 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note; the `levels` check becomes a gate | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
 | 6. Architecture | Stages, blocks, endpoints, and chains become entities, and a step note keeps only its arithmetic; romviz reads the graph and builds the atlas from the symbols of each layout; the atlas searches symbols by name and shows the symbols of a meaning across layouts, statuses, and analogs; block candidates for unplaced functions come from communities over the call graph and shared RAM | The numbers of `architecture.py check` reproduce; every layout with symbols has an atlas |

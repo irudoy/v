@@ -356,6 +356,14 @@ def _write(args, ops, root=repo.ROOT):
     return 0
 
 
+def command_new(args, root=repo.ROOT):
+    place = "symbol" if refs.LOCATION.fullmatch(args.ref.strip()) else "slug"
+    return _write(args, [{
+        "cmd": "new", "kind": args.kind, place: args.ref, "name": args.name,
+        "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
+        "level": args.level, "note": args.note}], root)
+
+
 def command_set(args, root=repo.ROOT):
     keys, unset = write.parse_assignments(args.assignments)
     return _write(args, [{"cmd": "set", "ref": args.ref, "layout": args.layout, "keys": keys,
@@ -383,11 +391,34 @@ def command_unresolved(args, root=repo.ROOT):
         "count": args.count, "note": args.note}], root)
 
 
+def _link_keys(args):
+    keys, unset = write.parse_assignments(args.assignments)
+    if unset:
+        raise repo.KbError(f"a link key takes a value: {', '.join(unset)}", code=2)
+    return keys
+
+
+def command_link(args, root=repo.ROOT):
+    return _write(args, [{
+        "cmd": "link", "meaning": args.meaning, "type": args.type, "to": args.to,
+        "keys": _link_keys(args),
+        "evidence": [write.parse_evidence(text) for text in args.evidence or ()]}], root)
+
+
+def command_unlink(args, root=repo.ROOT):
+    return _write(args, [{"cmd": "unlink", "meaning": args.meaning, "type": args.type,
+                          "to": args.to, "keys": _link_keys(args)}], root)
+
+
 def command_merge(args, root=repo.ROOT):
     return _write(args, [{
         "cmd": "merge", "meaning": args.meaning, "other": args.other,
         "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
         "from": args.source}], root)
+
+
+def command_rename(args, root=repo.ROOT):
+    return _write(args, [{"cmd": "rename", "meaning": args.meaning, "name": args.name}], root)
 
 
 def command_move(args, root=repo.ROOT):
@@ -525,6 +556,18 @@ def build_parser():
     meaning = ("meaning", "the meaning, or its symbol that a search starts from")
     evidence = "an evidence item as a TOML inline table; repeatable"
     source = "the layout of the symbol of the meaning that the search starts from"
+    start = writer("new", "a meaning with the symbol at a location, or a designed entity",
+                   ("kind", "the kind of the meaning or of the designed entity"),
+                   ("ref", "<layout>:<address> of the symbol, or the slug of the designed "
+                    "entity"))
+    start.add_argument("--name", help="the semantic name of the meaning; by default the "
+                       "generated name of the symbol")
+    start.add_argument("--evidence", action="append",
+                       help=f"{evidence} of the identity of the symbol on its layout; a symbol "
+                       "requires it")
+    start.add_argument("--level", choices=vocab.LEVELS, help="the level of the symbol")
+    start.add_argument("--note", help="prose about the symbol")
+    start.set_defaults(handler=command_new)
     assign = writer("set", "keys of a meaning, a symbol, a designed entity, or a feature target",
                     ("ref", "the meaning, its symbol, or the designed entity"))
     assign.add_argument("assignments", nargs="+", metavar="key=value",
@@ -557,6 +600,19 @@ def build_parser():
     unresolved.add_argument("--count", type=int, help="the matches of a stated search")
     unresolved.add_argument("--note", help="prose about the status")
     unresolved.set_defaults(handler=command_unresolved)
+    ends = (("meaning", "the meaning whose file states the link"),
+            ("type", "the link type (tools/kb/SPEC.md, section 7.5)"),
+            ("to", "the meaning that the link names"))
+    link = writer("link", "a typed link of a meaning to another meaning", *ends)
+    link.add_argument("assignments", nargs="*", metavar="key=value",
+                      help="a key of the link as a TOML value or else a string")
+    link.add_argument("--evidence", action="append", help=evidence)
+    link.set_defaults(handler=command_link)
+    unlink = writer("unlink", "remove a link from the file of a meaning", *ends)
+    unlink.add_argument("assignments", nargs="*", metavar="key=value",
+                        help="slot or offset, which choose among the links of one type and "
+                        "target")
+    unlink.set_defaults(handler=command_unlink)
     merge = writer("merge", "join another meaning, or another file of one meaning, into a "
                    "meaning", ("meaning", "the meaning that keeps its name, or its symbol that "
                                "a search starts from"),
@@ -566,11 +622,17 @@ def build_parser():
                        "default the evidence of the search")
     merge.add_argument("--from", dest="source", help=source)
     merge.set_defaults(handler=command_merge)
-    move = writer("move", "correct the address of a symbol on its layout",
-                  ("symbol", "the symbol"), ("to", "<layout>:<address> of the symbol"))
+    rename = writer("rename", "give a meaning a semantic name", ("meaning", "the meaning"),
+                    ("name", "the semantic name"))
+    rename.set_defaults(handler=command_rename)
+    move = writer("move", "correct the address of a symbol on its layout, or its meaning",
+                  ("symbol", "the symbol"),
+                  ("to", "<layout>:<address> of the symbol, or the meaning that it joins"))
     move.add_argument("--evidence", action="append",
                       help=f"{evidence}; by default the evidence of the search")
-    move.add_argument("--from", dest="source", help=source + "; by default the home symbol")
+    move.add_argument("--from", dest="source", help="the layout of the symbol that the search "
+                      "starts from, of the meaning of the symbol or of the meaning that it "
+                      "joins; by default the home symbol")
     move.add_argument("--level", choices=vocab.LEVELS, help="the level of the symbol")
     move.add_argument("--note", help="prose about the symbol")
     move.set_defaults(handler=command_move)

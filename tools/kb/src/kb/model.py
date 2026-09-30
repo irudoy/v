@@ -157,6 +157,8 @@ class Meaning:
     groups: set = field(default_factory=set)
     sources: set = field(default_factory=set)
     other_names: list = field(default_factory=list)
+    # The files and registries that state the semantic name.
+    name_sources: tuple = ()
     tables: dict = field(default_factory=dict)
 
     @property
@@ -653,6 +655,8 @@ class Builder:
             meaning.name = name
             meaning.semantic = True
             meaning.tier = tier
+            meaning.name_sources = tuple(sorted({src for _, _, other, _, src in found
+                                                 if other == name}))
             meaning.other_names = sorted({(other, other_tier, src)
                                           for _, _, other, other_tier, src in found
                                           if other != name})

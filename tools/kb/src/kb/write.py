@@ -1,6 +1,6 @@
-"""Write commands (tools/kb/SPEC.md, section 12.3): `set`, `bind`, `absent`,
-`unresolved`, `merge`, `move`, and `apply`, which applies a batch of them as
-one change.
+"""Write commands (tools/kb/SPEC.md, section 12.3): `new`, `set`, `bind`,
+`absent`, `unresolved`, `link`, `unlink`, `merge`, `rename`, `move`, and
+`apply`, which applies a batch of them as one change.
 
 A change edits entity files as documents over the working tree. An operation
 reads the file of its meaning from the change or from the disk, or starts it
@@ -10,6 +10,10 @@ form. A symbol that a file takes leaves `kb/names.csv`: its generated name
 becomes the `name` of its entry in an unnamed meaning, and its other names
 become `former` references.
 
+- `new` starts a meaning with the symbol at a location that holds none and
+  the stated evidence of its identity, in a file of its semantic name or of
+  the generated name of the symbol, or a designed entity of a kind that the
+  store holds.
 - `set` writes keys of a meaning, of the entry of one of its symbols, of a
   designed entity, or of the target of a feature on a layout, after it
   removes the keys that `unset` names. A table joins the table of its key key
@@ -27,6 +31,10 @@ become `former` references.
   from a symbol of the meaning, which finds no unique candidate, or of a
   stated search, with the L0 digest of the layout. A repeat of the search of
   the held status keeps its note unless the operation states one.
+- `link` adds a typed link to the file of its owner, or joins its keys and
+  evidence to the link of one type, target, slot, and offset that the file
+  holds; `unlink` removes a link of the file, which the slot and the offset
+  choose among the links of one type and target.
 - `merge` joins another meaning into a meaning, or another file of one meaning
   into its file. Each symbol of the other meaning takes the evidence of the
   join, stated or found as `bind` finds it, and its entry moves into the file
@@ -35,18 +43,27 @@ become `former` references.
   file join those of the file where they agree, the other file leaves the
   store, and every reference of the entity files to a name of the other
   meaning names the meaning.
-- `move` corrects the address of a symbol on its layout. Its evidence is
-  stated, or it is the evidence of the candidate that `match.search` finds at
-  the address from another symbol of the meaning. The entry keeps its other
-  keys, its previous full reference becomes its first `former` reference, and
-  every reference and `[[...]]` citation of the entity files to that
-  reference names the new one.
+- `rename` gives a meaning a semantic name: the file takes the name, each
+  entry drops its generated name and keeps its previous full reference as its
+  first `former` reference, a previous semantic name becomes a former name of
+  the meaning, and every reference of the entity files to a previous name
+  names the new one. A name that a registry states stays until the
+  conversion of that registry.
+- `move` corrects the address of a symbol on its layout, or the meaning of a
+  symbol. Its evidence is stated, or it is the evidence of the candidate that
+  `match.search` finds at the address, from another symbol of the meaning or
+  from a symbol of the target meaning. The entry keeps its other keys, its
+  previous full reference becomes its first `former` reference, and every
+  reference and `[[...]]` citation of the entity files to that reference
+  names the new one.
 
 `plan` compiles the model with the rendered files in place of those on disk
 and refuses the change with exit code 3 when the result has an issue of a
-model check or a registry disagreement that the working tree lacks. `apply`
-takes the lock, resolves the references on a current graph, plans, writes the
-files through temporary files and renames, and loads the graph.
+model check or a registry disagreement that the working tree lacks, or when
+it contradicts an expectation of an operation, such as a moved symbol that a
+registry keeps in its former meaning or names. `apply` takes the lock,
+resolves the references on a current graph, plans, writes the files through
+temporary files and renames, and loads the graph.
 """
 
 import difflib
@@ -56,22 +73,40 @@ import tomllib
 import weakref
 
 from kb import checks, compile, graph, lock, match, names, refs, repo, store, vocab
+from kb.adapters import files as file_adapter
 from kb.model import MEANING_REF, SymbolKey
 from kb.repo import KbError
 
 # The keys of each operation of a batch besides `cmd`, and those it requires.
 COMMANDS = {
+    "new": ("kind", "symbol", "slug", "name", "evidence", "level", "note"),
     "set": ("ref", "layout", "keys", "unset"),
     "bind": ("meaning", "symbol", "evidence", "from", "level", "note"),
     "absent": ("meaning", "layout", "evidence", "note"),
     "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
+    "link": ("meaning", "type", "to", "keys", "evidence"),
+    "unlink": ("meaning", "type", "to", "keys"),
     "merge": ("meaning", "other", "evidence", "from"),
+    "rename": ("meaning", "name"),
     "move": ("symbol", "to", "evidence", "from", "level", "note"),
 }
-REQUIRED = {"set": ("ref",), "bind": ("meaning", "symbol"),
+REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
             "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
-            "merge": ("meaning", "other"), "move": ("symbol", "to")}
+            "link": ("meaning", "type", "to"), "unlink": ("meaning", "type", "to"),
+            "merge": ("meaning", "other"), "rename": ("meaning", "name"),
+            "move": ("symbol", "to")}
 SEARCH = ("method", "target", "count")
+# The keys of a link besides its type, target, and evidence, and those that
+# choose among the links of one type and target.
+LINK_KEYS = {name: spec for name, spec in store.LINK.keys
+             if name not in ("type", "to", "evidence")}
+LINK_CHOICE = ("slot", "offset")
+LINK_VOCABULARY = {"relies": vocab.RELIES, "reverse_relies": vocab.RELIES,
+                   "supports": vocab.SUPPORTS, "reverse_supports": vocab.SUPPORTS}
+# The keys of a link that hold arrays, and those whose values join those of the
+# held link; the other keys agree with it.
+LINK_LISTS = ("via", "layouts")
+LINK_JOINED = (*LINK_LISTS, "supports", "reverse_supports")
 # The keys that commands other than `set` write: the former names, symbols,
 # statuses, links, and analogs of a meaning, and the place and the names of a
 # symbol entry. A feature target takes every key besides its layout.
@@ -218,34 +253,36 @@ def renamed(value, others, kind, target, key=None):
     return CITATION.sub(cite, value), count
 
 
-def relocated(value, old, new, key=None):
-    """(value, count): a value of an entity file with each full reference
-    `old`, a whole string or a `[[...]]` citation, naming `new`, and the count
-    of the references it rewrites; `former` records references and stays."""
+def relocated(value, moves, key=None):
+    """(value, count): a value of an entity file with each reference of
+    `moves` {old: new}, a whole string or a `[[...]]` citation, naming its new
+    reference, and the count of the references it rewrites; `former` records
+    references and stays."""
     if key == "former":
         return value, 0
     if isinstance(value, dict):
         found, count = {}, 0
         for name, item in value.items():
-            found[name], added = relocated(item, old, new, name)
+            found[name], added = relocated(item, moves, name)
             count += added
         return found, count
     if isinstance(value, list):
         found, count = [], 0
         for item in value:
-            item, added = relocated(item, old, new, key)
+            item, added = relocated(item, moves, key)
             found.append(item)
             count += added
         return found, count
     if not isinstance(value, str):
         return value, 0
-    if value == old:
-        return new, 1
+    if value in moves:
+        return moves[value], 1
     count = 0
 
     def cite(found):
         nonlocal count
-        if found.group("ref").strip() != old:
+        new = moves.get(found.group("ref").strip())
+        if new is None:
             return found.group(0)
         count += 1
         return f"[[{new}]]"
@@ -320,6 +357,10 @@ def _unset(table, path, subject):
 
 def _union(items, added):
     return [*items, *(item for item in added if item not in items)]
+
+
+def _listed(value):
+    return value if isinstance(value, list) else [value]
 
 
 def _link_key(link):
@@ -403,6 +444,13 @@ class Change:
         self.rows = {row.key: row for row in model.names}
         self.rows_changed = False
         self.lines = []
+        # {meaning key: new key} of the renames of the change, the symbols
+        # that `new` starts, and the checks of the compiled result that the
+        # operations expect, each a function of the result that returns a
+        # message when the result contradicts it.
+        self.renamed = {}
+        self.created = set()
+        self.expected = []
         self._taken = self._domain = None
 
     # Operations ------------------------------------------------------------
@@ -426,6 +474,87 @@ class Change:
             if number is None:
                 raise
             raise KbError(f"op {number}: {error}", code=error.code) from None
+
+    def new(self, op):
+        kind = op["kind"]
+        if kind not in vocab.KINDS:
+            raise KbError(f"kind {kind!r}; the kinds are {', '.join(vocab.KINDS)}", code=2)
+        if (op.get("symbol") is None) == (op.get("slug") is None):
+            raise KbError("new takes a symbol <layout>:<address> or a slug", code=2)
+        if op.get("slug") is not None:
+            self._new_entity(kind, op)
+        else:
+            self._new_meaning(kind, op)
+
+    def _new_meaning(self, kind, op):
+        """A meaning file with the symbol at a location that holds none, with
+        the evidence of its identity on its layout: named by `name`, or else
+        by the generated name of the symbol, which its row of `kb/names.csv`
+        gives or a draw."""
+        if kind not in vocab.MEANING_KINDS:
+            raise KbError(f"a {kind} is a designed entity; `kb new {kind} <slug>` starts one",
+                          code=2)
+        layout, address = self._location(op["symbol"])
+        key = SymbolKey(layout, kind, address)
+        held = self.model.symbols.get(key)
+        if held is not None and held.meaning is not None:
+            hint = "" if held.meaning.semantic else (
+                f"; `kb rename {held.meaning.key} <semantic-name>` names its meaning")
+            raise KbError(f"{key.location} is {self._ref(held)}{hint}", code=3)
+        if key in self.created:
+            raise KbError(f"{key.location} starts a meaning earlier in this change", code=3)
+        if not op.get("evidence"):
+            raise KbError("new needs the evidence of the identity of the symbol on its layout",
+                          code=2)
+        evidence = [evidence_item(item) for item in op["evidence"]]
+        level = op.get("level")
+        if level is not None and level not in vocab.LEVELS:
+            raise KbError(f"level {level!r}; the levels are {', '.join(vocab.LEVELS)}", code=2)
+        row = self.rows.get((layout, kind, address))
+        former = [row.name, *row.former] if row is not None else []
+        entry = {"layout": layout, "address": f"{address:08x}"}
+        name = op.get("name")
+        if name is not None:
+            self._semantic(name, kind)
+        else:
+            name = former.pop(0) if former else self._draw()
+            entry["name"] = name
+        path = store.path_of(kind, name)
+        self._fresh(path)
+        if row is not None:
+            del self.rows[(layout, kind, address)]
+            self.rows_changed = True
+        if former:
+            entry["former"] = [f"{item}/{kind}/{layout}-{address:08x}" for item in former]
+        entry.update({"level": level, "note": op.get("note"), "evidence": evidence})
+        self.documents[path] = {"symbol": [entry]}
+        self.created.add(key)
+        self.lines.append(f"new {name}/{kind}/{layout}-{address:08x}: "
+                          f"{'; '.join(summary(item) for item in evidence)}")
+
+    def _new_entity(self, kind, op):
+        """An empty file of a designed entity of a kind that the store holds."""
+        slug = op["slug"]
+        if kind not in vocab.DESIGNED_KINDS:
+            raise KbError(f"a {kind} meaning starts with a symbol: `kb new {kind} "
+                          "<layout>:<address>`", code=2)
+        if op.get("name") is not None:
+            raise KbError("a designed entity takes its slug as its name", code=2)
+        stated = [key for key in ("evidence", "level", "note") if op.get(key)]
+        if stated:
+            raise KbError(f"a designed entity takes no {', '.join(stated)}", code=2)
+        if not isinstance(slug, str) or not self._grammar(slug):
+            raise KbError(f"{slug!r} is no slug: 3 to 48 characters of "
+                          "[a-z][a-z0-9]*(_[a-z0-9]+)*", code=2)
+        if kind not in file_adapter.CONVERTED_KINDS:
+            raise KbError(f"the store holds no {kind} entities before their conversion stage",
+                          code=3)
+        if (kind, slug) in self.model.entities:
+            raise KbError(f"{slug}/{kind} exists", code=3)
+        path = store.path_of(kind, slug)
+        self._fresh(path)
+        self.documents[path] = {}
+        self.lines.append(f"new {slug}/{kind}")
 
     def set(self, op):
         keys, unset = op.get("keys") or {}, op.get("unset") or []
@@ -571,12 +700,128 @@ class Change:
         self.lines.append(f"unresolved {meaning.key} on {layout}: {method} search of {target}, "
                           f"{count} matches")
 
+    def link(self, op):
+        meaning, to, type_ = self._ends(op)
+        owners, targets = vocab.LINK_TYPES[type_]
+        if meaning.kind not in owners or to.kind not in targets:
+            raise KbError(f"the {type_} type joins {'/'.join(owners)} to {'/'.join(targets)}, "
+                          f"not {meaning.kind} to {to.kind}", code=2)
+        keys = self._link_keys(op.get("keys"), tuple(LINK_KEYS))
+        if type_ == "depends" and "role" not in keys:
+            raise KbError("a depends link states its role", code=2)
+        evidence = [evidence_item(item) for item in op.get("evidence") or ()]
+        _, document = self.document(meaning)
+        links = document.setdefault("link", [])
+        entry = {"type": type_, "to": to.key, **keys}
+        held = next((link for link in links if self._same_link(link, entry, to)), None)
+        if held is None:
+            if evidence:
+                entry["evidence"] = evidence
+            links.append(entry)
+        else:
+            added = {}
+            for name, value in keys.items():
+                if name not in held:
+                    added[name] = value
+                elif name in LINK_JOINED:
+                    joined = _union(_listed(held[name]), _listed(value))
+                    if joined != _listed(held[name]):
+                        added[name] = joined
+                elif held[name] != value:
+                    raise KbError(f"the {type_} link of {meaning.key} to {to.key} holds {name} = "
+                                  f"{held[name]!r}; `kb unlink` removes it", code=3)
+            evidence = [item for item in evidence if item not in held.get("evidence", ())]
+            if not added and not evidence:
+                raise KbError(f"{meaning.key} has this {type_} link to {to.key}", code=3)
+            held.update(added)
+            if evidence:
+                held["evidence"] = [*held.get("evidence", ()), *evidence]
+        described = "; ".join(summary(item) for item in evidence) or "no evidence"
+        self.lines.append(f"link {meaning.key} {type_} {to.key}: {described}")
+
+    def unlink(self, op):
+        meaning, to, type_ = self._ends(op)
+        keys = self._link_keys(op.get("keys"), LINK_CHOICE)
+        document = self._held(meaning) or {}
+        links = document.get("link", [])
+        found = [link for link in links if self._same_link(link, {"type": type_, **keys}, to,
+                                                           keys=tuple(keys))]
+        if not found:
+            stated = sorted({src for link in meaning.links
+                             if link.type == type_ and link.to is to for src in link.sources
+                             if not src.startswith(f"{store.TREE.as_posix()}/")})
+            if stated:
+                raise KbError(f"{', '.join(stated)} states the {type_} link of {meaning.key} to "
+                              f"{to.key}; a registry owns its facts until its conversion",
+                              code=3)
+            raise KbError(f"{meaning.key} has no {type_} link to {to.key}", code=5)
+        if len(found) > 1:
+            choices = "; ".join(", ".join(f"{name} = {link[name]!r}" for name in LINK_CHOICE
+                                          if name in link) or "no slot or offset"
+                                for link in found)
+            raise KbError(f"{meaning.key} has {len(found)} {type_} links to {to.key} ({choices}); "
+                          "slot or offset chooses one", code=4)
+        document["link"] = [link for link in links if link is not found[0]]
+        self.lines.append(f"unlink {meaning.key} {type_} {to.key}")
+
+    def _ends(self, op):
+        """(meaning, to, type) of a link operation."""
+        meaning, _ = self.resolve(op["meaning"])
+        to, _ = self.resolve(op["to"])
+        type_ = op["type"]
+        if type_ not in vocab.LINK_TYPES:
+            raise KbError(f"link type {type_!r}; the types are {', '.join(vocab.LINK_TYPES)}",
+                          code=2)
+        if to is meaning:
+            raise KbError(f"{op['meaning']} and {op['to']} name {meaning.key}; a link joins two "
+                          "meanings", code=2)
+        self._gate(meaning)
+        self._gate(to)
+        return meaning, to, type_
+
+    def _link_keys(self, keys, allowed):
+        """Checked keys of a link among `allowed`; exit code 2 for another key
+        or a value against its schema or vocabulary."""
+        keys = keys or {}
+        if not isinstance(keys, dict):
+            raise KbError("the keys of a link are a table", code=2)
+        found = {}
+        for name, value in keys.items():
+            if name not in allowed:
+                raise KbError(f"a link takes no {name} here; the keys are {', '.join(allowed)}",
+                              code=2)
+            value = checked(LINK_KEYS[name], name, value)
+            if name in LINK_LISTS and not isinstance(value, list):
+                raise KbError(f"{name} is an array", code=2)
+            if name in LINK_VOCABULARY:
+                # `supports` and `reverse_supports` join into arrays, and the
+                # dependency of `relies` is one value.
+                for item in value if isinstance(value, list) and name in LINK_JOINED else [value]:
+                    if item not in LINK_VOCABULARY[name]:
+                        raise KbError(f"{name} {item!r}; the values are "
+                                      f"{', '.join(LINK_VOCABULARY[name])}", code=2)
+            if name == "layouts":
+                value = [self._layout(item) for item in value]
+            found[name] = value
+        return found
+
+    def _same_link(self, link, entry, to, keys=LINK_CHOICE):
+        """Whether a link of a file has the type and the keys of `entry` and
+        names the meaning `to`: by its name, a generated name of one of its
+        symbols, or one of its other names."""
+        found = REFERENCE.fullmatch(str(link.get("to")))
+        return link.get("type") == entry["type"] and found is not None \
+            and found.group("kind") == to.kind and found.group("name") in self._names(to) \
+            and all(link.get(name) == entry.get(name) for name in keys)
+
     def merge(self, op):
         meaning, named, path = self._file_of(op["meaning"])
         other, _, other_path = self._file_of(op["other"])
         if meaning.kind != other.kind:
             raise KbError(f"{op['meaning']} is a {meaning.kind} meaning and {op['other']} a "
                           f"{other.kind} one", code=2)
+        self._gate(meaning)
+        self._gate(other)
         if meaning is other:
             self._merge_files(meaning, path, other_path, op)
         else:
@@ -802,6 +1047,157 @@ class Change:
         if named is None:
             raise KbError(f"{op['symbol']} names the meaning {meaning.key}; `kb move` takes one "
                           "of its symbols", code=2)
+        if refs.LOCATION.fullmatch(str(op["to"]).strip()):
+            self._move_address(meaning, named, op)
+        else:
+            self._move_meaning(meaning, named, op)
+
+    def _move_meaning(self, meaning, named, op):
+        """Move a symbol into the meaning that `to` names: its entry leaves the
+        file of its meaning and enters the file of the target, and the result
+        must join it with the symbols of the target alone."""
+        target, via = self.resolve(op["to"])
+        old = self._ref(named)
+        if target is meaning:
+            raise KbError(f"{old} is a symbol of {meaning.key}", code=2)
+        if target.kind != meaning.kind:
+            raise KbError(f"{old} is a {meaning.kind} symbol and {target.key} a {target.kind} "
+                          "meaning", code=2)
+        self._gate(meaning)
+        self._gate(target)
+        layout = named.layout
+        if len(meaning.symbols) == 1:
+            raise KbError(f"{old} is the only symbol of {meaning.key}; `kb merge` joins the two "
+                          "meanings", code=3)
+        if named is meaning.home_symbol and not meaning.semantic:
+            raise KbError(f"{old} is the home symbol of {meaning.key} and gives its name; `kb "
+                          f"rename {meaning.key} <semantic-name>` names the meaning first", code=3)
+        if meaning.props.get("home") == layout:
+            raise KbError(f"the home of {meaning.key} is {layout}; `kb set {meaning.key} home=` "
+                          "unsets it first", code=3)
+        self._free(target, layout)
+        level = op.get("level")
+        if level is not None and level not in vocab.LEVELS:
+            raise KbError(f"level {level!r}; the levels are {', '.join(vocab.LEVELS)}", code=2)
+        if op.get("evidence"):
+            evidence = [evidence_item(item) for item in op["evidence"]]
+        else:
+            evidence = self._found(self._source(target, via, op.get("from")), named.key)
+        generated, former, keys = self._release(meaning, named)
+        path, document = self.document(target)
+        kind, address = named.kind, f"{named.address:08x}"
+        entry = {"layout": layout, "address": address}
+        if target.semantic:
+            name = target.name
+            if generated:
+                former = [f"{generated}/{kind}/{layout}-{address}", *former]
+        else:
+            name = generated or self._draw()
+            entry["name"] = name
+            self._keep_home(target, [layout], document)
+        current = f"{name}/{kind}/{layout}-{address}"
+        former = [item for item in _union([old], former) if item != current]
+        if former:
+            entry["former"] = former
+        entry.update(keys)
+        entry.update({item: op[item] for item in ("level", "note") if op.get(item) is not None})
+        entry["evidence"] = evidence
+        document["symbol"] = [*document.get("symbol", ()), entry]
+        document["status"] = [status for status in document.get("status", ())
+                              if status.get("layout") != layout]
+        # A reference to the symbol by a name of its former meaning on its
+        # layout, or by its previous full reference, names it in the target.
+        moves = {f"{item}/{kind}/{layout}": f"{name}/{kind}/{layout}"
+                 for item in self._names(meaning) if item != name}
+        moves[old] = current
+        count = self._relocate({key: value for key, value in moves.items() if key != value})
+        if generated and target.semantic:
+            count += self._rename({generated}, kind, target.name, path)
+        joined = {symbol.key for symbol in target.symbols.values()}
+        apart = {symbol.key for symbol in meaning.symbols.values() if symbol is not named}
+
+        def expect(result):
+            found = result.meaning_of(named.key)
+            if found is None or any(result.meaning_of(key) is not found for key in joined) \
+                    or any(result.meaning_of(key) is found for key in apart):
+                return (f"move {old} to {target.key}: the compiled model does not join the "
+                        f"symbol with {target.key} alone; `kb raw {old}` shows the registry rows "
+                        "that state it, and the move waits for their conversion")
+            left = sorted({getattr(result.meaning_of(key), "key", "?") for key in apart})
+            if found.key != target.key or left != [meaning.key]:
+                return (f"move {old} to {target.key}: the compiled model names the meanings "
+                        f"{found.key} and {', '.join(left)}; a registry name of the symbol moves "
+                        "with it, and the move waits for the conversion of that registry")
+            return None
+
+        self.expected.append(expect)
+        named_as = f" as {current}" if name != target.name and current != old else ""
+        self.lines.append(f"move {old} to {target.key}{named_as}: "
+                          f"{'; '.join(summary(item) for item in evidence)}"
+                          f"{self._renames(count)}")
+
+    def _release(self, meaning, symbol):
+        """(generated name, former references, keys) of a symbol that leaves
+        its meaning: its entry leaves the file of the meaning with its keys
+        besides its place, names, evidence, level, and note, or else its row
+        leaves `kb/names.csv`."""
+        document = self._held(meaning)
+        for entry in (document or {}).get("symbol", ()):
+            if entry.get("layout") == symbol.layout:
+                document["symbol"] = [item for item in document["symbol"] if item is not entry]
+                keys = {key: value for key, value in entry.items()
+                        if key not in (*ENTRY, "level", "note")}
+                return entry.get("name"), list(entry.get("former", ())), keys
+        row = self.rows.pop((symbol.layout, symbol.kind, symbol.address), None)
+        if row is not None:
+            self.rows_changed = True
+            return row.name, [f"{name}/{symbol.kind}/{symbol.layout}-{symbol.address:08x}"
+                              for name in row.former], {}
+        return symbol.generated, [], {}
+
+    def rename(self, op):
+        meaning, _ = self.resolve(op["meaning"])
+        name, kind = op["name"], meaning.kind
+        if meaning.semantic and meaning.name == name:
+            raise KbError(f"{meaning.key} has the name {name}", code=2)
+        stated = [src for src in meaning.name_sources
+                  if not src.startswith(f"{store.TREE.as_posix()}/")]
+        if stated:
+            raise KbError(f"{', '.join(stated)} names {meaning.key}; a registry owns its facts "
+                          "until its conversion", code=3)
+        self._semantic(name, kind, meaning)
+        held = sorted(src for owner, src in self.model.files.values() if owner is meaning)
+        if len(held) > 1:
+            raise KbError(f"{meaning.key} has {len(held)} files, {', '.join(held)}; `kb merge` "
+                          "joins them first", code=3)
+        old = meaning.key
+        path, document = self.document(meaning)
+        target = store.path_of(kind, name)
+        if target != path:
+            self._fresh(target)
+        others = {meaning.name, *(symbol.generated for symbol in meaning.symbols.values())}
+        for entry in document.get("symbol", ()):
+            generated = entry.pop("name", None)
+            others.add(generated)
+            previous = f"{generated or meaning.name}/{kind}/{entry.get('layout')}-" \
+                       f"{entry.get('address')}"
+            former = [item for item in _union([previous], entry.get("former", ()))
+                      if item.partition("/")[0] != name]
+            entry.pop("former", None)
+            if former:
+                entry["former"] = former
+        former = _union(document.pop("former", []), [meaning.name] if meaning.semantic else [])
+        former = [item for item in former if item != name]
+        if former:
+            document["former"] = former
+        if target != path:
+            self._remove(path)
+            self.documents[target] = document
+        self.renamed[old] = f"{name}/{kind}"
+        count = self._rename(others - {None, name}, kind, name, target)
+        self.lines.append(f"rename {old} to {name}/{kind}{self._renames(count)}")
+
+    def _move_address(self, meaning, named, op):
         layout, address = self._location(op["to"])
         if layout != named.layout:
             raise KbError(f"{self._ref(named)} lies on {named.layout}, not on {layout}; a symbol "
@@ -834,7 +1230,7 @@ class Change:
         entry["former"] = _union([old], entry.get("former", []))
         entry["evidence"] = evidence
         entry.update({item: op[item] for item in ("level", "note") if op.get(item) is not None})
-        count = self._relocate(old, new)
+        count = self._relocate({old: new})
         self.lines.append(f"move {old} to {key.location}: "
                           f"{'; '.join(summary(item) for item in evidence)}"
                           f"{self._renames(count)}")
@@ -850,9 +1246,9 @@ class Change:
         document["symbol"] = [*document.get("symbol", ()), entry]
         return entry
 
-    def _relocate(self, old, new):
-        """Rewrite the references of the entity files to the full reference
-        `old` as references to `new`; returns their count."""
+    def _relocate(self, moves):
+        """Rewrite the references of the entity files to a reference of
+        `moves` {old: new} as references to its new one; returns their count."""
         paths = {path for _, _, path in store.files(self.root, self.model.overlay)}
         total = 0
         for path in sorted((paths | set(self.documents)) - self.removed,
@@ -860,7 +1256,7 @@ class Change:
             document = self.documents.get(path)
             if document is None:
                 document = store.load(self.root, path, self.model.overlay)
-            document, count = relocated(document, old, new)
+            document, count = relocated(document, moves)
             if count:
                 self.documents[path] = document
             total += count
@@ -907,6 +1303,7 @@ class Change:
     def document(self, meaning):
         """(path, document) of the file of a meaning; a meaning without one
         starts a file with the entry of its home symbol."""
+        self._gate(meaning)
         path = self._path(meaning)
         if path is None:
             path = store.path_of(meaning.kind, meaning.name)
@@ -919,6 +1316,28 @@ class Change:
             else:
                 self.documents[path] = {"symbol": [self.adopt(meaning, meaning.home_symbol)]}
         return path, self.documents[path]
+
+    def _held(self, meaning):
+        """The document of the file of a meaning, or None when neither the
+        change nor the working tree holds one."""
+        path = self._path(meaning) or store.path_of(meaning.kind, meaning.name)
+        if path in self.documents or self._current(path) is not None:
+            return self.document(meaning)[1]
+        return None
+
+    def _fresh(self, path):
+        """Refuse the path of a new file that the store or the change holds."""
+        if path in self.removed:
+            raise KbError(f"{path.as_posix()} leaves the store in this change", code=3)
+        if path in self.documents or self._current(path) is not None:
+            raise KbError(f"{path.as_posix()} exists", code=3)
+
+    def _gate(self, meaning):
+        """Refuse a meaning that an earlier operation of the change renames."""
+        new = self.renamed.get(meaning.key)
+        if new is not None:
+            raise KbError(f"{meaning.key} takes the name {new} earlier in this change; a batch "
+                          "renames a meaning after its other operations", code=3)
 
     def _path(self, meaning):
         """The file of a meaning: the file of its name, or else its only file."""
@@ -1026,6 +1445,38 @@ class Change:
         return symbol
 
     @staticmethod
+    def _grammar(text):
+        """Whether a text is a semantic name or a slug (section 5.1)."""
+        return bool(vocab.SEMANTIC_NAME.fullmatch(text)) and 3 <= len(text) <= 48
+
+    def _semantic(self, name, kind, own=None):
+        """Refuse a semantic name of `kind` against its grammar, or one that
+        another meaning holds: as its name, one of its other names, or the
+        former name of one of its symbols (section 5.3)."""
+        if not isinstance(name, str) or not self._grammar(name):
+            raise KbError(f"{name!r} is no semantic name: 3 to 48 characters of "
+                          "[a-z][a-z0-9]*(_[a-z0-9]+)*", code=2)
+        for meaning in self.model.meanings:
+            if meaning is own or meaning.kind != kind:
+                continue
+            if meaning.semantic and meaning.name == name:
+                raise KbError(f"{name}/{kind} exists", code=3)
+            for other, tier, src in meaning.other_names:
+                if other == name:
+                    raise KbError(f"{name} is a {tier} name of {meaning.key} in {src}", code=3)
+        for key, (_, former, src) in sorted(self.model.file_names.items()):
+            if key.kind == kind and name in former and self.model.meaning_of(key) is not own:
+                raise KbError(f"{name} is a former name of {self._ref(self.model.symbols[key])} "
+                              f"in {src}", code=3)
+
+    @staticmethod
+    def _names(meaning):
+        """The names that references of files give a meaning: its name, the
+        generated names of its symbols, and its other names."""
+        return {meaning.name, *(symbol.generated for symbol in meaning.symbols.values()),
+                *(name for name, _, _ in meaning.other_names)} - {None}
+
+    @staticmethod
     def _ref(symbol):
         return f"{symbol.name or '?'}/{symbol.kind}/{symbol.layout}-{symbol.address:08x}"
 
@@ -1068,17 +1519,23 @@ def refusals(base, result):
 
 def plan(ops, base, resolve, root=repo.ROOT):
     """(change, texts, result) of operations over the model `base` of the
-    working tree and its overlay; exit code 3 when the result adds an issue."""
+    working tree and its overlay; exit code 3 when the result adds an issue or
+    contradicts what an operation expects of it."""
     change = Change(base, resolve, root)
     for number, op in enumerate(ops, 1):
         change.run(op, number if len(ops) > 1 else None)
     texts = change.texts()
     result = compile.build(root, {**base.overlay, **texts})
     refused = refusals(base, result)
-    if refused:
-        lines = [f"the change adds {len(refused)} issues; nothing is written"]
+    unmet = [message for expected in change.expected for message in [expected(result)]
+             if message]
+    if refused or unmet:
+        parts = [f"adds {len(refused)} issues"] if refused else []
+        parts += [f"contradicts {len(unmet)} of its operations"] if unmet else []
+        lines = [f"the change {' and '.join(parts)}; nothing is written"]
         lines += [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
                   for issue in refused]
+        lines += [f"  {message}" for message in unmet]
         raise KbError("\n".join(lines), code=3)
     return change, texts, result
 

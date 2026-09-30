@@ -35,12 +35,18 @@ uv run kb mcp                        # the read commands and kb_apply as MCP too
 uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
 uv run kb project --check            # exit 1 when a projection differs from its rendering
 uv run kb fmt                        # rewrite the entity files of kb/ in canonical form
+uv run kb new <kind> <layout>:<address> --evidence '<item>' --dry-run   # a meaning with the symbol at a location
+uv run kb new feature <slug> --dry-run   # a designed entity
 uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning on another layout
 uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
 uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
+uv run kb link <from> <type> <to> [<key>=<value>...] --dry-run   # a typed link with its keys and evidence
+uv run kb unlink <from> <type> <to> --dry-run   # a link of the file of a meaning
 uv run kb merge <meaning> <other> --dry-run   # two meanings, or two files of one meaning, as one
+uv run kb rename <meaning> <semantic-name> --dry-run   # the semantic name of a meaning
 uv run kb set <ref> <key>=<value> --dry-run   # keys of a meaning, a symbol, a designed entity, or a feature target
 uv run kb move <symbol> <layout>:<address> --dry-run   # the address of a symbol on its layout
+uv run kb move <symbol> <meaning> --dry-run   # a symbol into the meaning that it belongs to
 uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
@@ -155,23 +161,32 @@ name resolves with a note that names the current reference.
 
 ## Write commands
 
-`kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb merge`, and `kb move`
-write one operation, and `kb apply` the operations of a TOML file of `[[op]]`
-tables, as one change under `.kb/lock` (section 12.3 of the specification). A
-change resolves its references on a current graph, edits the entity files in
-memory, and compiles the model with them in place of the files on disk
-(`compile.build` with an overlay). When the result has an issue of a model
-check or a registry disagreement that the working tree lacks, the change is
-refused with exit code 3 and the issues, and nothing is written; otherwise the
-files are written through temporary files and renames, and the graph loads the
-compiled result. `--dry-run` prints the diff instead of writing; the write
-draws the generated names of the diff anew.
+`kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`,
+`kb unlink`, `kb merge`, `kb rename`, and `kb move` write one operation, and
+`kb apply` the operations of a TOML file of `[[op]]` tables, as one change
+under `.kb/lock` (section 12.3 of the specification). A change resolves its
+references on a current graph, edits the entity files in memory, and compiles
+the model with them in place of the files on disk (`compile.build` with an
+overlay). When the result has an issue of a model check or a registry
+disagreement that the working tree lacks, or contradicts what an operation
+expects of it, the change is refused with exit code 3 and the issues, and
+nothing is written; otherwise the files are written through temporary files
+and renames, and the graph loads the compiled result. `--dry-run` prints the
+diff instead of writing; the write draws the generated names of the diff
+anew. A batch renames a meaning after its other operations: an operation on a
+meaning that an earlier operation renames is refused.
 
 - The file of a meaning without one starts with the entry of the home symbol,
   so that the file joins the meaning that the registries state. The row of
   `kb/names.csv` of that symbol moves into its entry: the generated name of a
   symbol of an unnamed meaning becomes its `name`, and the other names become
   `former` references.
+- `kb new <kind> <layout>:<address> --evidence <item>` starts the file of a
+  meaning with the symbol at a location that holds no symbol of a meaning and
+  the evidence of its identity on its layout, which makes it an anchor, named
+  by `--name` or else by the generated name of the row of the symbol or a
+  drawn one. `kb new <kind> <slug>` starts the empty file of a designed entity
+  of a kind that the store holds.
 - `kb set <ref> <key>=<value>...` writes keys of a meaning, of the entry of
   the symbol that the reference or `--layout` names, of a designed entity, or
   of the target of a feature on `--layout`. A value is a TOML value or else a
@@ -194,6 +209,20 @@ draws the generated names of the diff anew.
   search with the L0 digest of the layout, or those of `--method`, `--target`,
   and `--count`; a search with one candidate is refused with the `kb bind`
   that records it.
+- `kb link <from> <type> <to> [<key>=<value>...]` writes a link with its keys
+  and `--evidence` items into the file of `<from>`, or joins them to the link
+  of the file with the same type, target, `slot`, and `offset`: `via`,
+  `layouts`, `supports`, and `reverse_supports` join, and another key agrees
+  with the held value. `kb unlink <from> <type> <to>` removes a link of the
+  file, which `slot=` and `offset=` choose among several; a link that only a
+  registry states is refused.
+- `kb rename <meaning> <semantic-name>` renames the file of the meaning. Each
+  entry drops its generated name and keeps its previous full reference as its
+  first `former` reference, a previous semantic name becomes a former name of
+  the meaning, and the references of every entity file to a previous name name
+  the new one. A name that another meaning of the kind holds as its name, one
+  of its other names, or a former name of one of its symbols is refused, and
+  so is a meaning whose name a registry states until that registry converts.
 - `kb merge <meaning> <other>` moves the symbols of the other meaning into
   the file of the meaning, each with the evidence of its join: the
   `--evidence` items at its layout, or the candidate of the search as for
@@ -212,6 +241,17 @@ draws the generated names of the diff anew.
   citation of the entity files to that reference names the new one. It
   refuses another layout, the home symbol as the start of its own search, and
   a location of another meaning.
+- `kb move <symbol> <meaning>` moves the entry of a symbol, or its row of
+  `kb/names.csv`, into the file of the meaning that it belongs to, with the
+  evidence of the search from a symbol of that meaning or the `--evidence`
+  items. The symbol takes the name of a named target and keeps or draws a
+  generated name in an unnamed one; its previous full reference becomes its
+  first `former` reference, and the references to it by that reference or by
+  a name of its former meaning on its layout name it in the target. The
+  change is refused when the compiled result does not join the symbol with
+  the symbols of the target alone, as when a registry states it with its
+  former meaning, or changes the key of either meaning, as when a registry
+  names the symbol.
 - An evidence item is a TOML inline table, for example `--evidence 'kind =
   "l0", at = "jk00c:00043f10"'`, and a batch states it as an `[[op.evidence]]`
   table.

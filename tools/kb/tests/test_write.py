@@ -7,6 +7,7 @@ import unittest
 from unittest import mock
 
 from kb import adapters, checks, cli, compile, match, names, repo, store, targets, vocab, write
+from kb.adapters import files as file_adapter
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
 from kb.repo import KbError
@@ -197,6 +198,127 @@ class PlanTest(unittest.TestCase):
                                      code=2).startswith("op 2: cmd 'retire'"))
 
 
+def new(kind, ref, **keys):
+    return {"cmd": "new", "kind": kind, "symbol" if ":" in ref else "slug": ref, **keys}
+
+
+class NewTest(unittest.TestCase):
+    """`new` over a base whose kb/names.csv reserves the generated name
+    probe-heron, with the former name probe-otter, for the RAM location FREE
+    on 7mfk, which holds no symbol."""
+
+    FREE = 0xFFFF0FF0
+    LOCATION = f"7mfk:{FREE:08x}"
+    ROW = names.Row("7mfk", "ram", FREE, "probe-heron", ("probe-otter",))
+
+    @classmethod
+    def setUpClass(cls):
+        rows = [row for row in names.read() if row.key != cls.ROW.key] + [cls.ROW]
+        cls.base = compile.build(repo.ROOT, {names.PATH: names.render(rows)})
+
+    def plan(self, *ops):
+        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+
+    def refused(self, *ops, code=3):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        with self.assertRaises(KbError) as caught:
+            for number, op in enumerate(ops, 1):
+                change.run(op, number)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def test_new_starts_a_meaning_with_the_generated_name_of_its_row(self):
+        change, texts, result = self.plan(new("ram", self.LOCATION, evidence=[SPEC],
+                                              note="probe"))
+        path = store.path_of("ram", "probe-heron")
+        self.assertEqual(list(texts), [names.PATH, path])
+        self.assertNotIn(self.ROW.key, {row.key for row in names.parse(texts[names.PATH])})
+        self.assertEqual(tomllib.loads(texts[path]), {"symbol": [{
+            "layout": "7mfk", "address": f"{self.FREE:08x}", "name": "probe-heron",
+            "former": [f"probe-otter/ram/7mfk-{self.FREE:08x}"], "note": "probe",
+            "evidence": [SPEC]}]})
+        key = SymbolKey("7mfk", "ram", self.FREE)
+        self.assertEqual(result.meaning_of(key).key, "probe-heron/ram")
+        self.assertEqual(result.symbols[key].former, ("probe-otter",))
+        self.assertEqual(change.lines, [
+            f"new probe-heron/ram/7mfk-{self.FREE:08x}: spec path tools/kb/SPEC.md"])
+
+    def test_a_named_meaning_keeps_the_names_of_the_row_as_former_references(self):
+        _, texts, result = self.plan(new("ram", self.LOCATION, name="probe_cell",
+                                         level="candidate", evidence=[SPEC]))
+        [entry] = tomllib.loads(texts[store.path_of("ram", "probe_cell")])["symbol"]
+        self.assertEqual(entry, {"layout": "7mfk", "address": f"{self.FREE:08x}", "former": [
+            f"{name}/ram/7mfk-{self.FREE:08x}" for name in ("probe-heron", "probe-otter")],
+            "level": "candidate", "evidence": [SPEC]})
+        symbol = result.symbols[SymbolKey("7mfk", "ram", self.FREE)]
+        self.assertEqual((symbol.meaning.key, symbol.former),
+                         ("probe_cell/ram", ("probe-heron", "probe-otter")))
+
+    def test_a_symbol_without_a_row_draws_its_generated_name(self):
+        held = {key.address for key in self.base.symbols
+                if (key.layout, key.kind) == ("7mfk", "fn")}
+        rows = {row.key for row in self.base.names}
+        address = next(address for address in sorted(self.base.functions["7mfk"])
+                       if address not in held and ("7mfk", "fn", address) not in rows)
+        location = f"7mfk:{address:08x}"
+        change, texts, result = self.plan(new("fn", location,
+                                              evidence=[{"kind": "l0", "at": location}]))
+        [(path, text)] = texts.items()
+        [entry] = tomllib.loads(text)["symbol"]
+        self.assertRegex(entry["name"], vocab.GENERATED_NAME)
+        self.assertEqual(path, store.path_of("fn", entry["name"]))
+        self.assertEqual(result.meaning_of(SymbolKey("7mfk", "fn", address)).key,
+                         f"{entry['name']}/fn")
+        self.assertEqual(change.lines, [f"new {entry['name']}/fn/7mfk-{address:08x}: l0 at "
+                                        f"{location}"])
+
+    def test_new_starts_the_empty_file_of_a_designed_entity(self):
+        change, texts, result = self.plan(new("feature", "probe_feature"))
+        self.assertEqual(texts, {store.path_of("feature", "probe_feature"):
+                                 store.render("feature", {})})
+        self.assertIn(("feature", "probe_feature"), result.entities)
+        self.assertEqual(change.lines, ["new probe_feature/feature"])
+
+    def test_new_refuses_a_held_place_or_name_and_the_keys_of_the_other_form(self):
+        symbol = new("ram", self.LOCATION, evidence=[SPEC])
+        stage = next(kind for kind in vocab.DESIGNED_KINDS
+                     if kind not in file_adapter.CONVERTED_KINDS)
+        cases = [
+            ({**symbol, "symbol": f"7mfk:{THROTTLE_HOME:08x}"}, 3,
+             f"7mfk:{THROTTLE_HOME:08x} is {THROTTLE}/7mfk-{THROTTLE_HOME:08x}"),
+            (new("tbl", f"7mfk:{TABLE_HOME:08x}", evidence=[SPEC]), 3,
+             f"`kb rename {TABLE} <semantic-name>` names its meaning"),
+            ({**symbol, "name": "throttle_runtime"}, 3, f"{THROTTLE} exists"),
+            ({**symbol, "name": "Probe"}, 2, "'Probe' is no semantic name"),
+            (new("ram", self.LOCATION), 2,
+             "new needs the evidence of the identity of the symbol on its layout"),
+            ({**symbol, "level": "sure"}, 2, "level 'sure'"),
+            (new("feature", self.LOCATION), 2,
+             "a feature is a designed entity; `kb new feature <slug>` starts one"),
+            (new("ram", "probe_cell"), 2,
+             "a ram meaning starts with a symbol: `kb new ram <layout>:<address>`"),
+            (new("feature", "probe_feature", name="probe"), 2,
+             "a designed entity takes its slug as its name"),
+            (new("feature", "probe_feature", evidence=[SPEC], note="probe"), 2,
+             "a designed entity takes no evidence, note"),
+            (new("feature", "Probe"), 2, "'Probe' is no slug"),
+            (new("feature", "map_switching"), 3, "map_switching/feature exists"),
+            (new(stage, "probe_entity"), 3,
+             f"the store holds no {stage} entities before their conversion stage"),
+            ({"cmd": "new", "kind": "ram"}, 2, "new takes a symbol <layout>:<address> or a slug"),
+            ({**symbol, "slug": "probe_cell"}, 2, "new takes a symbol"),
+            (new("widget", "probe_widget"), 2, "kind 'widget'; the kinds are"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+        named = {**symbol, "name": "probe_cell"}
+        self.assertIn(f"op 2: {self.LOCATION} starts a meaning earlier in this change",
+                      self.refused(named, {**named, "name": "probe_store"}))
+        self.assertIn(f"op 2: {store.path_of('ram', 'probe_cell').as_posix()} exists",
+                      self.refused(named, {**named, "symbol": f"7mfk:{self.FREE + 1:08x}"}))
+
+
 def merge(meaning, other, **keys):
     return {"cmd": "merge", "meaning": meaning, "other": other, **keys}
 
@@ -313,6 +435,11 @@ class MergeTest(unittest.TestCase):
         self.assertIn("join without evidence", self.refused(
             merge(self.FOX, self.MARMOT, evidence=[SPEC]), code=2))
 
+    def test_a_rename_waits_for_the_merge_of_the_files_of_its_meaning(self):
+        paths = ", ".join(self.FILES[name].as_posix() for name in (self.FOX, self.MARMOT))
+        self.assertIn(f"{self.MARMOT} has 2 files, {paths}; `kb merge` joins them first",
+                      self.refused(rename(self.MARMOT, "probe_routine")))
+
 
 def assign(ref, keys=None, unset=None, layout=None):
     op = {"cmd": "set", "ref": ref, "keys": keys, "unset": unset, "layout": layout}
@@ -418,6 +545,131 @@ class SetTest(unittest.TestCase):
             self.assertEqual(caught.exception.code, 2)
 
 
+def link(meaning, type_, to, cmd="link", **keys):
+    return {"cmd": cmd, "meaning": meaning, "type": type_, "to": to, **keys}
+
+
+class LinkTest(unittest.TestCase):
+    """`link` and `unlink` over a base whose file of RPM states its reader
+    link to MACHINE and one to KERNEL by the generated name of the 1ND symbol
+    of KERNEL; defs/JK08A.funcs.csv states the reader link of RPM to BUILDER.
+    The file of ALTERNATE states its axis link to AXIS in slot x and its
+    reader link to ACCESSOR with the role accessor."""
+
+    RPM, RPM_HOME, RPM_FILE = "rpm/ram", 0xFFFF11BC, store.path_of("ram", "rpm")
+    MACHINE, BUILDER = "rev_fuel_cut_state_machine/fn", "idle_opening_area_builder/fn"
+    KERNEL, KERNEL_1ND = "uptight-tiger/fn", "cryptic-heron/fn"
+    ALTERNATE, AXIS = "fuel_compensation_alternate/tbl", "fascinating-hog/axis"
+    ACCESSOR = "asparagus-scallop/fn"
+
+    @classmethod
+    def setUpClass(cls):
+        text = (repo.ROOT / cls.RPM_FILE).read_text(encoding="utf-8")
+        cls.held = tomllib.loads(text)
+        document = tomllib.loads(text)
+        document["link"].append({"type": "reader", "to": cls.KERNEL_1ND})
+        cls.base = compile.build(repo.ROOT, {cls.RPM_FILE: store.render("ram", document)})
+
+    def plan(self, *ops):
+        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+
+    def change(self, *ops):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        for number, op in enumerate(ops, 1):
+            change.run(op, number)
+        return change
+
+    def refused(self, *ops, code=3):
+        with self.assertRaises(KbError) as caught:
+            self.change(*ops)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def links(self, texts, to):
+        return [item for item in tomllib.loads(texts[self.RPM_FILE])["link"] if item["to"] == to]
+
+    def test_link_starts_the_file_of_its_meaning_with_the_link(self):
+        change, texts, result = self.plan(link(SELECTOR, "depends", THROTTLE, keys={
+            "role": "input", "relies": "contract"}, evidence=[SPEC]))
+        path = store.path_of("fn", "accelerator_pedal_pair_selector")
+        self.assertEqual(list(texts), [path])
+        self.assertEqual(tomllib.loads(texts[path]), {
+            "symbol": [{"layout": "7mfk", "address": f"{SELECTOR_HOME:08x}"}],
+            "link": [{"type": "depends", "to": THROTTLE, "relies": "contract", "role": "input",
+                      "evidence": [SPEC]}]})
+        meaning = result.meaning_of(SymbolKey("7mfk", "fn", SELECTOR_HOME))
+        [found] = [item for item in meaning.links
+                   if item.type == "depends" and item.to.key == THROTTLE]
+        self.assertEqual(found.props.get("relies"), "contract")
+        self.assertIn(path.as_posix(), found.sources)
+        self.assertEqual(change.lines, [f"link {SELECTOR} depends {THROTTLE}: spec path "
+                                        "tools/kb/SPEC.md"])
+
+    def test_link_joins_the_keys_and_the_evidence_of_the_held_link(self):
+        change, texts, _ = self.plan(
+            link(self.RPM, "reader", self.MACHINE, keys={"layouts": ["1nd"]}),
+            link(self.RPM, "reader", self.MACHINE, keys={"layouts": ["1me3b"]}, evidence=[SPEC]))
+        [held] = [item for item in self.held["link"] if item["to"] == self.MACHINE]
+        self.assertEqual(self.links(texts, self.MACHINE), [
+            {**held, "layouts": ["1nd", "1me3b"], "evidence": [*held["evidence"], SPEC]}])
+        self.assertEqual(change.lines, [
+            f"link {self.RPM} reader {self.MACHINE}: no evidence",
+            f"link {self.RPM} reader {self.MACHINE}: spec path tools/kb/SPEC.md"])
+
+    def test_a_link_names_its_target_by_any_of_its_names(self):
+        _, texts, result = self.plan(link(self.RPM, "reader", self.KERNEL, evidence=[SPEC]))
+        self.assertEqual(self.links(texts, self.KERNEL_1ND),
+                         [{"type": "reader", "to": self.KERNEL_1ND, "evidence": [SPEC]}])
+        rpm = result.meaning_of(SymbolKey("7mfk", "ram", self.RPM_HOME))
+        self.assertIn(self.KERNEL, [item.to.key for item in rpm.links if item.type == "reader"])
+        texts = self.change(link(self.RPM, "reader", self.KERNEL, cmd="unlink")).texts()
+        self.assertEqual(self.links(texts, self.KERNEL_1ND), [])
+
+    def test_unlink_removes_the_link_that_its_keys_choose(self):
+        change, texts, result = self.plan(link(self.RPM, "reader", self.MACHINE, cmd="unlink"))
+        self.assertEqual(self.links(texts, self.MACHINE), [])
+        rpm = result.meaning_of(SymbolKey("7mfk", "ram", self.RPM_HOME))
+        self.assertNotIn(self.MACHINE, [item.to.key for item in rpm.links])
+        self.assertEqual(change.lines, [f"unlink {self.RPM} reader {self.MACHINE}"])
+        axis = link(self.ALTERNATE, "axis", self.AXIS, keys={"slot": "y"})
+        change, texts, _ = self.plan(axis, {**axis, "cmd": "unlink"})
+        self.assertEqual(texts, {})
+        self.assertEqual(change.lines, [f"link {self.ALTERNATE} axis {self.AXIS}: no evidence",
+                                        f"unlink {self.ALTERNATE} axis {self.AXIS}"])
+        self.assertIn(f"op 2: {self.ALTERNATE} has 2 axis links to {self.AXIS} (slot = 'x'; "
+                      "slot = 'y'); slot or offset chooses one",
+                      self.refused(axis, {**axis, "cmd": "unlink", "keys": {}}, code=4))
+
+    def test_links_refuse_what_the_schema_or_the_files_contradict(self):
+        machine = link(self.RPM, "reader", self.MACHINE)
+        cases = [
+            (machine, 3, f"{self.RPM} has this reader link to {self.MACHINE}"),
+            (link(self.ALTERNATE, "reader", self.ACCESSOR, keys={"role": "consumer"}), 3,
+             f"the reader link of {self.ALTERNATE} to {self.ACCESSOR} holds role = 'accessor'; "
+             "`kb unlink` removes it"),
+            (link(self.RPM, "axis", self.AXIS), 2, "the axis type joins tbl to axis, not ram to "
+             "axis"),
+            (link(self.RPM, "depends", THROTTLE), 2, "a depends link states its role"),
+            (link(self.RPM, "reader", self.RPM), 2, "a link joins two meanings"),
+            (link(self.RPM, "calls", self.MACHINE), 2, "link type 'calls'; the types are"),
+            ({**machine, "keys": {"relies": ["contract"]}}, 2,
+             "relies ['contract']; the values are"),
+            ({**machine, "keys": {"via": "x"}}, 2, "via is an array"),
+            ({**machine, "keys": {"title": "x"}}, 2, "a link takes no title here"),
+            ({**machine, "keys": {"layouts": ["k9"]}}, 5, "unknown layout 'k9'"),
+            (link(self.RPM, "reader", self.BUILDER, cmd="unlink"), 3,
+             f"defs/JK08A.funcs.csv states the reader link of {self.RPM} to {self.BUILDER}; a "
+             "registry owns its facts until its conversion"),
+            (link(self.RPM, "reader", self.ACCESSOR, cmd="unlink"), 5,
+             f"{self.RPM} has no reader link to {self.ACCESSOR}"),
+            ({**machine, "cmd": "unlink", "keys": {"role": "consumer"}}, 2,
+             "a link takes no role here; the keys are slot, offset"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+
+
 def move(symbol, to, **keys):
     return {"cmd": "move", "symbol": symbol, "to": to, **keys}
 
@@ -487,12 +739,221 @@ class MoveTest(unittest.TestCase):
                 self.assertIn(message, self.refused(op, code=code))
 
 
+def rename(meaning, name):
+    return {"cmd": "rename", "meaning": meaning, "name": name}
+
+
+class RenameMeaningTest(unittest.TestCase):
+    """`rename` over the working tree, where TABLE has a file with symbols
+    on three layouts and the map switching feature cites THROTTLE."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.base = compile.cached(repo.ROOT)
+
+    def plan(self, *ops):
+        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+
+    def refused(self, *ops, code=3, base=None):
+        base = base or self.base
+        change = write.Change(base, write.model_resolver(base))
+        with self.assertRaises(KbError) as caught:
+            for number, op in enumerate(ops, 1):
+                change.run(op, number)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def test_rename_names_an_unnamed_meaning_and_keeps_its_generated_names_as_former_references(
+            self):
+        meaning = self.base.meaning_of(SymbolKey("7mfk", "tbl", TABLE_HOME))
+        change, texts, result = self.plan(rename(TABLE, "probe_table"))
+        self.assertIsNone(texts[store.path_of("tbl", "astute-toad")])
+        document = tomllib.loads(texts[store.path_of("tbl", "probe_table")])
+        self.assertNotIn("former", document)
+        self.assertEqual(
+            {entry["layout"]: (entry.get("name"), entry["former"]) for entry in document["symbol"]},
+            {layout: (None, [f"{symbol.generated}/tbl/{layout}-{symbol.address:08x}"])
+             for layout, symbol in meaning.symbols.items()})
+        home = result.symbols[SymbolKey("7mfk", "tbl", TABLE_HOME)]
+        self.assertEqual((home.meaning.key, home.former), ("probe_table/tbl", ("astute-toad",)))
+        self.assertRegex(change.lines[0],
+                         rf"^rename {TABLE} to probe_table/tbl; \d+ references? rewritten$")
+
+    def test_rename_of_a_named_meaning_keeps_its_name_as_a_former_name(self):
+        path = store.path_of("ram", "throttle_runtime")
+        held = tomllib.loads((repo.ROOT / path).read_text(encoding="utf-8"))
+        change, texts, result = self.plan(rename(THROTTLE, "throttle_state"))
+        self.assertIsNone(texts[path])
+        document = tomllib.loads(texts[store.path_of("ram", "throttle_state")])
+        self.assertEqual(document["former"], ["throttle_runtime"])
+        self.assertEqual([entry["former"] for entry in document["symbol"]], [
+            [f"{THROTTLE}/{entry['layout']}-{entry['address']}", *entry.get("former", ())]
+            for entry in held["symbol"]])
+        meaning = result.meaning_of(SymbolKey("7mfk", "ram", THROTTLE_HOME))
+        self.assertEqual(meaning.key, "throttle_state/ram")
+        self.assertIn("throttle_runtime", [name for name, _, _ in meaning.other_names])
+        feature = texts[store.path_of("feature", "map_switching")]
+        self.assertNotIn(THROTTLE, feature)
+        self.assertIn("throttle_state/ram", feature)
+        self.assertRegex(change.lines[0],
+                         rf"^rename {THROTTLE} to throttle_state/ram; \d+ references rewritten$")
+
+    def test_renames_refuse_the_names_that_the_model_holds(self):
+        cases = [
+            (rename(THROTTLE, "throttle_runtime"), 2, f"{THROTTLE} has the name throttle_runtime"),
+            (rename(THROTTLE, "fuel_inhibit"), 3, f"{INHIBIT} exists"),
+            (rename(THROTTLE, "Throttle"), 2, "'Throttle' is no semantic name"),
+            (rename(SELECTOR, "probe_selector"), 3, f"tools/ghidra/symbols/7mfk.csv names "
+             f"{SELECTOR}; a registry owns its facts until its conversion"),
+            (rename("nothing/ram", "probe_cell"), 5, "no meaning 'nothing/ram'"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+        # A former name of INHIBIT and a former reference of its JK00C symbol.
+        path = store.path_of("ram", "fuel_inhibit")
+        document = tomllib.loads((repo.ROOT / path).read_text(encoding="utf-8"))
+        document["former"] = ["throttle_cell"]
+        entry = next(entry for entry in document["symbol"] if entry["layout"] == "jk00c")
+        entry["former"] = [f"throttle_probe/ram/jk00c-{entry['address']}"]
+        base = compile.build(repo.ROOT, {path: store.render("ram", document)})
+        self.assertIn(f"throttle_cell is a former name of {INHIBIT} in {path.as_posix()}",
+                      self.refused(rename(THROTTLE, "throttle_cell"), base=base))
+        self.assertIn(f"throttle_probe is a former name of {INHIBIT}/jk00c-{entry['address']} "
+                      f"in {path.as_posix()}",
+                      self.refused(rename(THROTTLE, "throttle_probe"), base=base))
+
+    def test_a_batch_renames_a_meaning_after_its_other_operations(self):
+        renamed = rename(THROTTLE, "throttle_state")
+        gate = (f"op 2: {THROTTLE} takes the name throttle_state/ram earlier in this change; a "
+                "batch renames a meaning after its other operations")
+        self.assertIn(gate, self.refused(renamed, assign(THROTTLE, {"note": "probe"})))
+        self.assertIn(gate, self.refused(renamed, link("rpm/ram", "depends", THROTTLE,
+                                                       keys={"role": "input"})))
+        _, texts, _ = self.plan(assign(THROTTLE, {"note": "probe"}), renamed)
+        self.assertEqual(tomllib.loads(texts[store.path_of("ram", "throttle_state")])["note"],
+                         "probe")
+
+
+class MoveMeaningTest(unittest.TestCase):
+    """`move` of a symbol into another meaning over a base whose file of
+    INHIBIT states the JK78C counterpart of THROTTLE, which the search from
+    the 7mfk symbol of THROTTLE finds, with a note that cites it. WRAPPER and
+    ACCESSOR are unnamed functions: WRAPPER has five symbols, and ACCESSOR has
+    one on JK78C."""
+
+    SYMBOL = f"jk78c:{THROTTLE_JK78C:08x}"
+    WRONG = f"{INHIBIT}/jk78c-{THROTTLE_JK78C:08x}"
+    INHIBIT_FILE = store.path_of("ram", "fuel_inhibit")
+    THROTTLE_FILE = store.path_of("ram", "throttle_runtime")
+    WRAPPER, WRAPPER_JK00C, ACCESSOR = "amusing-ara/fn", 0x26C84, "asparagus-scallop/fn"
+
+    @classmethod
+    def setUpClass(cls):
+        document = tomllib.loads((repo.ROOT / cls.INHIBIT_FILE).read_text(encoding="utf-8"))
+        document["symbol"].append({"layout": "jk78c", "address": f"{THROTTLE_JK78C:08x}",
+                                   "evidence": [SPEC]})
+        document["note"] = f"probe of [[{cls.WRONG}]] and [[{INHIBIT}/jk78c]]"
+        cls.base = compile.build(repo.ROOT, {cls.INHIBIT_FILE: store.render("ram", document)})
+
+    def plan(self, *ops):
+        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+
+    def refused(self, *ops, code=3):
+        with self.assertRaises(KbError) as caught:
+            self.plan(*ops)
+        self.assertEqual(caught.exception.code, code, str(caught.exception))
+        return str(caught.exception)
+
+    def test_move_joins_a_symbol_with_the_meaning_whose_search_finds_it(self):
+        home = self.base.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
+        found = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
+        evidence = write.Change._stored(found)
+        change, texts, result = self.plan(move(self.SYMBOL, THROTTLE))
+        self.assertEqual(sorted(texts), [self.INHIBIT_FILE, self.THROTTLE_FILE])
+        inhibit = tomllib.loads(texts[self.INHIBIT_FILE])
+        self.assertNotIn("jk78c", [entry["layout"] for entry in inhibit["symbol"]])
+        self.assertEqual(inhibit["note"], f"probe of [[{THROTTLE}/jk78c-{THROTTLE_JK78C:08x}]] "
+                                          f"and [[{THROTTLE}/jk78c]]")
+        entry = next(entry for entry in tomllib.loads(texts[self.THROTTLE_FILE])["symbol"]
+                     if entry["layout"] == "jk78c")
+        self.assertEqual(entry, {"layout": "jk78c", "address": f"{THROTTLE_JK78C:08x}",
+                                 "former": [self.WRONG], "evidence": [evidence]})
+        symbol = result.symbols[SymbolKey("jk78c", "ram", THROTTLE_JK78C)]
+        self.assertEqual((symbol.meaning.key, symbol.former), (THROTTLE, ("fuel_inhibit",)))
+        self.assertNotIn("jk78c", result.meaning_of(SymbolKey("7mfk", "ram", INHIBIT_HOME)).symbols)
+        self.assertEqual(change.lines, [f"move {self.WRONG} to {THROTTLE}: "
+                                        f"{write.summary(evidence)}; 2 references rewritten"])
+
+    def test_a_symbol_keeps_its_generated_name_in_an_unnamed_meaning(self):
+        key = SymbolKey("jk00c", "fn", self.WRAPPER_JK00C)
+        name = self.base.symbols[key].generated
+        change, texts, result = self.plan(move(key.location, self.ACCESSOR, evidence=[SPEC]))
+        target = tomllib.loads(texts[store.path_of("fn", "asparagus-scallop")])
+        self.assertEqual(target["home"], "jk78c")
+        self.assertIn({"layout": "jk00c", "address": f"{self.WRAPPER_JK00C:08x}", "name": name,
+                       "evidence": [SPEC]}, target["symbol"])
+        wrapper = tomllib.loads(texts[store.path_of("fn", "amusing-ara")])
+        self.assertNotIn("jk00c", [entry["layout"] for entry in wrapper["symbol"]])
+        self.assertEqual((result.meaning_of(key).key, result.symbols[key].generated),
+                         (self.ACCESSOR, name))
+        self.assertEqual(change.lines, [f"move {name}/fn/jk00c-{self.WRAPPER_JK00C:08x} to "
+                                        f"{self.ACCESSOR}: spec path tools/kb/SPEC.md"])
+
+    def test_a_move_that_the_compiled_model_undoes_is_refused(self):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        change.run(move(self.SYMBOL, THROTTLE, evidence=[SPEC]))
+        [expected] = change.expected
+        self.assertIn(f"move {self.WRONG} to {THROTTLE}: the compiled model does not join the "
+                      f"symbol with {THROTTLE} alone; `kb raw {self.WRONG}` shows the registry "
+                      "rows that state it", expected(self.base))
+        # A registry name of the symbol that names the target in the result.
+        throttle = self.base.meaning_of(SymbolKey("7mfk", "ram", THROTTLE_HOME))
+        inhibit = self.base.meaning_of(SymbolKey("7mfk", "ram", INHIBIT_HOME))
+        joined = {SymbolKey("jk78c", "ram", THROTTLE_JK78C),
+                  *(symbol.key for symbol in throttle.symbols.values())}
+        renamed = Meaning("ram", name="throttle_state", semantic=True)
+        result = mock.Mock(meaning_of=lambda key: renamed if key in joined else inhibit)
+        self.assertIn(f"the compiled model names the meanings throttle_state/ram and {INHIBIT}",
+                      expected(result))
+        with mock.patch.object(write.compile, "build", return_value=self.base):
+            message = self.refused(move(self.SYMBOL, THROTTLE, evidence=[SPEC]))
+        self.assertIn("the change contradicts 1 of its operations; nothing is written", message)
+
+    def test_moves_into_a_meaning_refuse_what_the_model_contradicts(self):
+        alternate = next(meaning for meaning in self.base.meanings
+                         if meaning.key == "fuel_compensation_alternate/tbl")
+        wrapper = f"jk00c:{self.WRAPPER_JK00C:08x}"
+        cases = [
+            (move(self.SYMBOL, INHIBIT), 2, f"{self.WRONG} is a symbol of {INHIBIT}"),
+            (move(self.SYMBOL, "absolute_throttle/ram"), 3, "absolute_throttle/ram has "
+             "absolute_throttle/ram/jk78c-ffff107b on jk78c; `kb move` corrects a wrong symbol"),
+            (move(self.SYMBOL, SELECTOR), 2,
+             f"{self.WRONG} is a ram symbol and {SELECTOR} a fn meaning"),
+            (move("jk78c:ffff1084", THROTTLE), 3, "cocky-quetzal/ram/jk78c-ffff1084 is the only "
+             "symbol of cocky-quetzal/ram; `kb merge` joins the two meanings"),
+            (move("7mfk:00026100", "fuel_cut_coordinator/fn"), 3,
+             f"{self.WRAPPER}/7mfk-00026100 is the home symbol of {self.WRAPPER} and gives its "
+             f"name; `kb rename {self.WRAPPER} <semantic-name>` names the meaning first"),
+            (move(alternate.symbols["jk78c"].key.location, "able-bison/tbl"), 3,
+             f"the home of {alternate.key} is jk78c; `kb set {alternate.key} home=` unsets it "
+             "first"),
+            (move(self.SYMBOL, THROTTLE, level="sure"), 2, "level 'sure'"),
+            (move(wrapper, self.ACCESSOR), 3, f"on jk00c, not {wrapper}; state the evidence"),
+        ]
+        for op, code, message in cases:
+            with self.subTest(op=op):
+                self.assertIn(message, self.refused(op, code=code))
+        self.assertIn(f"op 2: {THROTTLE} takes the name throttle_state/ram earlier in this change",
+                      self.refused(rename(THROTTLE, "throttle_state"), move(self.SYMBOL, THROTTLE)))
+
+
 class RenameTest(unittest.TestCase):
     def test_relocated_references_name_the_new_address(self):
         document = {"to": "x/ram/jk78c-ffff450c", "note": "[[x/ram/jk78c-ffff450c]] and "
                     "[[x/ram/jk78c]]", "former": ["x/ram/jk78c-ffff450c"],
                     "evidence": [{"kind": "l0", "to": "jk78c:ffff450c"}]}
-        found, count = write.relocated(document, "x/ram/jk78c-ffff450c", "x/ram/jk78c-ffff450b")
+        found, count = write.relocated(document, {"x/ram/jk78c-ffff450c": "x/ram/jk78c-ffff450b"})
         self.assertEqual(count, 2)
         self.assertEqual(found, {**document, "to": "x/ram/jk78c-ffff450b",
                                  "note": "[[x/ram/jk78c-ffff450b]] and [[x/ram/jk78c]]"})
@@ -635,6 +1096,41 @@ class ArgumentsTest(unittest.TestCase):
             [{"cmd": "move", "symbol": "x/ram/jk78c", "to": "jk78c:ffff450b",
               "evidence": [{"kind": "l0", "at": "jk78c:000fcbec"}], "from": None,
               "level": "code", "note": None}]])
+
+    def test_new_link_unlink_and_rename_pass_their_operations_to_apply(self):
+        stub = write.Change(mock.Mock(names=[]), None)
+        with mock.patch.object(write, "apply", return_value=(stub, {})) as applied:
+            with contextlib.redirect_stdout(io.StringIO()):
+                cli.main(["new", "ram", "7mfk:ffff0ff0", "--name", "probe_cell", "--evidence",
+                          'kind = "spec", path = "tools/kb/SPEC.md"', "--level", "candidate",
+                          "--note", "probe"])
+                cli.main(["new", "feature", "probe_feature"])
+                cli.main(["link", "x/ram", "reader", "y/fn", "role=consumer", 'layouts=["1nd"]',
+                          "--evidence", 'kind = "l0", at = "1nd:00040000"'])
+                cli.main(["unlink", "x/tbl", "axis", "y/axis", "slot=x"])
+                cli.main(["rename", "x/ram", "probe_cell"])
+                cli.main(["move", "x/ram/jk78c", "y/ram"])
+        self.assertEqual([call.args[0] for call in applied.call_args_list], [
+            [{"cmd": "new", "kind": "ram", "symbol": "7mfk:ffff0ff0", "name": "probe_cell",
+              "evidence": [{"kind": "spec", "path": "tools/kb/SPEC.md"}], "level": "candidate",
+              "note": "probe"}],
+            [{"cmd": "new", "kind": "feature", "slug": "probe_feature", "name": None,
+              "evidence": [], "level": None, "note": None}],
+            [{"cmd": "link", "meaning": "x/ram", "type": "reader", "to": "y/fn",
+              "keys": {"role": "consumer", "layouts": ["1nd"]},
+              "evidence": [{"kind": "l0", "at": "1nd:00040000"}]}],
+            [{"cmd": "unlink", "meaning": "x/tbl", "type": "axis", "to": "y/axis",
+              "keys": {"slot": "x"}}],
+            [{"cmd": "rename", "meaning": "x/ram", "name": "probe_cell"}],
+            [{"cmd": "move", "symbol": "x/ram/jk78c", "to": "y/ram", "evidence": [],
+              "from": None, "level": None, "note": None}]])
+
+    def test_a_link_key_takes_a_value(self):
+        err = io.StringIO()
+        with mock.patch.object(write, "apply") as applied, contextlib.redirect_stderr(err):
+            self.assertEqual(cli.main(["link", "x/ram", "reader", "y/fn", "slot="]), 2)
+        applied.assert_not_called()
+        self.assertEqual(err.getvalue(), "error: a link key takes a value: slot\n")
 
 
 class ApplyTest(unittest.TestCase):
