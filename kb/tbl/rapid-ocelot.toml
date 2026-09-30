@@ -1,0 +1,13 @@
+[editor]
+name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
+category = "Internal Calculations"
+order = 186
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a3a"
+name = "rapid-ocelot"

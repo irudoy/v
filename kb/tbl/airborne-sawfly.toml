@@ -1,0 +1,13 @@
+[editor]
+name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
+category = "Internal Calculations"
+order = 173
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000123a2"
+name = "airborne-sawfly"

@@ -134,6 +134,15 @@ class LinkTest(unittest.TestCase):
         self.assertTrue(b.symbols[SymbolKey("7mfk", "fn", 0x26740)].implicit)
         self.assertFalse(b.symbols[SymbolKey("7mfk", "axis", 0x125EA)].implicit)
 
+    def test_an_index_lets_at_and_resolve_answer_the_symbols_of_another_model(self):
+        b = builder()
+        key = SymbolKey("7mfk", "axis", 0x125EA)
+        self.assertEqual(b.at("7mfk", 0x125EA), set())
+        b.index([key])
+        self.assertEqual(b.at("7mfk", 0x125EA), {key})
+        self.assertEqual(b.resolve("7mfk", 0x125EA, ("tbl", "axis"), "t"), key)
+        self.assertNotIn(key, b.symbols)
+
     def test_a_table_of_named_entries_of_a_target_takes_the_entries_of_every_source(self):
         b = builder()
         b.target("rolling_launch", "7mfk", "a.toml", status="supported", props={

@@ -1,0 +1,13 @@
+[editor]
+name = "Per-Channel Product Multiplier - raw u8 (0x121EE)"
+category = "Internal Calculations"
+order = 164
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000121ee"
+name = "mini-ladybug"

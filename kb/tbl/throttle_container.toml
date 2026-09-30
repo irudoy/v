@@ -1,3 +1,13 @@
+[editor]
+name = "Throttle Rev Limiter Threshold Blend Gain"
+category = "Limiters / Rev Limit / Internal State"
+order = 190
+emit = false
+format = "0.0000"
+fine = 0.01
+coarse = 0.1
+static_axis = ["blend gain"]
+
 [[symbol]]
 layout = "7mfk"
 address = "00009424"

@@ -1,3 +1,12 @@
+[editor]
+name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
+category = "Internal Calculations"
+order = 160
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000121ce"

@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating Sum Addend B - raw u8 (0x1234A)"
+category = "Internal Calculations"
+order = 170
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001234a"
+name = "quaint-lion"

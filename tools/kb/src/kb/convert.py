@@ -131,6 +131,18 @@ The signal catalog (section 20.5):
   the meaning has that width, or else the override of its entry.
 - `feature/can_telemetry.toml` takes the catalog keys, and the catalog
   becomes the projection of the signals, which must equal the file.
+
+The editor presentation (section 20.5):
+
+- The file of the meaning of each `7mfk` symbol that the overrides state
+  takes its `[editor]` or `[logparam]` as the table of the meaning, the
+  operand of a static axis as the reference of its meaning; a symbol whose
+  meaning holds another table keeps its own as the override of its entry.
+- `feature/definitions.toml` takes `default_emit`, the switches, and the
+  `7mfk` target with the JK08A image.
+- The overrides file becomes the projection of the tables and of
+  `definitions`, which must parse to the document of the file; the
+  conversion lists the comments of the file that the projection drops.
 """
 
 import argparse
@@ -139,7 +151,7 @@ from pathlib import Path
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import definitions, interp, native, profiles, signals, telemetry
+from kb.adapters import definitions, interp, native, overrides, profiles, signals, telemetry
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
@@ -245,6 +257,9 @@ class Conversion:
                 slug: entity.refs["signal"][0][1]
                 for (kind, slug), entity in before.entities.items()
                 if kind == "field" and entity.refs.get("signal")}
+        if adapter is overrides:
+            # The overrides name the symbols of the model before them.
+            self.facts.index(before.symbols)
         adapter.declare(self.facts, root)
         if adapter is signals:
             # The signals relate their sources to the RAM that the features
@@ -279,9 +294,10 @@ class Conversion:
         # plans for the entry of the symbol after its row item}.
         self.documents, self.planned = {}, defaultdict(list)
         # {meaning key: notes of its file that precede those of the
-        # registries}, and [(field, scale before, scale after)] of the
-        # strings that a projection renders from the model.
-        self.meaning_notes, self.changed = {}, []
+        # registries}, [(field, scale before, scale after)] of the strings
+        # that a projection renders from the model, and [(line, comment)] of
+        # the comments of a registry that its projection drops.
+        self.meaning_notes, self.changed, self.comments = {}, [], []
 
     def run(self):
         getattr(self, self.adapter.__name__.rsplit(".", 1)[1])()
@@ -1033,6 +1049,48 @@ class Conversion:
             found["note"] = notes[0] if len(notes) == 1 else notes
         return found
 
+    def overrides(self):
+        before, facts = self.before, self.facts
+        for key, props, _ in facts.symbol_keys:
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f"{key.key} has no meaning in the model", code=3)
+            document = self._document(symbol.meaning)
+            for name, value in props.items():
+                if symbol.value(name) != value:
+                    raise KbError(f"{key.key}: the {name} of the overrides disagrees with "
+                                  f"{symbol.value(name)!r}", code=3)
+                # The table of the meaning, or else the override of the symbol.
+                stated = {name: self._stated(value)}
+                if symbol.meaning.props.get(name) == value:
+                    _agree(document, stated, symbol.meaning.key)
+                else:
+                    _agree(self._entry(document, symbol), stated, key.key)
+        _, document = self.change.designed("feature", overrides.FEATURE)
+        _agree(document, facts.entities[("feature", overrides.FEATURE)].props,
+               f"{overrides.FEATURE}/feature")
+        targets = {entry.get("layout"): entry for entry in document.get("target", ())}
+        for (slug, layout), target in sorted(facts.targets.items()):
+            if slug != overrides.FEATURE:
+                continue
+            props = {"status": target.status, **target.props}
+            if layout in targets:
+                _agree(targets[layout], props, f"{slug}/feature@{layout}")
+            else:
+                targets[layout] = {"layout": layout, **props}
+        document["target"] = [targets[layout] for layout in sorted(targets)]
+
+    def _stated(self, table):
+        """A table of a meaning as its file states it: the operand of a static
+        axis as the reference of its meaning."""
+        operand = table.get(overrides.OPERAND)
+        if not isinstance(operand, SymbolKey):
+            return table
+        held = self.before.meaning_of(operand)
+        if held is None:
+            raise KbError(f"the static axis operand {operand.key} has no meaning", code=3)
+        return {**table, overrides.OPERAND: held.key}
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -1237,6 +1295,14 @@ def plan(name, root=repo.ROOT):
             + [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
                for issue in refused[:SHOWN]]), code=3)
     rendered = projections(adapter, result)
+    if adapter is overrides:
+        # The projection renders the file without its comments and wraps its
+        # notes.
+        path = overrides.OVERRIDES
+        text, found = (root / path).read_text(encoding="utf-8"), rendered[path.as_posix()]
+        conversion.comments, conversion.changed = overrides.dropped(text, found)
+        if found != text:
+            texts = {**texts, path: found}
     if adapter is telemetry:
         # The projection renders each ecu_ram scale from its meaning.
         path = telemetry.PROFILE
@@ -1273,6 +1339,9 @@ def projections(adapter, model):
     if adapter is signals:
         return {signals.SIGNALS.as_posix(): signals.render_catalog(
             signals.catalog_document(model))}
+    if adapter is overrides:
+        return {overrides.OVERRIDES.as_posix(): overrides.render_presentation(
+            overrides.presentation_document(model))}
     return {}
 
 
@@ -1295,6 +1364,8 @@ def main(argv=None):
         print(f"{path.as_posix()}: {'planned' if args.dry_run else 'written'}")
     for name, old, new in conversion.changed:
         print(f"{name}: {old!r} -> {new!r}")
+    for line, comment in conversion.comments:
+        print(f"dropped {line}: {comment}")
     print(f"{args.registry}: {len(conversion.evidence)} symbols, {len(conversion.statuses)} "
           f"statuses, {len(texts)} files")
     return 0

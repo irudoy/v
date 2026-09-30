@@ -1,3 +1,13 @@
+[editor]
+name = "MAF Factor"
+category = "Fuelling / MAF Scaling"
+order = 41
+emit = true
+format = "0.0000"
+fine = 1
+coarse = 10
+static_axis = ["MAF Factor"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00008965"

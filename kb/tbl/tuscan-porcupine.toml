@@ -1,0 +1,13 @@
+[editor]
+name = "Knock Sensor Circuit Monitor - Mode A"
+category = "Diagnostics / Knock Sensor Circuit"
+order = 30
+emit = false
+format = "0"
+fine = 1
+coarse = 8
+
+[[symbol]]
+layout = "7mfk"
+address = "0000abba"
+name = "tuscan-porcupine"

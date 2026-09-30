@@ -1,0 +1,13 @@
+[editor]
+name = "Negative-Branch Multiplier - raw u8 (0x1239A)"
+category = "Internal Calculations"
+order = 172
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001239a"
+name = "maize-pudu"

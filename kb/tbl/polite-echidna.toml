@@ -1,0 +1,13 @@
+[editor]
+name = "P0128 Inverse-Weight Curve - raw u16 (0x14CCA)"
+category = "Diagnostics / Internal Calculations"
+order = 216
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00014cca"
+name = "polite-echidna"

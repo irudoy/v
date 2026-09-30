@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Upshift Auxiliary Duration"
+category = "Limiters / Rev Limit / Internal State"
+order = 208
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["target above current duration"]
+
+[[symbol]]
+layout = "7mfk"
+address = "0000943e"
+name = "tunneling-woodpecker"

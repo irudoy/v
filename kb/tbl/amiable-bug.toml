@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Mode Cap"
+category = "Limiters / Rev Limit / Internal State"
+order = 202
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["mode cap"]
+
+[[symbol]]
+layout = "7mfk"
+address = "0000942e"
+name = "amiable-bug"

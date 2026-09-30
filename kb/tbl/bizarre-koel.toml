@@ -1,0 +1,13 @@
+[editor]
+name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
+category = "Internal Calculations"
+order = 183
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000129ca"
+name = "bizarre-koel"

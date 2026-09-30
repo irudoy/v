@@ -1,0 +1,13 @@
+[editor]
+name = "Conditional Signed State Value (x-128) (0x13016)"
+category = "Internal Calculations"
+order = 199
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00013016"
+name = "upbeat-barracuda"

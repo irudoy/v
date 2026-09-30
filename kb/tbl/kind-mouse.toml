@@ -1,0 +1,13 @@
+[editor]
+name = "Shared Additive Base Term - raw u8 (0x122E2)"
+category = "Internal Calculations"
+order = 166
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000122e2"
+name = "kind-mouse"

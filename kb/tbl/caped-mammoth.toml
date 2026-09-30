@@ -1,3 +1,12 @@
+[editor]
+name = "Minimum Intake-Cam Product Multiplier (0x12EDE)"
+category = "Internal Calculations"
+order = 114
+emit = false
+format = "0.0000"
+fine = 0.015625
+coarse = 0.0625
+
 [[symbol]]
 layout = "7mfk"
 address = "00012ede"

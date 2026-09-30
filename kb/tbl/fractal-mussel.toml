@@ -1,3 +1,12 @@
+[editor]
+name = "State Decrease Step B - raw u16 (0x14314)"
+category = "Internal Calculations"
+order = 201
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
 [[symbol]]
 layout = "7mfk"
 address = "00014314"

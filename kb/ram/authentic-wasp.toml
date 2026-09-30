@@ -1,5 +1,9 @@
 width = 16
 
+[logparam]
+id = "X_VQ_Engine_Speed"
+unit = "RPM"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff11f4"

@@ -1,0 +1,13 @@
+[editor]
+name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
+category = "Internal Calculations"
+order = 106
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012930"
+name = "infrared-python"

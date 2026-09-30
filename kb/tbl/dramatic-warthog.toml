@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
+category = "Internal Calculations"
+order = 144
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00011fe6"
+name = "dramatic-warthog"

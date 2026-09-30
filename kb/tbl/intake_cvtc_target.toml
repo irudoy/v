@@ -1,3 +1,12 @@
+[editor]
+name = "Intake CVTC Target - Main"
+category = "Variable Valve Timing / Intake Cam"
+order = 10
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [[symbol]]
 layout = "7mfk"
 address = "0000b43a"

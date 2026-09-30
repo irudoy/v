@@ -1,3 +1,14 @@
+[editor]
+name = "RPM-Drop Publication Inhibit by Pre-Mode RPM (0x1202E)"
+category = "Internal Calculations"
+order = 131
+emit = false
+format = "0"
+fine = 1
+coarse = 200
+static_axis = [1200, 2000, 2800, 3600]
+static_axis_name = "Engine Speed [RPM]"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001202e"

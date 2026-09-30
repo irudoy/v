@@ -1,3 +1,10 @@
+[editor]
+name = "Composite Calculation Base Curve (0x121FE)"
+category = "Internal Calculations"
+order = 42
+emit = false
+coarse = 4
+
 [[symbol]]
 layout = "7mfk"
 address = "000121fe"

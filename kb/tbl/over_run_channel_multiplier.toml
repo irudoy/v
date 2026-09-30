@@ -1,3 +1,13 @@
+[editor]
+name = "Injection Pulse Channel Multiplier"
+category = "Fuelling / Injection"
+order = 22
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+static_axis = [1, 2, 3, 4, 5, 6]
+static_axis_name = "Channel"
+
 [[symbol]]
 layout = "1me3b"
 address = "00014190"

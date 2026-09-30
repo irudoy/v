@@ -1,3 +1,12 @@
+[editor]
+name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
+category = "Internal Calculations"
+order = 153
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012176"

@@ -1,3 +1,13 @@
+[editor]
+name = "Base Fuel Schedule K-Value"
+category = "Fuelling / MAF Scaling"
+order = 42
+emit = true
+format = "0"
+fine = 1
+coarse = 100
+static_axis = ["K-Value"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00009170"

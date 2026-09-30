@@ -1,0 +1,13 @@
+[editor]
+name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
+category = "Internal Calculations"
+order = 152
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001215e"
+name = "futuristic-rattlesnake"

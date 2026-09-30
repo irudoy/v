@@ -311,7 +311,6 @@ a reference that names nothing fails the `references` check.
 | `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
 | `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch`; the RAM that each feature allocates on `7mfk`, whose addresses name no meaning |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
-| `overrides` | `defs/JK08A.overrides.toml`, `tools/mapkit/definition_projections.py` | `[editor]` of `7mfk` tables and axes with their masked views, `[logparam]` of `7mfk` RAM; the presentation keys and switches of `definitions` and the JK08A entry of its `7mfk` target |
 | `architecture` | `defs/JK08A.architecture.toml` | `stage`, `block`, `endpoint`, and `chain` entities with the chain steps; the `block` key of the `7mfk` functions and signals of each block |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
@@ -332,6 +331,7 @@ a projection of the files.
 | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, the symbol and hook-key tables of `patches/runtime_targets.py` | 3 | `hook`, `fn`, `ram`, `reg`, `tbl`, `const`, and `did` meanings with the row items of their symbols, the `target` links of the hook words, and the `absent` and `unresolved` statuses of the rows; the targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` in `kb/feature/` with their key tables, roles, `requires`, `variants`, `unsupported`, `notes`, and `basis` | `kb.adapters.profiles:address_profiles`, `kb.adapters.profiles:correspondences` |
 | `patches/can-telemetry-profile.toml` | 4 | `field` entities with their keys, `signal`, and `source`; the unit, scale, and scale level of the source meanings of the `ecu_ram` fields; the wire constants, `profiles`, and `contexts` of `kb/feature/can_telemetry.toml`, the addresses of its `7mfk` target, and the allocations of the `7mfk` targets of `can_telemetry`, `map_switching`, and `rolling_launch` | `kb.adapters.telemetry:profile` |
 | `defs/JK08A.tuning-signals.toml` | 4 | `signal` entities with their keys and the meanings and allocations that they observe; the widths of the observed meanings and the identity item of an observed symbol that no evidence grounds; the catalog keys of `kb/feature/can_telemetry.toml` | `kb.adapters.signals:catalog` |
+| `defs/JK08A.overrides.toml` | 4 | `[editor]` of the `7mfk` tables and axes with their masked views and `[logparam]` of the `7mfk` RAM; `default_emit` and the switches of `kb/feature/definitions.toml` and the JK08A entry of its `7mfk` target | `kb.adapters.overrides:presentation` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -525,6 +525,27 @@ addresses and the widths of the observed `7mfk` symbols and allocations in
 the order of `observes`, its `current_fields` the fields whose `signal` names
 the signal, by observed source and in the order of the profile, and its
 `dids` the DIDs that return an observed meaning, by source and by number.
+
+The rules of the presentation layer:
+
+- The file of the meaning of each `7mfk` table, axis, and RAM that the layer
+  names takes its `[editor]` or `[logparam]`: as the key of the meaning where
+  the meaning holds the same value, and otherwise as the key of the entry of
+  the symbol. `static_axis_operand` becomes the reference of the meaning of
+  its operand.
+- `kb/feature/definitions.toml` takes `default_emit` and the switches, each
+  with its position as `order`, and its `7mfk` target the JK08A entry of
+  `images`, whose notes are one paragraph each; the entry keeps `basis` and
+  the other keys that the layer does not state.
+
+`defs/JK08A.overrides.toml` has, after its header, `[presentation]`, the
+exposed features, `[logparam.<address>]` by address, `[rom]` with its
+comment, the checksums, the switches by `order`, `[table.<address>]` by the
+`order` of the editor and by address with the masked views of each table
+after it, and `[axis.<address>]` by address. Each note is wrapped at 79
+columns, and the file has no other comments than its header. The conversion
+lists each comment that it drops and each note that it wraps anew, and
+refuses any other change of the file.
 
 ## Matchers
 

@@ -1,3 +1,12 @@
+[editor]
+name = "Exhaust CVTC Target Correction - High-Detonation State"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 12
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [[symbol]]
 layout = "7mfk"
 address = "0000ab4a"

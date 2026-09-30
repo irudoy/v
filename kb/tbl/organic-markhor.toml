@@ -1,3 +1,12 @@
+[editor]
+name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
+category = "Internal Calculations"
+order = 174
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000123e2"

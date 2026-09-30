@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Fast Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 192
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["fast rate"]
+
+[[symbol]]
+layout = "7mfk"
+address = "00009428"
+name = "poetic-stallion"

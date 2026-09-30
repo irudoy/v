@@ -1,0 +1,13 @@
+[editor]
+name = "Branching Saturated Calculation Base (0x11F12)"
+category = "Internal Calculations"
+order = 140
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00011f12"
+name = "excellent-cuckoo"

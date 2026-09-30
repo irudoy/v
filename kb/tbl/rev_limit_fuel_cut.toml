@@ -1,3 +1,16 @@
+[editor]
+name = "Engine Speed Limit - Fuel Cut"
+category = "Limiters / Engine Speed / Driving"
+order = 200
+emit = true
+format = "0.0"
+fine = 12.5
+coarse = 125
+static_axis_x = ["Normal", "Reverse"]
+static_axis_x_name = "State"
+static_axis_y = ["Cut", "Restore"]
+static_axis_y_name = "Fuel"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000934e"

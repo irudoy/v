@@ -1,0 +1,13 @@
+[editor]
+name = "Alternate Product Coefficient Q1.7 (0x14E22)"
+category = "Internal Calculations"
+order = 192
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "00014e22"
+name = "devout-chicken"

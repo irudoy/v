@@ -1,3 +1,12 @@
+[editor]
+name = "Composite 7-bit Base / Multiplier (0x11FBE)"
+category = "Internal Calculations"
+order = 143
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00011fbe"

@@ -1,3 +1,12 @@
+[editor]
+name = "Blend Coefficient Step B Q0.16 (0x153B8)"
+category = "Internal Calculations"
+order = 136
+emit = false
+format = "0.000000"
+fine = 1.52587890625e-05
+coarse = 0.001
+
 [[symbol]]
 layout = "7mfk"
 address = "000153b8"

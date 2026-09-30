@@ -1,0 +1,13 @@
+[editor]
+name = "MAF Diagnostic Composite Factor A - raw u8 (0x12AC2)"
+category = "Diagnostics / MAF"
+order = 190
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012ac2"
+name = "persimmon-crow"

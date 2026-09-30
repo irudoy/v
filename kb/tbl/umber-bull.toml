@@ -1,3 +1,13 @@
+[editor]
+name = "Exhaust CVTC Target - Standstill Override"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 13
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+static_axis = ["Target"]
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e36"

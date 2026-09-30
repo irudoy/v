@@ -1,0 +1,20 @@
+[editor]
+name = "Throttle Rev Limiter Auxiliary Request"
+category = "Limiters / Rev Limit / Internal State"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = [
+    "context 0",
+    "context 1",
+    "context 2",
+    "context 3",
+    "context 4+",
+]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014384"
+name = "premium-malkoha"

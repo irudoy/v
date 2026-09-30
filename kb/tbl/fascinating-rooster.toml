@@ -1,0 +1,13 @@
+[editor]
+name = "Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
+category = "Internal Calculations"
+order = 90
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00011f2a"
+name = "fascinating-rooster"

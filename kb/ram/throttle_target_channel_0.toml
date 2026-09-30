@@ -5,6 +5,10 @@ width = 16
 unit = "percent"
 scale = "x*34285/1114112"
 
+[logparam]
+id = "X_VQ_Throttle_Target"
+unit = "Throttle Valve Opening [%]"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeb80c"

@@ -1,0 +1,13 @@
+[editor]
+name = "Fallback Source Table - BFS candidate scale (0x15630)"
+category = "Internal Calculations"
+order = 205
+emit = false
+format = "0.000000"
+fine = 0.000488
+coarse = 0.062464
+
+[[symbol]]
+layout = "7mfk"
+address = "00015630"
+name = "nice-coucal"

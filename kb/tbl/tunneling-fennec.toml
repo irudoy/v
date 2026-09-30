@@ -1,3 +1,12 @@
+[editor]
+name = "Paired Product Multiplier A - raw u8 (0x12A22)"
+category = "Internal Calculations"
+order = 184
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a22"

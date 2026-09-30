@@ -1,0 +1,13 @@
+[editor]
+name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
+category = "Internal Calculations"
+order = 175
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012422"
+name = "fair-horse"

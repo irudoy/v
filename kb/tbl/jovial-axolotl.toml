@@ -1,0 +1,13 @@
+[editor]
+name = "Latched Zero Condition Table - raw u8 (0x12026)"
+category = "Internal Calculations"
+order = 207
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012026"
+name = "jovial-axolotl"

@@ -39,7 +39,7 @@ stock ROM + tracked source registries
 | `defs/<source>.vars.csv` | RAM and peripheral semantics, units, confidence, and evidence |
 | `defs/<source>.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims with separate applicability and ROM scope |
 | `defs/<source>.dtc.csv` | Exact DTC descriptor and attribute edit ranges |
-| `defs/<source>.overrides.toml` | Editor names, categories, visibility, presentation, static labels, switches, and checksum declarations |
+| `defs/<source>.overrides.toml` | Projection of the `[editor]` and `[logparam]` tables of the meanings in `kb/` and of `kb/feature/definitions.toml`: editor names, categories, visibility, presentation, static labels, switches, and checksum declarations |
 | `patches/*-layout.toml` | Current map-slot and runtime configuration projection layouts |
 | `refs/diagnostics/` | Source-preserving factory and community diagnostic claims |
 | `refs/vendor/` and pinned definition submodules | Address-free map vocabulary, shapes, units, documented mechanics, and comparison anchors |

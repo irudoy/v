@@ -1,0 +1,13 @@
+[editor]
+name = "Conditional Blend Reference - raw u16 (0x14CEA)"
+category = "Unidentified Calibrations"
+order = 124
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00014cea"
+name = "yellow-caracal"

@@ -1,3 +1,12 @@
+[editor]
+name = "Selected Aggregate Curve A - raw u8 (0x127A8)"
+category = "Internal Calculations"
+order = 190
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000127a8"

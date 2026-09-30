@@ -1,3 +1,15 @@
+[editor]
+name = "Timing-State Addend - Default/Post-Transition"
+category = "Ignition Timing / State Corrections"
+order = 155
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "succinct-pudu/ram"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013a1e"

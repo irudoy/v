@@ -1,3 +1,13 @@
+[editor]
+name = "Exhaust CVTC Standstill Override - RPM Floor"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 14
+emit = true
+format = "0"
+fine = 50
+coarse = 200
+static_axis = ["RPM"]
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e3b"

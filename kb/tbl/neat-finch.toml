@@ -1,0 +1,13 @@
+[editor]
+name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
+category = "Internal Calculations"
+order = 193
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "00012dca"
+name = "neat-finch"

@@ -1,3 +1,12 @@
+[editor]
+name = "Composite Product Multiplier A - raw u8 (0x11E46)"
+category = "Internal Calculations"
+order = 87
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00011e46"

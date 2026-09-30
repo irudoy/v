@@ -1,0 +1,11 @@
+[editor]
+name = "Filter Target Additive Correction (0xAB0A)"
+category = "Internal Calculations"
+order = 32
+emit = false
+coarse = 4
+
+[[symbol]]
+layout = "7mfk"
+address = "0000ab0a"
+name = "ancient-tuna"

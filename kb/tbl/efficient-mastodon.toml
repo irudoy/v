@@ -1,0 +1,13 @@
+[editor]
+name = "Signed Weighted Reference Term - raw u8 (0x1198E)"
+category = "Internal Calculations"
+order = 86
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001198e"
+name = "efficient-mastodon"

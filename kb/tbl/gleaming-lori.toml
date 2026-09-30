@@ -1,0 +1,13 @@
+[editor]
+name = "State Gate Byte Table - raw u8 (0x12A9A)"
+category = "Internal Calculations"
+order = 188
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a9a"
+name = "gleaming-lori"

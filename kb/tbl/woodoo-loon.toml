@@ -1,3 +1,12 @@
+[editor]
+name = "Local Correction Coefficient /2048 (0x12126)"
+category = "Internal Calculations"
+order = 150
+emit = false
+format = "0.000000"
+fine = 0.00048828125
+coarse = 0.0078125
+
 [[symbol]]
 layout = "7mfk"
 address = "00012126"

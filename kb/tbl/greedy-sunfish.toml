@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating Reduction Addend B - raw u8 (0x129F2)"
+category = "Internal Calculations"
+order = 109
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000129f2"
+name = "greedy-sunfish"

@@ -1,0 +1,13 @@
+[editor]
+name = "Filter Weight - new-sample share Q16 (0x14E52)"
+category = "Internal Calculations"
+order = 70
+emit = false
+format = "0.0000"
+fine = 0.001
+coarse = 0.01
+
+[[symbol]]
+layout = "7mfk"
+address = "00014e52"
+name = "armored-cricket"

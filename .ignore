@@ -12,3 +12,4 @@
 /patches/*-runtime-correspondence.csv
 /patches/can-telemetry-profile.toml
 /defs/JK08A.tuning-signals.toml
+/defs/JK08A.overrides.toml

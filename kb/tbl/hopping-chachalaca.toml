@@ -1,3 +1,12 @@
+[editor]
+name = "Negative Branch Multiplier (0x14CBA)"
+category = "Internal Calculations"
+order = 82
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00014cba"

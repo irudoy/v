@@ -1,0 +1,13 @@
+[editor]
+name = "Filter Weight - new-sample share Q16 (0xB23A)"
+category = "Internal Calculations"
+order = 33
+emit = false
+format = "0.000000"
+fine = 1.52587890625e-05
+coarse = 6.103515625e-05
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b23a"
+name = "cinnamon-stork"

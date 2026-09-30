@@ -1,0 +1,13 @@
+[editor]
+name = "Init-only Constant Output 255 - raw u8 (0x12C3A)"
+category = "Unidentified Calibrations"
+order = 112
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c3a"
+name = "strong-owl"

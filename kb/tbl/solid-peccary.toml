@@ -1,0 +1,13 @@
+[editor]
+name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
+category = "Internal Calculations"
+order = 121
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "00012dd2"
+name = "solid-peccary"

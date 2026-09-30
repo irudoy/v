@@ -1,3 +1,12 @@
+[editor]
+name = "Stationary Limiter Readiness Threshold"
+category = "Limiters / Engine Speed / Stationary"
+order = 11
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["readiness"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00008fdc"

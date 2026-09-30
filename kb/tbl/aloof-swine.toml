@@ -1,3 +1,12 @@
+[editor]
+name = "Accelerator Pedal High-State Hysteresis"
+category = "Electronic Throttle Control / Accelerator Pedal / Thresholds"
+order = 10
+format = "0"
+fine = 1
+coarse = 8
+static_axis = ["activate", "release"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00008e9a"

@@ -1,0 +1,13 @@
+[editor]
+name = "DFCO Conditional Entry Delay"
+category = "Fuelling / Deceleration Fuel Cut"
+order = 93
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000120f6"
+name = "attentive-axolotl"

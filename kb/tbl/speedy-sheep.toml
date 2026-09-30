@@ -1,0 +1,13 @@
+[editor]
+name = "Two-channel Constant Calibration (0x14E82)"
+category = "Internal Calculations"
+order = 83
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00014e82"
+name = "speedy-sheep"

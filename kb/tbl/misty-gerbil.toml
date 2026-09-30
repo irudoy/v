@@ -1,3 +1,12 @@
+[editor]
+name = "Channel 1 Composite Addend - raw u8 (0x12E7A)"
+category = "Internal Calculations"
+order = 195
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012e7a"

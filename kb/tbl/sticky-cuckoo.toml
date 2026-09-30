@@ -1,0 +1,13 @@
+[editor]
+name = "Composite Output Coefficient K - raw u8 (0x12A82)"
+category = "Internal Calculations"
+order = 187
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a82"
+name = "sticky-cuckoo"

@@ -1,0 +1,13 @@
+[editor]
+name = "Conditional Triple-Product Multiplier - raw u8 (0x12282)"
+category = "Internal Calculations"
+order = 94
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012282"
+name = "visionary-camel"

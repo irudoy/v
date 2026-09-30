@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Normal Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 191
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["normal rate"]
+
+[[symbol]]
+layout = "7mfk"
+address = "00009426"
+name = "khaki-aardwolf"

@@ -1,3 +1,12 @@
+[editor]
+name = "Target Mixture - Main"
+category = "Fuelling / Target Mixture"
+order = 30
+emit = true
+format = "0.000"
+fine = 0.0078125
+coarse = 0.0625
+
 [[symbol]]
 layout = "7mfk"
 address = "0000a9aa"

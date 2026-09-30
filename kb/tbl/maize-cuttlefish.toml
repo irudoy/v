@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating Sum Addend A - raw u8 (0x12342)"
+category = "Internal Calculations"
+order = 169
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012342"
+name = "maize-cuttlefish"

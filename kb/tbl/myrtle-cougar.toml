@@ -1,0 +1,13 @@
+[editor]
+name = "Transient State Threshold Base - catalog initial-retard family (0x11F6A)"
+category = "Internal Calculations"
+order = 130
+emit = false
+format = "0"
+fine = 1
+coarse = 4
+
+[[symbol]]
+layout = "7mfk"
+address = "00011f6a"
+name = "myrtle-cougar"

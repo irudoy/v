@@ -1,3 +1,9 @@
+[editor]
+name = "Minimum Two-Bank Intake Cam Timing"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [[symbol]]
 layout = "7mfk"
 address = "00011bfb"

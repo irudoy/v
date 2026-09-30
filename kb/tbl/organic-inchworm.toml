@@ -1,3 +1,12 @@
+[editor]
+name = "Throttle Valve Opening Coordinate - Validation Copy"
+category = "Electronic Throttle Control / Internal Coordinates"
+order = 127
+emit = false
+format = "0.00"
+fine = 0.1
+coarse = 1
+
 [[symbol]]
 layout = "7mfk"
 address = "000190d0"

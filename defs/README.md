@@ -27,7 +27,7 @@ presentation and generated output.
 | `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
-| `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
+| `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | no, `kb` projection |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | no, `kb` projection |
 | `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | no, `kb` projection |

@@ -1,3 +1,13 @@
+[editor]
+name = "Engine Speed Limit - Throttle Request"
+category = "Limiters / Engine Speed / Driving"
+order = 201
+emit = true
+format = "0"
+fine = 50
+coarse = 250
+static_axis = ["throttle cut"]
+
 [[symbol]]
 layout = "1me3b"
 address = "0000935e"

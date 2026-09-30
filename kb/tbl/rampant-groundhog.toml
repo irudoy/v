@@ -1,0 +1,13 @@
+[editor]
+name = "Internal Product Coefficient Q0.7 (0x12C02)"
+category = "Internal Calculations"
+order = 111
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c02"
+name = "rampant-groundhog"

@@ -1,3 +1,13 @@
+[editor]
+name = "Internal Load Normalization Reference"
+category = "Fuelling / Load Model"
+order = 40
+emit = true
+format = "0.000"
+fine = 0.001
+coarse = 0.01
+static_axis = ["100% BFS reference"]
+
 [[symbol]]
 layout = "1me3b"
 address = "000094d4"

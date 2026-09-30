@@ -1,3 +1,11 @@
+[editor]
+name = "Throttle Angle-to-Area Conversion - Validation Copy"
+category = "Electronic Throttle Control / Throttle Geometry"
+order = 123
+format = "0.000"
+fine = 0.01
+coarse = 0.1
+
 [[symbol]]
 layout = "1me3b"
 address = "0001b078"

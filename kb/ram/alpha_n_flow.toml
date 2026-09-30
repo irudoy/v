@@ -6,6 +6,11 @@ unit = "percent"
 scale = "x*0.390625"
 scale_level = "candidate"
 
+[logparam]
+id = "X_VQ_QH0_Flow_Quantity"
+unit = "QH0 Flow Quantity [%]"
+scale = "x*0.390625"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff1170"

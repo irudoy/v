@@ -1,3 +1,12 @@
+[editor]
+name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
+category = "Internal Calculations"
+order = 192
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012afa"

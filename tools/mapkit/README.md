@@ -15,7 +15,7 @@ not be edited by hand.
 | `defs/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
 | `defs/JK08A.dtc.csv` | Addressed DTC descriptor and attribute controls |
 | `defs/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
-| `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, native switches, and the Logger parameters of lookup operands |
+| `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, native switches, and the Logger parameters of lookup operands: the `kb` projection of `[editor]` and `[logparam]` of the `7mfk` meanings and of `kb/feature/definitions.toml` |
 | `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
@@ -181,9 +181,9 @@ that a patch adds, removes, or replaces run in the GNU SH-2E gate of
 - Relocated definitions retain canonical provenance while applying only
   explicit target-address bindings.
 - XML and XDF are rendered from the same in-memory model in one invocation.
-- `[logparam.<operand>]` in the presentation layer declares the Logger ID, the
-  axis units, and optionally the axis expression for one runtime lookup
-  operand. A RomRaider axis names a Logger parameter in `logparam` only when
+- `[logparam]` of the meaning of a runtime lookup operand, which the
+  presentation layer renders as `[logparam.<operand>]`, declares the Logger
+  ID, the axis units, and optionally the axis expression for the operand. A RomRaider axis names a Logger parameter in `logparam` only when
   its scale evidence names exactly that one `indexed_by` operand without an
   offset, its units equal the declared units, and both sides convert through
   the same multiplier: the declaration repeats the axis expression in `scale`,

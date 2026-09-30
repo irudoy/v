@@ -1,0 +1,13 @@
+[editor]
+name = "Consumer Multiplier Curve - catalog RPM scale (0x12768)"
+category = "Internal Calculations"
+order = 102
+emit = false
+format = "0.0"
+fine = 12.5
+coarse = 50
+
+[[symbol]]
+layout = "7mfk"
+address = "00012768"
+name = "victorious-capybara"

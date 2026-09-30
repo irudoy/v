@@ -1,3 +1,12 @@
+[editor]
+name = "Conditional Paired State Value B - raw u8 (0x12F06)"
+category = "Internal Calculations"
+order = 197
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012f06"

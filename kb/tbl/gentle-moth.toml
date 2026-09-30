@@ -1,0 +1,13 @@
+[editor]
+name = "Weighted Calculation Multiplier A (0x12808)"
+category = "Internal Calculations"
+order = 105
+emit = false
+format = "0"
+fine = 2
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012808"
+name = "gentle-moth"

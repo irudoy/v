@@ -1,0 +1,13 @@
+[editor]
+name = "EVAP Fuel-Level Coordinate / Sentinel Curve - raw u16 (0x14BCA)"
+category = "Diagnostics / Internal Calculations"
+order = 218
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00014bca"
+name = "rigorous-parakeet"

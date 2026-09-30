@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from pathlib import Path
 import random
 import re
-import tomllib
 
 import coolname
 from rapidfuzz import process
@@ -25,8 +24,6 @@ from kb import repo, vocab
 PATH = Path("kb/names.csv")
 DOMAIN = Path("tools/kb/domain-words.txt")
 HEADER = ("layout", "kind", "address", "name", "former")
-# The registry whose editor names join the domain dictionary.
-OVERRIDES = Path("defs/JK08A.overrides.toml")
 WORD = re.compile(r"[a-z]+")
 HEX_WORD = re.compile(r"[a-f]+")
 
@@ -45,7 +42,7 @@ class Row:
 
 
 def inputs():
-    return [PATH.as_posix(), DOMAIN.as_posix(), OVERRIDES.as_posix()]
+    return [PATH.as_posix(), DOMAIN.as_posix()]
 
 
 def read(root=repo.ROOT, overlay=None):
@@ -106,10 +103,6 @@ def domain_dictionary(model, root=repo.ROOT):
         found |= words(entity.slug)
         if entity.kind == "signal":
             found |= words(entity.props.get("title", ""))
-    overrides = tomllib.loads((root / OVERRIDES).read_text(encoding="utf-8"))
-    for table in ("table", "axis"):
-        for entry in overrides.get(table, {}).values():
-            found |= words(entry.get("name", ""))
     for meaning in model.meanings:
         for props in (meaning.props, *(symbol.props for symbol in meaning.symbols.values())):
             editor = props.get("editor")

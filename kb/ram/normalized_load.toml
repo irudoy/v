@@ -5,6 +5,10 @@ width = 8
 unit = "percent"
 scale = "x*100/128"
 
+[logparam]
+id = "X_VQ_Engine_Load"
+unit = "Normalized BFS [%]"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff102c"

@@ -1,0 +1,13 @@
+note = """
+It is the ratio that the feed publishes from the Q7 byte \
+[[normalized_load/ram]] at a finer resolution; the coordinate saturates at \
+160 percent and the byte at 199.2 percent."""
+
+[logparam]
+id = "X_VQ_Engine_Load"
+unit = "Normalized BFS [%]"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15c4"
+name = "adept-seriema"

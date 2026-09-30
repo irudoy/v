@@ -1,0 +1,13 @@
+[editor]
+name = "P0128 Thermostat Model Balance Surface - raw u16 (0x0D40E)"
+category = "Diagnostics / Internal Calculations"
+order = 214
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "0000d40e"
+name = "origami-hare"

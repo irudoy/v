@@ -129,7 +129,6 @@ generator = "kb.adapters.definitions:projections"
 stage = 3
 inputs = [
     "kb/feature/",
-    "defs/JK08A.overrides.toml",
     "tools/mapkit/definition_projections.py",
     "tools/kb/src/kb/adapters/definitions.py",
 ]
@@ -249,6 +248,30 @@ consumers = [
     "tools/diagnostics/tuning_signal_coverage.py",
     "tools/diagnostics/tests/test_tuning_signal_coverage.py",
     "tools/memgraph/tests/test_base_fuel_schedule_scale.py",
+]
+read = "guarded"
+
+[[projection]]
+path = "defs/JK08A.overrides.toml"
+generator = "kb.adapters.overrides:presentation"
+stage = 4
+inputs = [
+    "kb/tbl/",
+    "kb/axis/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/feature/",
+    "tools/kb/src/kb/adapters/overrides.py",
+]
+consumers = [
+    "tools/mapkit/emit_def.py",
+    "tools/mapkit/presentation_audit.py",
+    "tools/mapkit/validate_map_switching.py",
+    "tools/romviz/model.py",
+    "patches/tests/test_cruise_control_switch.py",
+    "tools/mapkit/tests/",
+    "tools/memgraph/tests/test_crank_reference_and_cylinder_order.py",
+    "tools/romviz/tests/",
 ]
 read = "guarded"
 

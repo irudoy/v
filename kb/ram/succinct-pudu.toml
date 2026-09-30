@@ -1,0 +1,8 @@
+[logparam]
+id = "X_VQ_Engine_Speed"
+static_axis_name = "Engine Speed [RPM]"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11b2"
+name = "succinct-pudu"

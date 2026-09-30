@@ -1,3 +1,12 @@
+[editor]
+name = "Composite Product Window Coefficient (0x11E5E)"
+category = "Internal Calculations"
+order = 88
+emit = false
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
 [[symbol]]
 layout = "7mfk"
 address = "00011e5e"

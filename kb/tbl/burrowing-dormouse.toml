@@ -1,0 +1,13 @@
+[editor]
+name = "Unsigned Product Multiplier - raw u8 (0x12042)"
+category = "Internal Calculations"
+order = 91
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012042"
+name = "burrowing-dormouse"

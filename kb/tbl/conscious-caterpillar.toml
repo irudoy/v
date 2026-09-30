@@ -1,0 +1,13 @@
+[editor]
+name = "Internal Subtractive Correction (0x13CE8)"
+category = "Internal Calculations"
+order = 80
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00013ce8"
+name = "conscious-caterpillar"

@@ -1,0 +1,13 @@
+[editor]
+name = "Constant Output 255 - raw u8 (0x120BE)"
+category = "Unidentified Calibrations"
+order = 92
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000120be"
+name = "jovial-capuchin"

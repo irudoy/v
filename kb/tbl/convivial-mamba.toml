@@ -1,0 +1,13 @@
+[editor]
+name = "Signed Difference Multiplier Q0.6 (0x1300E)"
+category = "Internal Calculations"
+order = 198
+emit = false
+format = "0.0000"
+fine = 0.015625
+coarse = 0.125
+
+[[symbol]]
+layout = "7mfk"
+address = "0001300e"
+name = "convivial-mamba"

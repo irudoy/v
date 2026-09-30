@@ -1,0 +1,10 @@
+[editor]
+name = "Scaled First-Channel Raw Coordinate (Duplicate)"
+format = "0.0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "7mfk"
+address = "00018916"
+name = "competent-foxhound"

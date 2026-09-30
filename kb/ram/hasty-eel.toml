@@ -1,0 +1,8 @@
+[logparam]
+id = "X_VQ_Coolant_Temperature"
+static_axis_name = "Coolant Temperature [deg C]"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff106f"
+name = "hasty-eel"

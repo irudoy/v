@@ -1,3 +1,12 @@
+[editor]
+name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
+category = "Internal Calculations"
+order = 165
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "0001220e"

@@ -23,7 +23,7 @@ diagnostic bindings.
 | RAM and peripheral semantics | `JK08A.vars.csv` |
 | Firmware-to-diagnostic associations | `JK08A.diagnostic-bindings.csv` |
 | DTC descriptor and attribute edit ranges | `JK08A.dtc.csv` |
-| Definition names, categories, visibility, and presentation | `JK08A.overrides.toml` |
+| Definition names, categories, visibility, and presentation | `[editor]` and `[logparam]` of the meanings in `kb/` and `kb/feature/definitions.toml`, projected into `JK08A.overrides.toml` |
 | Internal and diagnostic load-coordinate model | `JK08A.load.md` |
 | Intake/exhaust-CVTC target and reference model | `JK08A.cvtc.md` |
 | Exact target/source relationship | `rom-inheritance.toml` |

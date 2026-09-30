@@ -38,7 +38,7 @@ From their conversion the registries are projections of the files:
 - `defs/definition-projections.toml` has `[projection.<ROM>]` for each image
   of a `definitions` target in the order of the ROM keys, with the address
   file of its layout, its note wrapped greedily within 79 columns as
-  `comment`, and its switch addresses in the order of the switches of the
+  `comment`, and its switch addresses by the `order` of the switches of the
   feature.
 """
 
@@ -307,7 +307,8 @@ def render_projections(model):
     images = {rom: (layout, entry) for layout, target in _targets(model)
               for rom, entry in target.props.get("images", {}).items()}
     feature = model.entities.get(("feature", FEATURE))
-    order = list(feature.props.get("switches") or ()) if feature is not None else []
+    switches = (feature.props.get("switches") or {}) if feature is not None else {}
+    order = sorted(switches, key=lambda slug: (switches[slug].get("order", 0), slug))
     blocks = [f"schema_version = {SCHEMA_VERSION}"]
     for rom in sorted(images):
         layout, entry = images[rom]

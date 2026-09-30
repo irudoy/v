@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Recovery Rate Other Gear Relation"
+category = "Limiters / Rev Limit / Internal State"
+order = 207
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["other gear relation"]
+
+[[symbol]]
+layout = "7mfk"
+address = "0000943c"
+name = "independent-koel"

@@ -1,0 +1,13 @@
+[editor]
+name = "Normalized Reduction Share A Q0.8 (0x129E2)"
+category = "Internal Calculations"
+order = 108
+emit = false
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "000129e2"
+name = "married-whippet"

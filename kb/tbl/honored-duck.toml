@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating Internal State Load - raw u16 (0x15330)"
+category = "Internal Calculations"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00015330"
+name = "honored-duck"

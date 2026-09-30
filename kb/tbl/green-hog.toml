@@ -1,0 +1,13 @@
+[editor]
+name = "Additive Initialization Term - raw u8 (0x12D8A)"
+category = "Internal Calculations"
+order = 120
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012d8a"
+name = "green-hog"

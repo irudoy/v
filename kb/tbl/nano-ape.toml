@@ -1,0 +1,13 @@
+[editor]
+name = "Diagnostic Signed-Value Multiplier Q1.7 (0x12272)"
+category = "Diagnostics / Internal Calculations"
+order = 195
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "00012272"
+name = "nano-ape"

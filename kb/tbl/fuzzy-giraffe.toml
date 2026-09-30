@@ -1,0 +1,13 @@
+[editor]
+name = "Positive Difference Coefficient /100 (0x12522)"
+category = "Internal Calculations"
+order = 132
+emit = false
+format = "0.00"
+fine = 0.01
+coarse = 0.1
+
+[[symbol]]
+layout = "7mfk"
+address = "00012522"
+name = "fuzzy-giraffe"

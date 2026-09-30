@@ -1,0 +1,13 @@
+[editor]
+name = "Shared Nonzero Enable Curve - raw u8 (0x122D2)"
+category = "Internal Calculations"
+order = 197
+emit = false
+format = "0"
+fine = 1
+coarse = 8
+
+[[symbol]]
+layout = "7mfk"
+address = "000122d2"
+name = "notorious-lyrebird"

@@ -1,3 +1,11 @@
+[editor]
+name = "Engine Torque Base Term vs RPM"
+category = "Torque Model / Engine Torque"
+order = 211
+format = "0.0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00016d06"

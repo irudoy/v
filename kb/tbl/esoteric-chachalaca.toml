@@ -1,0 +1,13 @@
+[editor]
+name = "Dual-Channel Conversion Curve - raw u16 (0x148FA)"
+category = "Internal Calculations"
+order = 194
+emit = false
+format = "0"
+fine = 1
+coarse = 100
+
+[[symbol]]
+layout = "7mfk"
+address = "000148fa"
+name = "esoteric-chachalaca"

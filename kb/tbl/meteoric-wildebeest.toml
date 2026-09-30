@@ -1,0 +1,13 @@
+[editor]
+name = "Branch-Selected Product Coefficient Q1.7 (0x124F2)"
+category = "Internal Calculations"
+order = 189
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "000124f2"
+name = "meteoric-wildebeest"

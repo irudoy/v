@@ -1,3 +1,12 @@
+[editor]
+name = "Input-shaping Coefficient Q0.7 (0x12D72)"
+category = "Internal Calculations"
+order = 119
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
 [[symbol]]
 layout = "7mfk"
 address = "00012d72"

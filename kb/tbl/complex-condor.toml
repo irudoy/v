@@ -1,3 +1,12 @@
+[editor]
+name = "Selected Aggregate Curve B - raw u8 (0x127E8)"
+category = "Internal Calculations"
+order = 191
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000127e8"

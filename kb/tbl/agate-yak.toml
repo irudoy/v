@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Threshold Up Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 205
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["up rate"]
+
+[[symbol]]
+layout = "7mfk"
+address = "00009436"
+name = "agate-yak"

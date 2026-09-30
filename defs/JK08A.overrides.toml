@@ -7,135 +7,71 @@
 # merge key is the graph map or axis address: eight lowercase hexadecimal digits.
 
 [presentation]
-# Maps that pass the definition gate are visible by default. Internal,
-# diagnostic-internal, internal-coordinate, and unidentified research maps use
-# an explicit emit = false decision in their own table records.
 default_emit = true
 
 [map_switching]
-# The common JK08A XML/XDF expose all five storage slots. Map 1 uses stock
-# storage. Map 2 through Map 5 point into the allocated project layout and are
-# runtime-active only when the map-switching patch is present.
 enabled = true
 
 [rolling_launch]
-# Direct tables expose the validated activation thresholds, bounded-retard ramp
-# width, RPM offset, and RPM hysteresis. Five independent masked controls edit
-# bits 0 through 4 of the enable_mask byte and preserve every other map-enable
-# bit.
 enabled = true
 
-# RomRaider Overlay Log. Each record names the Logger parameter that carries the
-# physical quantity of one runtime lookup operand, the axis units in which that
-# parameter is expressed, and the name of the static axis whose reviewed labels
-# it is comparable with. A ROM array axis names the parameter in logparam when
-# its scale evidence rests on exactly this indexed_by operand, its units equal
-# the record, and the multiplier is the same on both sides: either the record
-# repeats the axis expression in scale, or the axis scale is established by
-# code. A static axis names it when the map declares
-# static_axis_operand and carries labels under the declared name. The IDs are
-# the external parameters that the CAN dashboard live value feed publishes
-# (tools/can_dashboard/live_feed.py). A relocated target definition leaves out
-# every record whose parameter the feed publishes from a telemetry field that
-# the target encodes from a cleared zero source.
-[logparam.ffff11ae]
-# Scheduler copy of engine speed in 50 RPM counts.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
-[logparam.ffff11bc]
-# Snapshot of engine speed in 12.5 RPM counts.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
-[logparam.ffff11f4]
-# Current engine-speed word in 12.5 RPM counts, the row input of Fuel
-# Compensation Main.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
-[logparam.ffff11b6]
-# Snapshot of engine speed in 3.125 RPM counts, the row input of the Engine
-# Torque Map.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
-[logparam.ffff1702]
-# Primary requested-torque conversion row coordinate max(32, ffff11b6) in
-# 3.125 RPM counts.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
-[logparam.ffff1cca]
-# Trustful requested-torque conversion row coordinate max(32, ffff11d0) in
-# 3.125 RPM counts; ffff11d0 is the snapshot of RPM/3.125 word ffff1208.
-id = "X_VQ_Engine_Speed"
-units = "RPM"
-
 [logparam.ffff102c]
-# Snapshot of the Q7 normalized Base Fuel Schedule byte,
-# min(255, floor(BFS * 128 / ROM16[0x9534])), 128 counts = 100 percent.
 id = "X_VQ_Engine_Load"
 units = "Normalized BFS [%]"
 
-[logparam.ffff15c4]
-# Engine Torque Map column coordinate min(65535, floor(BFS * 40960 /
-# ROM16[0x9534])), 40960 counts = 100 percent. It is the ratio that the feed
-# publishes from Q7 byte ffff102c at a finer resolution; the coordinate
-# saturates at 160 percent and the byte at 199.2 percent.
-id = "X_VQ_Engine_Load"
-units = "Normalized BFS [%]"
-
-[logparam.ffff28bc]
-# Channel 0 of the throttle target array that FUN 0006f48c publishes. FUN
-# 00072c3c passes it unscaled to wrapper 00026524, whose word core 00026984
-# compares each point of opening coordinate table 000155a0 with it directly, so
-# one stored count is one count of this word, 34285/1114112 percent of throttle
-# opening by the code scale that the J1979 absolute-throttle publication of FUN
-# 0006f236 establishes for that axis.
-id = "X_VQ_Throttle_Target"
-units = "Throttle Valve Opening [%]"
-
-[logparam.ffff1980]
-# Primary requested-torque conversion column coordinate. FUN 00073948 looks it
-# up from area-over-speed coordinate ffff1824 through curve 00015690 over axis
-# 00015500 or curve 000156d0 over axis 00015540 and passes it unscaled to
-# wrapper 000262e0, whose word core 00026984 compares each point of axis
-# 00014114 with it directly. The axis percent scale is a catalog candidate, so
-# the record repeats the axis expression.
-id = "X_VQ_QH0_Flow_Potential"
-units = "QH0 Flow Potential [%]"
-scale = "x*0.00152588"
+[logparam.ffff106f]
+id = "X_VQ_Coolant_Temperature"
+static_axis_name = "Coolant Temperature [deg C]"
 
 [logparam.ffff1170]
-# Fuel Compensation Main column coordinate. FUN 0003b498 writes it as the high
-# byte of curve 00015042 or 00015022 over an opening area divided by engine
-# speed, and FUN 0002c648 and FUN 0003bd74 pass it to wrapper 000261f0, whose
-# byte core 00026944 compares each point of axis 00011d4c with it directly. The
-# axis percent scale is a catalog candidate, so the record repeats the axis
-# expression.
 id = "X_VQ_QH0_Flow_Quantity"
 units = "QH0 Flow Quantity [%]"
 scale = "x*0.390625"
 
+[logparam.ffff11ae]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
 [logparam.ffff11b2]
-# Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It
-# indexes implicit-axis maps whose reviewed labels are engine speed in RPM.
 id = "X_VQ_Engine_Speed"
 static_axis_name = "Engine Speed [RPM]"
 
 [logparam.ffff11b3]
-# Scheduler copy of the saturated engine-speed byte in 25 RPM counts. It
-# indexes implicit-axis maps whose reviewed labels are engine speed in RPM.
 id = "X_VQ_Engine_Speed"
 static_axis_name = "Engine Speed [RPM]"
 
-[logparam.ffff106f]
-# Previous-cycle normalized engine-coolant-temperature index. In the linear
-# range it is floor(1.6 * (raw - 10)), so its lookup nodes 0, 16, ... 240 are
-# the reviewed labels -40, -30, ... 110 deg C.
-id = "X_VQ_Coolant_Temperature"
-static_axis_name = "Coolant Temperature [deg C]"
+[logparam.ffff11b6]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff11bc]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff11f4]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff15c4]
+id = "X_VQ_Engine_Load"
+units = "Normalized BFS [%]"
+
+[logparam.ffff1702]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff1980]
+id = "X_VQ_QH0_Flow_Potential"
+units = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+
+[logparam.ffff1cca]
+id = "X_VQ_Engine_Speed"
+units = "RPM"
+
+[logparam.ffff28bc]
+id = "X_VQ_Throttle_Target"
+units = "Throttle Valve Opening [%]"
 
 [rom]
 xmlid = "JK08A"
@@ -154,24 +90,19 @@ filesize = "1024kb"
 author = "VQ HR ECU project"
 version = "WIP"
 
-# Target dump:
-# rom-images/23710-JK08A/1JK08A-20260726-stock.bin,
-# sha256 ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23.
-# Code facts are inherited from exact-code donor JK03A. The loader measures map
-# and axis values from the owned JK08A dump. Structural donor EV18A (350Z HR,
-# the same SH7058/1MB non-VVEL class) has a different calibration layout.
 [rom.comment]
 text = """
-Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded in
-its comment. Maps that pass the definition gate are visible by default. Internal,
-diagnostic-internal, internal-coordinate, and unidentified research maps carry an
-explicit emit=false decision and remain in the canonical ledger. Categories follow
-the functional organization used by commercial Nissan tuning suites and do not encode
-confidence. Units ending in [cand] use a multiplier from the A2L catalog or data shape
-that has not been confirmed by code. The common definition exposes
-Map 1 through Map 5 storage from patches/map-switching-layout.toml. Map 2 through
-Map 5 are erased and inactive in stock firmware; they require the project
-map-switching patch before runtime use.
+Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded
+in its comment. Maps that pass the definition gate are visible by default.
+Internal, diagnostic-internal, internal-coordinate, and unidentified research
+maps carry an explicit emit=false decision and remain in the canonical ledger.
+Categories follow the functional organization used by commercial Nissan tuning
+suites and do not encode confidence. Units ending in [cand] use a multiplier
+from the A2L catalog or data shape that has not been confirmed by code. The
+common definition exposes Map 1 through Map 5 storage from
+patches/map-switching-layout.toml. Map 2 through Map 5 are erased and inactive
+in stock firmware; they require the project map-switching patch before runtime
+use.
 """
 
 [[checksum]]
@@ -238,107 +169,14 @@ state = [
   { name = "ICC Switch (5 Buttons)", data = "2B" },
 ]
 
-# Calibration axes remain embedded in their tables. Canonical axis facts stay in
-# the graph and defs/JK08A.axes.csv without separate editable reference views.
-
-# The 0xB61A/0xB71A/0xB81A trio contains base thresholds for the misfire
-# detector based on crankshaft rotational irregularity, accessor 0x82c8a.
-# Structure is confirmed by code, but the physical scaling is unresolved
-# (offset-binary, 0x80 sentinel). Section 9 gates therefore keep them out of the
-# definition and they have no presentation entries. See defs/JK08A.notes.md.
-
-[table.0000991a]
-name = "Ignition Timing Surface - Cold State"
-category = "Ignition Timing / State Surfaces"
-order = 100
-emit = true
-mask = "7F"
+[table.00008fdc]
+name = "Accelerator Pedal High-State Hysteresis"
+category = "Electronic Throttle Control / Accelerator Pedal / Thresholds"
+order = 10
 format = "0"
 fine = 1
-coarse = 4
-
-[table.00009a1a]
-name = "Ignition Timing Surface - High-Octane State"
-category = "Ignition Timing / State Surfaces"
-order = 101
-emit = true
-mask = "7F"
-format = "0"
-fine = 1
-coarse = 4
-
-[table.00009b1a]
-name = "Ignition Timing Surface - High-Detonation State"
-category = "Ignition Timing / State Surfaces"
-order = 102
-emit = true
-mask = "7F"
-format = "0"
-fine = 1
-coarse = 4
-
-[[masked_view]]
-source = "0000991a"
-name = "Knock-State Path Enable - Cold State"
-category = "Ignition Timing / State Control"
-mask = "80"
-units = "Enable flag (0: Off | 1: On)"
-expression = "x"
-to_byte = "x"
-format = "0"
-fine = 1
-coarse = 1
-
-[[masked_view]]
-source = "00009a1a"
-name = "Knock-State Path Enable - High-Octane State"
-category = "Ignition Timing / State Control"
-mask = "80"
-units = "Enable flag (0: Off | 1: On)"
-expression = "x"
-to_byte = "x"
-format = "0"
-fine = 1
-coarse = 1
-
-[[masked_view]]
-source = "00009b1a"
-name = "Knock-State Path Enable - High-Detonation State"
-category = "Ignition Timing / State Control"
-mask = "80"
-units = "Enable flag (0: Off | 1: On)"
-expression = "x"
-to_byte = "x"
-format = "0"
-fine = 1
-coarse = 1
-
-[table.0000a29a]
-name = "Fuel Compensation - Main"
-category = "Fuelling / Compensation"
-order = 20
-emit = true
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
-
-[table.0000a9aa]
-name = "Target Mixture - Main"
-category = "Fuelling / Target Mixture"
-order = 30
-emit = true
-format = "0.000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.00012552]
-name = "Target Mixture Multiplier - High-Detonation State"
-category = "Fuelling / Target Mixture"
-order = 31
-emit = true
-format = "0.000"
-fine = 0.0078125
-coarse = 0.0625
+coarse = 8
+static_axis = ["activate", "release"]
 
 [table.0000b33a]
 name = "Exhaust CVTC Target - Main"
@@ -349,11 +187,37 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[table.0000b43a]
+name = "Intake CVTC Target - Main"
+category = "Variable Valve Timing / Intake Cam"
+order = 10
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.0000911c]
+name = "Stationary Limiter Readiness Threshold"
+category = "Limiters / Engine Speed / Stationary"
+order = 11
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["readiness"]
+
 [table.0000b2fa]
 name = "Exhaust CVTC Target - Cold"
 category = "Variable Valve Timing / Exhaust Cam"
 order = 11
 emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.0000b53a]
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 11
 format = "0.0"
 fine = 0.5
 coarse = 2.0
@@ -366,6 +230,22 @@ emit = true
 format = "0.0"
 fine = 0.5
 coarse = 2.0
+
+[table.0000ab5a]
+name = "Intake CVTC Target Correction - High-Detonation State"
+category = "Variable Valve Timing / Intake Cam"
+order = 12
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.000124d2]
+name = "Stationary Limiter Readiness Step"
+category = "Limiters / Engine Speed / Stationary"
+order = 12
+format = "0"
+fine = 1
+coarse = 16
 
 [table.00008e36]
 name = "Exhaust CVTC Target - Standstill Override"
@@ -407,143 +287,158 @@ fine = 1
 coarse = 1
 static_axis = ["Counts"]
 
-[table.0000b43a]
-name = "Intake CVTC Target - Main"
-category = "Variable Valve Timing / Intake Cam"
-order = 10
+[table.0000a29a]
+name = "Fuel Compensation - Main"
+category = "Fuelling / Compensation"
+order = 20
 emit = true
-format = "0.0"
-fine = 0.5
-coarse = 2.0
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
 
-[table.0000b53a]
-name = "Intake CVTC Target - Cold"
-category = "Variable Valve Timing / Intake Cam"
-order = 11
-format = "0.0"
-fine = 0.5
-coarse = 2.0
+[table.000129c0]
+name = "Injection Pulse Channel Multiplier"
+category = "Fuelling / Injection"
+order = 22
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+static_axis = [1, 2, 3, 4, 5, 6]
+static_axis_name = "Channel"
 
-[table.0000ab5a]
-name = "Intake CVTC Target Correction - High-Detonation State"
-category = "Variable Valve Timing / Intake Cam"
-order = 12
-format = "0.0"
-fine = 0.5
-coarse = 2.0
+[table.00012302]
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "ffff11b3"
+
+[table.0001230a]
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "ffff11b3"
+
+[table.0000a9aa]
+name = "Target Mixture - Main"
+category = "Fuelling / Target Mixture"
+order = 30
+emit = true
+format = "0.000"
+fine = 0.0078125
+coarse = 0.0625
 
 [table.0000abba]
 name = "Knock Sensor Circuit Monitor - Mode A"
 category = "Diagnostics / Knock Sensor Circuit"
-emit = false
 order = 30
+emit = false
 format = "0"
 fine = 1
 coarse = 8
+
+[table.000126e4]
+name = "DFCO Hold RPM Threshold"
+category = "Fuelling / Deceleration Fuel Cut"
+order = 30
+emit = true
+format = "0"
+fine = 25
+coarse = 100
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis_operand = "ffff106f"
 
 [table.0000abfa]
 name = "Knock Sensor Circuit Monitor - Mode B"
 category = "Diagnostics / Knock Sensor Circuit"
-emit = false
 order = 31
+emit = false
 format = "0"
 fine = 1
 coarse = 8
+
+[table.00012552]
+name = "Target Mixture Multiplier - High-Detonation State"
+category = "Fuelling / Target Mixture"
+order = 31
+emit = true
+format = "0.000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012718]
+name = "DFCO Entry RPM Threshold"
+category = "Fuelling / Deceleration Fuel Cut"
+order = 31
+emit = true
+format = "0"
+fine = 25
+coarse = 100
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis_operand = "ffff106f"
 
 [table.0000ab0a]
 name = "Filter Target Additive Correction (0xAB0A)"
 category = "Internal Calculations"
-emit = false
 order = 32
+emit = false
 coarse = 4
+
+[table.00012818]
+name = "DFCO Full Restore RPM Threshold"
+category = "Fuelling / Deceleration Fuel Cut"
+order = 32
+emit = true
+format = "0"
+fine = 25
+coarse = 100
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis_operand = "ffff106f"
 
 [table.0000b23a]
 name = "Filter Weight - new-sample share Q16 (0xB23A)"
 category = "Internal Calculations"
-emit = false
 order = 33
+emit = false
 format = "0.000000"
 fine = 0.0000152587890625
 coarse = 0.00006103515625
 
-[table.0001108e]
-name = "Knock Threshold by Evaluator Channel"
-category = "Ignition Timing / Knock Control / Thresholds"
-order = 110
+[table.0001298c]
+name = "DFCO Low-Speed Intermediate Restore RPM Threshold"
+category = "Fuelling / Deceleration Fuel Cut"
+order = 33
 emit = true
-format = "0.000"
-fine = 0.0015259
-coarse = 0.015259
-static_axis_x_name = "Engine Speed [RPM]"
-static_axis_x = [
-  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
-  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
-]
-static_axis_y_name = "Evaluator Channel"
-static_axis_y = [1, 2, 3, 4, 5, 6]
-
-[table.00010f8e]
-name = "Unreferenced Knock-Shaped Bank (0x10F8E)"
-category = "Internal Calculations"
-order = 41
-emit = false
-format = "0.000"
-fine = 0.0015259
-coarse = 0.015259
-static_axis_x_name = "Engine Speed [RPM]"
-static_axis_x = [
-  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
-  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
-]
-static_axis_y_name = "Unverified Row"
-static_axis_y = [1, 2, 3, 4, 5, 6]
-
-[table.000085d9]
-name = "Stationary Engine Speed Limit"
-category = "Limiters / Engine Speed / Stationary"
-order = 210
-emit = true
-fine = 50
+format = "0"
+fine = 25
 coarse = 100
-static_axis = ["fuel cut", "fuel restore"]
-
-[table.00008fdc]
-name = "Accelerator Pedal High-State Hysteresis"
-category = "Electronic Throttle Control / Accelerator Pedal / Thresholds"
-order = 10
-format = "0"
-fine = 1
-coarse = 8
-static_axis = ["activate", "release"]
-
-[table.0000911c]
-name = "Stationary Limiter Readiness Threshold"
-category = "Limiters / Engine Speed / Stationary"
-order = 11
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["readiness"]
-
-[table.00008a27]
-name = "MAF Factor"
-category = "Fuelling / MAF Scaling"
-order = 41
-emit = true
-format = "0.0000"
-fine = 1
-coarse = 10
-static_axis = ["MAF Factor"]
-
-[table.00009284]
-name = "Base Fuel Schedule K-Value"
-category = "Fuelling / MAF Scaling"
-order = 42
-emit = true
-format = "0"
-fine = 1
-coarse = 100
-static_axis = ["K-Value"]
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis_operand = "ffff106f"
 
 [table.00009534]
 name = "Internal Load Normalization Reference"
@@ -555,189 +450,82 @@ fine = 0.001
 coarse = 0.01
 static_axis = ["100% BFS reference"]
 
-[table.0000934e]
-name = "Engine Speed Limit - Fuel Cut"
-category = "Limiters / Engine Speed / Driving"
-order = 200
+[table.00008a27]
+name = "MAF Factor"
+category = "Fuelling / MAF Scaling"
+order = 41
 emit = true
-format = "0.0"
-fine = 12.5
-coarse = 125
-static_axis_x_name = "State"
-static_axis_x = ["Normal", "Reverse"]
-static_axis_y_name = "Fuel"
-static_axis_y = ["Cut", "Restore"]
-
-[table.00009424]
-name = "Throttle Rev Limiter Threshold Blend Gain"
-category = "Limiters / Rev Limit / Internal State"
-order = 190
-emit = false
 format = "0.0000"
-fine = 0.01
-coarse = 0.1
-static_axis = ["blend gain"]
+fine = 1
+coarse = 10
+static_axis = ["MAF Factor"]
 
-[table.00009426]
-name = "Throttle Rev Limiter Normal Ramp Rate"
-category = "Limiters / Rev Limit / Internal State"
-order = 191
+[table.00010f8e]
+name = "Unreferenced Knock-Shaped Bank (0x10F8E)"
+category = "Internal Calculations"
+order = 41
 emit = false
 format = "0.000"
-fine = 0.1
-coarse = 1
-static_axis = ["normal rate"]
+fine = 0.0015259
+coarse = 0.015259
+static_axis_x = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
+static_axis_x_name = "Engine Speed [RPM]"
+static_axis_y = [1, 2, 3, 4, 5, 6]
+static_axis_y_name = "Unverified Row"
 
-[table.00009428]
-name = "Throttle Rev Limiter Fast Ramp Rate"
-category = "Limiters / Rev Limit / Internal State"
-order = 192
-emit = false
-format = "0.000"
-fine = 0.1
-coarse = 1
-static_axis = ["fast rate"]
-
-[table.0000942a]
-name = "Throttle Rev Limiter Final Rate"
-category = "Limiters / Rev Limit / Internal State"
-order = 193
-emit = false
-format = "0.000"
-fine = 0.1
-coarse = 1
-static_axis = ["final rate"]
-
-[table.0000942c]
-name = "Engine Speed Limit - Throttle Request"
-category = "Limiters / Engine Speed / Driving"
-order = 201
+[table.00009284]
+name = "Base Fuel Schedule K-Value"
+category = "Fuelling / MAF Scaling"
+order = 42
 emit = true
 format = "0"
-fine = 50
-coarse = 250
-static_axis = ["throttle cut"]
-
-[table.0000942e]
-name = "Throttle Rev Limiter Mode Cap"
-category = "Limiters / Rev Limit / Internal State"
-order = 202
-emit = false
-format = "0"
 fine = 1
-coarse = 16
-static_axis = ["mode cap"]
-
-[table.00009430]
-name = "Throttle Rev Limiter Threshold Down Rate"
-category = "Limiters / Rev Limit / Internal State"
-order = 203
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["down rate"]
-
-[table.00009434]
-name = "Throttle Rev Limiter Coolant-Latch Threshold"
-category = "Limiters / Rev Limit / Internal State"
-order = 204
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["alternate threshold"]
-
-[table.00009436]
-name = "Throttle Rev Limiter Threshold Up Rate"
-category = "Limiters / Rev Limit / Internal State"
-order = 205
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["up rate"]
-
-[table.0000943a]
-name = "Throttle Rev Limiter Recovery Rate Target Above Gear Phase"
-category = "Limiters / Rev Limit / Internal State"
-order = 206
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["target above gear phase"]
-
-[table.0000943c]
-name = "Throttle Rev Limiter Recovery Rate Other Gear Relation"
-category = "Limiters / Rev Limit / Internal State"
-order = 207
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["other gear relation"]
-
-[table.0000943e]
-name = "Throttle Rev Limiter Upshift Auxiliary Duration"
-category = "Limiters / Rev Limit / Internal State"
-order = 208
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["target above current duration"]
-
-[table.000094b2]
-name = "Transmission Request Scalar Floor"
-category = "Limiters / Rev Limit / Internal State"
-order = 209
-emit = false
-format = "0"
-fine = 1
-coarse = 16
-static_axis = ["secondary request floor"]
+coarse = 100
+static_axis = ["K-Value"]
 
 [table.000121fe]
 name = "Composite Calculation Base Curve (0x121FE)"
 category = "Internal Calculations"
-emit = false
 order = 42
-coarse = 4
-
-[table.0001236a]
-name = "MAF Range-Performance RPM Factor (0x1236A)"
-category = "Diagnostics / MAF"
 emit = false
-order = 50
-format = "0"
-fine = 1
 coarse = 4
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [
-  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
-  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
-]
 
 [table.0001491a]
 name = "Diagnostic Calculated-Load Reference"
 category = "Diagnostics / OBD"
-emit = false
 order = 43
+emit = false
 format = "0.000"
 fine = 0.001
 coarse = 0.01
-static_axis_name = "Engine Speed [RPM]"
 static_axis = [
   0, 400, 800, 1200, 1600, 2000, 2400, 2800,
   3200, 3600, 4000, 4400, 4800, 5200, 5600, 6000,
 ]
+static_axis_name = "Engine Speed [RPM]"
+
+[table.0001236a]
+name = "MAF Range-Performance RPM Factor (0x1236A)"
+category = "Diagnostics / MAF"
+order = 50
+emit = false
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
+static_axis_name = "Engine Speed [RPM]"
 
 [table.00014e52]
 name = "Filter Weight - new-sample share Q16 (0x14E52)"
 category = "Internal Calculations"
-emit = false
 order = 70
+emit = false
 format = "0.0000"
 fine = 0.001
 coarse = 0.01
@@ -745,8 +533,8 @@ coarse = 0.01
 [table.00013ce8]
 name = "Internal Subtractive Correction (0x13CE8)"
 category = "Internal Calculations"
-emit = false
 order = 80
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -754,8 +542,8 @@ coarse = 16
 [table.00014c9a]
 name = "Unsigned Branch Multiplier (0x14C9A)"
 category = "Internal Calculations"
-emit = false
 order = 81
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -763,8 +551,8 @@ coarse = 16
 [table.00014cba]
 name = "Negative Branch Multiplier (0x14CBA)"
 category = "Internal Calculations"
-emit = false
 order = 82
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -772,8 +560,8 @@ coarse = 16
 [table.00014e82]
 name = "Two-channel Constant Calibration (0x14E82)"
 category = "Internal Calculations"
-emit = false
 order = 83
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -781,8 +569,8 @@ coarse = 16
 [table.00015306]
 name = "Nonnegative Branch Multiplier (0x15306)"
 category = "Internal Calculations"
-emit = false
 order = 84
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -790,8 +578,8 @@ coarse = 16
 [table.000153a0]
 name = "Negative Branch Multiplier (0x153A0)"
 category = "Internal Calculations"
-emit = false
 order = 85
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -799,8 +587,8 @@ coarse = 16
 [table.0001198e]
 name = "Signed Weighted Reference Term - raw u8 (0x1198E)"
 category = "Internal Calculations"
-emit = false
 order = 86
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -808,8 +596,8 @@ coarse = 16
 [table.00011e46]
 name = "Composite Product Multiplier A - raw u8 (0x11E46)"
 category = "Internal Calculations"
-emit = false
 order = 87
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -817,19 +605,17 @@ coarse = 16
 [table.00011e5e]
 name = "Composite Product Window Coefficient (0x11E5E)"
 category = "Internal Calculations"
-emit = false
 order = 88
+emit = false
 format = "0.0000"
 fine = 0.00390625
 coarse = 0.0625
 
-# Operational names for calibrations in sweep range 0x11E9E..0x12808 describe
-# only the value role confirmed by code. Their physical names are unresolved.
 [table.00011e9e]
 name = "Saturated Difference Minuend - raw u8 (0x11E9E)"
 category = "Internal Calculations"
-emit = false
 order = 89
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -837,8 +623,8 @@ coarse = 16
 [table.00011f2a]
 name = "Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
 category = "Internal Calculations"
-emit = false
 order = 90
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -846,8 +632,8 @@ coarse = 16
 [table.00012042]
 name = "Unsigned Product Multiplier - raw u8 (0x12042)"
 category = "Internal Calculations"
-emit = false
 order = 91
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -855,8 +641,8 @@ coarse = 16
 [table.000120be]
 name = "Constant Output 255 - raw u8 (0x120BE)"
 category = "Unidentified Calibrations"
-emit = false
 order = 92
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -864,8 +650,8 @@ coarse = 16
 [table.000120f6]
 name = "DFCO Conditional Entry Delay"
 category = "Fuelling / Deceleration Fuel Cut"
-emit = false
 order = 93
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -873,8 +659,8 @@ coarse = 16
 [table.00012282]
 name = "Conditional Triple-Product Multiplier - raw u8 (0x12282)"
 category = "Internal Calculations"
-emit = false
 order = 94
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -882,8 +668,8 @@ coarse = 16
 [table.000122f2]
 name = "Centered Blend Coefficient Q0.7 (0x122F2)"
 category = "Internal Calculations"
-emit = false
 order = 95
+emit = false
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
@@ -891,8 +677,8 @@ coarse = 0.0625
 [table.000123c2]
 name = "Four-Factor Product Multiplier - raw u8 (0x123C2)"
 category = "Internal Calculations"
-emit = false
 order = 96
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -900,8 +686,8 @@ coarse = 16
 [table.000123d2]
 name = "Accumulator Base Term - internal u16 (0x123D2)"
 category = "Internal Calculations"
-emit = false
 order = 97
+emit = false
 format = "0"
 fine = 256
 coarse = 4096
@@ -909,52 +695,101 @@ coarse = 4096
 [table.00012462]
 name = "Linear Transition Target and Upper Clamp (0x12462)"
 category = "Internal Calculations"
-emit = false
 order = 98
+emit = false
 format = "0"
 fine = 1
 coarse = 16
 
-[table.000124d2]
-name = "Stationary Limiter Readiness Step"
-category = "Limiters / Engine Speed / Stationary"
-order = 12
+[table.0000991a]
+name = "Ignition Timing Surface - Cold State"
+category = "Ignition Timing / State Surfaces"
+order = 100
+emit = true
 format = "0"
 fine = 1
-coarse = 16
+coarse = 4
+mask = "7F"
+
+[[masked_view]]
+source = "0000991a"
+name = "Knock-State Path Enable - Cold State"
+category = "Ignition Timing / State Control"
+mask = "80"
+units = "Enable flag (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
 
 [table.000124e2]
 name = "Unidentified Output to ffff15f1 - raw u8 (0x124E2)"
 category = "Unidentified Calibrations"
-emit = false
 order = 100
+emit = false
 format = "0"
 fine = 1
 coarse = 16
 
-[table.000124f2]
-name = "Branch-Selected Product Coefficient Q1.7 (0x124F2)"
-category = "Internal Calculations"
-emit = false
-order = 189
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
+[table.00009a1a]
+name = "Ignition Timing Surface - High-Octane State"
+category = "Ignition Timing / State Surfaces"
+order = 101
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[masked_view]]
+source = "00009a1a"
+name = "Knock-State Path Enable - High-Octane State"
+category = "Ignition Timing / State Control"
+mask = "80"
+units = "Enable flag (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
 
 [table.00012704]
 name = "Normalized-Byte Multiplier - raw u8 (0x12704)"
 category = "Internal Calculations"
-emit = false
 order = 101
+emit = false
 format = "0"
 fine = 1
 coarse = 16
 
+[table.00009b1a]
+name = "Ignition Timing Surface - High-Detonation State"
+category = "Ignition Timing / State Surfaces"
+order = 102
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[masked_view]]
+source = "00009b1a"
+name = "Knock-State Path Enable - High-Detonation State"
+category = "Ignition Timing / State Control"
+mask = "80"
+units = "Enable flag (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
+
 [table.00012768]
 name = "Consumer Multiplier Curve - catalog RPM scale (0x12768)"
 category = "Internal Calculations"
-emit = false
 order = 102
+emit = false
 format = "0.0"
 fine = 12.5
 coarse = 50
@@ -962,128 +797,35 @@ coarse = 50
 [table.00012798]
 name = "Paired Normalization Curve A - catalog RPM scale (0x12798)"
 category = "Internal Calculations"
-emit = false
 order = 103
+emit = false
 format = "0"
 fine = 25
 coarse = 100
-
-[table.000127a8]
-name = "Selected Aggregate Curve A - raw u8 (0x127A8)"
-category = "Internal Calculations"
-emit = false
-order = 190
-format = "0"
-fine = 1
-coarse = 16
 
 [table.000127d8]
 name = "Paired Normalization Curve B - raw u8 (0x127D8)"
 category = "Internal Calculations"
-emit = false
 order = 104
+emit = false
 format = "0"
 fine = 1
 coarse = 16
-
-[table.000127e8]
-name = "Selected Aggregate Curve B - raw u8 (0x127E8)"
-category = "Internal Calculations"
-emit = false
-order = 191
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00014e22]
-name = "Alternate Product Coefficient Q1.7 (0x14E22)"
-category = "Internal Calculations"
-emit = false
-order = 192
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
 
 [table.00012808]
 name = "Weighted Calculation Multiplier A (0x12808)"
 category = "Internal Calculations"
-emit = false
 order = 105
+emit = false
 format = "0"
 fine = 2
 coarse = 16
 
-# Exact JK08A code establishes the dynamic role and RPM scale of all four
-# coolant-indexed thresholds. Registry family labels do not describe the runtime
-# selection in this executable: both source-labeled pairs are live.
-[table.000126e4]
-name = "DFCO Hold RPM Threshold"
-category = "Fuelling / Deceleration Fuel Cut"
-order = 30
-emit = true
-format = "0"
-fine = 25
-coarse = 100
-static_axis_operand = "ffff106f"
-static_axis_name = "Coolant Temperature [deg C]"
-static_axis = [
-  -40, -30, -20, -10, 0, 10, 20, 30,
-  40, 50, 60, 70, 80, 90, 100, 110,
-]
-
-[table.00012718]
-name = "DFCO Entry RPM Threshold"
-category = "Fuelling / Deceleration Fuel Cut"
-order = 31
-emit = true
-format = "0"
-fine = 25
-coarse = 100
-static_axis_operand = "ffff106f"
-static_axis_name = "Coolant Temperature [deg C]"
-static_axis = [
-  -40, -30, -20, -10, 0, 10, 20, 30,
-  40, 50, 60, 70, 80, 90, 100, 110,
-]
-
-[table.00012818]
-name = "DFCO Full Restore RPM Threshold"
-category = "Fuelling / Deceleration Fuel Cut"
-order = 32
-emit = true
-format = "0"
-fine = 25
-coarse = 100
-static_axis_operand = "ffff106f"
-static_axis_name = "Coolant Temperature [deg C]"
-static_axis = [
-  -40, -30, -20, -10, 0, 10, 20, 30,
-  40, 50, 60, 70, 80, 90, 100, 110,
-]
-
-[table.0001298c]
-name = "DFCO Low-Speed Intermediate Restore RPM Threshold"
-category = "Fuelling / Deceleration Fuel Cut"
-order = 33
-emit = true
-format = "0"
-fine = 25
-coarse = 100
-static_axis_operand = "ffff106f"
-static_axis_name = "Coolant Temperature [deg C]"
-static_axis = [
-  -40, -30, -20, -10, 0, 10, 20, 30,
-  40, 50, 60, 70, 80, 90, 100, 110,
-]
-
-# Operational names for other calibrations in sweep range 0x11F6A..0x19190
-# describe proven arithmetic use or an explicitly marked catalog hypothesis.
-# Physical signals for the internal calculations are unresolved.
 [table.00012930]
 name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
 category = "Internal Calculations"
-emit = false
 order = 106
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1091,8 +833,8 @@ coarse = 16
 [table.000129e2]
 name = "Normalized Reduction Share A Q0.8 (0x129E2)"
 category = "Internal Calculations"
-emit = false
 order = 108
+emit = false
 format = "0.0000"
 fine = 0.00390625
 coarse = 0.0625
@@ -1100,17 +842,33 @@ coarse = 0.0625
 [table.000129f2]
 name = "Saturating Reduction Addend B - raw u8 (0x129F2)"
 category = "Internal Calculations"
-emit = false
 order = 109
+emit = false
 format = "0"
 fine = 1
 coarse = 16
 
+[table.0001108e]
+name = "Knock Threshold by Evaluator Channel"
+category = "Ignition Timing / Knock Control / Thresholds"
+order = 110
+emit = true
+format = "0.000"
+fine = 0.0015259
+coarse = 0.015259
+static_axis_x = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
+static_axis_x_name = "Engine Speed [RPM]"
+static_axis_y = [1, 2, 3, 4, 5, 6]
+static_axis_y_name = "Evaluator Channel"
+
 [table.00012a02]
 name = "Signed Difference Reference Term - raw u8 (0x12A02)"
 category = "Internal Calculations"
-emit = false
 order = 110
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1118,8 +876,8 @@ coarse = 16
 [table.00012c02]
 name = "Internal Product Coefficient Q0.7 (0x12C02)"
 category = "Internal Calculations"
-emit = false
 order = 111
+emit = false
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
@@ -1127,8 +885,8 @@ coarse = 0.0625
 [table.00012c3a]
 name = "Init-only Constant Output 255 - raw u8 (0x12C3A)"
 category = "Unidentified Calibrations"
-emit = false
 order = 112
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1136,8 +894,17 @@ coarse = 16
 [table.00012c56]
 name = "Composite Product Multiplier - raw u8 (0x12C56)"
 category = "Internal Calculations"
-emit = false
 order = 113
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d22]
+name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
+category = "Internal Calculations"
+order = 114
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1145,35 +912,26 @@ coarse = 16
 [table.00012ede]
 name = "Minimum Intake-Cam Product Multiplier (0x12EDE)"
 category = "Internal Calculations"
-emit = false
 order = 114
+emit = false
 format = "0.0000"
 fine = 0.015625
 coarse = 0.0625
 
-[axis.00011bfb]
-name = "Minimum Two-Bank Intake Cam Timing"
-format = "0.0"
-fine = 0.5
-coarse = 2.0
+[table.00012d32]
+name = "Batch Scale Multiplier B - raw u8 (0x12D32)"
+category = "Internal Calculations"
+order = 115
+emit = false
+format = "0"
+fine = 1
+coarse = 16
 
 [table.00013d14]
 name = "Inverse Signed-Surface Coordinate (0x13D14)"
 category = "Internal Calculations"
-emit = false
 order = 115
-format = "0.0"
-fine = 1
-coarse = 10
-
-[axis.00013d14]
-name = "Scaled First-Channel Raw Coordinate"
-format = "0.0"
-fine = 1
-coarse = 10
-
-[axis.00018916]
-name = "Scaled First-Channel Raw Coordinate (Duplicate)"
+emit = false
 format = "0.0"
 fine = 1
 coarse = 10
@@ -1181,35 +939,17 @@ coarse = 10
 [table.0000e28e]
 name = "Alternate Inverse Signed Surface - raw s16 (0xE28E)"
 category = "Internal Calculations"
-emit = false
 order = 116
+emit = false
 format = "0"
 fine = 1
 coarse = 256
 
-[table.00012d22]
-name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
-category = "Internal Calculations"
-emit = false
-order = 114
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012d32]
-name = "Batch Scale Multiplier B - raw u8 (0x12D32)"
-category = "Internal Calculations"
-emit = false
-order = 115
-format = "0"
-fine = 1
-coarse = 16
-
 [table.00012d42]
 name = "Batch Scale Multiplier C - raw u8 (0x12D42)"
 category = "Internal Calculations"
-emit = false
 order = 116
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1217,8 +957,8 @@ coarse = 16
 [table.00012d52]
 name = "Batch Scale Multiplier D - raw u8 (0x12D52)"
 category = "Internal Calculations"
-emit = false
 order = 117
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1226,8 +966,8 @@ coarse = 16
 [table.00012d62]
 name = "Batch Scale Multiplier E - raw u8 (0x12D62)"
 category = "Internal Calculations"
-emit = false
 order = 118
+emit = false
 format = "0"
 fine = 1
 coarse = 16
@@ -1235,856 +975,8 @@ coarse = 16
 [table.00012d72]
 name = "Input-shaping Coefficient Q0.7 (0x12D72)"
 category = "Internal Calculations"
-emit = false
 order = 119
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.00012d8a]
-name = "Additive Initialization Term - raw u8 (0x12D8A)"
-category = "Internal Calculations"
 emit = false
-order = 120
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012dd2]
-name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
-category = "Internal Calculations"
-emit = false
-order = 121
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.0001465a]
-name = "Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
-category = "Internal Calculations"
-emit = false
-order = 122
-format = "0.0000"
-fine = 0.0008
-coarse = 0.008
-
-[table.00014bfa]
-name = "Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
-category = "Internal Calculations"
-emit = false
-order = 123
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00014cea]
-name = "Conditional Blend Reference - raw u16 (0x14CEA)"
-category = "Unidentified Calibrations"
-emit = false
-order = 124
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00015022]
-name = "High-range Quotient Divisor - raw u16 (0x15022)"
-category = "Internal Calculations"
-emit = false
-order = 125
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00015042]
-name = "Low-range Piecewise Source - raw u16 (0x15042)"
-category = "Internal Calculations"
-emit = false
-order = 126
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00015770]
-name = "Protected Division Denominator - catalog torque-ratio scale (0x15770)"
-category = "Internal Calculations"
-emit = false
-order = 127
-format = "0.000000"
-fine = 0.000976563
-coarse = 0.00976563
-
-[table.00018c96]
-name = "Saturating Pair Base Term - catalog opening-area scale (0x18C96)"
-category = "Internal Calculations"
-emit = false
-order = 128
-format = "0.0000"
-fine = 0.0008
-coarse = 0.008
-
-[table.00019190]
-name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
-category = "Internal Calculations"
-emit = false
-order = 129
-format = "0.000000"
-fine = 0.000976563
-coarse = 0.00976563
-
-[table.00011f6a]
-name = "Transient State Threshold Base - catalog initial-retard family (0x11F6A)"
-category = "Internal Calculations"
-emit = false
-order = 130
-format = "0"
-fine = 1
-coarse = 4
-
-# Operational names for calibrations in sweep range 0x11C6D..0x153B8 describe
-# proven arithmetic use or an explicitly marked catalog hypothesis. Physical
-# signals for the internal calculations are unresolved.
-[table.0001202e]
-name = "RPM-Drop Publication Inhibit by Pre-Mode RPM (0x1202E)"
-category = "Internal Calculations"
-emit = false
-order = 131
-format = "0"
-fine = 1
-coarse = 200
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [1200, 2000, 2800, 3600]
-
-[table.00012522]
-name = "Positive Difference Coefficient /100 (0x12522)"
-category = "Internal Calculations"
-emit = false
-order = 132
-format = "0.00"
-fine = 0.01
-coarse = 0.1
-
-[table.00012526]
-name = "Negative Difference Coefficient /100 (0x12526)"
-category = "Internal Calculations"
-emit = false
-order = 133
-format = "0.00"
-fine = 0.01
-coarse = 0.1
-
-[table.0001292c]
-name = "Local Limit Base Term - raw u8 (0x1292C)"
-category = "Internal Calculations"
-emit = false
-order = 134
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000153b0]
-name = "Blend Coefficient Step A Q0.16 (0x153B0)"
-category = "Internal Calculations"
-emit = false
-order = 135
-format = "0.000000"
-fine = 0.0000152587890625
-coarse = 0.001
-
-[table.000153b8]
-name = "Blend Coefficient Step B Q0.16 (0x153B8)"
-category = "Internal Calculations"
-emit = false
-order = 136
-format = "0.000000"
-fine = 0.0000152587890625
-coarse = 0.001
-
-[table.000141f4]
-name = "MAF Sensor Transfer - Bank 2"
-category = "Fuelling / MAF Scaling"
-order = 137
-emit = true
-format = "0"
-fine = 1
-coarse = 256
-static_axis_name = "MAF Sensor Voltage [V, cand]"
-static_axis = [
-  0.00, 0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56,
-  0.64, 0.72, 0.80, 0.88, 0.96, 1.04, 1.12, 1.20,
-  1.28, 1.36, 1.44, 1.52, 1.60, 1.68, 1.76, 1.84,
-  1.92, 2.00, 2.08, 2.16, 2.24, 2.32, 2.40, 2.48,
-  2.56, 2.64, 2.72, 2.80, 2.88, 2.96, 3.04, 3.12,
-  3.20, 3.28, 3.36, 3.44, 3.52, 3.60, 3.68, 3.76,
-  3.84, 3.92, 4.00, 4.08, 4.16, 4.24, 4.32, 4.40,
-  4.48, 4.56, 4.64, 4.72, 4.80, 4.88, 4.96, 5.04,
-]
-
-[table.00014274]
-name = "MAF Sensor Transfer - Bank 1"
-category = "Fuelling / MAF Scaling"
-order = 138
-emit = true
-format = "0"
-fine = 1
-coarse = 256
-static_axis_name = "MAF Sensor Voltage [V, cand]"
-static_axis = [
-  0.00, 0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56,
-  0.64, 0.72, 0.80, 0.88, 0.96, 1.04, 1.12, 1.20,
-  1.28, 1.36, 1.44, 1.52, 1.60, 1.68, 1.76, 1.84,
-  1.92, 2.00, 2.08, 2.16, 2.24, 2.32, 2.40, 2.48,
-  2.56, 2.64, 2.72, 2.80, 2.88, 2.96, 3.04, 3.12,
-  3.20, 3.28, 3.36, 3.44, 3.52, 3.60, 3.68, 3.76,
-  3.84, 3.92, 4.00, 4.08, 4.16, 4.24, 4.32, 4.40,
-  4.48, 4.56, 4.64, 4.72, 4.80, 4.88, 4.96, 5.04,
-]
-
-[table.00011e56]
-name = "Four-Factor Product Multiplier B Q0.8 (0x11E56)"
-category = "Internal Calculations"
-emit = false
-order = 139
-format = "0.0000"
-fine = 0.00390625
-coarse = 0.0625
-
-[table.00011f12]
-name = "Branching Saturated Calculation Base (0x11F12)"
-category = "Internal Calculations"
-emit = false
-order = 140
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00011f1a]
-name = "Conditional Subtractive Term (0x11F1A)"
-category = "Internal Calculations"
-emit = false
-order = 141
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00011f22]
-name = "Conditional Additive Term (0x11F22)"
-category = "Internal Calculations"
-emit = false
-order = 142
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00011fbe]
-name = "Composite 7-bit Base / Multiplier (0x11FBE)"
-category = "Internal Calculations"
-emit = false
-order = 143
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00011fe6]
-name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
-category = "Internal Calculations"
-emit = false
-order = 144
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012006]
-name = "Piecewise Clamp y=min(x,224) (0x12006)"
-category = "Internal Calculations"
-emit = false
-order = 145
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001208e]
-name = "Composite Product Multiplier A - raw u8 (0x1208E)"
-category = "Internal Calculations"
-emit = false
-order = 146
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012096]
-name = "Composite Product Multiplier B - raw u8 (0x12096)"
-category = "Internal Calculations"
-emit = false
-order = 147
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000120ce]
-name = "Dual-Lookup Additive Correction (0x120CE)"
-category = "Internal Calculations"
-emit = false
-order = 148
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001211e]
-name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
-category = "Internal Calculations"
-emit = false
-order = 149
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012126]
-name = "Local Correction Coefficient /2048 (0x12126)"
-category = "Internal Calculations"
-emit = false
-order = 150
-format = "0.000000"
-fine = 0.00048828125
-coarse = 0.0078125
-
-[table.0001212e]
-name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
-category = "Internal Calculations"
-emit = false
-order = 151
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.0001215e]
-name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
-category = "Internal Calculations"
-emit = false
-order = 152
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012176]
-name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
-category = "Internal Calculations"
-emit = false
-order = 153
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001218e]
-name = "Control Selector ffff23ed - raw u8 (0x1218E)"
-category = "Internal Calculations"
-emit = false
-order = 154
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012196]
-name = "Timing-State Addend - Default/Post-Transition"
-category = "Ignition Timing / State Corrections"
-emit = true
-order = 155
-format = "0"
-fine = 1
-coarse = 4
-static_axis_operand = "ffff11b2"
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
-
-[table.0001219e]
-name = "Timing-State Addend - Warm DFCO Transition"
-category = "Ignition Timing / State Corrections"
-emit = true
-order = 156
-format = "0"
-fine = 1
-coarse = 4
-static_axis_operand = "ffff11b2"
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
-
-[table.000121a6]
-name = "Stock-Inert Feature Timing-State Addend (x-128) (0x121A6)"
-category = "Internal Calculations"
-emit = false
-order = 157
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121ae]
-name = "Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
-category = "Internal Calculations"
-emit = false
-order = 158
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121c6]
-name = "Three-Factor Product Multiplier A - raw u8 (0x121C6)"
-category = "Internal Calculations"
-emit = false
-order = 159
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121ce]
-name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
-category = "Internal Calculations"
-emit = false
-order = 160
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121d6]
-name = "Cascaded Product Multiplier B - raw u8 (0x121D6)"
-category = "Internal Calculations"
-emit = false
-order = 161
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121de]
-name = "Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
-category = "Internal Calculations"
-emit = false
-order = 162
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121e6]
-name = "Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
-category = "Internal Calculations"
-emit = false
-order = 163
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000121ee]
-name = "Per-Channel Product Multiplier - raw u8 (0x121EE)"
-category = "Internal Calculations"
-emit = false
-order = 164
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001220e]
-name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
-category = "Internal Calculations"
-emit = false
-order = 165
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000122e2]
-name = "Shared Additive Base Term - raw u8 (0x122E2)"
-category = "Internal Calculations"
-emit = false
-order = 166
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012302]
-name = "End of Injection Angle - Base"
-category = "Fuelling / Injection"
-order = 23
-static_axis_operand = "ffff11b3"
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
-format = "0"
-fine = 4
-coarse = 20
-
-[table.0001230a]
-name = "End of Injection Angle - Conditional"
-category = "Fuelling / Injection"
-order = 24
-static_axis_operand = "ffff11b3"
-static_axis_name = "Engine Speed [RPM]"
-static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
-format = "0"
-fine = 4
-coarse = 20
-
-[table.00012342]
-name = "Saturating Sum Addend A - raw u8 (0x12342)"
-category = "Internal Calculations"
-emit = false
-order = 169
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001234a]
-name = "Saturating Sum Addend B - raw u8 (0x1234A)"
-category = "Internal Calculations"
-emit = false
-order = 170
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012352]
-name = "Paired Product Multiplier - raw u8 (0x12352)"
-category = "Internal Calculations"
-emit = false
-order = 171
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001239a]
-name = "Negative-Branch Multiplier - raw u8 (0x1239A)"
-category = "Internal Calculations"
-emit = false
-order = 172
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000123a2]
-name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
-category = "Internal Calculations"
-emit = false
-order = 173
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000123e2]
-name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
-category = "Internal Calculations"
-emit = false
-order = 174
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012422]
-name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
-category = "Internal Calculations"
-emit = false
-order = 175
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001242a]
-name = "Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
-category = "Internal Calculations"
-emit = false
-order = 176
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012432]
-name = "Composite First-Stage Multiplier Q1.7 (0x12432)"
-category = "Internal Calculations"
-emit = false
-order = 177
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.00012562]
-name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
-category = "Internal Calculations"
-emit = false
-order = 178
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000126a0]
-name = "Paired Product Multiplier A - raw u8 (0x126A0)"
-category = "Internal Calculations"
-emit = false
-order = 179
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000126a8]
-name = "Paired Product Multiplier B - raw u8 (0x126A8)"
-category = "Internal Calculations"
-emit = false
-order = 180
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012868]
-name = "MAF Diagnostic Composite Factor B - raw u8 (0x12868)"
-category = "Diagnostics / MAF"
-emit = false
-order = 181
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001296c]
-name = "Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
-category = "Internal Calculations"
-emit = false
-order = 182
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000129ca]
-name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
-category = "Internal Calculations"
-emit = false
-order = 183
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012a22]
-name = "Paired Product Multiplier A - raw u8 (0x12A22)"
-category = "Internal Calculations"
-emit = false
-order = 184
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012a2a]
-name = "Paired Product Multiplier B - raw u8 (0x12A2A)"
-category = "Internal Calculations"
-emit = false
-order = 185
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012a3a]
-name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
-category = "Internal Calculations"
-emit = false
-order = 186
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012a82]
-name = "Composite Output Coefficient K - raw u8 (0x12A82)"
-category = "Internal Calculations"
-emit = false
-order = 187
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012a9a]
-name = "State Gate Byte Table - raw u8 (0x12A9A)"
-category = "Internal Calculations"
-emit = false
-order = 188
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012ab2]
-name = "State Transition Initial Value - raw u8 (0x12AB2)"
-category = "Internal Calculations"
-emit = false
-order = 189
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012ac2]
-name = "MAF Diagnostic Composite Factor A - raw u8 (0x12AC2)"
-category = "Diagnostics / MAF"
-emit = false
-order = 190
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012ada]
-name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
-category = "Internal Calculations"
-emit = false
-order = 191
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012afa]
-name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
-category = "Internal Calculations"
-emit = false
-order = 192
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012dca]
-name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
-category = "Internal Calculations"
-emit = false
-order = 193
-format = "0.0000"
-fine = 0.0078125
-coarse = 0.0625
-
-[table.00012e72]
-name = "Channel 0 Signed Additive Term (x-128) (0x12E72)"
-category = "Internal Calculations"
-emit = false
-order = 194
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012e7a]
-name = "Channel 1 Composite Addend - raw u8 (0x12E7A)"
-category = "Internal Calculations"
-emit = false
-order = 195
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012efe]
-name = "Conditional Paired State Value A - raw u8 (0x12EFE)"
-category = "Internal Calculations"
-emit = false
-order = 196
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012f06]
-name = "Conditional Paired State Value B - raw u8 (0x12F06)"
-category = "Internal Calculations"
-emit = false
-order = 197
-format = "0"
-fine = 1
-coarse = 16
-
-[table.0001300e]
-name = "Signed Difference Multiplier Q0.6 (0x1300E)"
-category = "Internal Calculations"
-emit = false
-order = 198
-format = "0.0000"
-fine = 0.015625
-coarse = 0.125
-
-[table.00013016]
-name = "Conditional Signed State Value (x-128) (0x13016)"
-category = "Internal Calculations"
-emit = false
-order = 199
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00014304]
-name = "State Decrease Limit A - raw u16 (0x14304)"
-category = "Internal Calculations"
-emit = false
-order = 200
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00014314]
-name = "State Decrease Step B - raw u16 (0x14314)"
-category = "Internal Calculations"
-emit = false
-order = 201
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00014ed2]
-name = "Composite Product Multiplicand - raw u16 (0x14ED2)"
-category = "Internal Calculations"
-emit = false
-order = 202
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00015082]
-name = "Rounded UQ0.16 Threshold Coefficient (0x15082)"
-category = "Internal Calculations"
-emit = false
-order = 203
-format = "0.000000"
-fine = 1.52587890625e-05
-coarse = 0.0009765625
-
-[table.00015330]
-name = "Saturating Internal State Load - raw u16 (0x15330)"
-category = "Internal Calculations"
-emit = false
-order = 204
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00015630]
-name = "Fallback Source Table - BFS candidate scale (0x15630)"
-category = "Internal Calculations"
-emit = false
-order = 205
-format = "0.000000"
-fine = 0.000488
-coarse = 0.062464
-
-[table.00023824]
-name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
-category = "Internal Calculations"
-emit = false
-order = 206
-format = "0"
-fine = 1
-coarse = 256
-
-[table.00012026]
-name = "Latched Zero Condition Table - raw u8 (0x12026)"
-category = "Internal Calculations"
-emit = false
-order = 207
-format = "0"
-fine = 1
-coarse = 16
-
-[table.00012e1a]
-name = "Interpolated State Byte - raw u8 (0x12E1A)"
-category = "Internal Calculations"
-emit = false
-order = 208
-format = "0"
-fine = 1
-coarse = 16
-
-[table.000129c0]
-name = "Injection Pulse Channel Multiplier"
-category = "Fuelling / Injection"
-order = 22
-static_axis_name = "Channel"
-static_axis = [1, 2, 3, 4, 5, 6]
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
@@ -2096,6 +988,24 @@ order = 120
 format = "0.0"
 fine = 1
 coarse = 10
+
+[table.00012d8a]
+name = "Additive Initialization Term - raw u8 (0x12D8A)"
+category = "Internal Calculations"
+order = 120
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012dd2]
+name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
+category = "Internal Calculations"
+order = 121
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
 
 [table.000175c8]
 name = "Requested Torque Conversion by QH0 - Validation Copy"
@@ -2113,8 +1023,23 @@ format = "0.000"
 fine = 0.01
 coarse = 0.1
 
-[axis.000155a0]
-format = "0.0"
+[table.0001465a]
+name = "Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
+category = "Internal Calculations"
+order = 122
+emit = false
+format = "0.0000"
+fine = 0.0008
+coarse = 0.008
+
+[table.00014bfa]
+name = "Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
+category = "Internal Calculations"
+order = 123
+emit = false
+format = "0"
+fine = 1
+coarse = 256
 
 [table.00018766]
 name = "Throttle Angle-to-Area Conversion - Validation Copy"
@@ -2124,69 +1049,783 @@ format = "0.000"
 fine = 0.01
 coarse = 0.1
 
-[axis.000190d0]
-format = "0.0"
-
 [table.00014114]
 name = "QH0 Flow Potential Coordinate"
 category = "Electronic Throttle Control / Internal Coordinates"
-emit = false
 order = 124
+emit = false
 format = "0.00"
 fine = 0.1
 coarse = 1
 
-[table.00014384]
-name = "Throttle Rev Limiter Auxiliary Request"
-category = "Limiters / Rev Limit / Internal State"
+[table.00014cea]
+name = "Conditional Blend Reference - raw u16 (0x14CEA)"
+category = "Unidentified Calibrations"
+order = 124
 emit = false
-order = 209
 format = "0"
 fine = 1
-coarse = 16
-static_axis = ["context 0", "context 1", "context 2", "context 3", "context 4+"]
+coarse = 256
+
+[table.00015022]
+name = "High-range Quotient Divisor - raw u16 (0x15022)"
+category = "Internal Calculations"
+order = 125
+emit = false
+format = "0"
+fine = 1
+coarse = 256
 
 [table.00018ac6]
 name = "QH0 Flow Potential Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
-emit = false
 order = 125
+emit = false
 format = "0.00"
 fine = 0.1
 coarse = 1
+
+[table.00015042]
+name = "Low-range Piecewise Source - raw u16 (0x15042)"
+category = "Internal Calculations"
+order = 126
+emit = false
+format = "0"
+fine = 1
+coarse = 256
 
 [table.000155a0]
 name = "Throttle Valve Opening Coordinate"
 category = "Electronic Throttle Control / Internal Coordinates"
-emit = false
 order = 126
+emit = false
 format = "0.00"
 fine = 0.1
 coarse = 1
+
+[table.00015770]
+name = "Protected Division Denominator - catalog torque-ratio scale (0x15770)"
+category = "Internal Calculations"
+order = 127
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
 
 [table.000190d0]
 name = "Throttle Valve Opening Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
-emit = false
 order = 127
+emit = false
 format = "0.00"
 fine = 0.1
 coarse = 1
 
-[table.00012292]
-name = "Dual-Channel Deviation Divisor Q1.7 (0x12292)"
+[table.00018c96]
+name = "Saturating Pair Base Term - catalog opening-area scale (0x18C96)"
 category = "Internal Calculations"
+order = 128
 emit = false
-order = 193
+format = "0.0000"
+fine = 0.0008
+coarse = 0.008
+
+[table.00019190]
+name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
+category = "Internal Calculations"
+order = 129
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
+[table.00011f6a]
+name = "Transient State Threshold Base - catalog initial-retard family (0x11F6A)"
+category = "Internal Calculations"
+order = 130
+emit = false
+format = "0"
+fine = 1
+coarse = 4
+
+[table.0001202e]
+name = "RPM-Drop Publication Inhibit by Pre-Mode RPM (0x1202E)"
+category = "Internal Calculations"
+order = 131
+emit = false
+format = "0"
+fine = 1
+coarse = 200
+static_axis = [1200, 2000, 2800, 3600]
+static_axis_name = "Engine Speed [RPM]"
+
+[table.00012522]
+name = "Positive Difference Coefficient /100 (0x12522)"
+category = "Internal Calculations"
+order = 132
+emit = false
+format = "0.00"
+fine = 0.01
+coarse = 0.1
+
+[table.00012526]
+name = "Negative Difference Coefficient /100 (0x12526)"
+category = "Internal Calculations"
+order = 133
+emit = false
+format = "0.00"
+fine = 0.01
+coarse = 0.1
+
+[table.0001292c]
+name = "Local Limit Base Term - raw u8 (0x1292C)"
+category = "Internal Calculations"
+order = 134
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000153b0]
+name = "Blend Coefficient Step A Q0.16 (0x153B0)"
+category = "Internal Calculations"
+order = 135
+emit = false
+format = "0.000000"
+fine = 0.0000152587890625
+coarse = 0.001
+
+[table.000153b8]
+name = "Blend Coefficient Step B Q0.16 (0x153B8)"
+category = "Internal Calculations"
+order = 136
+emit = false
+format = "0.000000"
+fine = 0.0000152587890625
+coarse = 0.001
+
+[table.000141f4]
+name = "MAF Sensor Transfer - Bank 2"
+category = "Fuelling / MAF Scaling"
+order = 137
+emit = true
+format = "0"
+fine = 1
+coarse = 256
+static_axis = [
+  0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56,
+  0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 1.12, 1.2,
+  1.28, 1.36, 1.44, 1.52, 1.6, 1.68, 1.76, 1.84,
+  1.92, 2.0, 2.08, 2.16, 2.24, 2.32, 2.4, 2.48,
+  2.56, 2.64, 2.72, 2.8, 2.88, 2.96, 3.04, 3.12,
+  3.2, 3.28, 3.36, 3.44, 3.52, 3.6, 3.68, 3.76,
+  3.84, 3.92, 4.0, 4.08, 4.16, 4.24, 4.32, 4.4,
+  4.48, 4.56, 4.64, 4.72, 4.8, 4.88, 4.96, 5.04,
+]
+static_axis_name = "MAF Sensor Voltage [V, cand]"
+
+[table.00014274]
+name = "MAF Sensor Transfer - Bank 1"
+category = "Fuelling / MAF Scaling"
+order = 138
+emit = true
+format = "0"
+fine = 1
+coarse = 256
+static_axis = [
+  0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56,
+  0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 1.12, 1.2,
+  1.28, 1.36, 1.44, 1.52, 1.6, 1.68, 1.76, 1.84,
+  1.92, 2.0, 2.08, 2.16, 2.24, 2.32, 2.4, 2.48,
+  2.56, 2.64, 2.72, 2.8, 2.88, 2.96, 3.04, 3.12,
+  3.2, 3.28, 3.36, 3.44, 3.52, 3.6, 3.68, 3.76,
+  3.84, 3.92, 4.0, 4.08, 4.16, 4.24, 4.32, 4.4,
+  4.48, 4.56, 4.64, 4.72, 4.8, 4.88, 4.96, 5.04,
+]
+static_axis_name = "MAF Sensor Voltage [V, cand]"
+
+[table.00011e56]
+name = "Four-Factor Product Multiplier B Q0.8 (0x11E56)"
+category = "Internal Calculations"
+order = 139
+emit = false
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
+[table.00011f12]
+name = "Branching Saturated Calculation Base (0x11F12)"
+category = "Internal Calculations"
+order = 140
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011f1a]
+name = "Conditional Subtractive Term (0x11F1A)"
+category = "Internal Calculations"
+order = 141
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011f22]
+name = "Conditional Additive Term (0x11F22)"
+category = "Internal Calculations"
+order = 142
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011fbe]
+name = "Composite 7-bit Base / Multiplier (0x11FBE)"
+category = "Internal Calculations"
+order = 143
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011fe6]
+name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
+category = "Internal Calculations"
+order = 144
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012006]
+name = "Piecewise Clamp y=min(x,224) (0x12006)"
+category = "Internal Calculations"
+order = 145
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001208e]
+name = "Composite Product Multiplier A - raw u8 (0x1208E)"
+category = "Internal Calculations"
+order = 146
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012096]
+name = "Composite Product Multiplier B - raw u8 (0x12096)"
+category = "Internal Calculations"
+order = 147
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000120ce]
+name = "Dual-Lookup Additive Correction (0x120CE)"
+category = "Internal Calculations"
+order = 148
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001211e]
+name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
+category = "Internal Calculations"
+order = 149
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012126]
+name = "Local Correction Coefficient /2048 (0x12126)"
+category = "Internal Calculations"
+order = 150
+emit = false
+format = "0.000000"
+fine = 0.00048828125
+coarse = 0.0078125
+
+[table.0001212e]
+name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
+category = "Internal Calculations"
+order = 151
+emit = false
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[table.0001215e]
+name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
+category = "Internal Calculations"
+order = 152
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012176]
+name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
+category = "Internal Calculations"
+order = 153
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001218e]
+name = "Control Selector ffff23ed - raw u8 (0x1218E)"
+category = "Internal Calculations"
+order = 154
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012196]
+name = "Timing-State Addend - Default/Post-Transition"
+category = "Ignition Timing / State Corrections"
+order = 155
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "ffff11b2"
+
+[table.0001219e]
+name = "Timing-State Addend - Warm DFCO Transition"
+category = "Ignition Timing / State Corrections"
+order = 156
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "ffff11b2"
+
+[table.000121a6]
+name = "Stock-Inert Feature Timing-State Addend (x-128) (0x121A6)"
+category = "Internal Calculations"
+order = 157
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ae]
+name = "Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
+category = "Internal Calculations"
+order = 158
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121c6]
+name = "Three-Factor Product Multiplier A - raw u8 (0x121C6)"
+category = "Internal Calculations"
+order = 159
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ce]
+name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
+category = "Internal Calculations"
+order = 160
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121d6]
+name = "Cascaded Product Multiplier B - raw u8 (0x121D6)"
+category = "Internal Calculations"
+order = 161
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121de]
+name = "Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
+category = "Internal Calculations"
+order = 162
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121e6]
+name = "Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
+category = "Internal Calculations"
+order = 163
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ee]
+name = "Per-Channel Product Multiplier - raw u8 (0x121EE)"
+category = "Internal Calculations"
+order = 164
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001220e]
+name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
+category = "Internal Calculations"
+order = 165
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000122e2]
+name = "Shared Additive Base Term - raw u8 (0x122E2)"
+category = "Internal Calculations"
+order = 166
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012342]
+name = "Saturating Sum Addend A - raw u8 (0x12342)"
+category = "Internal Calculations"
+order = 169
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001234a]
+name = "Saturating Sum Addend B - raw u8 (0x1234A)"
+category = "Internal Calculations"
+order = 170
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012352]
+name = "Paired Product Multiplier - raw u8 (0x12352)"
+category = "Internal Calculations"
+order = 171
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001239a]
+name = "Negative-Branch Multiplier - raw u8 (0x1239A)"
+category = "Internal Calculations"
+order = 172
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000123a2]
+name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
+category = "Internal Calculations"
+order = 173
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000123e2]
+name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
+category = "Internal Calculations"
+order = 174
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012422]
+name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
+category = "Internal Calculations"
+order = 175
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001242a]
+name = "Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
+category = "Internal Calculations"
+order = 176
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012432]
+name = "Composite First-Stage Multiplier Q1.7 (0x12432)"
+category = "Internal Calculations"
+order = 177
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012562]
+name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
+category = "Internal Calculations"
+order = 178
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000126a0]
+name = "Paired Product Multiplier A - raw u8 (0x126A0)"
+category = "Internal Calculations"
+order = 179
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000126a8]
+name = "Paired Product Multiplier B - raw u8 (0x126A8)"
+category = "Internal Calculations"
+order = 180
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012868]
+name = "MAF Diagnostic Composite Factor B - raw u8 (0x12868)"
+category = "Diagnostics / MAF"
+order = 181
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001296c]
+name = "Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
+category = "Internal Calculations"
+order = 182
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000129ca]
+name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
+category = "Internal Calculations"
+order = 183
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a22]
+name = "Paired Product Multiplier A - raw u8 (0x12A22)"
+category = "Internal Calculations"
+order = 184
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a2a]
+name = "Paired Product Multiplier B - raw u8 (0x12A2A)"
+category = "Internal Calculations"
+order = 185
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a3a]
+name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
+category = "Internal Calculations"
+order = 186
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a82]
+name = "Composite Output Coefficient K - raw u8 (0x12A82)"
+category = "Internal Calculations"
+order = 187
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a9a]
+name = "State Gate Byte Table - raw u8 (0x12A9A)"
+category = "Internal Calculations"
+order = 188
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000124f2]
+name = "Branch-Selected Product Coefficient Q1.7 (0x124F2)"
+category = "Internal Calculations"
+order = 189
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012ab2]
+name = "State Transition Initial Value - raw u8 (0x12AB2)"
+category = "Internal Calculations"
+order = 189
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00009424]
+name = "Throttle Rev Limiter Threshold Blend Gain"
+category = "Limiters / Rev Limit / Internal State"
+order = 190
+emit = false
+format = "0.0000"
+fine = 0.01
+coarse = 0.1
+static_axis = ["blend gain"]
+
+[table.000127a8]
+name = "Selected Aggregate Curve A - raw u8 (0x127A8)"
+category = "Internal Calculations"
+order = 190
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012ac2]
+name = "MAF Diagnostic Composite Factor A - raw u8 (0x12AC2)"
+category = "Diagnostics / MAF"
+order = 190
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00009426]
+name = "Throttle Rev Limiter Normal Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 191
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["normal rate"]
+
+[table.000127e8]
+name = "Selected Aggregate Curve B - raw u8 (0x127E8)"
+category = "Internal Calculations"
+order = 191
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012ada]
+name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
+category = "Internal Calculations"
+order = 191
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00009428]
+name = "Throttle Rev Limiter Fast Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 192
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["fast rate"]
+
+[table.00012afa]
+name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
+category = "Internal Calculations"
+order = 192
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014e22]
+name = "Alternate Product Coefficient Q1.7 (0x14E22)"
+category = "Internal Calculations"
+order = 192
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.0000942a]
+name = "Throttle Rev Limiter Final Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 193
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["final rate"]
+
+[table.00012292]
+name = "Dual-Channel Deviation Divisor Q1.7 (0x12292)"
+category = "Internal Calculations"
+order = 193
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012dca]
+name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
+category = "Internal Calculations"
+order = 193
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012e72]
+name = "Channel 0 Signed Additive Term (x-128) (0x12E72)"
+category = "Internal Calculations"
+order = 194
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [table.000148fa]
 name = "Dual-Channel Conversion Curve - raw u16 (0x148FA)"
 category = "Internal Calculations"
-emit = false
 order = 194
+emit = false
 format = "0"
 fine = 1
 coarse = 100
@@ -2194,38 +1833,286 @@ coarse = 100
 [table.00012272]
 name = "Diagnostic Signed-Value Multiplier Q1.7 (0x12272)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 195
+emit = false
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
+
+[table.00012e7a]
+name = "Channel 1 Composite Addend - raw u8 (0x12E7A)"
+category = "Internal Calculations"
+order = 195
+emit = false
+format = "0"
+fine = 1
+coarse = 16
 
 [table.000129d2]
 name = "Calculated Load Secondary Divisor Q1.7 (0x129D2)"
 category = "Internal Calculations"
-emit = false
 order = 196
+emit = false
 format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[table.00012efe]
+name = "Conditional Paired State Value A - raw u8 (0x12EFE)"
+category = "Internal Calculations"
+order = 196
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [table.000122d2]
 name = "Shared Nonzero Enable Curve - raw u8 (0x122D2)"
 category = "Internal Calculations"
-emit = false
 order = 197
+emit = false
 format = "0"
 fine = 1
 coarse = 8
 
-[table.0000c78e]
-name = "Current/Prior-Cycle State Coefficient - raw u16 (0x0C78E)"
+[table.00012f06]
+name = "Conditional Paired State Value B - raw u8 (0x12F06)"
 category = "Internal Calculations"
+order = 197
 emit = false
-order = 209
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001300e]
+name = "Signed Difference Multiplier Q0.6 (0x1300E)"
+category = "Internal Calculations"
+order = 198
+emit = false
+format = "0.0000"
+fine = 0.015625
+coarse = 0.125
+
+[table.00013016]
+name = "Conditional Signed State Value (x-128) (0x13016)"
+category = "Internal Calculations"
+order = 199
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0000934e]
+name = "Engine Speed Limit - Fuel Cut"
+category = "Limiters / Engine Speed / Driving"
+order = 200
+emit = true
+format = "0.0"
+fine = 12.5
+coarse = 125
+static_axis_x = ["Normal", "Reverse"]
+static_axis_x_name = "State"
+static_axis_y = ["Cut", "Restore"]
+static_axis_y_name = "Fuel"
+
+[table.00014304]
+name = "State Decrease Limit A - raw u16 (0x14304)"
+category = "Internal Calculations"
+order = 200
+emit = false
 format = "0"
 fine = 1
 coarse = 256
+
+[table.0000942c]
+name = "Engine Speed Limit - Throttle Request"
+category = "Limiters / Engine Speed / Driving"
+order = 201
+emit = true
+format = "0"
+fine = 50
+coarse = 250
+static_axis = ["throttle cut"]
+
+[table.00014314]
+name = "State Decrease Step B - raw u16 (0x14314)"
+category = "Internal Calculations"
+order = 201
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[table.0000942e]
+name = "Throttle Rev Limiter Mode Cap"
+category = "Limiters / Rev Limit / Internal State"
+order = 202
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["mode cap"]
+
+[table.00014ed2]
+name = "Composite Product Multiplicand - raw u16 (0x14ED2)"
+category = "Internal Calculations"
+order = 202
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00009430]
+name = "Throttle Rev Limiter Threshold Down Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 203
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["down rate"]
+
+[table.00015082]
+name = "Rounded UQ0.16 Threshold Coefficient (0x15082)"
+category = "Internal Calculations"
+order = 203
+emit = false
+format = "0.000000"
+fine = 0.0000152587890625
+coarse = 0.0009765625
+
+[table.00009434]
+name = "Throttle Rev Limiter Coolant-Latch Threshold"
+category = "Limiters / Rev Limit / Internal State"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["alternate threshold"]
+
+[table.00015330]
+name = "Saturating Internal State Load - raw u16 (0x15330)"
+category = "Internal Calculations"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00009436]
+name = "Throttle Rev Limiter Threshold Up Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 205
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["up rate"]
+
+[table.00015630]
+name = "Fallback Source Table - BFS candidate scale (0x15630)"
+category = "Internal Calculations"
+order = 205
+emit = false
+format = "0.000000"
+fine = 0.000488
+coarse = 0.062464
+
+[table.0000943a]
+name = "Throttle Rev Limiter Recovery Rate Target Above Gear Phase"
+category = "Limiters / Rev Limit / Internal State"
+order = 206
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["target above gear phase"]
+
+[table.00023824]
+name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
+category = "Internal Calculations"
+order = 206
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[table.0000943c]
+name = "Throttle Rev Limiter Recovery Rate Other Gear Relation"
+category = "Limiters / Rev Limit / Internal State"
+order = 207
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["other gear relation"]
+
+[table.00012026]
+name = "Latched Zero Condition Table - raw u8 (0x12026)"
+category = "Internal Calculations"
+order = 207
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0000943e]
+name = "Throttle Rev Limiter Upshift Auxiliary Duration"
+category = "Limiters / Rev Limit / Internal State"
+order = 208
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["target above current duration"]
+
+[table.00012e1a]
+name = "Interpolated State Byte - raw u8 (0x12E1A)"
+category = "Internal Calculations"
+order = 208
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000094b2]
+name = "Transmission Request Scalar Floor"
+category = "Limiters / Rev Limit / Internal State"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["secondary request floor"]
+
+[table.0000c78e]
+name = "Current/Prior-Cycle State Coefficient - raw u16 (0x0C78E)"
+category = "Internal Calculations"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00014384]
+name = "Throttle Rev Limiter Auxiliary Request"
+category = "Limiters / Rev Limit / Internal State"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["context 0", "context 1", "context 2", "context 3", "context 4+"]
+
+[table.000085d9]
+name = "Stationary Engine Speed Limit"
+category = "Limiters / Engine Speed / Stationary"
+order = 210
+emit = true
+fine = 50
+coarse = 100
+static_axis = ["fuel cut", "fuel restore"]
 
 [table.00010b8e]
 name = "Engine Torque Surface"
@@ -2254,8 +2141,8 @@ coarse = 10
 [table.0001245a]
 name = "Engine Torque State Attenuation - raw u8 (0x1245A)"
 category = "Internal Calculations"
-emit = false
 order = 213
+emit = false
 format = "0"
 fine = 1
 coarse = 8
@@ -2263,8 +2150,8 @@ coarse = 8
 [table.0000d40e]
 name = "P0128 Thermostat Model Balance Surface - raw u16 (0x0D40E)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 214
+emit = false
 format = "0"
 fine = 1
 coarse = 256
@@ -2272,8 +2159,8 @@ coarse = 256
 [table.00014b0a]
 name = "P0128 Temperature-Difference Model Coefficient Curve - raw u16 (0x14B0A)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 215
+emit = false
 format = "0"
 fine = 1
 coarse = 256
@@ -2281,8 +2168,8 @@ coarse = 256
 [table.00014cca]
 name = "P0128 Inverse-Weight Curve - raw u16 (0x14CCA)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 216
+emit = false
 format = "0"
 fine = 1
 coarse = 256
@@ -2290,8 +2177,8 @@ coarse = 256
 [table.000151f2]
 name = "P0128 State-Weighted Inverse-Weight Curve - raw u16 (0x151F2)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 217
+emit = false
 format = "0"
 fine = 1
 coarse = 256
@@ -2299,8 +2186,32 @@ coarse = 256
 [table.00014bca]
 name = "EVAP Fuel-Level Coordinate / Sentinel Curve - raw u16 (0x14BCA)"
 category = "Diagnostics / Internal Calculations"
-emit = false
 order = 218
+emit = false
 format = "0"
 fine = 1
 coarse = 256
+
+[axis.00011bfb]
+name = "Minimum Two-Bank Intake Cam Timing"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[axis.00013d14]
+name = "Scaled First-Channel Raw Coordinate"
+format = "0.0"
+fine = 1
+coarse = 10
+
+[axis.000155a0]
+format = "0.0"
+
+[axis.00018916]
+name = "Scaled First-Channel Raw Coordinate (Duplicate)"
+format = "0.0"
+fine = 1
+coarse = 10
+
+[axis.000190d0]
+format = "0.0"

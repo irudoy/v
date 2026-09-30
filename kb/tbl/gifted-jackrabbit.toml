@@ -1,3 +1,12 @@
+[editor]
+name = "Stationary Engine Speed Limit"
+category = "Limiters / Engine Speed / Stationary"
+order = 210
+emit = true
+fine = 50
+coarse = 100
+static_axis = ["fuel cut", "fuel restore"]
+
 [[symbol]]
 layout = "1me3b"
 address = "00008538"

@@ -1,3 +1,12 @@
+[editor]
+name = "Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
+category = "Internal Calculations"
+order = 163
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000121e6"

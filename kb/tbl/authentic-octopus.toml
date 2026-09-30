@@ -1,0 +1,13 @@
+[editor]
+name = "P0128 Temperature-Difference Model Coefficient Curve - raw u16 (0x14B0A)"
+category = "Diagnostics / Internal Calculations"
+order = 215
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00014b0a"
+name = "authentic-octopus"

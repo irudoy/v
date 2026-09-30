@@ -793,7 +793,8 @@ Features:
   and no symbol fills the role of the field; the list of those fields is
   derived, not stored.
   `definitions` holds `default_emit` and the switches of the editor
-  definitions, and each of its targets holds in `images` the header metadata,
+  definitions, each with its position among the switches as `order`, and
+  each of its targets holds in `images` the header metadata,
   checksums, switch addresses, exposed features, prose (`note`), and the
   basis of the review (`basis`) of each image with a definition, in
   `requires` the meanings whose tables and axes the definition of the layout
@@ -2810,15 +2811,27 @@ The service 0x22 table of `7mfk`:
 - `[presentation]` becomes `default_emit` of `definitions`, and each
   `[[switch]]` without its storage address an entry of its `switches`, under
   the slug that `SWITCH_NAMES` of `tools/mapkit/definition_projections.py`
-  gives its name.
+  gives its name, with its position among the switches as `order`.
 - The JK08A entry in `images` of the `7mfk` target of `definitions` takes
   the keys of a projection entry: `[rom]` becomes `rom` with its comment as
-  `note`, `[[checksum]]` becomes `checksums` with each `comment` as `note`,
-  the storage address of each switch goes under `switch`, and `enabled` of
-  `[map_switching]` and `[rolling_launch]` becomes `map_switching` and
-  `rolling_launch`: the definitions of the image expose those features.
+  a `note` of one paragraph, `[[checksum]]` becomes `checksums` with each
+  `comment` as a `note` of one paragraph, the storage address of each switch
+  goes under `switch`, and `enabled` of `[map_switching]` and
+  `[rolling_launch]` becomes `map_switching` and `rolling_launch`: the
+  definitions of the image expose those features.
 - Comments are dropped, and the conversion lists each one for review against
   the summary of its meaning.
+- The file becomes the projection of the `[editor]` and `[logparam]` tables
+  of the `7mfk` symbols and of `definitions`: its header, `[presentation]`,
+  the exposed features, `[logparam.<address>]` by address, `[rom]`, the
+  checksums, the switches by `order`, `[table.<address>]` by the `order` of
+  the editor and by address with the masked views of each table after it,
+  and `[axis.<address>]` by address. `static_axis_operand` names the address
+  of the `7mfk` symbol of its meaning, and each note becomes its comment,
+  wrapped at 79 columns as the definition projections wrap theirs. The
+  projection parses to the file before the conversion, with each note as one
+  paragraph; the conversion lists every note that it wraps anew, and the
+  editor definitions that carry such a note change only in its line breaks.
 
 ### 20.6 Architecture
 

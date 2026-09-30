@@ -1,3 +1,12 @@
+[editor]
+name = "Stock-Inert Feature Timing-State Addend (x-128) (0x121A6)"
+category = "Internal Calculations"
+order = 157
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "1me3b"
 address = "00013a36"

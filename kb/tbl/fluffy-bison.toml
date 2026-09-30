@@ -1,3 +1,12 @@
+[editor]
+name = "Batch Scale Multiplier B - raw u8 (0x12D32)"
+category = "Internal Calculations"
+order = 115
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "00012d32"

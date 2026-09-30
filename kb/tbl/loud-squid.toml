@@ -1,3 +1,12 @@
+[editor]
+name = "Paired Normalization Curve A - catalog RPM scale (0x12798)"
+category = "Internal Calculations"
+order = 103
+emit = false
+format = "0"
+fine = 25
+coarse = 100
+
 [[symbol]]
 layout = "7mfk"
 address = "00012798"

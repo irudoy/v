@@ -353,6 +353,12 @@ class Builder:
     def at(self, layout, address):
         return self._at.get((layout, address), set())
 
+    def index(self, keys):
+        """Let `at` and `resolve` answer symbols that another model declares,
+        as a conversion relates a registry to the model before it."""
+        for key in keys:
+            self._at[(key.layout, key.address)].add(key)
+
     def group(self, group, key, src=None, strength="key"):
         src = str(src) if src is not None else ";".join(sorted(self.symbols[key].sources))
         if group[0] != key.kind:

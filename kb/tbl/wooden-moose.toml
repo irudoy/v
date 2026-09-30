@@ -1,3 +1,11 @@
+[editor]
+name = "Stationary Limiter Readiness Step"
+category = "Limiters / Engine Speed / Stationary"
+order = 12
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "1me3b"
 address = "00013c7e"

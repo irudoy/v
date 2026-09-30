@@ -1,3 +1,14 @@
+[editor]
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "daffodil-gibbon/ram"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012302"

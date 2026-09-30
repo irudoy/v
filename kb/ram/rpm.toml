@@ -1,3 +1,7 @@
+[logparam]
+id = "X_VQ_Engine_Speed"
+unit = "RPM"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe819e"

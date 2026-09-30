@@ -1,3 +1,11 @@
+[editor]
+name = "Intake CVTC Target Correction - High-Detonation State"
+category = "Variable Valve Timing / Intake Cam"
+order = 12
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [[symbol]]
 layout = "7mfk"
 address = "0000ab5a"

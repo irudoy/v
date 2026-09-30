@@ -1,0 +1,13 @@
+[editor]
+name = "Composite Product Multiplier A - raw u8 (0x1208E)"
+category = "Internal Calculations"
+order = 146
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001208e"
+name = "prophetic-jacamar"

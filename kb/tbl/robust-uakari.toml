@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Coolant-Latch Threshold"
+category = "Limiters / Rev Limit / Internal State"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["alternate threshold"]
+
+[[symbol]]
+layout = "7mfk"
+address = "00009434"
+name = "robust-uakari"

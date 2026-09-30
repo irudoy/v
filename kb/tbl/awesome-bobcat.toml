@@ -1,0 +1,13 @@
+[editor]
+name = "Normalized-Byte Multiplier - raw u8 (0x12704)"
+category = "Internal Calculations"
+order = 101
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012704"
+name = "awesome-bobcat"

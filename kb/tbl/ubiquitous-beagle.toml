@@ -1,0 +1,13 @@
+[editor]
+name = "Alternate Inverse Signed Surface - raw s16 (0xE28E)"
+category = "Internal Calculations"
+order = 116
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "0000e28e"
+name = "ubiquitous-beagle"

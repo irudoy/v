@@ -1,0 +1,13 @@
+[editor]
+name = "Composite Product Multiplier B - raw u8 (0x12096)"
+category = "Internal Calculations"
+order = 147
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012096"
+name = "huge-pelican"

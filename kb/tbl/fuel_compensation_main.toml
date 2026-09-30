@@ -1,5 +1,14 @@
 former = ["fuel_compensation_main_default"]
 
+[editor]
+name = "Fuel Compensation - Main"
+category = "Fuelling / Compensation"
+order = 20
+emit = true
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+
 [[symbol]]
 layout = "1me3b"
 address = "0000a0f4"

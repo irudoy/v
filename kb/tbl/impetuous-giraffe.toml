@@ -1,0 +1,13 @@
+[editor]
+name = "Current/Prior-Cycle State Coefficient - raw u16 (0x0C78E)"
+category = "Internal Calculations"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "0000c78e"
+name = "impetuous-giraffe"

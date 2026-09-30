@@ -1,0 +1,14 @@
+[editor]
+name = "Transmission Request Scalar Floor"
+category = "Limiters / Rev Limit / Internal State"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["secondary request floor"]
+
+[[symbol]]
+layout = "7mfk"
+address = "000094b2"
+name = "wonderful-coua"

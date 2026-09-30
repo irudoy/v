@@ -1,3 +1,12 @@
+[editor]
+name = "Protected Division Denominator - catalog torque-ratio scale (0x15770)"
+category = "Internal Calculations"
+order = 127
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
 [[symbol]]
 layout = "7mfk"
 address = "00015770"

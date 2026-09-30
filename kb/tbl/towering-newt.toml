@@ -1,3 +1,12 @@
+[editor]
+name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
+category = "Internal Calculations"
+order = 129
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
 [[symbol]]
 layout = "7mfk"
 address = "00019190"

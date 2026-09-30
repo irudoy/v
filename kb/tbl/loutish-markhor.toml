@@ -1,0 +1,13 @@
+[editor]
+name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
+category = "Internal Calculations"
+order = 178
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012562"
+name = "loutish-markhor"

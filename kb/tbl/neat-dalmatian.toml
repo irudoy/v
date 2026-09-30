@@ -1,0 +1,13 @@
+[editor]
+name = "Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
+category = "Internal Calculations"
+order = 122
+emit = false
+format = "0.0000"
+fine = 0.0008
+coarse = 0.008
+
+[[symbol]]
+layout = "7mfk"
+address = "0001465a"
+name = "neat-dalmatian"

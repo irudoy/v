@@ -1,0 +1,13 @@
+[editor]
+name = "Interpolated State Byte - raw u8 (0x12E1A)"
+category = "Internal Calculations"
+order = 208
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012e1a"
+name = "grinning-peacock"

@@ -1,0 +1,13 @@
+[editor]
+name = "MAF Diagnostic Composite Factor B - raw u8 (0x12868)"
+category = "Diagnostics / MAF"
+order = 181
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012868"
+name = "smiling-piculet"

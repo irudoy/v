@@ -1,0 +1,13 @@
+[editor]
+name = "Control Selector ffff23ed - raw u8 (0x1218E)"
+category = "Internal Calculations"
+order = 154
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001218e"
+name = "judicious-avocet"

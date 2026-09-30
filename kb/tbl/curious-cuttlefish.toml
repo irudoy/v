@@ -1,0 +1,13 @@
+[editor]
+name = "Local Limit Base Term - raw u8 (0x1292C)"
+category = "Internal Calculations"
+order = 134
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001292c"
+name = "curious-cuttlefish"

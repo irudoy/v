@@ -1,3 +1,24 @@
+[editor]
+name = "Ignition Timing Surface - Cold State"
+category = "Ignition Timing / State Surfaces"
+order = 100
+emit = true
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[editor.view]]
+name = "Knock-State Path Enable - Cold State"
+category = "Ignition Timing / State Control"
+mask = "80"
+unit = "Enable flag (0: Off | 1: On)"
+scale = "x"
+to_raw = "x"
+format = "0"
+fine = 1
+coarse = 1
+
 [[symbol]]
 layout = "1nd"
 address = "00009880"

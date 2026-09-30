@@ -1,0 +1,13 @@
+[editor]
+name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
+category = "Internal Calculations"
+order = 206
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "00023824"
+name = "prompt-mosquito"

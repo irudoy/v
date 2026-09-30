@@ -1,3 +1,12 @@
+[editor]
+name = "QH0 Flow Potential Coordinate - Validation Copy"
+category = "Electronic Throttle Control / Internal Coordinates"
+order = 125
+emit = false
+format = "0.00"
+fine = 0.1
+coarse = 1
+
 [[symbol]]
 layout = "7mfk"
 address = "00018ac6"

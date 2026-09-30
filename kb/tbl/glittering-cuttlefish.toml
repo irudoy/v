@@ -1,0 +1,14 @@
+[editor]
+name = "Throttle Rev Limiter Recovery Rate Target Above Gear Phase"
+category = "Limiters / Rev Limit / Internal State"
+order = 206
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["target above gear phase"]
+
+[[symbol]]
+layout = "7mfk"
+address = "0000943a"
+name = "glittering-cuttlefish"

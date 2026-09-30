@@ -1,0 +1,13 @@
+[editor]
+name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
+category = "Internal Calculations"
+order = 151
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[symbol]]
+layout = "7mfk"
+address = "0001212e"
+name = "lemon-badger"

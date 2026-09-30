@@ -2,6 +2,7 @@ from collections import defaultdict
 import copy
 import csv
 import re
+import textwrap
 import tomllib
 from types import SimpleNamespace
 import unittest
@@ -1059,7 +1060,8 @@ class OverridesAdapterTest(unittest.TestCase):
                          [("alt", "0002040c", "0002259c", None),
                           ("alt2", "00008200", "00100000", "00020000")])
         self.assertTrue(entry["note"].startswith("Analysis and method"))
-        self.assertLessEqual(set(entry) - {"rom", "checksums", "note"},
+        self.assertIn("rom-images/roms.csv", entry["basis"])
+        self.assertLessEqual(set(entry) - {"rom", "checksums", "note", "basis"},
                              set(definitions.IMAGE_KEYS) | {"switch"})
         feature = m.entities[("feature", "definitions")].props
         self.assertEqual(feature["default_emit"], True)
@@ -1088,6 +1090,60 @@ class OverridesAdapterTest(unittest.TestCase):
                           ("schema", "switch.Unknown Switch",
                            f"no slug of SWITCH_NAMES in {overrides.PROJECTIONS}"),
                           ("schema", "table.00009000", "unknown key shade")])
+
+    def test_the_registry_entry_keeps_the_keys_of_the_files_that_it_lacks(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+        target = b.target("definitions", "7mfk", "kb/feature/definitions.toml",
+                          status="supported")
+        target.props["images"] = {"JK08A": {"basis": "Measured.", "map_switching": False}}
+        document = {"map_switching": {"enabled": True}, "rom": {"xmlid": "JK08A"}}
+        overrides.declare_overrides(b, document, {}, "probe.toml")
+        self.assertEqual(target.props["images"]["JK08A"],
+                         {"basis": "Measured.", "map_switching": True, "rom": {"xmlid": "JK08A"}})
+
+
+class PresentationProjectionTest(unittest.TestCase):
+    def test_the_projection_renders_the_file(self):
+        text = (repo.ROOT / overrides.OVERRIDES).read_text(encoding="utf-8")
+        rendered = overrides.render_presentation(overrides.presentation_document(model()))
+        self.assertEqual(rendered, text)
+        self.assertEqual(overrides.dropped(text, rendered), ([], []))
+
+    def test_switches_render_by_order_and_tables_by_the_order_of_the_editor(self):
+        m = model()
+        document = overrides.presentation_document(m)
+        switches = m.entities[("feature", "definitions")].props["switches"]
+        self.assertEqual([item["name"] for item in document["switch"]],
+                         [switches[slug]["name"] for slug in
+                          sorted(switches, key=lambda slug: switches[slug]["order"])])
+        self.assertTrue(all("order" not in item for item in document["switch"]))
+        places = [(item.get("order", overrides.LAST), address)
+                  for address, item in document["table"].items()]
+        self.assertEqual(places, sorted(places))
+        self.assertEqual(document["table"]["000126e4"]["static_axis_operand"], "ffff106f")
+
+    def test_a_note_renders_as_its_paragraph_wrapped_at_79_columns(self):
+        m = model()
+        note = m.targets[("definitions", "7mfk")].props["images"]["JK08A"]["note"]
+        text = overrides.presentation_document(m)["rom"]["comment"]["text"]
+        self.assertTrue(text.endswith("\n"))
+        self.assertLessEqual(max(map(len, text.splitlines())), overrides.NOTE_WIDTH)
+        self.assertEqual(" ".join(text.split()), note)
+
+    def test_the_conversion_lists_dropped_comments_and_rewrapped_notes(self):
+        text = (repo.ROOT / overrides.OVERRIDES).read_text(encoding="utf-8")
+        note = tomllib.loads(text)["rom"]["comment"]["text"]
+        narrow = textwrap.fill(" ".join(note.split()), 60, break_on_hyphens=False) + "\n"
+        held = text.replace("[presentation]\n", "# A comment of the file.\n[presentation]\n", 1)
+        held = held.replace(note, narrow, 1)
+        comments, wrapped = overrides.dropped(held, text)
+        self.assertEqual([line for _, line in comments], ["# A comment of the file."])
+        self.assertEqual(wrapped, [("rom.comment.text", narrow, note)])
+        changed = text.replace("default_emit = true", "default_emit = false", 1)
+        self.assertNotEqual(changed, text)
+        with self.assertRaises(KbError) as error:
+            overrides.dropped(changed, text)
+        self.assertEqual(error.exception.code, 3)
 
 
 def _architecture():

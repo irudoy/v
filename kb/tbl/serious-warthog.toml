@@ -1,3 +1,12 @@
+[editor]
+name = "Composite Product Multiplicand - raw u16 (0x14ED2)"
+category = "Internal Calculations"
+order = 202
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
 [[symbol]]
 layout = "7mfk"
 address = "00014ed2"

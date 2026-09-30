@@ -1,3 +1,12 @@
+[editor]
+name = "Dual-Lookup Additive Correction (0x120CE)"
+category = "Internal Calculations"
+order = 148
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
 [[symbol]]
 layout = "7mfk"
 address = "000120ce"

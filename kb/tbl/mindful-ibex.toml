@@ -1,3 +1,12 @@
+[editor]
+name = "Low-range Piecewise Source - raw u16 (0x15042)"
+category = "Internal Calculations"
+order = 126
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
 [[symbol]]
 layout = "7mfk"
 address = "00015042"

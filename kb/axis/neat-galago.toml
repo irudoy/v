@@ -1,3 +1,6 @@
+[editor]
+format = "0.0"
+
 [[symbol]]
 layout = "1me3b"
 address = "0001bc58"

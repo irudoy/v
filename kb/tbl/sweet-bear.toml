@@ -1,0 +1,13 @@
+[editor]
+name = "P0128 State-Weighted Inverse-Weight Curve - raw u16 (0x151F2)"
+category = "Diagnostics / Internal Calculations"
+order = 217
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[symbol]]
+layout = "7mfk"
+address = "000151f2"
+name = "sweet-bear"

@@ -1,0 +1,13 @@
+[editor]
+name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
+category = "Internal Calculations"
+order = 191
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "00012ada"
+name = "daffy-centipede"

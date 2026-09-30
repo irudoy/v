@@ -1,0 +1,13 @@
+[editor]
+name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
+category = "Internal Calculations"
+order = 149
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "0001211e"
+name = "industrious-saluki"

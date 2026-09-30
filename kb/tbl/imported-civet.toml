@@ -1,3 +1,13 @@
+[editor]
+name = "Exhaust CVTC Standstill Override - Speed Threshold"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 16
+emit = true
+format = "0"
+fine = 1
+coarse = 1
+static_axis = ["Counts"]
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e3c"

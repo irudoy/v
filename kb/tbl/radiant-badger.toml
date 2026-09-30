@@ -1,0 +1,34 @@
+[editor]
+name = "Unreferenced Knock-Shaped Bank (0x10F8E)"
+category = "Internal Calculations"
+order = 41
+emit = false
+format = "0.000"
+fine = 0.0015259
+coarse = 0.015259
+static_axis_x = [
+    400,
+    800,
+    1200,
+    1600,
+    2000,
+    2400,
+    2800,
+    3200,
+    3600,
+    4000,
+    4400,
+    4800,
+    5200,
+    5600,
+    6000,
+    6400,
+]
+static_axis_x_name = "Engine Speed [RPM]"
+static_axis_y = [1, 2, 3, 4, 5, 6]
+static_axis_y_name = "Unverified Row"
+
+[[symbol]]
+layout = "7mfk"
+address = "00010f8e"
+name = "radiant-badger"

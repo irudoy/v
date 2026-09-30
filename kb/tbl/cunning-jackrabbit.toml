@@ -1,3 +1,11 @@
+[editor]
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [[symbol]]
 layout = "7mfk"
 address = "0000b53a"

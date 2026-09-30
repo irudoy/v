@@ -1,0 +1,13 @@
+[editor]
+name = "Unidentified Output to ffff15f1 - raw u8 (0x124E2)"
+category = "Unidentified Calibrations"
+order = 100
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[symbol]]
+layout = "7mfk"
+address = "000124e2"
+name = "quaint-platypus"
