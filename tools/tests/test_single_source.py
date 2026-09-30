@@ -149,11 +149,6 @@ def test_a_copy_that_leaves_its_owner_fails(monkeypatch, check, path, old, new):
             "CAN bindings, and all 63 ECU-RAM\ntelemetry fields. 1ND3B",
         ),
         (
-            "patches/rom-address-profiles.toml",
-            "57 of the 60 ECU-RAM fields bind to 1ND0A sources",
-            "58 of the 60 ECU-RAM fields bind to 1ND0A sources",
-        ),
-        (
             "rom-images/support-matrix.md",
             "ECU RAM; 39 of those",
             "ECU RAM; 45 of those",

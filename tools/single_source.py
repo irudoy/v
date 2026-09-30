@@ -736,14 +736,6 @@ def published_facts(sources=None):
             r"fuel-cut state machine bind {n} supported VQ37 families",
             (s.switched(jk78),),
         ),
-        *(
-            Fact(
-                profiles,
-                rf"{{n}} of the {{n}} ECU-RAM fields bind to {rom} sources",
-                (s.bound(rom), s.ecu_fields),
-            )
-            for rom in (nd[0], me[0], jk78[0])
-        ),
     )
 
 

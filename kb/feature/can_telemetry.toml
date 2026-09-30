@@ -35,23 +35,24 @@ can = """
 Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
 payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-56 of the 60 ECU-RAM fields bind to 1ME3B sources through aligned diagnostic \
-tables and reviewed producer-consumer evidence. The two intake solenoid duty \
-command fields read the cells 0xFFFE938F and 0xFFFE9390, which hold the high \
-bytes of the 16-bit duty words 0xFFFE9692 and 0xFFFE9694 after two scheduler \
-copies while bit 2 of ROM8[0x00008576] selects the 16-bit scheme; in that \
-scheme the command cells and the live bytes 0xFFFE942B and 0xFFFE942C carry \
-x*25/64 percent, within 0.16 percentage points of the x*39/100 wire scale. \
-The knock surface field reads the byte 0xFFFE945B, whose bit 7 the knock \
-function 0x00071D64 keeps as the high-detonation state while bit 7 of \
-ROM8[0x00008A7C] enables its hysteresis; the payload moves the bit into bit \
-6 of the wire byte and clears the other bits of the byte. The absent knock \
-timing state, the normalized load snapshot, whose 32-instruction JK08A \
-producer at 0x0003BD1C has no match in the image with PC-relative \
-displacements masked, and the requested-torque column coordinate 0xFFFF1980 \
-and the Fuel Compensation Main column coordinate 0xFFFF1170, whose target \
-homologs are not traced, are encoded from cleared reserved RAM and remain \
-explicitly unavailable in metadata."""
+Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
+ECU-RAM fields to 1ME3B sources, except the unavailable fields named at the \
+end. The two intake solenoid duty command fields read the cells 0xFFFE938F \
+and 0xFFFE9390, which hold the high bytes of the 16-bit duty words \
+0xFFFE9692 and 0xFFFE9694 after two scheduler copies while bit 2 of \
+ROM8[0x00008576] selects the 16-bit scheme; in that scheme the command cells \
+and the live bytes 0xFFFE942B and 0xFFFE942C carry x*25/64 percent, within \
+0.16 percentage points of the x*39/100 wire scale. The knock surface field \
+reads the byte 0xFFFE945B, whose bit 7 the knock function 0x00071D64 keeps \
+as the high-detonation state while bit 7 of ROM8[0x00008A7C] enables its \
+hysteresis; the payload moves the bit into bit 6 of the wire byte and clears \
+the other bits of the byte. The absent knock timing state, the normalized \
+load snapshot, whose 32-instruction JK08A producer at 0x0003BD1C has no \
+match in the image with PC-relative displacements masked, and the \
+requested-torque column coordinate 0xFFFF1980 and the Fuel Compensation Main \
+column coordinate 0xFFFF1170, whose target homologs are not traced, are \
+encoded from cleared reserved RAM and remain explicitly unavailable in \
+metadata."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -123,22 +124,22 @@ can = """
 Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
 payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-57 of the 60 ECU-RAM fields bind to 1ND0A sources through aligned diagnostic \
-tables and reviewed producer-consumer evidence. The knock timing field reads \
-the signed Q8 word 0xFFFE8214, which the knock function 0x0006D948 stores \
-only while bit 5 of ROM8[0x00008A2B] is clear, so the stock calibration \
-leaves the word at its start value. The two intake solenoid duty command \
-fields read the cells 0xFFFE93BF and 0xFFFE93C0, which hold the high bytes \
-of the 16-bit duty words 0xFFFE96BC and 0xFFFE96BE after two scheduler \
-copies while bit 2 of ROM8[0x00008561] selects the 16-bit scheme; in that \
-scheme the command cells and the live bytes 0xFFFE945B and 0xFFFE945C carry \
-x*25/64 percent, within 0.16 percentage points of the x*39/100 wire scale. \
-The normalized load snapshot, whose 32-instruction JK08A producer at \
-0x0003BD1C has no match in the image with PC-relative displacements masked, \
-and the requested-torque column coordinate 0xFFFF1980 and the Fuel \
-Compensation Main column coordinate 0xFFFF1170, whose target homologs are \
-not traced, are encoded from cleared reserved RAM and remain explicitly \
-unavailable in metadata."""
+Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
+ECU-RAM fields to 1ND0A sources, except the unavailable fields named at the \
+end. The knock timing field reads the signed Q8 word 0xFFFE8214, which the \
+knock function 0x0006D948 stores only while bit 5 of ROM8[0x00008A2B] is \
+clear, so the stock calibration leaves the word at its start value. The two \
+intake solenoid duty command fields read the cells 0xFFFE93BF and \
+0xFFFE93C0, which hold the high bytes of the 16-bit duty words 0xFFFE96BC \
+and 0xFFFE96BE after two scheduler copies while bit 2 of ROM8[0x00008561] \
+selects the 16-bit scheme; in that scheme the command cells and the live \
+bytes 0xFFFE945B and 0xFFFE945C carry x*25/64 percent, within 0.16 \
+percentage points of the x*39/100 wire scale. The normalized load snapshot, \
+whose 32-instruction JK08A producer at 0x0003BD1C has no match in the image \
+with PC-relative displacements masked, and the requested-torque column \
+coordinate 0xFFFF1980 and the Fuel Compensation Main column coordinate \
+0xFFFF1170, whose target homologs are not traced, are encoded from cleared \
+reserved RAM and remain explicitly unavailable in metadata."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -300,7 +301,7 @@ initialization paths, payload, mailbox table, and knock sources; mailbox 26 \
 is stock inactive while mailbox 28 is occupied."""
 telemetry = """
 The aligned target UDS table, direct RAM references, and exact target \
-producer-consumer functions bind all 60 schema-2 ECU sources. The normalized \
+producer-consumer functions bind the schema-2 ECU sources. The normalized \
 load snapshot 0xFFFF1034 is the destination of the 0x1C-byte block copy from \
 0xFFFF1050 that the scheduler calls at 0x00020F50. The 32 instruction words \
 of its producer at 0x0003CACC equal those of the JK08A producer at \
@@ -379,8 +380,8 @@ bindings are recovered from target call topology and literal references; \
 mailbox 26 is stock inactive while mailbox 28 is occupied."""
 telemetry = """
 Direct RAM-reference pairs, exact UDS pointer-table positions, \
-producer-consumer topology, and reviewed target function listings bind all \
-60 schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the \
+producer-consumer topology, and reviewed target function listings bind the \
+schema-2 ECU sources. The normalized load snapshot 0xFFFF1034 is the \
 destination of the 0x1C-byte block copy from 0xFFFF1050 that the scheduler \
 calls at 0x00020F50. The 32 instruction words of its producer at 0x0003CACC \
 equal those of the JK08A producer at 0x0003BD1C; the JK08A literals \
@@ -460,13 +461,13 @@ can = """
 HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox \
 records, payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-60 of the 60 ECU-RAM fields bind to JK78C sources through aligned diagnostic \
-tables and reviewed producer-consumer evidence. The intake solenoid duty \
-fields read the command cells 0xFFFF2308 and 0xFFFF2309 and the live bytes \
-0xFFFF239A and 0xFFFF239B, which carry x*25/64 percent while bit 2 of \
-ROM8[0x0000852A] selects the 16-bit scheme, within 0.16 percentage points of \
-the x*39/100 wire scale. The knock timing field reads the signed Q8 word \
-0xFFFF1204, which the knock function 0x00062780 stores only while bit 5 of \
+Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
+ECU-RAM fields to JK78C sources. The intake solenoid duty fields read the \
+command cells 0xFFFF2308 and 0xFFFF2309 and the live bytes 0xFFFF239A and \
+0xFFFF239B, which carry x*25/64 percent while bit 2 of ROM8[0x0000852A] \
+selects the 16-bit scheme, within 0.16 percentage points of the x*39/100 \
+wire scale. The knock timing field reads the signed Q8 word 0xFFFF1204, \
+which the knock function 0x00062780 stores only while bit 5 of \
 ROM8[0x00008965] is clear, so the stock calibration leaves the word at its \
 start value. The Fuel Compensation Main column field reads the high byte of \
 0xFFFF22F8, the column of the target Fuel Compensation surfaces 0x00009EBA \
