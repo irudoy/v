@@ -646,6 +646,21 @@ def _join_failures(layout, base, present, root):
     return failures
 
 
+def inputs(root=repo.ROOT):
+    """The files that the `l0` check reads: every file under `l0/`, the image
+    catalog, the layouts, the configuration, the Ghidra pin, the export
+    scripts, the census registries, and the join registries."""
+    config = repo.config(root)
+    found = {path.relative_to(root).as_posix()
+             for path in (root / repo.L0).rglob("*") if path.is_file()}
+    found.update(path.as_posix() for path in (repo.CATALOG, repo.HOMOLOGY, repo.CONFIG,
+                                              repo.GHIDRA_PIN))
+    found.update((repo.GHIDRA_SCRIPTS / name).as_posix() for name in config["l0"]["scripts"])
+    found.update(settings["interp"] for settings in config["l0"].get("census", {}).values())
+    found.update((MERGES / path.name).as_posix() for path in (root / MERGES).glob("*.csv"))
+    return sorted(found)
+
+
 def check_all(root=repo.ROOT, only=None):
     """The `l0` check over every layout, or over the layout ids in `only`."""
     cache_path, verified = _normal_cache(root)

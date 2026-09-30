@@ -23,7 +23,7 @@ def section(heading, root=repo.ROOT):
 
 def table(heading, root=repo.ROOT):
     """The rows of the first table under a heading as lists of cells, without
-    the header and the separator row."""
+    the header and the separator row; `\\|` in a cell is a literal bar."""
     rows = []
     for line in section(heading, root).splitlines():
         line = line.strip()
@@ -31,7 +31,8 @@ def table(heading, root=repo.ROOT):
             if rows:
                 break
             continue
-        rows.append([cell.strip() for cell in line.strip("|").split("|")])
+        rows.append([cell.strip().replace("\\|", "|")
+                     for cell in re.split(r"(?<!\\)\|", line.strip("|"))])
     return rows[2:]
 
 

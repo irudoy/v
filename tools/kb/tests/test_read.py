@@ -1,8 +1,11 @@
+from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
 from kb import graph, read, refs, vocab
 from kb.refs import Ref
+from kb.repo import KbError
 
 
 def sym(name, kind, address, layout="7mfk"):
@@ -361,6 +364,81 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual(lines, [
             "l0  supports identity  at 7mfk:0004d464 0004d468",
             "trace  supports identity  to puffin/fn/7mfk-000261b8  relies structure"])
+
+
+class RawStore:
+    """The symbols of one meaning as `kb raw` reads them."""
+
+    def __init__(self, symbols):
+        self.symbols = symbols
+
+    def run(self, query, **params):
+        if "-[:HAS]->(s:Kb:Symbol)" in query:
+            return [{"s": node} for node in self.symbols]
+        return []
+
+
+class RawTest(unittest.TestCase):
+    """A meaning whose file states its home symbol on 7mfk and whose symbol
+    on 1nd a registry of curated names states."""
+
+    FILE = 'name = "demo"\nkind = "fn"\n\n[[symbol]]\nlayout = "7mfk"\naddress = 0xc338a\n'
+    MEANING = {"key": "demo/fn", "kind": "fn", "home": "7mfk",
+               "src": ["kb/fn/demo.toml", "tools/ghidra/symbols/1nd.csv"]}
+    HOME = {"name": "demo", "kind": "fn", "layout": "7mfk", "address": 0xC338A,
+            "src": ["kb/fn/demo.toml"]}
+    CURATED = {"name": "demo", "kind": "fn", "layout": "1nd", "address": 0x11363C,
+               "src": ["tools/ghidra/symbols/1nd.csv"]}
+
+    def setUp(self):
+        scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(scratch.cleanup)
+        self.root = Path(scratch.name)
+        for name, text in {
+                "kb/fn/demo.toml": self.FILE,
+                "kb/names.csv": "layout,kind,address,name,former\n"
+                                "7mfk,ram,000c338a,other-name,\n1nd,fn,0011363c,old-name,\n",
+                "tools/ghidra/symbols/1nd.csv": "# Curated function names\naddr,name,note\n"
+                                                "0011363c,demo,init\n00200000,next,\n"}.items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+    def raw(self, ref):
+        store = RawStore([self.HOME, self.CURATED])
+        with mock.patch.object(read.refs, "resolve", lambda graph, text, root: ref):
+            return read.raw(store, "demo", self.root)
+
+    def test_a_meaning_shows_its_file_and_the_registry_rows_of_its_symbols(self):
+        answer = self.raw(Ref("meaning", self.MEANING))
+        self.assertEqual(answer.data["files"], {"kb/fn/demo.toml": self.FILE})
+        self.assertEqual(answer.data["records"], [
+            "  kb/names.csv:1: layout,kind,address,name,former",
+            "  kb/names.csv:3: 1nd,fn,0011363c,old-name,",
+            "  tools/ghidra/symbols/1nd.csv:2: addr,name,note",
+            "  tools/ghidra/symbols/1nd.csv:3: 0011363c,demo,init"])
+        lines = answer.text().splitlines()
+        self.assertEqual(lines[:3], ["demo/fn", "--- kb/fn/demo.toml", 'name = "demo"'])
+        self.assertIn("--- registry rows", lines)
+
+    def test_a_symbol_shows_the_file_of_its_meaning_and_its_own_rows(self):
+        answer = self.raw(Ref("symbol", self.HOME, self.MEANING, "7mfk", 0xC338A))
+        self.assertEqual(answer.data["ref"], "demo/fn/7mfk-000c338a")
+        self.assertEqual(answer.data["files"], {"kb/fn/demo.toml": self.FILE})
+        self.assertEqual(answer.data["records"], [])
+
+    def test_a_record_without_file_or_row_says_so(self):
+        lone = {"name": "lone", "kind": "ram", "layout": "7mfk", "address": 0xFFFF8000,
+                "src": []}
+        answer = self.raw(Ref("symbol", lone, {"key": "lone/ram", "src": []}, "7mfk",
+                              0xFFFF8000))
+        self.assertEqual(answer.text().splitlines(),
+                         ["lone/ram/7mfk-ffff8000", "  no file or registry row states it"])
+
+    def test_a_location_holds_no_record(self):
+        with self.assertRaises(KbError) as location:
+            self.raw(Ref("location", layout="7mfk", address=0x8000))
+        self.assertEqual(location.exception.code, 5)
 
 
 if __name__ == "__main__":

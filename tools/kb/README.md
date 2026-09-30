@@ -14,10 +14,12 @@ uv run kb instance status            # instances of the repository and their sta
 uv run kb cypher "MATCH (m:Meaning {name: \$n}) RETURN m" --param n=hcan1_init
 uv run kb check                      # every active check; exit 1 on a failure
 uv run kb check --only l0            # one check
+uv run kb check --changed            # the checks whose inputs differ from those of their last pass
 uv run kb audit                      # disagreements between registries and the levels of claims
 uv run kb audit --section levels     # one section, which the audit alone computes
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
+uv run kb code hcan1_init --layout 1nd   # decompilation of a function symbol, or of the symbol of a meaning
 uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocation or datum that holds it, and its L0 facts
 uv run kb show 7mfk:0000a4aa         # identity, keys, block and chain steps, feature roles, layouts, links, L0 accessors, notes, evidence
 uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
@@ -27,10 +29,11 @@ uv run kb find knock threshold       # meanings and designed entities ranked by 
 uv run kb brief                      # graph state, layouts, stage, owners, legacy names, gaps, and the questions
 uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings without a symbol, by status
 uv run kb log <ref>                  # renames and generated names of an entity
-uv run kb raw <ref>                  # the registry rows that state an entity
+uv run kb raw <ref>                  # the file of an entity and the registry rows that state it
 uv run kb bench                      # the acceptance questions of the current stage
 uv run kb mcp                        # the read commands and kb_apply as MCP tools on stdio
 uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
+uv run kb project --check            # exit 1 when a projection differs from its rendering
 uv run kb fmt                        # rewrite the entity files of kb/ in canonical form
 uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning on another layout
 uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
@@ -49,6 +52,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   ([Matchers](#matchers)); and `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
   A check may print notes, lines marked `note:` that do not fail it.
+  `--changed` runs the checks whose inputs differ from those of their last
+  pass: the files a check reads and the source and configuration of `kb`.
+  `.kb/cache/checks.json` records the digest of the inputs of each check at
+  its last pass and the files beyond its stated inputs that it read, the
+  Python files of `test` evidence.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -76,8 +84,10 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   record, and the `arithmetic` equations that do not hold (SPEC, section
   7.1). `--section` computes only the named sections, and the write
   commands compute only `disagreements`.
-- `kb code` resolves an address to the function whose L0 body holds it and
-  calls `tools/ghidra/decompile.sh` for that function's layout image. The
+- `kb code` shows the function whose L0 body holds a location
+  `<layout>:<address>`, the function symbol that a reference names, or the
+  symbol of a meaning on `--layout` or else on its home layout, and calls
+  `tools/ghidra/decompile.sh` for that function's layout image. The
   decompilations and listings stay in the local export directory as the cache
   of `kb code`; `-f` reruns Ghidra. An answer longer than its budget in
   `config.toml` starts with a `TRUNCATED:` line; `--budget` and `--full`
@@ -505,11 +515,12 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 
 `projections.toml` registers every generated file of the repository with its
 generator, inputs, consumers, stage, and read mode, as section 14 of the
-specification states. `uv run kb project` renders the projections of `kb`
-functions whose stage the transition has reached, such as the `AGENTS.md#kb`
+specification states. `uv run kb project` renders under `.kb/lock` the
+projections of `kb` functions whose stage the transition has reached, such as the `AGENTS.md#kb`
 section, the interpolation registries, the native registries, and the
 definition registries; the generator of a pattern returns the text of each of
-its files. A projection of
+its files; `--check` writes nothing and exits with 1 when a projection
+differs from its rendering. A projection of
 another generator keeps that generator and its gate. The `projections` check requires every entry to
 match tracked files that no other entry claims and to name existing paths,
 compares each projection of `kb` with its rendering and the tracked files of
@@ -557,6 +568,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.checks` | The model checks and the audit |
 | `kb.levels` | Claims, effective levels, grounding, and the `levels` section of the audit |
 | `kb.fingerprint` | Input paths, git blob hashes, and the fingerprint |
+| `kb.passes` | The inputs of the checks and the record of their passes, which `kb check --changed` compares |
 | `kb.lock` | `.kb/lock` |
 | `kb.instance` | Graph instances by working tree |
 | `kb.graph` | Claim rows, loading, `:Meta`, and read-only queries |
@@ -622,3 +634,7 @@ KB_TEST_BOLT=bolt://localhost:<port> uv run pytest -q tools/kb/tests/test_graph.
 
 The second form also loads the whole model, in about a minute, into the
 scratch server that `KB_TEST_BOLT` names and that the test clears.
+`test_spec.py` binds the command tables of section 12 of the specification to
+the parser: the syntax of every row whose stage has started parses, every
+command and option of the parser appears in such a row, the MCP tools are the
+read commands of those rows, and the exit codes are those of section 12.5.

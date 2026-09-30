@@ -1175,60 +1175,70 @@ its own server.
 `uv run kb mcp` serves the same operations over MCP on standard input and
 output.
 
-Options common to the read commands:
+The read commands whose syntax ends in `[<read options>]` take these
+options:
 
 | Option | Effect |
 |---|---|
-| `--layout <id>` | Restrict the answer to one layout |
 | `--budget <tokens>` | Output budget; the default per command is in `tools/kb/config.toml` |
 | `--full` | No budget |
 | `--json` | Structured output for programs, without a budget |
 | `--no-sync` | Fail instead of syncing a stale graph |
-| `--expand <ref>` | `kb impact` and `kb path`: expand a hub; repeatable |
-| `--limit <n>` | `kb path`: paths to print; `kb find`: results to print |
+
+In a read command, `--layout <l>` restricts the answer to one layout. The
+Stage column of the command tables names the transition stage from which a
+command exists ([Stages](#213-stages)). A test binds the tables to the parser
+of `kb`: the syntax of every row whose stage has started parses, every
+command and option of the parser appears in such a row, and the MCP tools are
+the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 
 ### 12.2 Read commands
 
-| Command | Answers |
-|---|---|
-| `kb brief` | Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
-| `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning |
-| `kb at <layout>:<address>` | The symbol at the address, or else the feature allocations, function, or table that contain it, and the L0 facts at that address |
-| `kb where <ref>` | The symbol or status of a meaning on every layout |
-| `kb impact <ref>` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it |
-| `kb path <a> <b>` | The shortest typed paths between two entities |
-| `kb gaps [--feature <f>] [--layout <l>] [--catalog]` | Required meanings without a symbol, grouped by status |
-| `kb suggest <ref> --layout <l>` | Candidate symbols of a meaning on a layout, one line per channel with the evidence kind it would record |
-| `kb suggest --blocks --layout <l>` | Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms)) |
-| `kb find <text>` | Meanings and designed entities ranked by name or slug, former name, title, and summary |
-| `kb code <ref> [--layout <l>]` | Decompilation or listing of a function symbol through `tools/ghidra/decompile.sh` and its cache |
-| `kb log <ref>` | The history of the entity through renames and redirects |
-| `kb raw <ref>` | The canonical file of the entity |
-| `kb cypher <query>` | A read-only Cypher query over the working tree's instance after the fingerprint check |
-| `kb audit [--section <s>]` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes |
-| `kb bench [--all] [--only <id>]` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) |
-| `kb check [--changed]` | The gates of [Checks](#13-checks) |
+| Command | Answers | Stage |
+|---|---|---|
+| `kb brief [<read options>]` | Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands | 2 |
+| `kb show <ref> [--layout <l>] [<read options>]` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning | 2 |
+| `kb at <location> [--layout <l>] [<read options>]` | The symbol at a location `<layout>:<address>`, or at an address on `--layout`, or else the feature allocations, function, or table that contain it, and the L0 facts at that address | 2 |
+| `kb where <ref> [<read options>]` | The symbol or status of a meaning on every layout | 2 |
+| `kb impact <ref> [--layout <l>] [--expand <ref>]... [<read options>]` | Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it; `--expand` expands a hub | 2 |
+| `kb path <a> <b> [--layout <l>] [--expand <ref>]... [--limit <n>] [<read options>]` | The shortest typed paths between two entities, at most `--limit` of them; `--expand` expands a hub | 2 |
+| `kb gaps [--feature <f>] [--layout <l>] [<read options>]` | Required meanings without a symbol, grouped by status | 3 |
+| `kb gaps --catalog [<read options>]` | The features of the parity catalog with their acceptance criteria and their status per layout | 10 |
+| `kb suggest <ref> --layout <l> [<read options>]` | Candidate symbols of a meaning on a layout, one line per channel with the evidence kind it would record | 9 |
+| `kb suggest --blocks --layout <l> [<read options>]` | Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms)) | 6 |
+| `kb find <text>... [--limit <n>] [<read options>]` | Meanings and designed entities ranked by name or slug, former name, title, and summary, at most `--limit` of them | 2 |
+| `kb code <ref> [--layout <l>] [--listing] [--force] [--budget <tokens>] [--full] [--no-sync]` | The decompilation of a function through `tools/ghidra/decompile.sh` and its cache, with `--listing` its listing, and with `--force` from a new run of Ghidra: the function whose body holds a location `<layout>:<address>`, the function symbol that the reference names, or the symbol of a meaning on `--layout` or else on its home layout | 1 |
+| `kb log <ref> [<read options>]` | The history of the entity through renames and redirects | 2 |
+| `kb raw <ref> [<read options>]` | The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included | 2 |
+| `kb cypher <query> [--param <name>=<value>]... [<read options>]` | A read-only Cypher query over the working tree's instance after the fingerprint check | 2 |
+| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes | 2 |
+| `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
+| `kb check [--changed] [--only <check>]...` | The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass | 1 |
 
 ### 12.3 Write commands
 
-| Command | Effect |
-|---|---|
-| `kb new <kind> <layout>:<address>` | A meaning with one symbol, named or with a generated name |
-| `kb new <kind> <slug>` | A designed entity |
-| `kb set <ref> [--layout <l>] <key>=<value>...` | Keys of an entity, a symbol, or a feature target |
-| `kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>]` | A symbol of an existing meaning on another layout, with evidence |
-| `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>]` | Status `absent` with the evidence that removes the mechanism |
-| `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>]` | Status `unresolved` with the method and target of the search |
-| `kb link <from> <type> <to>` / `kb unlink` | A typed link and its evidence |
-| `kb merge <meaning> <other> [--evidence <item>]... [--from <l>]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) |
-| `kb rename`, `kb move` | [Renames, merges, and moves](#55-renames-merges-and-moves) |
-| `kb retire <ref>` | Retires a meaning or designed entity; its names stay reserved |
-| `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) |
-| `kb apply <batch> [--dry-run]` | A batch of the operations above as one change |
-| `kb fmt [<path>...]` | Rewrites entity files in canonical form after a merge |
-| `kb project [<path>...]` | Renders the projections of `kb` functions that apply at the current stage, or those of the paths ([Projections](#14-projections)) |
-| `kb sync [--full]` | Compiles and loads the graph |
-| `kb instance up\|down\|status\|prune` | [Instances](#11-instances) |
+| Command | Effect | Stage |
+|---|---|---|
+| `kb new <kind> <layout>:<address> [--dry-run]` | A meaning with one symbol, named or with a generated name | 4 |
+| `kb new <kind> <slug> [--dry-run]` | A designed entity | 4 |
+| `kb set <ref> [--layout <l>] <key>=<value>... [--dry-run]` | Keys of an entity, a symbol, or a feature target | 3 |
+| `kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | A symbol of an existing meaning on another layout, with evidence | 3 |
+| `kb absent <meaning> --layout <l> --evidence <item>... [--note <text>] [--dry-run]` | Status `absent` with the evidence that removes the mechanism | 3 |
+| `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]` | Status `unresolved` with the method and target of the search | 3 |
+| `kb link <from> <type> <to> [--evidence <item>]... [--dry-run]` | A typed link and its evidence | 4 |
+| `kb unlink <from> <type> <to> [--dry-run]` | Removes a typed link | 4 |
+| `kb merge <meaning> <other> [--evidence <item>]... [--from <l>] [--dry-run]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
+| `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 4 |
+| `kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
+| `kb move <symbol> <meaning> [--evidence <item>]... [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 4 |
+| `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 5 |
+| `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) | 9 |
+| `kb apply <batch> [--dry-run]` | A batch of the operations above as one change | 3 |
+| `kb fmt [<path>...]` | Rewrites entity files in canonical form after a merge | 3 |
+| `kb project [--check] [<path>...]` | Renders under the lock the projections of `kb` functions that apply at the current stage, or those of the paths; `--check` writes nothing and exits with 1 when a projection differs from its rendering ([Projections](#14-projections)) | 2 |
+| `kb sync [--full]` | Compiles and loads the graph | 2 |
+| `kb instance up\|down\|status\|prune` | [Instances](#11-instances) | 2 |
+| `kb mcp` | Serves the read commands and `kb apply` over MCP ([MCP](#126-mcp)) | 2 |
 
 Every write:
 
@@ -1367,12 +1377,20 @@ registers it; `tools/kb/README.md` gives the entry.
 
 ## 13. Checks
 
-`uv run kb check` runs every active check over the working tree, and
-`--changed` runs the checks whose inputs changed, with their dependents. Each
+`uv run kb check` runs every active check over the working tree. Each
 failure is one line with the file, the key, and the command that fixes or
-explains it. Stage 1 creates the `kb` package with the `l0` check, and from
-then on `make check` runs `uv run kb check`. The current gates keep running
-until the stage that replaces them.
+explains it. `--changed` runs the checks whose inputs differ from those of
+their last pass. The inputs of a check are the files that it reads and the
+source and configuration of `kb`: the `l0` check reads L0, the image catalog,
+the layouts, the Ghidra pin, the export scripts, and the census and join
+registries; the `sites` check reads the function ledgers, L0, and the images
+of the layouts; the model checks read the inputs of the fingerprint, the
+census registries, and the Python files that `test` evidence names; the
+`projections` and `guard` checks take every tracked file as an input.
+`.kb/cache/checks.json` records for each check the digest of its inputs at
+its last pass and the files that it read beyond those it states in advance. Stage 1 creates the `kb` package with the
+`l0` check, and from then on `make check` runs `uv run kb check`. The current
+gates keep running until the stage that replaces them.
 
 | Check | Requires | Active from stage |
 |---|---|---|
@@ -1440,9 +1458,10 @@ read = "guarded"
 | `read` | `guarded`: agents read the knowledge through `kb`; `open`: anyone reads the file |
 
 - A projection is regenerated byte-identically. `uv run kb project` renders
-  the projections of `kb` functions that apply, and the `projections` check
-  compares them with their rendering and the tracked files of a pattern with
-  the files of its rendering. A projection of another generator keeps
+  the projections of `kb` functions that apply under the lock of the writes,
+  `uv run kb project --check` compares them without writing, and the
+  `projections` check compares them with their rendering and the tracked
+  files of a pattern with the files of its rendering. A projection of another generator keeps
   the gate of that generator; the check requires its files and the repository
   paths of its command to exist.
 - A tracked file outside `kb/` and `l0/` whose first six lines declare it

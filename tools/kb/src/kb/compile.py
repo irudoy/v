@@ -16,12 +16,13 @@ from kb.model import Builder, SymbolKey
 SCHEMA = 1
 PACKAGE = "tools/kb/src/kb"
 # Modules of the command line, the read and write commands, the MCP server, the
-# checks, the projections, the conversions, the guard, and the instances, and
-# the adapters of converted registries, by their path in the package. They do
-# not change the graph, so they are no compiler inputs.
+# checks and the record of their passes, the projections, the conversions, the
+# guard, and the instances, and the adapters of converted registries, by their
+# path in the package. They do not change the graph, so they are no compiler
+# inputs.
 NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "convert.py", "guard.py",
-                          "instance.py", "lock.py", "mcp.py", "project.py", "read.py",
-                          "refs.py", "spec.py", "write.py",
+                          "instance.py", "lock.py", "mcp.py", "passes.py", "project.py",
+                          "read.py", "refs.py", "spec.py", "write.py",
                           *(f"adapters/{adapter.__name__.rsplit('.', 1)[1]}.py"
                             for adapter in adapters.CONVERTED)})
 

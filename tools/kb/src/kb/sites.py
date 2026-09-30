@@ -260,6 +260,19 @@ def related(layout_id, func, root=repo.ROOT):
     return found | calls(layout_id, root).get(func, set())
 
 
+def inputs(root=repo.ROOT):
+    """The files that the `sites` check reads: the layouts, the image catalog,
+    and the function ledger, the L0, and the image of each layout."""
+    found = {repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix()}
+    images = repo.images(root)
+    for layout in repo.layouts(root).values():
+        found.add(f"defs/{layout.image}.funcs.csv")
+        found.add(images[layout.image].path.relative_to(root).as_posix())
+        found.update(path.relative_to(root).as_posix()
+                     for path in (root / repo.L0 / layout.id).glob("*") if path.is_file())
+    return sorted(found)
+
+
 def check(root=repo.ROOT):
     """The `sites` check over the function ledger `defs/<image>.funcs.csv` of
     the L0 image of each layout: every `site:` token that is an instruction of

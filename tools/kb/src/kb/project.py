@@ -119,9 +119,10 @@ def current(root, entry):
     return None if span is None else text[span[0]:span[1]]
 
 
-def write(root=repo.ROOT, paths=()):
+def write(root=repo.ROOT, paths=(), check=False):
     """Render the projections of `kb` at the current stage, or those of
-    `paths`; return [(path, changed)]."""
+    `paths`; return [(path, changed)]. With `check`, write nothing and
+    return whether each file differs from its rendering."""
     entries = [entry for entry in load(root)
                if rendered(entry) and entry.get("stage", 0) <= stage(root)]
     unknown = sorted(set(paths) - {entry["path"] for entry in entries})
@@ -138,7 +139,8 @@ def write(root=repo.ROOT, paths=()):
             for name, text in sorted(renderings(root, entry).items()):
                 path = root / name
                 if not path.is_file() or path.read_text(encoding="utf-8") != text:
-                    _replace(path, text)
+                    if not check:
+                        _replace(path, text)
                     changed = True
             done.append((entry["path"], changed))
             continue
@@ -147,7 +149,7 @@ def write(root=repo.ROOT, paths=()):
         if span is None:
             raise KbError(f"{file} has no markers {' '.join(markers(section))}", code=1)
         new = old[:span[0]] + generator(entry)(root) + old[span[1]:]
-        if new != old:
+        if new != old and not check:
             _replace(root / file, new)
         done.append((entry["path"], new != old))
     return done

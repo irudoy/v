@@ -60,6 +60,9 @@ STORAGE_BYTES = {**sites.STORAGE_BYTES, "float32": 4}
 HOMOLOGY_KINDS = frozenset({"masked-match", "literal-pool", "function-match", "call-ordinal",
                             "interp-contract", "did-table", "byte-identical", "l0",
                             "manual"})
+# The repository files that the verifiers have read beyond the inputs of the
+# compiler: the Python files of `test` items, which `kb.passes` records.
+READ = set()
 COUNTED = frozenset({"masked-match", "function-match", "call-ordinal"})
 # Interpolation keys that two layouts share under one contract; `kernel` names
 # a function of each layout.
@@ -905,6 +908,7 @@ def _functions_of(path):
 def _verify_test(ctx):
     """`path` is a Python file of the repository that defines the test
     function `key`."""
+    READ.add(str(ctx.item["path"]))
     path = ctx.model.root / str(ctx.item["path"])
     if path.suffix != ".py" or not path.is_file():
         return f"{ctx.item['path']} is no Python file of the repository"

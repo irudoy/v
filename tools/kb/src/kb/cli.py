@@ -12,8 +12,8 @@ import shlex
 import subprocess
 import sys
 
-from kb import (answer, checks, compile, graph, guard, instance, l0, lock, project, read, repo,
-                sites, store, vocab, write)
+from kb import (answer, checks, compile, graph, guard, instance, l0, lock, passes, project,
+                read, refs, repo, sites, store, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -66,8 +66,29 @@ def containing_function(layout, address, root=repo.ROOT):
     return f"{owners[0]:08x}"
 
 
+def code_target(args, root=repo.ROOT):
+    """The layout and the address that `kb code` shows, with the reference of
+    their symbol: a location of the form `<layout>:<address>` as it stands,
+    or else the function symbol that the reference names on `--layout`, or
+    for a meaning on its home layout."""
+    if refs.LOCATION.fullmatch(args.ref.strip()):
+        return (*parse_location(args.ref, args.layout, root), None)
+    with graph.fresh(root, args.no_sync, log=_stderr) as session:
+        ref = refs.resolve(session, args.ref, args.layout, root)
+        if ref.kind == "meaning" and args.layout is None and ref.node.get("home"):
+            ref = refs.resolve(session, args.ref, ref.node["home"], root)
+    if ref.kind == "location":
+        return repo.layout(ref.layout, root), ref.address, None
+    if ref.kind == "meaning" and ref.node["kind"] == "fn":
+        raise KbError(f"{ref.text} has no symbol on {ref.layout or 'its home layout'}", code=5)
+    if ref.kind != "symbol" or ref.node["kind"] != "fn":
+        raise KbError(f"{ref.text} is no function; kb code shows the code of a function "
+                      f"(kb show {ref.text})", code=2)
+    return repo.layout(ref.node["layout"], root), ref.node["address"], ref.text
+
+
 def command_code(args, root=repo.ROOT):
-    layout, address = parse_location(args.ref, args.layout, root)
+    layout, address, symbol = code_target(args, root)
     entry = containing_function(layout, address, root)
     command = [str(root / "tools/ghidra/decompile.sh"), "-r", layout.image]
     if args.listing:
@@ -79,8 +100,9 @@ def command_code(args, root=repo.ROOT):
     if result.returncode != 0:
         raise KbError(result.stderr.strip() or "decompile.sh failed", code=6)
     paths = [Path(line) for line in result.stdout.splitlines() if line.strip()]
-    parts = [f"{layout.id}:{entry}  fn  [l0] Ghidra {repo.ghidra_version(root)}, "
-             f"program of {layout.image}"]
+    parts = [symbol] if symbol else []
+    parts.append(f"{layout.id}:{entry}  fn  [l0] Ghidra {repo.ghidra_version(root)}, "
+                 f"program of {layout.image}")
     if entry != f"{address:08x}":
         parts.append(f"  {layout.id}:{address:08x} lies in the body of {layout.id}:{entry}")
     for path in paths:
@@ -97,15 +119,20 @@ def command_check(args, root=repo.ROOT):
     unknown = sorted(set(selected) - set(CHECKS))
     if unknown:
         raise KbError(f"unknown or inactive checks {unknown}; active: {', '.join(CHECKS)}", code=2)
+    record = passes.Passes(root)
     failed = 0
     for name in selected:
-        failures = CHECKS[name](root)
+        failures = record.run(name, CHECKS[name], args.changed)
+        if failures is None:
+            print(f"check {name}: PASS, its inputs are those of its last pass")
+            continue
         for failure in failures:
             print(f"{name}: {failure}")
         for note in NOTES[name](root) if name in NOTES else ():
             print(f"{name}: note: {note}")
         print(f"check {name}: {'FAIL ' + str(len(failures)) if failures else 'PASS'}")
         failed += len(failures)
+    record.save()
     return 1 if failed else 0
 
 
@@ -297,8 +324,14 @@ def command_audit(args, root=repo.ROOT):
 
 
 def command_project(args, root=repo.ROOT):
-    for path, changed in project.write(root, args.paths):
-        print(f"{path}: {'written' if changed else 'current'}")
+    if args.check:
+        found = project.write(root, args.paths, check=True)
+        for path, changed in found:
+            print(f"{path}: {'differs from its rendering' if changed else 'current'}")
+        return 1 if any(changed for _, changed in found) else 0
+    with lock.held(root):
+        for path, changed in project.write(root, args.paths):
+            print(f"{path}: {'written' if changed else 'current'}")
     return 0
 
 
@@ -382,7 +415,7 @@ def build_parser():
 
     check = commands.add_parser("check", help="run the checks of the current stage")
     check.add_argument("--changed", action="store_true",
-                       help="run the checks whose inputs changed (every active check)")
+                       help="run the checks whose inputs differ from those of their last pass")
     check.add_argument("--only", action="append", help="run one check; repeatable")
     check.set_defaults(handler=command_check)
 
@@ -460,16 +493,21 @@ def build_parser():
     bench.set_defaults(handler=command_bench)
 
     code = commands.add_parser("code", help="decompilation or listing of a function")
-    code.add_argument("ref", help="<layout>:<address>")
-    code.add_argument("--layout")
+    code.add_argument("ref", help="a function, its meaning, or <layout>:<address> of an "
+                      "instruction (tools/kb/SPEC.md, section 5.2)")
+    code.add_argument("--layout", help="the layout of the symbol of a meaning, or of an address")
     code.add_argument("-l", "--listing", action="store_true", help="add the listing")
     code.add_argument("-f", "--force", action="store_true", help="rerun Ghidra")
     code.add_argument("--budget", type=int)
     code.add_argument("--full", action="store_true")
+    code.add_argument("--no-sync", action="store_true",
+                      help="fail instead of syncing a stale graph")
     code.set_defaults(handler=command_code)
 
     render = commands.add_parser("project", help="render the projections that kb generates")
     render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")
+    render.add_argument("--check", action="store_true",
+                        help="write nothing; exit 1 when a projection differs from its rendering")
     render.set_defaults(handler=command_project)
 
     rewrite = commands.add_parser("fmt", help="rewrite entity files in canonical form")

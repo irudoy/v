@@ -12,7 +12,7 @@ import math
 import re
 import tomllib
 
-from kb import project, refs, repo, spec
+from kb import names, project, refs, repo, spec, store
 from kb.answer import DETAIL, EVIDENCE, FACTS, IDENTITY, LINKS, Answer
 from kb.refs import location_ref, symbol_ref
 from kb.repo import KbError
@@ -1512,48 +1512,71 @@ def log(graph, text, root=repo.ROOT):
     return answer
 
 
+def _stored(path):
+    """Whether a source path is an entity file of `kb/`."""
+    return path.startswith(f"{store.TREE.as_posix()}/") and path.endswith(".toml")
+
+
 def raw(graph, text, root=repo.ROOT):
-    """The registry records of an entity: before conversion its canonical
-    records are the rows of the registries that state it."""
+    """The records of an entity: its canonical file under `kb/`, and the rows
+    of the registries that state it before their conversion, `kb/names.csv`
+    included. A symbol reads with its meaning, whose file holds it."""
     ref = refs.resolve(graph, text, root=root)
     if ref.kind == "location":
         raise KbError(f"{ref.text} holds no symbol", code=5)
     symbol = ref.node if ref.kind == "symbol" else None
-    meaning = ref.meaning if ref.kind == "symbol" else ref.node
-    members = [symbol] if symbol else [row["s"] for row in graph.run(
-        "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s", key=meaning["key"])]
-    answer = Answer(f"kb raw {ref.text} --full")
-    records = []
-    for member in members:
-        address = f"{member['address']:08x}"
-        for path in sorted(set(member.get("src") or ()) | set(meaning.get("src") or ())):
-            records.extend(_records(root, path, address, member["layout"]))
-    names_rows = _records(root, "kb/names.csv", f"{members[0]['address']:08x}",
-                          members[0]["layout"]) if members else []
-    records.extend(row for row in names_rows if row not in records)
+    owner = (ref.meaning if ref.kind == "symbol" else ref.node) or {}
+    sources = set(owner.get("src") or ())
+    rows = {}
+    if ref.kind == "entity":
+        slug = owner["key"].split("/")[0]
+        for path in sorted(sources):
+            if not _stored(path):
+                rows.update(((path, number), line)
+                            for number, line in _records(root, path, slug, whole=True))
+    else:
+        members = [symbol] if symbol else [row["s"] for row in graph.run(
+            "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s", key=owner["key"])]
+        for member in members:
+            address = f"{member['address']:08x}"
+            member_sources = set(member.get("src") or ())
+            sources |= member_sources
+            for path in sorted(member_sources | set(owner.get("src") or ())
+                               | {names.PATH.as_posix()}):
+                if not _stored(path):
+                    rows.update(((path, number), line) for number, line in _records(
+                        root, path, address, (member["layout"], member["kind"])))
+    records = [f"  {path}:{number}: {line}" for (path, number), line in sorted(rows.items())]
+    files = {path: (root / path).read_text(encoding="utf-8")
+             for path in sorted(sources) if _stored(path) and (root / path).is_file()}
+    answer = Answer(f"kb raw {ref.text} --budget <tokens>")
     answer.section(None, IDENTITY, [ref.text])
-    answer.section(None, FACTS, records or ["  no registry row names it"])
-    answer.data = {"ref": ref.text, "records": records}
+    for path, content in files.items():
+        answer.section(f"--- {path}", FACTS, content.rstrip("\n").split("\n"))
+    answer.section("--- registry rows" if files else None, DETAIL,
+                   records or ([] if files else ["  no file or registry row states it"]))
+    answer.data = {"ref": ref.text, "files": files, "records": records}
     return answer
 
 
-def _records(root, path, address, layout):
+def _records(root, path, address, key=None, whole=False):
+    """(line number, line) of the rows of a registry that state an address, or
+    with `whole` a slug as a whole word, after the header of a CSV file; a row
+    of `kb/names.csv` states the layout and the kind of `key` too."""
     file = root / path
     if not file.is_file():
         return []
     lines = file.read_text(encoding="utf-8").splitlines()
     out = []
     if path.endswith(".csv"):
-        reader = csv.reader(lines)
-        header = next(reader, [])
-        for number, row in enumerate(reader, 2):
+        numbered = [(number, line) for number, line in enumerate(lines, 1)
+                    if not line.startswith("#")]
+        for number, line in numbered[1:]:
+            row = next(csv.reader([line]), [])
             cells = {cell.lower().removeprefix("0x") for cell in row}
-            if address in cells and (path != "kb/names.csv" or row[0] == layout):
-                out.append(f"  {path}:{number}: {lines[number - 1]}")
-        if out:
-            out.insert(0, f"  {path}:1: {','.join(header)}")
-        return out
-    for number, line in enumerate(lines, 1):
-        if address in line.lower():
-            out.append(f"  {path}:{number}: {line.strip()}")
-    return out
+            if address in cells and (path != names.PATH.as_posix() or tuple(row[:2]) == key):
+                out.append((number, line))
+        return [numbered[0], *out] if out else []
+    word = re.compile(rf"(?<![\w-]){re.escape(address)}(?![\w-])")
+    return [(number, line.strip()) for number, line in enumerate(lines, 1)
+            if (word.search(line.lower()) if whole else address in line.lower())]

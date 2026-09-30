@@ -1,3 +1,6 @@
+from argparse import Namespace
+import contextlib
+import io
 from pathlib import Path
 import subprocess
 import tempfile
@@ -5,7 +8,7 @@ from types import SimpleNamespace
 import unittest
 from unittest import mock
 
-from kb import project
+from kb import cli, project
 from kb.repo import KbError
 
 SPEC = """\
@@ -167,6 +170,34 @@ class WriteTest(RepoCase):
             project.write(root, ["defs/*.xml"])
         self.assertEqual(unknown.exception.code, 2)
 
+    def test_the_check_mode_writes_nothing(self):
+        root = self.repo("check")
+        before = (root / "AGENTS.md").read_text()
+        self.assertEqual(project.write(root, check=True), [("AGENTS.md#kb", True)])
+        self.assertEqual((root / "AGENTS.md").read_text(), before)
+        project.write(root)
+        self.assertEqual(project.write(root, check=True), [("AGENTS.md#kb", False)])
+
+    def test_the_command_exits_with_1_when_a_projection_differs(self):
+        root = self.repo("command")
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(cli.command_project(Namespace(check=True, paths=[]), root), 1)
+        self.assertEqual(out.getvalue(), "AGENTS.md#kb: differs from its rendering\n")
+        held = []
+
+        @contextlib.contextmanager
+        def lock(where):
+            held.append(where)
+            yield
+
+        with mock.patch.object(cli.lock, "held", lock), \
+                contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(cli.command_project(Namespace(check=False, paths=[]), root), 0)
+        self.assertEqual((held, out.getvalue()), ([root], "AGENTS.md#kb: written\n"))
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(cli.command_project(Namespace(check=True, paths=[]), root), 0)
+        self.assertEqual(out.getvalue(), "AGENTS.md#kb: current\n")
+
     def test_a_section_without_markers_is_an_error(self):
         root = self.repo("markers", {"AGENTS.md": "# Rules\n"})
         with self.assertRaises(KbError):
@@ -218,6 +249,11 @@ class PatternTest(RepoCase):
         self.assertEqual((root / "defs/B.interp.csv").read_text(), "b\n")
         self.assertIn(("defs/*.interp.csv", False), project.write(root))
         self.assertEqual(project.check(root), [])
+
+    def test_the_check_mode_leaves_the_files_of_the_pattern(self):
+        root = self.repo("check")
+        self.assertIn(("defs/*.interp.csv", True), project.write(root, check=True))
+        self.assertEqual((root / "defs/B.interp.csv").read_text(), "old\n")
 
     def test_the_check_compares_the_tracked_files_with_the_rendering(self):
         root = self.repo("compare", {"defs/C.interp.csv": "c\n"})
