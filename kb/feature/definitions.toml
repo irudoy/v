@@ -1,3 +1,10 @@
+title = "Editor definitions"
+summary = """
+The RomRaider and TunerPro definitions of each image: the tables and axes \
+that the definition of a layout relocates from the canonical JK08A model, \
+with the editor presentation, the switches, and the header metadata and \
+checksums of each image."""
+specs = ["defs/README.md", "defs/JK08A.definition-presentation.md"]
 default_emit = true
 
 [[target]]

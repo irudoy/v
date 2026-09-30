@@ -136,7 +136,7 @@ DESIGNED = {
     "field": Table(_plain("signal", "source", "origin", "width", "signed", "scale",
                           "profiles", "page") + (("offset", HEX),)
                    + _plain("context", "position") + (("dashboard", DASHBOARD),)),
-    "feature": Table(_plain("title", "summary", "acceptance", "requires", "vendor")
+    "feature": Table(_plain("title", "summary", "specs", "acceptance", "requires", "vendor")
                      + (("target", Array(TARGET)),)),
 }
 

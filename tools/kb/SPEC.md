@@ -698,7 +698,7 @@ the diagnostic bindings read these tables.
 | `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, and `[[step]]` |
 | `signal` | `title`, `domain`, `priority`, `coverage`, `basis`, `observes`, `note` |
 | `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position`, and `[dashboard]` |
-| `feature` | `title`, `summary`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
+| `feature` | `title`, `summary`, `specs`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
 
 `specs` is an array of repository paths of narrow specifications.
 
@@ -775,10 +775,13 @@ Fields:
 
 Features:
 
-- `acceptance` states the observable criterion that the feature works;
-  `requires` lists the meanings and designed entities it needs on every
-  target layout; `vendor` lists the competitor products that offer it, for
-  the parity catalog.
+- `summary` states what the feature does, and `specs` names the
+  specifications that state how it works and the observable criterion that
+  it works. A feature without a specification in the repository, such as a
+  competitor function of the parity catalog, states that criterion in
+  `acceptance`. `requires` lists the meanings and designed entities it needs
+  on every target layout; `vendor` lists the competitor products that offer
+  it, for the parity catalog.
 - `[[target]]` keys: `layout`, `status` (`supported`, `planned`, or
   `unsupported`), `note`, `basis`, `requires`, and the keys of the feature.
   An `unsupported` target names in `note` the meanings whose status blocks
@@ -1548,6 +1551,17 @@ read = "guarded"
   between `<!-- kb:begin -->` and `<!-- kb:end -->`: the access rules, the
   table of questions and commands, and the ownership table of the current
   stage.
+- `rom-images/support-matrix.md` carries the generated section `features`,
+  the projection `rom-images/support-matrix.md#features`: a table with a row
+  for each layout and the images that share its addresses and a column for
+  each feature in the order of the build, whose cell states the status of the
+  target and what the model derives from it (the runtime ROM and RAM, the
+  switched and unsupported map families, the telemetry mailbox, the `ecu_ram`
+  fields whose source the layout lacks, and the other required meanings
+  without a symbol by the state of their status), then a table of the title,
+  summary, and specifications of each feature. The feature targets hold the
+  facts and the section only shows them; a specification that names no file
+  refuses the rendering.
 
 ## 15. Access guard
 

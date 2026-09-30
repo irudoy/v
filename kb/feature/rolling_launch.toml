@@ -1,3 +1,13 @@
+title = "Rolling Launch"
+summary = """
+An optional runtime on Map Switching that captures engine speed while CANCEL \
+is held, applies an all-cylinder fuel-cut actuator of the layout, and can \
+apply bounded retard-only ignition control; the actuator is a temporary \
+map-specific fuel-cut window on the 7mfk, jk00c, and jk00d layouts and a \
+request to the stock final-mask coordinator, without changes to the selected \
+maps, on the VQ37 layouts."""
+specs = ["patches/rolling-launch.md"]
+
 [[target]]
 layout = "1me3b"
 status = "supported"

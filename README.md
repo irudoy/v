@@ -205,8 +205,9 @@ instance for its definition-model validation. No root target starts, mutates,
 or backs up Memgraph, flashes hardware, or deletes temporary files. Each narrow
 README retains the detailed subsystem contract.
 
-Per-family address policy, switched calibration families, actuator, telemetry
-schema, checksum closure, and hardware status are tabulated in
+Per-family address policy, the feature targets of each layout with their
+switched calibration families and unavailable telemetry fields, actuator,
+checksum closure, and hardware status are tabulated in
 [`rom-images/support-matrix.md`](rom-images/support-matrix.md). The registered
 builder series and their address profiles are in
 [`patches/rom-builder.md`](patches/rom-builder.md). Only JK08A carries scoped

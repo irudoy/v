@@ -1,3 +1,10 @@
+title = "Runtime allocation"
+summary = """
+The ROM and RAM that the patch runtimes occupy on each layout: the envelope \
+of the canonical JK08A layout, its relocation into an audited free region of \
+every other layout, and the build variants that a layout selects."""
+specs = ["patches/rom-builder.md", "patches/runtime-reservations.md"]
+
 [[target]]
 layout = "1me3b"
 status = "supported"

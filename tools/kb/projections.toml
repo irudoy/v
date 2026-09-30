@@ -276,6 +276,26 @@ consumers = [
 read = "guarded"
 
 [[projection]]
+path = "rom-images/support-matrix.md#features"
+generator = "kb.matrix:features"
+stage = 4
+inputs = [
+    "kb/feature/",
+    "kb/field/",
+    "kb/tbl/",
+    "kb/axis/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/fn/",
+    "kb/hook/",
+    "kb/const/",
+    "rom-images/homology.toml",
+    "tools/kb/src/kb/matrix.py",
+]
+consumers = ["GitHub"]
+read = "open"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

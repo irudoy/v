@@ -631,7 +631,8 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
 generator, inputs, consumers, stage, and read mode, as section 14 of the
 specification states. `uv run kb project` renders under `.kb/lock` the
 projections of `kb` functions whose stage the transition has reached, such
-as the `AGENTS.md#kb` section, the interpolation, native, and definition
+as the `AGENTS.md#kb` section, the `features` section of
+`rom-images/support-matrix.md`, the interpolation, native, and definition
 registries, the address profiles with the correspondence files, and the
 telemetry profile; the generator of a pattern returns the text of each of
 its files; `--check` writes nothing and exits with 1 when a projection
@@ -641,6 +642,17 @@ match tracked files that no other entry claims and to name existing paths,
 compares each projection of `kb` with its rendering and the tracked files of
 a pattern with the files of its rendering, and requires every tracked file
 whose first lines declare it generated to be registered.
+
+Each feature file carries `title`, `summary`, and `specs`, the
+specifications that state how the feature works and its acceptance
+criterion. `kb.matrix` renders the `features` section of
+`rom-images/support-matrix.md` from the feature targets: a row for each
+layout, a column for each feature in the order of the build, and in each cell
+the status of the target with the runtime ROM and RAM, the switched and
+unsupported map families, the telemetry mailbox, the fields whose source the
+layout lacks, and the other required meanings without a symbol by the state
+of their status; a table of the title, summary, and specifications of each
+feature follows.
 
 The files decide the owner of a registry of a stage that has started:
 `kb brief` and `AGENTS.md#kb` name the owner after conversion once every
@@ -696,6 +708,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.mcp` | The read commands and `kb_apply` as MCP tools over JSON-RPC on standard input and output |
 | `kb.spec` | The stages, the ownership table, and the acceptance questions of the specification |
 | `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, the count of `kb/names.csv` by stage, and the `AGENTS.md#kb` section |
+| `kb.matrix` | The `features` section of `rom-images/support-matrix.md` |
 | `kb.convert` | The conversions of legacy registries into entity files |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
 | `kb.l0` | L0 export, normal form, manifest, the fragment registries, the export review, and the `l0` check |

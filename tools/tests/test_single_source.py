@@ -159,11 +159,6 @@ def test_a_copy_that_leaves_its_owner_fails(monkeypatch, check, path, old, new):
             "ECU RAM; 45 of those",
         ),
         (
-            "rom-images/support-matrix.md",
-            "mailbox 26; four fields unavailable",
-            "mailbox 26; seven fields unavailable",
-        ),
-        (
             "patches/rom-builder.md",
             "JK00C and JK00D telemetry binds 60 of the 60",
             "JK00C and JK00D telemetry binds 58 of the 60",

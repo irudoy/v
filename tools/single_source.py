@@ -485,25 +485,6 @@ def published_facts(sources=None):
     profiles = "patches/rom-address-profiles.toml"
     telemetry = "patches/can-telemetry.md"
     return (
-        Fact(matrix, r"\| `7MFKAVN86` \| [^|]+ \| {n} families \|", (s.switched(exact),)),
-        Fact(matrix, r"\| `8MFK` \| [^|]+ \| {n} families", (s.switched(eight),)),
-        Fact(matrix, r"\| JK78C \| [^|]+ \| {n} families \|", (s.switched(jk78),)),
-        Fact(matrix, r"\| `1ND` \| [^|]+ \| {n} families", (s.switched(nd),)),
-        Fact(matrix, r"\| `1ME3B` \| [^|]+ \| {n} families", (s.switched(me),)),
-        *(
-            Fact(
-                matrix,
-                rf"\| {label} \|(?: [^|]+ \|){{3}} Schema 2, mailbox \d+; "
-                r"{n} fields? unavailable \|",
-                (s.unavailable(roms),),
-            )
-            for label, roms in (
-                ("`8MFK`", eight),
-                ("JK78C", jk78),
-                ("`1ND`", nd),
-                ("`1ME3B`", me),
-            )
-        ),
         Fact(
             matrix,
             r"its registries hold {n} codes rather than {n},",

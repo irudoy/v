@@ -1,3 +1,11 @@
+title = "Map Switching"
+summary = """
+Five calibration slots that the steering-wheel switches select: Map 1 is the \
+stock storage of each switched map family and Maps 2 through 5 occupy ROM \
+that the layout owns, a map commit publishes the limiter clusters \
+atomically, and pulses of the CRUISE and SET lamps confirm the selection."""
+specs = ["patches/map-switching-selector.md"]
+
 [[target]]
 layout = "1me3b"
 status = "supported"

@@ -1,3 +1,11 @@
+title = "CAN telemetry"
+summary = """
+Custom CAN telemetry, disabled by default: a firmware producer transmits the \
+fields of the telemetry profile in fixed and context pages under the \
+ROM-neutral schema 2 wire contract on a CAN mailbox of each layout, and the \
+host schema, decoder, dashboard, and recorder use the same profile \
+identity."""
+specs = ["patches/can-telemetry.md"]
 base_tick_numerator = 204800
 byte_order = "big"
 candidate_can_id = 1776
