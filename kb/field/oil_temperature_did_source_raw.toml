@@ -5,3 +5,11 @@ width = 1
 signed = false
 context = "temperatures_af"
 position = 3
+
+[dashboard]
+label = "Oil temperature"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 30
+description = "Engine oil temperature."

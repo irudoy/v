@@ -7,3 +7,12 @@ scale = "six-position bit mask; bit c - 1 is knock channel c"
 profiles = ["tuning"]
 page = 4
 offset = 0x7
+
+[dashboard]
+label = "Knock channel mask"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+panel_label = "Knock channels"
+order = 110
+description = "Knock channels that had an exceedance between two snapshots."

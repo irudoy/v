@@ -5,3 +5,19 @@ width = 1
 signed = false
 context = "temperatures_af"
 position = 1
+
+[dashboard]
+label = "Intake air"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 10
+description = "Intake air temperature."
+
+[dashboard.feed]
+key = "iat_c"
+name = "VQ Intake Air Temperature"
+format = "0"
+minimum = -40
+maximum = 140
+step = 20

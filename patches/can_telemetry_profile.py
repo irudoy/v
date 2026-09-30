@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 import json
 from pathlib import Path
 import sys
@@ -40,6 +40,9 @@ class Field:
     kind: str
     signed: bool
     scale: str
+    # The host presentation of [field.dashboard], which the host schema
+    # carries and the wire identity leaves out.
+    dashboard: dict | None = dataclass_field(default=None, compare=False)
 
     @property
     def byte_sources(self):
@@ -160,7 +163,7 @@ def _parse_field(raw, *, context, page_field, runtime_spans=()):
     }
     if page_field:
         required |= {"page", "offset", "profiles"}
-    _require_keys(raw, required, (), context)
+    _require_keys(raw, required, ("dashboard",), context)
     field = Field(
         name=raw["name"],
         page=raw.get("page"),
@@ -171,6 +174,7 @@ def _parse_field(raw, *, context, page_field, runtime_spans=()):
         kind=raw["kind"],
         signed=raw["signed"],
         scale=raw["scale"],
+        dashboard=raw.get("dashboard"),
     )
     if (
         not isinstance(field.name, str)
@@ -463,12 +467,22 @@ def render_tables(manifest):
 
 
 def _field_json(field):
+    """The host contract of a field: its wire placement, its scale with the
+    conversion, unit, candidate flag, values, or named bits that the scale
+    states, and its presentation."""
+    try:
+        terms = can_telemetry_schema.scale_terms(field.scale)
+    except ValueError as error:
+        raise ValueError(f"{field.name}: {error}") from error
     result = {
         "name": field.name,
         "width": field.width,
         "signed": field.signed,
         "scale": field.scale,
+        **terms,
     }
+    if field.dashboard is not None:
+        result["dashboard"] = field.dashboard
     if field.page is not None:
         result["page"] = field.page
         result["offset"] = field.offset

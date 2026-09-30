@@ -6,3 +6,19 @@ signed = false
 profiles = ["tuning"]
 page = 1
 offset = 0x5
+
+[dashboard]
+label = "Total airflow"
+digits = 2
+group = "Air"
+description = """
+Total intake airflow of both banks in g/s from the ECU airflow model, the \
+value J1979 PID 0x10 reports. A model output, not a direct sensor reading."""
+
+[dashboard.feed]
+key = "maf_g_s"
+name = "VQ Total Airflow"
+format = "0.00"
+minimum = 0
+maximum = 400
+step = 50

@@ -6,3 +6,13 @@ signed = false
 profiles = ["tuning"]
 page = 5
 offset = 0x3
+
+[dashboard]
+label = "APP 2"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 30
+description = """
+Accelerator pedal position sensor 2 in volts, the second track that the ECU \
+checks against sensor 1; it rises with pedal travel."""

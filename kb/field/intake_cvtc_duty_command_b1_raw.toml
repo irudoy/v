@@ -5,3 +5,13 @@ width = 1
 signed = false
 context = "exhaust_cvtc_duty_and_intake_duty_command"
 position = 2
+
+[dashboard]
+label = "Intake CVTC duty command B1"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 30
+description = """
+Scheduler copy of the bank 1 intake valve timing solenoid duty, in percent. \
+Every recorded drive holds it equal to the live duty."""

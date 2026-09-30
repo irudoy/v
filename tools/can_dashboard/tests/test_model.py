@@ -68,36 +68,36 @@ class DashboardModelTest(unittest.TestCase):
 
         self.assertTrue(dashboard.schema_verified)
         self.assertEqual(dashboard.decoder.completed_groups, 8)
-        self.assertEqual(dashboard.value("coolant_deg_c"), 90)
-        self.assertEqual(dashboard.value("iat_deg_c"), 32)
-        self.assertIn("stft_b1_percent", dashboard.engineering)
-        self.assertIn("ltft_b1_percent", dashboard.engineering)
-        self.assertIn("intake_cvtc_actual_b1_deg_ca", dashboard.engineering)
-        self.assertIn("intake_cvtc_target_deg_ca", dashboard.engineering)
-        self.assertIn("exhaust_cvtc_target_deg_ca", dashboard.engineering)
-        self.assertIn("calculated_load_percent", dashboard.engineering)
-        self.assertIn("app1_v", dashboard.engineering)
-        self.assertIn("tps_b1_v", dashboard.engineering)
-        self.assertIn("oil_temperature_deg_c", dashboard.engineering)
-        self.assertIn("engine_torque_state_nm", dashboard.engineering)
-        self.assertIn("battery_voltage_v", dashboard.engineering)
-        self.assertIn("exhaust_cvtc_actual_b1_deg_ca", dashboard.engineering)
+        self.assertEqual(dashboard.value("coolant"), 90)
+        self.assertEqual(dashboard.value("iat"), 32)
+        self.assertIn("stft_b1", dashboard.engineering)
+        self.assertIn("ltft_b1", dashboard.engineering)
+        self.assertIn("intake_cvtc_actual_b1", dashboard.engineering)
+        self.assertIn("intake_cvtc_target", dashboard.engineering)
+        self.assertIn("exhaust_cvtc_target", dashboard.engineering)
+        self.assertIn("calculated_load", dashboard.engineering)
+        self.assertIn("app1", dashboard.engineering)
+        self.assertIn("tps_b1", dashboard.engineering)
+        self.assertIn("oil_temperature_did_source", dashboard.engineering)
+        self.assertIn("engine_torque_state", dashboard.engineering)
+        self.assertIn("battery_voltage", dashboard.engineering)
+        self.assertIn("exhaust_cvtc_actual_b1", dashboard.engineering)
         self.assertEqual(
             dashboard.value("knock_timing_state"),
             dashboard.raw["knock_timing_state_raw"] / 256,
         )
-        self.assertEqual(dashboard.value("knock_surface_mode"), "HIGH OCTANE")
+        self.assertEqual(dashboard.value("knock_surface_state"), "HIGH OCTANE")
         self.assertEqual(dashboard.high_detonation_selected, 0)
-        self.assertGreater(dashboard.value("stft_b1_percent"), -5)
-        self.assertLess(dashboard.value("stft_b1_percent"), 5)
+        self.assertGreater(dashboard.value("stft_b1"), -5)
+        self.assertLess(dashboard.value("stft_b1"), 5)
         self.assertIsNone(dashboard.value("rpm"))
         self.assertEqual(dashboard.missed_snapshots, 0)
         self.assertEqual(
-            dashboard.value("intake_cvtc_target_deg_ca"),
+            dashboard.value("intake_cvtc_target"),
             dashboard.raw["intake_cvtc_target_raw"] * 0.5 - 64,
         )
         self.assertEqual(
-            dashboard.value("exhaust_cvtc_target_deg_ca"),
+            dashboard.value("exhaust_cvtc_target"),
             dashboard.raw["exhaust_cvtc_target_raw"] * 0.5 - 64,
         )
 
@@ -110,7 +110,7 @@ class DashboardModelTest(unittest.TestCase):
                 generator.group(tick),
                 tick * model.BASE_TICK_SECONDS,
             )
-            if "secondary_tps_b2_v" in dashboard.engineering:
+            if "secondary_tps_b2" in dashboard.engineering:
                 break
 
         for bank in (1, 2):
@@ -118,7 +118,7 @@ class DashboardModelTest(unittest.TestCase):
                 raw = dashboard.raw[f"secondary_tps_b{bank}_raw"]
                 self.assertLess(raw, 1024)
                 self.assertAlmostEqual(
-                    dashboard.value(f"secondary_tps_b{bank}_v"), raw / 200
+                    dashboard.value(f"secondary_tps_b{bank}"), raw / 200
                 )
 
     def test_converted_fields_display_engineering_units(self):
@@ -141,21 +141,23 @@ class DashboardModelTest(unittest.TestCase):
         dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
 
         expected = {
-            "apc_command_deg": 20,
-            "torque_request_nm": 256.5,
-            "throttle_area_request_cm2": 21.476,
-            "throttle_target_b1_percent": 2143 * 34285 / 1114112,
-            "throttle_target_b2_percent": 2149 * 34285 / 1114112,
-            "af_sensor_b1_v": 2.2,
-            "af_sensor_b2_v": 5.065,
+            "apc_command": 20,
+            "throttle_request_bounded": 256.5,
+            "throttle_target_shared": 21.476,
+            "throttle_target_channel_0": 2143 * 34285 / 1114112,
+            "throttle_target_channel_1": 2149 * 34285 / 1114112,
+            "front_af_sensor_b1_word": 2.2,
+            "front_af_sensor_b2_word": 5.065,
             "af_adjustment_b1": -0.004,
             "af_adjustment_b2": 0.33,
         }
         for key, value in expected.items():
             with self.subTest(key=key):
                 self.assertAlmostEqual(dashboard.value(key), value)
-        self.assertEqual(dashboard.value("fuel_inhibit_cylinders"), "cyl 1 3 5")
-        self.assertEqual(dashboard.value("knock_channels_latched"), "ch 1 2 4 6")
+        self.assertEqual(dashboard.value("fuel_inhibit_mask"), "cyl 1 3 5")
+        self.assertEqual(
+            dashboard.value("knock_channel_mask_latched"), "ch 1 2 4 6"
+        )
         self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], -2)
 
     def test_masks_name_their_members(self):
@@ -165,6 +167,53 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(model.inhibited_cylinders(0x20), "cyl 6")
         self.assertEqual(model.knock_channels(0), "none")
         self.assertEqual(model.knock_channels(0x2B), "ch 1 2 4 6")
+
+    def test_a_field_displays_its_conversion_or_its_named_codes(self):
+        def field(**terms):
+            return {"name": "example", "width": 1, "signed": False, **terms}
+
+        calibration = can_telemetry.Calibration("example", 0.5, -64)
+        self.assertEqual(model.field_display(field(), calibration)(160), 16)
+        values = model.field_display(
+            field(
+                values=[
+                    {"value": 0, "name": "IDLE"},
+                    {"value": 1, "name": "BUTTON_HELD"},
+                ]
+            )
+        )
+        self.assertEqual(values(1), "BUTTON HELD")
+        self.assertEqual(values(7), "0x07")
+        bits = model.field_display(
+            field(
+                bits=[
+                    {"bit": 0, "name": "LEFT"},
+                    {"bit": 6, "name": "HIGH_DETONATION"},
+                ]
+            )
+        )
+        self.assertEqual(bits(0x41), "LEFT, HIGH DETONATION")
+        self.assertEqual(bits(0x02), "none")
+        self.assertIsNone(model.field_display(field()))
+        # A mask the dashboard names in code keeps its code display.
+        self.assertIs(
+            model.field_display(field(name="fuel_inhibit_mask")),
+            model.inhibited_cylinders,
+        )
+
+    def test_a_field_without_a_display_shows_its_raw_value(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        values = {
+            "tick16": 1,
+            "schema_verified": 1,
+            "knock_margin_min_ch1_raw": -250,
+            "knock_count_latched": 3,
+        }
+        dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
+        self.assertEqual(dashboard.value("knock_margin_min_ch1"), -250)
+        self.assertEqual(dashboard.value("knock_count_latched"), 3)
+        self.assertNotIn("knock_margin_min_ch1", dashboard.engineering)
+        self.assertIsNone(dashboard.value("unknown", None))
 
     def test_mask_names_follow_the_profile_declarations(self):
         _document, profiles = can_telemetry.load_schema(
@@ -218,7 +267,7 @@ class DashboardModelTest(unittest.TestCase):
         feed_group(dashboard, group, 0.05)
 
         self.assertEqual(
-            dashboard.value("knock_surface_mode"),
+            dashboard.value("knock_surface_state"),
             "HIGH DETONATION",
         )
         self.assertEqual(dashboard.high_detonation_selected, 1)
@@ -416,7 +465,7 @@ class DashboardModelTest(unittest.TestCase):
         for tick in range(1, 5):
             feed_group(dashboard, generator.group(tick), 4.0 + tick * 0.01)
         self.assertTrue(dashboard.schema_verified)
-        self.assertIsNotNone(dashboard.value("normalized_load_percent"))
+        self.assertIsNotNone(dashboard.value("normalized_load"))
 
         bad = list(generator.group(9))
         self.assertEqual(bad[9].data[1], 3)
@@ -425,7 +474,7 @@ class DashboardModelTest(unittest.TestCase):
         bad[9] = model.FrameRecord(0x6F0, bytes(health))
         self.assertIsNone(feed_group(dashboard, bad, 4.1))
         self.assertFalse(dashboard.schema_verified)
-        self.assertIsNone(dashboard.value("normalized_load_percent"))
+        self.assertIsNone(dashboard.value("normalized_load"))
 
     def test_the_telemetry_map_index_names_the_selected_map(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
@@ -451,32 +500,46 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.selected_map, 3)
 
     def test_rolling_launch_codes_follow_the_runtime_enumerations(self):
-        for names, enumeration in (
-            (model.ROLLING_LAUNCH_PHASES, rolling_launch.Phase),
-            (model.ROLLING_LAUNCH_ABORT_REASONS, rolling_launch.AbortReason),
+        _document, profiles = can_telemetry.load_schema(
+            can_telemetry.DEFAULT_SCHEMA
+        )
+        fields = {
+            field["name"]: field
+            for field in can_telemetry.profile_fields(profiles["tuning"])
+        }
+        for name, enumeration in (
+            ("rolling_launch_phase", rolling_launch.Phase),
+            ("rolling_launch_abort_reason", rolling_launch.AbortReason),
         ):
             with self.subTest(enumeration=enumeration.__name__):
                 self.assertEqual(
-                    [member.value for member in enumeration],
-                    list(range(len(enumeration))),
+                    fields[name]["values"],
+                    [
+                        {"value": member.value, "name": member.name}
+                        for member in enumeration
+                    ],
+                )
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        for tick, (phase, reason, phase_name, reason_name) in enumerate(
+            ((2, 14, "COOLDOWN", "TIMEOUT"), (3, 19, "0x03", "0x13")),
+            start=1,
+        ):
+            with self.subTest(phase=phase, reason=reason):
+                values = {
+                    "tick16": tick,
+                    "schema_verified": 1,
+                    "rolling_launch_phase": phase,
+                    "rolling_launch_abort_reason": reason,
+                }
+                dashboard.process_record(
+                    model.SnapshotRecord(tick * 0.01, values), now=tick * 0.01
                 )
                 self.assertEqual(
-                    names,
-                    tuple(
-                        member.name.replace("_", " ")
-                        for member in enumeration
-                    ),
+                    dashboard.value("rolling_launch_phase"), phase_name
                 )
-        values = model._dashboard_engineering_values(
-            {"rolling_launch_phase": 2, "rolling_launch_abort_reason": 14}
-        )
-        self.assertEqual(values["rolling_launch_phase_name"], "COOLDOWN")
-        self.assertEqual(values["rolling_launch_abort_name"], "TIMEOUT")
-        values = model._dashboard_engineering_values(
-            {"rolling_launch_phase": 3, "rolling_launch_abort_reason": 19}
-        )
-        self.assertEqual(values["rolling_launch_phase_name"], "0x03")
-        self.assertEqual(values["rolling_launch_abort_name"], "0x13")
+                self.assertEqual(
+                    dashboard.value("rolling_launch_abort_reason"), reason_name
+                )
 
 
 if __name__ == "__main__":

@@ -7,3 +7,13 @@ scale = "saturating event count"
 profiles = ["tuning"]
 page = 4
 offset = 0x6
+
+[dashboard]
+label = "Knock interval count"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+order = 100
+description = """
+Knock exceedances that the evaluator counted between two snapshots, \
+saturating."""

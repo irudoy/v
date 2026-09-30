@@ -5,3 +5,13 @@ width = 2
 signed = false
 context = "secondary_throttle_and_adjustment_b2"
 position = 1
+
+[dashboard]
+label = "Secondary TPS B2"
+digits = 3
+group = "Throttle"
+panel = "Throttle sensors and protocol"
+order = 20
+description = """
+Throttle position sensor 2 of the bank 2 throttle body in volts, the second \
+track that the ECU checks against sensor 1; it rises with opening."""

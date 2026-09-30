@@ -83,6 +83,24 @@ class RenderTest(unittest.TestCase):
         self.assertLess(text.index("rom_size"), text.index("[target.hooks.a]"))
         self.assertEqual(store.render("feature", document), text)
 
+    def test_the_presentation_of_a_field_follows_its_keys_and_its_feed_table_ends_it(self):
+        dashboard = {"feed": {"step": 20, "maximum": 200, "minimum": 0, "format": "0.00",
+                              "name": "VQ Probe", "key": "probe"},
+                     "order": 40, "panel": "Air and fuel", "digits": 1, "label": "Probe",
+                     "description": " ".join(["word"] * 30)}
+        text, document = canonical("field", {
+            "signed": False, "dashboard": dashboard, "width": 1, "origin": "ecu_ram",
+            "source": "probe/ram", "signal": "probe/signal"})
+        self.assertEqual(document["dashboard"], dashboard)
+        lines = text.splitlines()
+        self.assertEqual([line.split(" = ")[0] for line in lines if " = " in line],
+                         ["signal", "source", "origin", "width", "signed", "label", "digits",
+                          "panel", "order", "description", "key", "name", "format",
+                          "minimum", "maximum", "step"])
+        self.assertLess(text.index("\n\n[dashboard]\n"), text.index("\n\n[dashboard.feed]\n"))
+        self.assertTrue(all(len(line) <= store.WIDTH for line in lines))
+        self.assertEqual(store.render("field", document), text)
+
     def test_rendering_is_idempotent(self):
         document = {"title": "t", "summary": "s " * 50, "home": "7mfk", "width": 8,
                     "bit": [{"bit": 3, "name": "armed"}, {"bit": 0, "name": "active"}],

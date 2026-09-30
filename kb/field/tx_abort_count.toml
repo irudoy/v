@@ -5,3 +5,8 @@ signed = false
 scale = "saturating count"
 context = "health"
 position = 4
+
+[dashboard]
+label = "TX abort count"
+digits = 0
+group = "Transport"

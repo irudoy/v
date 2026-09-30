@@ -243,6 +243,11 @@ reference, and raw 255 is 199.2 percent.
 `--publish-udp [HOST:]PORT` turns the feed on at that endpoint for one run
 without changing the settings file.
 
+The channel table is the engine speed of the stock bus, then every telemetry
+field whose presentation in the schema declares a feed channel, in profile
+order. A channel publishes the engineering value of its field in the display
+unit of the field scale:
+
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
 | `rpm` | `X_VQ_Engine_Speed` | RPM | `0x180` bytes 0..1 `/ 8` |
@@ -251,8 +256,8 @@ without changing the settings file.
 | `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
 | `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw / 100` |
 | `throttle_pct` | `X_VQ_Absolute_Throttle` | % | `absolute_throttle_raw * 100 / 255` |
-| `coolant_c` | `X_VQ_Coolant_Temperature` | C | `coolant_raw - 50` |
-| `iat_c` | `X_VQ_Intake_Air_Temperature` | C | `iat_raw - 50` |
+| `coolant_c` | `X_VQ_Coolant_Temperature` | degC | `coolant_raw - 50` |
+| `iat_c` | `X_VQ_Intake_Air_Temperature` | degC | `iat_raw - 50` |
 | `intake_cam_b1_deg`, `intake_cam_b2_deg` | `X_VQ_Intake_Cam_B1`, `X_VQ_Intake_Cam_B2` | degCA | `(raw - 128) * 0.5` |
 | `stft_b1_pct`, `stft_b2_pct` | `X_VQ_STFT_B1`, `X_VQ_STFT_B2` | % | `raw / 256 - 100` |
 | `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
@@ -334,12 +339,15 @@ and dashboard state.
 Decoded telemetry and context values use F32, so a rotating context that has
 not arrived yet can be represented as `NaN` rather than a fabricated zero.
 
+A telemetry channel takes the label, category, and digits of the
+presentation of its field in the schema and the display unit of its scale.
 Channel names carry no candidate marker; the marker stays in the units, as it
 does on the display, under the MegaLogViewer naming and scaling rules in
-[`../logs/README.md`](../logs/README.md#peak-trc-telemetry-to-mlg). Both
-numbers are derived from the calibrations the dashboard applies to the same
-field, and the recorder tests bind every channel value to the live engineering
-value. `tools/logs/mlg_restamp.py` applies a corrected field table to files
+[`../logs/README.md`](../logs/README.md#peak-trc-telemetry-to-mlg). The scale
+and transform of a channel are the conversion of its field, the one the
+dashboard applies to the same value, and the recorder tests bind every channel
+value to the live engineering value. A field without a conversion records its
+raw value. `tools/logs/mlg_restamp.py` applies a corrected field table to files
 recorded earlier without rewriting their data.
 
 MLG has a wrapping 16-bit 10-us block timestamp. A hold-last bridge record is
@@ -657,9 +665,22 @@ longer than its reserve is elided, and hover and click still report it in full.
 
 ## Display semantics
 
+The window builds its panels and hero cards from the schema. A telemetry
+field takes its place from its presentation: the panel, the order within it,
+the label, and the digits, with the unit of its scale in display spelling, `%`
+for percent, no unit for a ratio, and a trailing `*` for a candidate
+conversion. A field with a conversion shows its engineering value, a field
+with an enumeration or named bits shows the names of its code in the schema,
+hexadecimal for a code without a name, and a field without either shows its
+raw value. The fuel-inhibit, knock-channel, and knock-surface masks keep the
+names of the table below. The stock-bus quantities, the drive runs, the GPS
+slots, and the selected map are metrics of the dashboard code at fixed places
+among the fields.
+
 Hover over a panel row name or a card title describes the metric: the
 quantity the ECU or the bus carries, the direction of its scale where it
-matters, and the evidence boundary of the conversion. The texts live in
+matters, and the evidence boundary of the conversion. A telemetry field
+carries its text in its presentation in the schema, a code metric in
 `descriptions.py`, and a test requires one for every metric the window offers.
 
 The decoder retains the latest values from the paired page-9 and page-10
@@ -728,7 +749,7 @@ Compensation Main column coordinates at `raw * 0.00152588` and
 | APC command | `0xFFFF2022` byte | `110 - raw degBTDC` | `FUN_0004DF82` normally writes `110 - final timing`, and J1979 PID 0x0E reports `110 - raw` as the timing advance in every mode, so the field is the delivered command also where Rolling Launch or a stock mode moves it away from the timing coordinate; `tools/logs/mlg_relation_audit.py` checks `final timing = 110 - raw` on recordings; a software command, not a measured spark angle |
 | fuel inhibit | `0xFFFF22E0` byte | `none`, `all`, or the list of cut cylinders | code-proven bit `k` = injector output `k`: a set bit replaces channel word `k` with the opening time and withholds the channel from the fire mask; output `k` drives cylinder `k + 1` by the diagnostic Power Balance order, which is not measured electrically |
 | selected map | `0xFFFF5D00` byte | `raw + 1`, `1` outside 0..4 | active index of the map-switching runtime, which resolves an invalid index to Map 1 |
-| Rolling Launch phase and reason | `0xFFFF5D40`, `0xFFFF5D41` bytes | names of the `Phase` and `AbortReason` codes of `patches/rolling_launch.py`, hex outside them | runtime state of the Rolling Launch patch |
+| Rolling Launch phase and reason | `0xFFFF5D40`, `0xFFFF5D41` bytes | names of the enumerations of the schema, hex outside them; a test binds them to the `Phase` and `AbortReason` codes of `patches/rolling_launch.py` | runtime state of the Rolling Launch patch |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 deg` | exact Q8 state; in the direct branch the coordinator shifts the difference of the High Octane and High Detonation surface cells, one degree per count, left by 8 |
 | knock channels | telemetry latch `0xFFFF5E0D` | `none` or the list of channels | code-proven: the evaluator sets bit `c - 1` on an exceedance of channel `c` |
 | knock margin ch 1..6 | telemetry latches `0xFFFF5E10..0xFFFF5E1B` | signed evaluator counts, `cnt` | the wrapper behind the only literal of the knock slice evaluator repeats the stock `threshold + 0x80000000 < metric` comparison on the values the evaluator leaves in RAM; the unit of the metric is the summed and gain-scaled sensor difference and has no physical conversion |
@@ -744,7 +765,7 @@ Compensation Main column coordinates at `raw * 0.00152588` and
 | torque request | `0xFFFF19C6` signed word | candidate `raw * 0.1 Nm` | output of table `0xE98E` minus `0x8000`; at full pedal the recorded request follows the maximum of the table row at the recorded engine speed |
 | A/F sensor 1 B1/B2 | `0xFFFF2780`, `0xFFFF2782` | `raw / 200 V` | the ADC count re-based so that the filtered sensor reference reads 440, which is 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm; lower is richer; under sustained enrichment both words read lean of 440, which is unexplained, so the channel does not validate full-load fuelling without an independent wideband |
 | A/F ADJ B1/B2 | `0xFFFF45A0`, `0xFFFF45A2` | candidate signed `raw * 0.002` | signed integrators bounded to -500..500 counts, read as signed by every consumer; the factor maps the bounds to -1..1 and the factory running range of -0.330..0.330 to 165 counts; every recording reads 0 |
-| end of injection after intake TDC | `0xFFFF192E` word | `raw * 2 - 590 degATDC` | the word holds `2 * min(y, 209)` and `raw * 2` is the code-proven delay in crank degrees after the reference tooth; the intake-TDC anchor rests on the reference-tooth and cylinder-order analysis and is a firmware coordinate, not a measured injector event; JK00C, JK00D, JK78C, 1ND, and 1ME3B stream their homologous word with the same anchor |
+| end of injection after intake TDC | `0xFFFF192E` word | `raw * 2 - 590 degCA` | the word holds `2 * min(y, 209)` and `raw * 2` is the code-proven delay in crank degrees after the reference tooth; the intake-TDC anchor rests on the reference-tooth and cylinder-order analysis and is a firmware coordinate, not a measured injector event; JK00C, JK00D, JK78C, 1ND, and 1ME3B stream their homologous word with the same anchor |
 
 The MLG descriptor applies the exact Q8 scale to `Knock timing state` and keeps
 the original `Knock surface state` bitfield. The additional

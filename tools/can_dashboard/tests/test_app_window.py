@@ -11,11 +11,11 @@ from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
 from tools.can_dashboard import icons
 from tools.can_dashboard import model
+from tools.can_dashboard import presentation
 from tools.can_dashboard import replay
 from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
 from tools.can_dashboard import widgets
-from tools.can_dashboard.descriptions import describe
 from tools.logs import can_telemetry
 
 
@@ -43,23 +43,32 @@ def tool_buttons(widget):
     return found
 
 
+LAYOUT = presentation.default()
+HERO_CATALOG, HERO_CHOICES = app.hero_catalog(LAYOUT)
+
+
+def layout_panels(layout=LAYOUT):
+    """The (title, metrics) panels of every tab, in tab order."""
+    return [panel for _tab, panels in layout.tabs for panel in panels]
+
+
 class HeroCatalogTest(unittest.TestCase):
     def test_default_hero_row_leaves_the_selector_out(self):
-        self.assertNotIn("gear", app.DEFAULT_HERO_KEYS)
-        self.assertTrue(app.DEFAULT_HERO_KEYS)
-        self.assertLessEqual(len(app.DEFAULT_HERO_KEYS), settings.HERO_LIMIT)
+        self.assertNotIn("gear", LAYOUT.default_hero)
+        self.assertTrue(LAYOUT.default_hero)
+        self.assertLessEqual(len(LAYOUT.default_hero), settings.HERO_LIMIT)
 
     def test_default_hero_keys_come_from_the_catalog(self):
         self.assertEqual(
-            settings.normalize_hero(app.DEFAULT_HERO_KEYS, app.HERO_CATALOG),
-            app.DEFAULT_HERO_KEYS,
+            settings.normalize_hero(LAYOUT.default_hero, HERO_CATALOG),
+            LAYOUT.default_hero,
         )
 
     def test_selector_stays_available_as_a_card_and_as_a_panel_row(self):
-        self.assertIn("gear", app.HERO_CATALOG)
+        self.assertIn("gear", HERO_CATALOG)
         panel_keys = {
             metric.key
-            for _title, metrics in app.PANELS
+            for _title, metrics in layout_panels()
             for metric in metrics
         }
         self.assertIn("gear", panel_keys)
@@ -67,74 +76,61 @@ class HeroCatalogTest(unittest.TestCase):
     def test_the_transmission_gear_and_the_selected_map_are_optional_rows(self):
         for key in ("tcm_gear", "selected_map"):
             with self.subTest(key=key):
-                self.assertIn(key, app.HERO_CATALOG)
-                self.assertNotIn(key, app.DEFAULT_HERO_KEYS)
-        context = dict(app.PANELS)["Temperatures and context"]
+                self.assertIn(key, HERO_CATALOG)
+                self.assertNotIn(key, LAYOUT.default_hero)
+        context = dict(layout_panels())["Temperatures and context"]
         labels = {metric.key: metric.label for metric in context}
         self.assertEqual(labels["tcm_gear"], "Gear")
         self.assertEqual(labels["selected_map"], "Selected map")
 
     def test_every_offered_metric_carries_its_description(self):
-        for choice in app.HERO_CHOICES:
+        for choice in HERO_CHOICES:
             with self.subTest(key=choice.key):
-                self.assertEqual(choice.description, describe(choice.key))
+                self.assertEqual(
+                    choice.description, LAYOUT.describe(choice.key)
+                )
                 self.assertTrue(choice.description)
 
     def test_every_panel_metric_is_offered_once(self):
-        keys = [choice.key for choice in app.HERO_CHOICES]
+        keys = [choice.key for choice in HERO_CHOICES]
         self.assertEqual(len(keys), len(set(keys)))
-        self.assertEqual(set(keys), set(app.HERO_CATALOG))
-        for _tab, panels in app.TABS:
-            for _title, metrics in panels:
-                for metric in metrics:
-                    self.assertIn(metric.key, app.HERO_CATALOG)
+        self.assertEqual(set(keys), set(HERO_CATALOG))
+        for _title, metrics in layout_panels():
+            for metric in metrics:
+                self.assertIn(metric.key, HERO_CATALOG)
 
 
 class ProfileCoverageTest(unittest.TestCase):
-    # The Selected map row shows the map number the stream index gives
+    # The Selected map row shows the map number that the stream index gives
     # through the tracker, which also follows the stock bus.
-    SHOWN_THROUGH = {"selected_map_number": "selected_map"}
+    SHOWN_THROUGH = {"active_map_index": "selected_map"}
 
     def test_every_converted_field_of_the_current_profile_has_a_row(self):
-        shown = {metric.key for metric in app.HERO_METRICS}
+        shown = {metric.key for metric in LAYOUT.hero}
         shown.update(
             metric.key
-            for _tab, panels in app.TABS
-            for _title, metrics in panels
+            for _title, metrics in layout_panels()
             for metric in metrics
         )
-        calibrations = {
-            **can_telemetry.RAW_CALIBRATIONS,
-            **model.DASHBOARD_CALIBRATIONS,
-        }
         _document, profiles = can_telemetry.load_schema()
-        checked = 0
-        for field in model.profile_field_names(profiles["tuning"]):
-            calibration = calibrations.get(field)
-            if calibration is None:
-                continue
-            checked += 1
+        calibrations = can_telemetry.calibrations(profiles["tuning"])
+        for field, calibration in calibrations.items():
             key = self.SHOWN_THROUGH.get(
                 calibration.target, calibration.target
             )
             with self.subTest(field=field):
                 self.assertIn(key, shown)
-        self.assertGreater(checked, 50)
+        self.assertGreater(len(calibrations), 50)
 
     def test_the_column_coordinates_show_their_candidate_percent(self):
         metrics = {
             metric.key: (title, metric)
-            for _tab, panels in app.TABS
-            for title, panel in panels
+            for title, panel in layout_panels()
             for metric in panel
         }
         for key, title, label in (
-            ("alpha_n_flow_percent", "Air and fuel", "QH0 flow quantity"),
-            (
-                "request_flow_percent",
-                "Torque and requests",
-                "QH0 flow potential",
-            ),
+            ("alpha_n_flow", "Air and fuel", "QH0 flow quantity"),
+            ("request_flow", "Torque and requests", "QH0 flow potential"),
         ):
             with self.subTest(key=key):
                 panel, metric = metrics[key]
@@ -295,7 +291,7 @@ class DashboardWindowTest(unittest.TestCase):
     def test_first_start_shows_the_default_cards_in_the_dark_theme(self):
         dashboard = self.dashboard()
         self.assertEqual(dashboard.palette.name, "dark")
-        self.assertEqual(tuple(dashboard.hero_cards), app.DEFAULT_HERO_KEYS)
+        self.assertEqual(tuple(dashboard.hero_cards), LAYOUT.default_hero)
         self.assertNotIn("gear", dashboard.hero_cards)
         self.assertFalse(self.path.exists())
 
@@ -360,11 +356,11 @@ class DashboardWindowTest(unittest.TestCase):
     def test_stored_choices_return_on_the_next_start(self):
         settings.save(
             self.path,
-            settings.Settings("light", ("coolant_deg_c", "gear")),
+            settings.Settings("light", ("coolant", "gear")),
         )
         dashboard = self.dashboard()
         self.assertEqual(dashboard.palette, app.LIGHT)
-        self.assertEqual(tuple(dashboard.hero_cards), ("coolant_deg_c", "gear"))
+        self.assertEqual(tuple(dashboard.hero_cards), ("coolant", "gear"))
 
     def test_ack_control_follows_the_listen_only_option(self):
         self.assertTrue(self.dashboard().active_button.lit)
@@ -422,7 +418,7 @@ class DashboardWindowTest(unittest.TestCase):
         picker.apply()
         self.assertEqual(
             tuple(dashboard.hero_cards),
-            app.DEFAULT_HERO_KEYS[1:],
+            LAYOUT.default_hero[1:],
         )
         self.assertFalse(picker.winfo_exists())
 
@@ -458,7 +454,7 @@ class DashboardWindowTest(unittest.TestCase):
             self.path,
             settings.Settings(
                 "dark",
-                app.DEFAULT_HERO_KEYS,
+                LAYOUT.default_hero,
                 settings.FeedSettings(True, "127.0.0.1", 5000),
             ),
         )
@@ -473,7 +469,7 @@ class DashboardWindowTest(unittest.TestCase):
                 {
                     "version": settings.SETTINGS_VERSION,
                     "theme": "dark",
-                    "hero": list(app.DEFAULT_HERO_KEYS),
+                    "hero": list(LAYOUT.default_hero),
                     "feed": {
                         "enabled": True,
                         "host": "127.0.0.1",
@@ -533,7 +529,7 @@ class DashboardWindowTest(unittest.TestCase):
             self.path,
             settings.Settings(
                 "dark",
-                app.DEFAULT_HERO_KEYS,
+                LAYOUT.default_hero,
                 settings.FeedSettings(False, "127.0.0.1", 5000),
             ),
         )
@@ -677,14 +673,14 @@ class DashboardReplayWindowTest(unittest.TestCase):
         dashboard._refresh(0.0)
         self.assertEqual(self.panel_value("selected_map"), "2")
         self.assertEqual(
-            self.panel_value("rolling_launch_phase_name"), "COOLDOWN"
+            self.panel_value("rolling_launch_phase"), "COOLDOWN"
         )
         self.assertEqual(
-            self.panel_value("rolling_launch_abort_name"), "BUTTON RELEASED"
+            self.panel_value("rolling_launch_abort_reason"), "BUTTON RELEASED"
         )
         self.assertEqual(
             dashboard._describe("selected_map"),
-            f"{describe('selected_map')}\n\n"
+            f"{LAYOUT.describe('selected_map')}\n\n"
             f"Source: {app.TELEMETRY_MAP_SOURCE}.",
         )
         self.assertEqual(
@@ -700,19 +696,21 @@ class DashboardReplayWindowTest(unittest.TestCase):
                     if metric.key == "selected_map":
                         self.assertEqual(
                             text,
-                            f"Selected map\n\n{describe('selected_map')}"
+                            "Selected map\n\n"
+                            f"{LAYOUT.describe('selected_map')}"
                             "\n\nLast observation: "
                             f"{selected_map.UNKNOWN_REASON}.",
                         )
                     else:
                         self.assertEqual(
                             text,
-                            f"{metric.label}\n\n{describe(metric.key)}",
+                            f"{metric.label}\n\n"
+                            f"{LAYOUT.describe(metric.key)}",
                         )
         card = dashboard.hero_cards["rpm"]
         self.assertEqual(
             card.tooltip_text(),
-            f"ENGINE SPEED [RPM]\n--\n\n{describe('rpm')}",
+            f"ENGINE SPEED [RPM]\n--\n\n{LAYOUT.describe('rpm')}",
         )
 
     def test_save_loop_writes_the_loop_region_as_a_new_trace(self):

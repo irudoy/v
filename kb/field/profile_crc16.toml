@@ -5,3 +5,15 @@ signed = false
 scale = "CRC-16/CCITT-FALSE"
 context = "health"
 position = 2
+
+[dashboard]
+label = "Profile CRC16"
+digits = 0
+hexadecimal = true
+group = "Transport"
+panel = "Throttle sensors and protocol"
+order = 40
+description = """
+CRC16 of the wire layout that the ECU reports in the health context. Values \
+are converted only when it equals the CRC of the bundled profile, because \
+another layout carries other quantities in the same slots."""

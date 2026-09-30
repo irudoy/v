@@ -5,3 +5,15 @@ width = 2
 signed = false
 context = "temperatures_af"
 position = 4
+
+[dashboard]
+label = "A/F state factor"
+digits = 4
+group = "Fuel"
+panel = "Air and fuel"
+order = 80
+description = """
+Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 \
+is the closed-loop stoichiometric target, and a larger value commands \
+enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / \
+factor."""

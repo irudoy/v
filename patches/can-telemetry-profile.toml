@@ -5,10 +5,10 @@
 # addresses, mailbox ownership, and ROM identity are not part of the host
 # contract. The profile CRC covers the wire layout alone: protocol version,
 # profile ID, page count, and the placement, width, and signedness of every
-# slot. Names and scale strings are outside it, and a slot that carries a
-# different quantity takes a new profile ID. The host decodes the current
-# profile ID alone. Runtime arbitrary-address interpretation is intentionally
-# unsupported.
+# slot. Names, scale strings, and the host presentation of [field.dashboard]
+# are outside it, and a slot that carries a different quantity takes a new
+# profile ID. The host decodes the current profile ID alone. Runtime
+# arbitrary-address interpretation is intentionally unsupported.
 
 schema_version = 2
 rom = "JK08A"
@@ -44,6 +44,11 @@ kind = "telemetry_state"
 signed = false
 scale = "base scheduler ticks"
 
+[field.dashboard]
+label = "Telemetry tick"
+digits = 0
+group = "Transport"
+
 [[field]]
 name = "request_flow_raw"
 page = 0
@@ -54,6 +59,28 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "candidate raw * 0.00152588 percent"
+
+[field.dashboard]
+label = "QH0 flow potential"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+order = 30
+description = """
+QH0 flow potential: the column coordinate of Requested Torque Conversion by \
+QH0 - Primary. The ECU looks it up from the opening area over engine speed \
+through curve 0x15690 or 0x156D0, and the word lookup compares each point of \
+axis 0x14114 with it directly. The percent scale, 0.00152588 per count, is \
+the catalog candidate of that axis. The live value feed sends it as VQ QH0 \
+Flow Potential."""
+
+[field.dashboard.feed]
+key = "request_flow_pct"
+name = "VQ QH0 Flow Potential"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10
 
 [[field]]
 name = "final_timing_raw"
@@ -66,6 +93,23 @@ kind = "ecu_ram"
 signed = true
 scale = "raw degBTDC"
 
+[field.dashboard]
+label = "Timing command"
+digits = 0
+group = "Ignition"
+description = """
+Final ignition timing coordinate in degrees before TDC. A software command, \
+not a measured spark angle. During a Rolling Launch late override it is the \
+upstream stock coordinate, and APC command carries the effective value."""
+
+[field.dashboard.feed]
+key = "timing_deg"
+name = "VQ Timing Command"
+format = "0"
+minimum = -20
+maximum = 60
+step = 10
+
 [[field]]
 name = "apc_command_raw"
 page = 0
@@ -77,6 +121,18 @@ kind = "ecu_ram"
 signed = false
 scale = "110 - raw degBTDC"
 
+[field.dashboard]
+label = "APC command"
+digits = 0
+group = "Ignition"
+panel = "Ignition, throttle, and CVTC"
+order = 10
+description = """
+Effective ignition timing command in degrees before TDC, as J1979 PID 0x0E \
+reports it: 110 minus the APC byte. It follows Rolling Launch and the stock \
+modes that move the command away from the timing coordinate. A software \
+command, not a measured spark angle."""
+
 [[field]]
 name = "fuel_inhibit_mask"
 page = 0
@@ -86,7 +142,20 @@ source = 0xFFFF22E0
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, 5 CYLINDER_6"
+scale = """
+bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, \
+5 CYLINDER_6"""
+
+[field.dashboard]
+label = "Fuel inhibit mask"
+digits = 0
+group = "Injection"
+panel = "Injection and knock"
+panel_label = "Fuel inhibit"
+order = 70
+description = """
+Cylinders whose injection the ECU cuts at this moment: none, all for a \
+complete fuel cut, or the list of cut cylinders."""
 
 [[field]]
 name = "maf_b1_raw"
@@ -99,6 +168,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[field.dashboard]
+label = "MAF bank 1"
+digits = 3
+group = "Air"
+panel = "Air and fuel"
+order = 10
+description = """
+Mass airflow sensor signal of bank 1 in volts, the ten-bit ADC count after a \
+unit-nominal trim. The ECU converts it to airflow through its sensor table."""
+
 [[field]]
 name = "maf_b2_raw"
 page = 1
@@ -109,6 +188,16 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
+
+[field.dashboard]
+label = "MAF bank 2"
+digits = 3
+group = "Air"
+panel = "Air and fuel"
+order = 20
+description = """
+Mass airflow sensor signal of bank 2 in volts, the ten-bit ADC count after a \
+unit-nominal trim. The ECU converts it to airflow through its sensor table."""
 
 [[field]]
 name = "maf_total_raw"
@@ -121,6 +210,22 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 100 g/s"
 
+[field.dashboard]
+label = "Total airflow"
+digits = 2
+group = "Air"
+description = """
+Total intake airflow of both banks in g/s from the ECU airflow model, the \
+value J1979 PID 0x10 reports. A model output, not a direct sensor reading."""
+
+[field.dashboard.feed]
+key = "maf_g_s"
+name = "VQ Total Airflow"
+format = "0.00"
+minimum = 0
+maximum = 400
+step = 50
+
 [[field]]
 name = "normalized_load_raw"
 page = 1
@@ -131,6 +236,27 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw * 100 / 128 percent"
+
+[field.dashboard]
+label = "Engine load"
+digits = 1
+group = "Engine"
+panel = "Air and fuel"
+order = 40
+description = """
+Engine load that indexes the ignition and CVTC target maps: the Base Fuel \
+Schedule as a ratio to the reference constant of the ROM in steps of 1/128, \
+as the ECU computes it for the snapshot. 100 percent is the reference \
+schedule, and the value saturates at 199.2 percent. The live value feed \
+sends it as VQ Engine Load."""
+
+[field.dashboard.feed]
+key = "load"
+name = "VQ Engine Load"
+format = "0.00"
+minimum = 0
+maximum = 200
+step = 20
 
 [[field]]
 name = "bfs_raw"
@@ -143,6 +269,27 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 2048 ms"
 
+[field.dashboard]
+label = "Base fuel schedule"
+digits = 3
+group = "Fuel"
+panel = "Air and fuel"
+panel_label = "BFS"
+order = 30
+description = """
+Base Fuel Schedule: the base injection time in ms for the measured air \
+charge, before the fuel trims, the target-mixture factor, and the injector \
+opening time. Normalized to its reference constant, it is the load axis of \
+the ignition and CVTC maps, which Engine load shows."""
+
+[field.dashboard.feed]
+key = "bfs_ms"
+name = "VQ Base Fuel Schedule"
+format = "0.000"
+minimum = 0
+maximum = 20
+step = 2
+
 [[field]]
 name = "rolling_launch_phase"
 page = 2
@@ -153,6 +300,19 @@ profiles = ["tuning"]
 kind = "runtime_state"
 signed = false
 scale = "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN"
+
+[field.dashboard]
+label = "Rolling Launch phase"
+digits = 0
+group = "Context"
+panel = "Temperatures and context"
+panel_label = "Rolling Launch"
+order = 80
+description = """
+Phase of the Rolling Launch runtime: IDLE while it evaluates the activation \
+gates, ACTIVE while it owns the launch fuel cut and the optional ignition \
+retard, and COOLDOWN after a run ends, until the buttons stay released for \
+the rearm period."""
 
 [[field]]
 name = "injection_0_raw"
@@ -165,6 +325,17 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
 
+[field.dashboard]
+label = "Injection calc 0"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 10
+description = """
+Calculated injection pulse of channel 0, which drives cylinder 1 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
+
 [[field]]
 name = "injection_1_raw"
 page = 2
@@ -175,6 +346,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
+
+[field.dashboard]
+label = "Injection calc 1"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 20
+description = """
+Calculated injection pulse of channel 1, which drives cylinder 2 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
 
 [[field]]
 name = "injection_2_raw"
@@ -187,6 +369,17 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
 
+[field.dashboard]
+label = "Injection calc 2"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 30
+description = """
+Calculated injection pulse of channel 2, which drives cylinder 3 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
+
 [[field]]
 name = "injection_3_raw"
 page = 3
@@ -197,6 +390,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
+
+[field.dashboard]
+label = "Injection calc 3"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 40
+description = """
+Calculated injection pulse of channel 3, which drives cylinder 4 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
 
 [[field]]
 name = "injection_4_raw"
@@ -209,6 +413,17 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
 
+[field.dashboard]
+label = "Injection calc 4"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 50
+description = """
+Calculated injection pulse of channel 4, which drives cylinder 5 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
+
 [[field]]
 name = "telemetry_status"
 page = 3
@@ -219,6 +434,11 @@ profiles = ["tuning"]
 kind = "telemetry_state"
 signed = false
 scale = "bit mask"
+
+[field.dashboard]
+label = "Telemetry status"
+digits = 0
+group = "Transport"
 
 [[field]]
 name = "injection_5_raw"
@@ -231,6 +451,17 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 100 ms"
 
+[field.dashboard]
+label = "Injection calc 5"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 60
+description = """
+Calculated injection pulse of channel 5, which drives cylinder 6 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""
+
 [[field]]
 name = "knock_timing_state_raw"
 page = 4
@@ -241,6 +472,16 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
 scale = "raw / 256 deg"
+
+[field.dashboard]
+label = "Knock timing state"
+digits = 3
+group = "Knock"
+panel = "Injection and knock"
+order = 80
+description = """
+Signed timing state of the knock and high-detonation coordinator in 1/256 \
+degree; its whole-number part enters the engine-event timing correction."""
 
 [[field]]
 name = "knock_surface_state"
@@ -253,6 +494,18 @@ kind = "ecu_ram"
 signed = false
 scale = "bits: 6 HIGH_DETONATION"
 
+[field.dashboard]
+label = "Knock surface state"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+panel_label = "Active hot surface"
+order = 90
+description = """
+Hot ignition surface in use: HIGH OCTANE or HIGH DETONATION. The knock \
+coordinator selects it through several gates, one of them a hysteresis on a \
+knock state, and the same bit scales the target mixture."""
+
 [[field]]
 name = "knock_count_latched"
 page = 4
@@ -263,6 +516,16 @@ profiles = ["tuning"]
 kind = "telemetry_state"
 signed = false
 scale = "saturating event count"
+
+[field.dashboard]
+label = "Knock interval count"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+order = 100
+description = """
+Knock exceedances that the evaluator counted between two snapshots, \
+saturating."""
 
 [[field]]
 name = "knock_channel_mask_latched"
@@ -275,6 +538,15 @@ kind = "telemetry_state"
 signed = false
 scale = "six-position bit mask; bit c - 1 is knock channel c"
 
+[field.dashboard]
+label = "Knock channel mask"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+panel_label = "Knock channels"
+order = 110
+description = "Knock channels that had an exceedance between two snapshots."
+
 [[field]]
 name = "app1_raw"
 page = 5
@@ -285,6 +557,16 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
+
+[field.dashboard]
+label = "APP 1"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 20
+description = """
+Accelerator pedal position sensor 1 in volts; it rises with pedal travel. \
+Factory bands: 0.5..1.0 V released and 4.2..4.8 V fully depressed."""
 
 [[field]]
 name = "app2_raw"
@@ -297,6 +579,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[field.dashboard]
+label = "APP 2"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 30
+description = """
+Accelerator pedal position sensor 2 in volts, the second track that the ECU \
+checks against sensor 1; it rises with pedal travel."""
+
 [[field]]
 name = "tps_b1_raw"
 page = 5
@@ -307,6 +599,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
+
+[field.dashboard]
+label = "TPS bank 1"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 40
+description = """
+Throttle position sensor 1 of the bank 1 electric throttle body in volts; it \
+rises with opening. Factory criteria: above 0.36 V released and below 4.75 V \
+fully depressed."""
 
 [[field]]
 name = "absolute_throttle_raw"
@@ -319,6 +622,24 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 100 / 255 percent"
 
+[field.dashboard]
+label = "Absolute throttle"
+digits = 1
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 60
+description = """
+Absolute throttle position as J1979 PID 0x11 reports it, in percent of the \
+byte range."""
+
+[field.dashboard.feed]
+key = "throttle_pct"
+name = "VQ Absolute Throttle"
+format = "0.0"
+minimum = 0
+maximum = 100
+step = 10
+
 [[field]]
 name = "tps_b2_raw"
 page = 6
@@ -329,6 +650,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
+
+[field.dashboard]
+label = "TPS bank 2"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 50
+description = """
+Throttle position sensor 1 of the bank 2 electric throttle body in volts; it \
+rises with opening. Factory criteria: above 0.36 V released and below 4.75 V \
+fully depressed."""
 
 [[field]]
 name = "intake_cvtc_actual_b1_raw"
@@ -341,6 +673,24 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
 
+[field.dashboard]
+label = "Intake CVTC actual B1"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 70
+description = """
+Measured intake camshaft advance of bank 1 in crank degrees, from the phase \
+of the cam sensor edges; a larger value is more advance."""
+
+[field.dashboard.feed]
+key = "intake_cam_b1_deg"
+name = "VQ Intake Cam B1"
+format = "0.0"
+minimum = -64
+maximum = 64
+step = 16
+
 [[field]]
 name = "intake_cvtc_actual_b2_raw"
 page = 6
@@ -351,6 +701,24 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
+
+[field.dashboard]
+label = "Intake CVTC actual B2"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 80
+description = """
+Measured intake camshaft advance of bank 2 in crank degrees, from the phase \
+of the cam sensor edges; a larger value is more advance."""
+
+[field.dashboard.feed]
+key = "intake_cam_b2_deg"
+name = "VQ Intake Cam B2"
+format = "0.0"
+minimum = -64
+maximum = 64
+step = 16
 
 [[field]]
 name = "intake_cvtc_target_raw"
@@ -363,6 +731,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
 
+[field.dashboard]
+label = "Intake CVTC target"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 90
+description = """
+Intake camshaft advance target common to both banks, in crank degrees. The \
+CVTC controller drives the measured positions toward it."""
+
 [[field]]
 name = "exhaust_cvtc_target_raw"
 page = 6
@@ -373,6 +751,14 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
+
+[field.dashboard]
+label = "Exhaust CVTC target"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 100
+description = "Exhaust camshaft target common to both banks, in crank degrees."
 
 [[field]]
 name = "calculated_load_raw"
@@ -385,6 +771,15 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 100 / 255 percent"
 
+[field.dashboard]
+label = "Calculated load"
+digits = 1
+group = "Engine"
+description = """
+Calculated load value of J1979 PID 0x04: the current airflow divided by the \
+peak airflow. It is not the normalized Base Fuel Schedule that indexes the \
+ignition and CVTC maps; Engine load carries that coordinate."""
+
 [[field]]
 name = "throttle_request_bounded_raw"
 page = 7
@@ -395,6 +790,18 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
 scale = "candidate raw * 0.1 Nm"
+
+[field.dashboard]
+label = "Bounded throttle request"
+digits = 1
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Torque request"
+order = 20
+description = """
+Bounded torque request that the electronic throttle serves: the pedal demand \
+of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. Transmission \
+requests can bound it during gear changes."""
 
 [[field]]
 name = "engine_torque_state_raw"
@@ -407,6 +814,16 @@ kind = "ecu_ram"
 signed = true
 scale = "candidate raw * 0.1 Nm"
 
+[field.dashboard]
+label = "Engine torque state"
+digits = 1
+group = "Engine"
+panel = "Torque and requests"
+order = 10
+description = """
+Signed engine torque state of the torque and throttle calibration path, \
+candidate 0.1 Nm per count."""
+
 [[field]]
 name = "injection_end_angle_raw"
 page = 7
@@ -417,6 +834,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw * 2 - 590 degCA"
+
+[field.dashboard]
+label = "End of injection after intake TDC"
+digits = 0
+group = "Injection"
+panel = "Torque and requests"
+order = 70
+description = """
+End of injection in crank degrees after intake TDC of the injected cylinder. \
+A firmware coordinate from the injection-end tables, not a measured injector \
+event."""
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"
@@ -429,6 +857,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
 
+[field.dashboard]
+label = "Exhaust CVTC actual B1"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 10
+description = """
+Measured exhaust camshaft position of bank 1 in crank degrees, from the \
+phase of the cam sensor edges."""
+
 [[field]]
 name = "throttle_target_shared_raw"
 page = 8
@@ -439,6 +877,17 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "candidate raw * 0.0008 cm2"
+
+[field.dashboard]
+label = "Shared throttle target"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle area request"
+order = 40
+description = """
+Target opening area of both throttle bodies, candidate 0.0008 cm2 per count; \
+the channel targets derive from it."""
 
 [[field]]
 name = "throttle_target_channel_0_raw"
@@ -451,6 +900,27 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 34285 / 1114112 percent"
 
+[field.dashboard]
+label = "Throttle target channel 0"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle target B1"
+order = 50
+description = """
+Bank 1 throttle target as throttle opening above the learned closed \
+position, on the percent scale the ECU publishes as J1979 absolute throttle. \
+It is the coordinate of the throttle opening tables, and the live value feed \
+publishes it for RomRaider Overlay Log."""
+
+[field.dashboard.feed]
+key = "throttle_target_pct"
+name = "VQ Throttle Target"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10
+
 [[field]]
 name = "throttle_target_channel_1_raw"
 page = 8
@@ -462,6 +932,18 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 34285 / 1114112 percent"
 
+[field.dashboard]
+label = "Throttle target channel 1"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle target B2"
+order = 60
+description = """
+Bank 2 throttle target as throttle opening above the learned closed \
+position, on the percent scale the ECU publishes as J1979 absolute \
+throttle."""
+
 [[field]]
 name = "exhaust_cvtc_actual_b2_raw"
 page = 8
@@ -472,6 +954,16 @@ profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
 scale = "raw * 0.5 - 64 degCA"
+
+[field.dashboard]
+label = "Exhaust CVTC actual B2"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 20
+description = """
+Measured exhaust camshaft position of bank 2 in crank degrees, from the \
+phase of the cam sensor edges."""
 
 [[context]]
 page = 9
@@ -486,6 +978,20 @@ kind = "ecu_ram"
 signed = false
 scale = "raw - 50 degC"
 
+[context.field.dashboard]
+label = "Coolant"
+digits = 0
+group = "Temperature"
+description = "Engine coolant temperature."
+
+[context.field.dashboard.feed]
+key = "coolant_c"
+name = "VQ Coolant Temperature"
+format = "0"
+minimum = -40
+maximum = 140
+step = 20
+
 [[context.field]]
 name = "iat_raw"
 width = 1
@@ -493,6 +999,22 @@ source = 0xFFFF2837
 kind = "ecu_ram"
 signed = false
 scale = "raw - 50 degC"
+
+[context.field.dashboard]
+label = "Intake air"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 10
+description = "Intake air temperature."
+
+[context.field.dashboard.feed]
+key = "iat_c"
+name = "VQ Intake Air Temperature"
+format = "0"
+minimum = -40
+maximum = 140
+step = 20
 
 [[context.field]]
 name = "fuel_temperature_did_source_raw"
@@ -502,6 +1024,14 @@ kind = "ecu_ram"
 signed = false
 scale = "raw - 50 degC"
 
+[context.field.dashboard]
+label = "Fuel temperature"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 20
+description = "Fuel temperature from the fuel tank temperature sensor."
+
 [[context.field]]
 name = "oil_temperature_did_source_raw"
 width = 1
@@ -510,6 +1040,14 @@ kind = "ecu_ram"
 signed = false
 scale = "raw - 50 degC"
 
+[context.field.dashboard]
+label = "Oil temperature"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 30
+description = "Engine oil temperature."
+
 [[context.field]]
 name = "af_state_factor_raw"
 width = 2
@@ -517,6 +1055,18 @@ source = 0xFFFF22E8
 kind = "ecu_ram"
 signed = false
 scale = "raw / 16384 ratio"
+
+[context.field.dashboard]
+label = "A/F state factor"
+digits = 4
+group = "Fuel"
+panel = "Air and fuel"
+order = 80
+description = """
+Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 \
+is the closed-loop stoichiometric target, and a larger value commands \
+enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / \
+factor."""
 
 [[context]]
 page = 9
@@ -531,6 +1081,24 @@ kind = "ecu_ram"
 signed = true
 scale = "raw / 256 - 100 percent"
 
+[context.field.dashboard]
+label = "STFT bank 1"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 90
+description = """
+Short-term fuel trim of bank 1: the fast closed-loop correction from the A/F \
+sensor, in percent. A positive value adds fuel."""
+
+[context.field.dashboard.feed]
+key = "stft_b1_pct"
+name = "VQ STFT B1"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5
+
 [[context.field]]
 name = "stft_b2_raw"
 width = 2
@@ -538,6 +1106,24 @@ source = 0xFFFF22DE
 kind = "ecu_ram"
 signed = true
 scale = "raw / 256 - 100 percent"
+
+[context.field.dashboard]
+label = "STFT bank 2"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 100
+description = """
+Short-term fuel trim of bank 2: the fast closed-loop correction from the A/F \
+sensor, in percent. A positive value adds fuel."""
+
+[context.field.dashboard.feed]
+key = "stft_b2_pct"
+name = "VQ STFT B2"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5
 
 [[context.field]]
 name = "intake_cvtc_duty_b1_raw"
@@ -547,6 +1133,17 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 39 / 100 percent"
 
+[context.field.dashboard]
+label = "CVTC duty B1"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 110
+description = """
+Duty of the bank 1 intake valve timing solenoid, in percent of its PWM \
+period; the output that moves the camshaft. A larger duty advances the \
+camshaft."""
+
 [[context.field]]
 name = "intake_cvtc_duty_b2_raw"
 width = 1
@@ -554,6 +1151,17 @@ source = 0xFFFF2441
 kind = "ecu_ram"
 signed = false
 scale = "raw * 39 / 100 percent"
+
+[context.field.dashboard]
+label = "CVTC duty B2"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 120
+description = """
+Duty of the bank 2 intake valve timing solenoid, in percent of its PWM \
+period; the output that moves the camshaft. A larger duty advances the \
+camshaft."""
 
 [[context]]
 page = 9
@@ -568,6 +1176,25 @@ kind = "ecu_ram"
 signed = true
 scale = "raw / 256 - 100 percent"
 
+[context.field.dashboard]
+label = "LTFT bank 1"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 110
+description = """
+Long-term fuel trim of bank 1 as diagnostics report it: the learned cell of \
+the operating region plus the running adjustment, in percent. A positive \
+value adds fuel."""
+
+[context.field.dashboard.feed]
+key = "ltft_b1_pct"
+name = "VQ LTFT B1"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5
+
 [[context.field]]
 name = "ltft_b2_raw"
 width = 2
@@ -576,13 +1203,39 @@ kind = "ecu_ram"
 signed = true
 scale = "raw / 256 - 100 percent"
 
+[context.field.dashboard]
+label = "LTFT bank 2"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 120
+description = """
+Long-term fuel trim of bank 2 as diagnostics report it: the learned cell of \
+the operating region plus the running adjustment, in percent. A positive \
+value adds fuel."""
+
+[context.field.dashboard.feed]
+key = "ltft_b2_pct"
+name = "VQ LTFT B2"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5
+
 [[context.field]]
 name = "active_map_index"
 width = 1
 source = 0xFFFF5D00
 kind = "runtime_state"
 signed = false
-scale = "raw + 1 map number; 0 through 4 select Maps 1 through 5, and any other value selects Map 1"
+scale = """
+raw + 1; 0 through 4 select Maps 1 through 5, and any other value selects \
+Map 1"""
+
+[context.field.dashboard]
+label = "Selected map"
+digits = 0
+group = "Context"
 
 [[context.field]]
 name = "alpha_n_flow_raw"
@@ -591,6 +1244,28 @@ source = 0xFFFF1170
 kind = "ecu_ram"
 signed = false
 scale = "candidate raw * 0.390625 percent"
+
+[context.field.dashboard]
+label = "QH0 flow quantity"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 50
+description = """
+QH0 flow quantity: the column coordinate of the five Fuel Compensation Main \
+surfaces. The ECU writes it as the high byte of curve 0x15042 or 0x15022 \
+over the throttle opening area divided by engine speed, and the byte lookup \
+compares each point of axis 0x11D4C with it directly. The percent scale, \
+0.390625 per count, is the catalog candidate of that axis. The live value \
+feed sends it as VQ QH0 Flow Quantity."""
+
+[context.field.dashboard.feed]
+key = "alpha_n_flow_pct"
+name = "VQ QH0 Flow Quantity"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10
 
 [[context]]
 page = 9
@@ -605,6 +1280,16 @@ kind = "rom_configuration"
 signed = false
 scale = "identity"
 
+[context.field.dashboard]
+label = "Protocol version"
+digits = 0
+group = "Transport"
+panel = "Throttle sensors and protocol"
+order = 30
+description = """
+Telemetry protocol version that the ECU reports in the health context. \
+Values are converted only when it matches the bundled schema."""
+
 [[context.field]]
 name = "profile_id"
 width = 1
@@ -612,6 +1297,11 @@ source = 0x000D4E04
 kind = "rom_configuration"
 signed = false
 scale = "identity"
+
+[context.field.dashboard]
+label = "Profile ID"
+digits = 0
+group = "Transport"
 
 [[context.field]]
 name = "profile_crc16"
@@ -621,6 +1311,18 @@ kind = "rom_configuration"
 signed = false
 scale = "CRC-16/CCITT-FALSE"
 
+[context.field.dashboard]
+label = "Profile CRC16"
+digits = 0
+hexadecimal = true
+group = "Transport"
+panel = "Throttle sensors and protocol"
+order = 40
+description = """
+CRC16 of the wire layout that the ECU reports in the health context. Values \
+are converted only when it equals the CRC of the bundled profile, because \
+another layout carries other quantities in the same slots."""
+
 [[context.field]]
 name = "snapshot_overrun_count"
 width = 1
@@ -629,6 +1331,11 @@ kind = "telemetry_state"
 signed = false
 scale = "saturating count"
 
+[context.field.dashboard]
+label = "Snapshot overrun count"
+digits = 0
+group = "Transport"
+
 [[context.field]]
 name = "tx_abort_count"
 width = 1
@@ -636,6 +1343,11 @@ source = 0xFFFF5E0F
 kind = "telemetry_state"
 signed = false
 scale = "saturating count"
+
+[context.field.dashboard]
+label = "TX abort count"
+digits = 0
+group = "Transport"
 
 [[context]]
 page = 9
@@ -648,7 +1360,25 @@ width = 2
 source = 0xFFFF5E10
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 1"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 120
+description = """
+Smallest knock margin of evaluator channel 1 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window."""
 
 [[context.field]]
 name = "knock_margin_min_ch2_raw"
@@ -656,7 +1386,25 @@ width = 2
 source = 0xFFFF5E12
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 2"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 130
+description = """
+Smallest knock margin of evaluator channel 2 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window."""
 
 [[context.field]]
 name = "knock_margin_min_ch3_raw"
@@ -664,7 +1412,26 @@ width = 2
 source = 0xFFFF5E14
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 3"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 140
+description = """
+Smallest knock margin of evaluator channel 3 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window. The stock threshold row of this channel holds 0xFFFF, so it reads -- \
+unless the metric exceeds 32768."""
 
 [[context]]
 page = 10
@@ -677,7 +1444,25 @@ width = 1
 source = 0xFFFF5D41
 kind = "runtime_state"
 signed = false
-scale = "enumeration: the latest Rolling Launch abort reason, 0 NONE through 18 MODE_CHANGED"
+scale = """
+enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, \
+4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 \
+BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, \
+13 RESERVED_13, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 \
+MAP_CHANGED, 18 MODE_CHANGED"""
+
+[context.field.dashboard]
+label = "Rolling Launch reason"
+digits = 0
+group = "Context"
+panel = "Temperatures and context"
+order = 90
+description = """
+Reason code of the Rolling Launch runtime. In IDLE it names the first \
+activation gate that fails, such as MAP DISABLED on a map without Rolling \
+Launch or BUTTON INVALID while CANCEL is not held. ACTIVE reads NONE, and \
+COOLDOWN keeps the reason that ended the run, such as BUTTON RELEASED, \
+TIMEOUT, or MAP REQUEST."""
 
 [[context.field]]
 name = "battery_voltage_raw"
@@ -687,6 +1472,22 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 0.08 V"
 
+[context.field.dashboard]
+label = "Battery voltage"
+digits = 2
+group = "Context"
+panel = "Trims and supply"
+order = 50
+description = "Battery voltage at the ECU supply."
+
+[context.field.dashboard.feed]
+key = "battery_v"
+name = "VQ Battery Voltage"
+format = "0.00"
+minimum = 8
+maximum = 16
+step = 1
+
 [[context.field]]
 name = "ltft_learned_b1_raw"
 width = 2
@@ -695,6 +1496,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 256 - 100 percent"
 
+[context.field.dashboard]
+label = "LTFT learned bank 1"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 10
+description = """
+Learned long-term trim cell of bank 1 for the current operating region, in \
+percent. LTFT bank 1 is this cell plus the adjustment."""
+
 [[context.field]]
 name = "ltft_adjustment_b1_raw"
 width = 2
@@ -702,6 +1513,14 @@ source = 0xFFFF5648
 kind = "ecu_ram"
 signed = false
 scale = "raw / 256 - 100 percent"
+
+[context.field.dashboard]
+label = "LTFT adjustment bank 1"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 20
+description = "Running adjustment of the bank 1 long-term trim, in percent."
 
 [[context]]
 page = 10
@@ -716,6 +1535,14 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 100 / 1024 percent"
 
+[context.field.dashboard]
+label = "Exhaust CVTC duty B1 word"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 50
+description = "Duty of the bank 1 exhaust valve timing solenoid, in percent."
+
 [[context.field]]
 name = "exhaust_cvtc_duty_b2_word_raw"
 width = 2
@@ -723,6 +1550,14 @@ source = 0xFFFF1AAE
 kind = "ecu_ram"
 signed = false
 scale = "raw * 100 / 1024 percent"
+
+[context.field.dashboard]
+label = "Exhaust CVTC duty B2 word"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 60
+description = "Duty of the bank 2 exhaust valve timing solenoid, in percent."
 
 [[context.field]]
 name = "intake_cvtc_duty_command_b1_raw"
@@ -732,6 +1567,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw * 39 / 100 percent"
 
+[context.field.dashboard]
+label = "Intake CVTC duty command B1"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 30
+description = """
+Scheduler copy of the bank 1 intake valve timing solenoid duty, in percent. \
+Every recorded drive holds it equal to the live duty."""
+
 [[context.field]]
 name = "intake_cvtc_duty_command_b2_raw"
 width = 1
@@ -739,6 +1584,16 @@ source = 0xFFFF23B5
 kind = "ecu_ram"
 signed = false
 scale = "raw * 39 / 100 percent"
+
+[context.field.dashboard]
+label = "Intake CVTC duty command B2"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 40
+description = """
+Scheduler copy of the bank 2 intake valve timing solenoid duty, in percent. \
+Every recorded drive holds it equal to the live duty."""
 
 [[context]]
 page = 10
@@ -753,6 +1608,19 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[context.field.dashboard]
+label = "Front A/F sensor B1"
+digits = 3
+group = "Fuel"
+panel = "Air and fuel"
+panel_label = "A/F sensor 1 B1"
+order = 60
+description = """
+Front A/F sensor signal of bank 1 in volts, the item the factory data \
+monitor calls A/F SEN1: 2.20 V is the sensor reference, and lower is richer. \
+It is not converted to AFR: the ECU curve from voltage to lambda is not \
+identified, and under sustained enrichment the reading moves lean."""
+
 [[context.field]]
 name = "front_af_sensor_b2_word_raw"
 width = 2
@@ -761,6 +1629,19 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[context.field.dashboard]
+label = "Front A/F sensor B2"
+digits = 3
+group = "Fuel"
+panel = "Air and fuel"
+panel_label = "A/F sensor 1 B2"
+order = 70
+description = """
+Front A/F sensor signal of bank 2 in volts, the item the factory data \
+monitor calls A/F SEN1: 2.20 V is the sensor reference, and lower is richer. \
+It is not converted to AFR: the ECU curve from voltage to lambda is not \
+identified, and under sustained enrichment the reading moves lean."""
+
 [[context.field]]
 name = "af_adjustment_b1_raw"
 width = 2
@@ -768,6 +1649,19 @@ source = 0xFFFF45A0
 kind = "ecu_ram"
 signed = true
 scale = "candidate raw * 0.002 ratio"
+
+[context.field.dashboard]
+label = "A/F adjustment B1"
+digits = 3
+group = "Fuel"
+panel = "Trims and supply"
+panel_label = "A/F ADJ B1"
+order = 30
+description = """
+A/F adjustment of bank 1: the signed correction that the ECU integrates from \
+the difference between the target mixture and the A/F sensor 1 mixture, \
+bounded to -500..500 counts. The candidate factor 0.002 maps the factory \
+running range to -0.33..0.33. Every recording so far reads 0."""
 
 [[context]]
 page = 10
@@ -782,6 +1676,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[context.field.dashboard]
+label = "Secondary TPS B1"
+digits = 3
+group = "Throttle"
+panel = "Throttle sensors and protocol"
+order = 10
+description = """
+Throttle position sensor 2 of the bank 1 throttle body in volts, the second \
+track that the ECU checks against sensor 1; it rises with opening."""
+
 [[context.field]]
 name = "secondary_tps_b2_raw"
 width = 2
@@ -790,6 +1694,16 @@ kind = "ecu_ram"
 signed = false
 scale = "raw / 200 V"
 
+[context.field.dashboard]
+label = "Secondary TPS B2"
+digits = 3
+group = "Throttle"
+panel = "Throttle sensors and protocol"
+order = 20
+description = """
+Throttle position sensor 2 of the bank 2 throttle body in volts, the second \
+track that the ECU checks against sensor 1; it rises with opening."""
+
 [[context.field]]
 name = "af_adjustment_b2_raw"
 width = 2
@@ -797,6 +1711,19 @@ source = 0xFFFF45A2
 kind = "ecu_ram"
 signed = true
 scale = "candidate raw * 0.002 ratio"
+
+[context.field.dashboard]
+label = "A/F adjustment B2"
+digits = 3
+group = "Fuel"
+panel = "Trims and supply"
+panel_label = "A/F ADJ B2"
+order = 40
+description = """
+A/F adjustment of bank 2: the signed correction that the ECU integrates from \
+the difference between the target mixture and the A/F sensor 1 mixture, \
+bounded to -500..500 counts. The candidate factor 0.002 maps the factory \
+running range to -0.33..0.33. Every recording so far reads 0."""
 
 [[context]]
 page = 10
@@ -809,7 +1736,25 @@ width = 2
 source = 0xFFFF5E16
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 4"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 150
+description = """
+Smallest knock margin of evaluator channel 4 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window."""
 
 [[context.field]]
 name = "knock_margin_min_ch5_raw"
@@ -817,7 +1762,26 @@ width = 2
 source = 0xFFFF5E18
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 5"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 160
+description = """
+Smallest knock margin of evaluator channel 5 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window. The stock threshold row of this channel holds 0xFFFF, so it reads -- \
+unless the metric exceeds 32768."""
 
 [[context.field]]
 name = "knock_margin_min_ch6_raw"
@@ -825,4 +1789,22 @@ width = 2
 source = 0xFFFF5E1A
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
+scale = """
+threshold minus metric in evaluator units, minimum since the previous \
+capture of this context; 32767 without an evaluation or for a margin of \
+32767 or more"""
+
+[context.field.dashboard]
+label = "Knock margin ch 6"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 170
+description = """
+Smallest knock margin of evaluator channel 6 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window."""

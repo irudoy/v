@@ -26,6 +26,16 @@ CANDUMP_COMPACT = re.compile(
 # stream late can miss the first groups of that run, so the opening window is
 # wider than one tick.
 PRODUCER_RUN_TICK_MAX = 0x00FF
+# The keys of the presentation of a field and of its live feed channel.
+DASHBOARD_KEYS = frozenset({
+    "label", "digits", "unit", "hexadecimal", "group", "panel", "panel_label",
+    "order", "description", "feed",
+})
+FEED_KEYS = frozenset({"key", "name", "format", "minimum", "maximum", "step"})
+FEED_KEY = re.compile(r"[a-z][a-z0-9_]*")
+# The spelling of a scale unit on a display; a candidate conversion adds an
+# asterisk.
+DISPLAY_UNITS = {"percent": "%", "ratio": ""}
 
 
 def is_producer_restart(previous_tick16, tick16):
@@ -249,6 +259,7 @@ def _parse_profile(source_profile, context, protocol_version):
         != crc16
     ):
         raise DecodeError(f"{context} CRC16 does not match its wire contract")
+    _validate_presentation(profile_fields(source_profile), context)
 
     profile = dict(source_profile)
     profile["_context_pages"] = tuple(sorted(context_pages))
@@ -289,6 +300,98 @@ def _validate_schema_field(field, context):
         or not scale
     ):
         raise DecodeError(f"{context} has an invalid field contract")
+    try:
+        terms = can_telemetry_schema.scale_terms(scale)
+    except ValueError as error:
+        raise DecodeError(f"{context}: {error}") from error
+    stated = {
+        key: field[key]
+        for key in ("conversion", "candidate", "unit", "values", "bits")
+        if key in field
+    }
+    if stated != terms:
+        raise DecodeError(
+            f"{context} differs from the conversion, unit, values, or bits "
+            "of its scale"
+        )
+    dashboard = field.get("dashboard")
+    if dashboard is not None:
+        _validate_dashboard(dashboard, terms, f"{context}.dashboard")
+
+
+def _text(value):
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _number(value):
+    return type(value) in (int, float)
+
+
+def _validate_dashboard(dashboard, terms, context):
+    """Validate the presentation of one field against the terms of its
+    scale: a scale that states a unit leaves the presentation none, and a
+    feed channel publishes the value of a conversion."""
+    if not isinstance(dashboard, dict) or not set(dashboard) <= DASHBOARD_KEYS:
+        raise DecodeError(f"{context} must be an object of presentation keys")
+    optional_text = ("unit", "panel", "panel_label", "description")
+    if (
+        not _text(dashboard.get("label"))
+        or not _text(dashboard.get("group"))
+        or type(dashboard.get("digits")) is not int
+        or not 0 <= dashboard["digits"] <= 9
+        or any(
+            key in dashboard and not _text(dashboard[key])
+            for key in optional_text
+        )
+        or type(dashboard.get("hexadecimal", False)) is not bool
+        or ("order" in dashboard) != ("panel" in dashboard)
+        or ("panel_label" in dashboard and "panel" not in dashboard)
+        or ("order" in dashboard and type(dashboard["order"]) is not int)
+    ):
+        raise DecodeError(f"{context} has an invalid presentation")
+    if "unit" in terms and "unit" in dashboard:
+        raise DecodeError(f"{context} states a unit that the scale states")
+    feed = dashboard.get("feed")
+    if feed is None:
+        return
+    if "conversion" not in terms:
+        raise DecodeError(
+            f"{context}.feed publishes a field without a conversion"
+        )
+    if (
+        not isinstance(feed, dict)
+        or set(feed) != FEED_KEYS
+        or not isinstance(feed["key"], str)
+        or not FEED_KEY.fullmatch(feed["key"])
+        or not _text(feed["name"])
+        or not _text(feed["format"])
+        or not all(
+            _number(feed[key]) for key in ("minimum", "maximum", "step")
+        )
+        or not feed["minimum"] < feed["maximum"]
+        or not feed["step"] > 0
+    ):
+        raise DecodeError(f"{context}.feed has an invalid feed channel")
+
+
+def _validate_presentation(fields, context):
+    """Require the channel labels and the feed keys and names of a profile to
+    be unique."""
+    seen = {"label": set(), "key": set(), "name": set()}
+    for field in fields:
+        dashboard = field.get("dashboard")
+        if dashboard is None:
+            continue
+        feed = dashboard.get("feed")
+        values = {"label": dashboard["label"]}
+        if feed is not None:
+            values.update(key=feed["key"], name=feed["name"])
+        for key, value in values.items():
+            if value in seen[key]:
+                raise DecodeError(
+                    f"{context} repeats the presentation {key} {value!r}"
+                )
+            seen[key].add(value)
 
 
 def _decode_value(payload, field, *, offset=None):
@@ -322,6 +425,7 @@ class Decoder:
         self._layout = self.profile["_layout"]
         self._health = self.profile["_health"]
         self._health_fields = self._layout.contexts[self._health][1]
+        self.calibrations = calibrations(self.profile)
         self._pages = []
         self._sequence = None
         self._last_tick = None
@@ -482,82 +586,52 @@ class Calibration:
         return raw * self.factor + self.offset
 
 
-RAW_CALIBRATIONS = {
-    "maf_b1_raw": Calibration("maf_b1_v", 1 / 200),
-    "maf_b2_raw": Calibration("maf_b2_v", 1 / 200),
-    "maf_total_raw": Calibration("maf_total_g_s", 1 / 100),
-    "bfs_raw": Calibration("bfs_ms", 1 / 2048),
-    "af_state_factor_raw": Calibration("af_state_factor", 1 / 16384),
-    "intake_cvtc_duty_b1_raw": Calibration(
-        "intake_cvtc_duty_b1_percent", 39 / 100
-    ),
-    "intake_cvtc_duty_b2_raw": Calibration(
-        "intake_cvtc_duty_b2_percent", 39 / 100
-    ),
-    "engine_torque_state_raw": Calibration("engine_torque_state_nm", 0.1),
-    "injection_end_angle_raw": Calibration("injection_end_angle_deg", 2, -590),
-    "intake_cvtc_duty_command_b1_raw": Calibration(
-        "intake_cvtc_duty_command_b1_percent", 39 / 100
-    ),
-    "intake_cvtc_duty_command_b2_raw": Calibration(
-        "intake_cvtc_duty_command_b2_percent", 39 / 100
-    ),
-    "exhaust_cvtc_duty_b1_word_raw": Calibration(
-        "exhaust_cvtc_duty_b1_word_percent", 100 / 1024
-    ),
-    "exhaust_cvtc_duty_b2_word_raw": Calibration(
-        "exhaust_cvtc_duty_b2_word_percent", 100 / 1024
-    ),
-    "battery_voltage_raw": Calibration("battery_voltage_v", 0.08),
-    "intake_cvtc_actual_b1_raw": Calibration(
-        "intake_cvtc_actual_b1_deg_ca", 0.5, -64
-    ),
-    "intake_cvtc_actual_b2_raw": Calibration(
-        "intake_cvtc_actual_b2_deg_ca", 0.5, -64
-    ),
-    "exhaust_cvtc_actual_b1_raw": Calibration(
-        "exhaust_cvtc_actual_b1_deg_ca", 0.5, -64
-    ),
-    "exhaust_cvtc_actual_b2_raw": Calibration(
-        "exhaust_cvtc_actual_b2_deg_ca", 0.5, -64
-    ),
-    "intake_cvtc_target_raw": Calibration(
-        "intake_cvtc_target_deg_ca", 0.5, -64
-    ),
-    "exhaust_cvtc_target_raw": Calibration(
-        "exhaust_cvtc_target_deg_ca", 0.5, -64
-    ),
-    "calculated_load_raw": Calibration("calculated_load_percent", 100 / 255),
-    "normalized_load_raw": Calibration("normalized_load_percent", 100 / 128),
-    "stft_b1_raw": Calibration("stft_b1_percent", 1 / 256, -100),
-    "stft_b2_raw": Calibration("stft_b2_percent", 1 / 256, -100),
-    "ltft_b1_raw": Calibration("ltft_b1_percent", 1 / 256, -100),
-    "ltft_b2_raw": Calibration("ltft_b2_percent", 1 / 256, -100),
-    "ltft_learned_b1_raw": Calibration(
-        "ltft_learned_b1_percent", 1 / 256, -100
-    ),
-    "ltft_adjustment_b1_raw": Calibration(
-        "ltft_adjustment_b1_percent", 1 / 256, -100
-    ),
-    "coolant_raw": Calibration("coolant_deg_c", 1.0, -50),
-    "iat_raw": Calibration("iat_deg_c", 1.0, -50),
-}
-RAW_CALIBRATIONS.update(
-    {
-        f"injection_{index}_raw": Calibration(f"injection_{index}_ms", 1 / 100)
-        for index in range(6)
+def engineering_key(name):
+    """The key of the engineering value of a field: its name without the
+    ``_raw`` suffix."""
+    return name.removesuffix("_raw")
+
+
+def profile_fields(profile):
+    """The fixed fields and then the context fields of one profile."""
+    return tuple(profile["fields"]) + tuple(
+        field for context in profile["contexts"] for field in context["fields"]
+    )
+
+
+def calibrations(profile):
+    """The calibration of every field whose scale states a conversion, by
+    field name."""
+    return {
+        field["name"]: Calibration(
+            engineering_key(field["name"]),
+            field["conversion"]["factor"],
+            field["conversion"]["offset"],
+        )
+        for field in profile_fields(profile)
+        if "conversion" in field
     }
-)
 
 
-def engineering_values(snapshot):
-    """Return only physical transforms explicitly declared by the schema."""
+def display_unit(field):
+    """The unit a display shows with the value of a field: the unit of its
+    scale in display spelling with an asterisk for a candidate conversion,
+    or else the unit of its presentation."""
+    unit = DISPLAY_UNITS.get(field.get("unit", ""), field.get("unit", ""))
+    if field.get("candidate"):
+        unit += "*"
+    return unit or field.get("dashboard", {}).get("unit", "")
+
+
+def engineering_values(snapshot, calibrations):
+    """The engineering value of every field of a verified snapshot whose
+    scale states a conversion, by engineering key."""
     if not snapshot.schema_verified:
         raise DecodeError("wire schema is not verified for this snapshot")
     raw = snapshot.fields
     return {
         calibration.target: calibration.apply(raw[name])
-        for name, calibration in RAW_CALIBRATIONS.items()
+        for name, calibration in calibrations.items()
         if name in raw
     }
 
@@ -608,7 +682,9 @@ def main(argv=None):
                 **snapshot.fields,
             }
             if snapshot.schema_verified:
-                row.update(engineering_values(snapshot))
+                row["engineering"] = engineering_values(
+                    snapshot, decoder.calibrations
+                )
             print(json.dumps(row, sort_keys=True, separators=(",", ":")))
     finally:
         if args.input:

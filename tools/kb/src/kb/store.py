@@ -121,6 +121,9 @@ ARRAYS = (("symbol", Array(SYMBOL)), ("status", Array(STATUS)), ("link", Array(L
 
 TARGET = Table(_plain("layout", "status", "note"), sort=("layout",))
 STEP = Table(_plain("from", "to", "effect", "sign", "via", "note", "specs"))
+FEED = Table(_plain("key", "name", "format", "minimum", "maximum", "step"))
+DASHBOARD = Table(_plain("label", "digits", "unit", "hexadecimal", "group", "panel",
+                         "panel_label", "order", "description") + (("feed", FEED),))
 DESIGNED = {
     "stage": Table(_plain("title", "lane", "order", "summary")),
     "block": Table(_plain("title", "stage", "summary", "generic", "specs", "home")),
@@ -132,7 +135,7 @@ DESIGNED = {
                            "note")),
     "field": Table(_plain("signal", "source", "origin", "width", "signed", "scale",
                           "profiles", "page") + (("offset", HEX),)
-                   + _plain("context", "position")),
+                   + _plain("context", "position") + (("dashboard", DASHBOARD),)),
     "feature": Table(_plain("title", "summary", "acceptance", "requires", "vendor")
                      + (("target", Array(TARGET)),)),
 }
@@ -291,7 +294,7 @@ def escape(text):
 def _assignment(key, value, spec):
     prefix = f"{_key(key)} = "
     if isinstance(value, str):
-        return _string(value, prefix, "")
+        return string_lines(value, prefix, "")
     if isinstance(value, list):
         return _array(prefix, value, spec)
     return [prefix + _scalar(value, spec)]
@@ -331,14 +334,14 @@ def _array(prefix, values, spec):
     lines = [prefix + "["]
     for item, text in zip(values, single):
         if isinstance(item, str):
-            lines.extend(_string(item, INDENT, ","))
+            lines.extend(string_lines(item, INDENT, ","))
         else:
             lines.append(f"{INDENT}{text},")
     lines.append("]")
     return lines
 
 
-def _string(text, prefix, suffix):
+def string_lines(text, prefix, suffix):
     """A string as a basic string on one line when it has at most 72
     characters, and otherwise as a multiline basic string whose lines end in a
     space and a backslash, so that the value holds no newline."""

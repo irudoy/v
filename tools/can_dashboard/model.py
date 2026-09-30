@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 import math
 from pathlib import Path
 import time
@@ -73,96 +73,9 @@ KNOCK_MARGIN_IDLE = 0x7FFF
 KNOCK_MARGIN_FIELDS = tuple(
     f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
 )
-# Rolling Launch phase and abort reason codes of the runtime state bytes
-# 0xFFFF5D40 and 0xFFFF5D41, in the order of the enumerations of
-# patches/rolling_launch.py.
-ROLLING_LAUNCH_PHASES = ("IDLE", "ACTIVE", "COOLDOWN")
-ROLLING_LAUNCH_ABORT_REASONS = (
-    "NONE",
-    "CONFIG INVALID",
-    "MAP INDEX INVALID",
-    "MAP DISABLED",
-    "SELECTOR BUSY",
-    "FEEDBACK BUSY",
-    "MAIN PRESSED",
-    "BUTTON RELEASED",
-    "BUTTON INVALID",
-    "SPEED LOW",
-    "RPM LOW",
-    "PEDAL LOW",
-    "COOLANT OUTSIDE",
-    "RESERVED 13",
-    "TIMEOUT",
-    "MAP REQUEST",
-    "STATE CORRUPT",
-    "MAP CHANGED",
-    "MODE CHANGED",
-)
-
-DASHBOARD_CALIBRATIONS = {
-    "final_timing_raw": can_telemetry.Calibration("timing_command_deg"),
-    "knock_timing_state_raw": can_telemetry.Calibration(
-        "knock_timing_state", 1 / 256
-    ),
-    "app1_raw": can_telemetry.Calibration("app1_v", 1 / 200),
-    "app2_raw": can_telemetry.Calibration("app2_v", 1 / 200),
-    "tps_b1_raw": can_telemetry.Calibration("tps_b1_v", 1 / 200),
-    "tps_b2_raw": can_telemetry.Calibration("tps_b2_v", 1 / 200),
-    "secondary_tps_b1_raw": can_telemetry.Calibration(
-        "secondary_tps_b1_v", 1 / 200
-    ),
-    "secondary_tps_b2_raw": can_telemetry.Calibration(
-        "secondary_tps_b2_v", 1 / 200
-    ),
-    "absolute_throttle_raw": can_telemetry.Calibration(
-        "absolute_throttle_percent", 100 / 255
-    ),
-    "fuel_temperature_did_source_raw": can_telemetry.Calibration(
-        "fuel_temperature_deg_c", 1.0, -50
-    ),
-    "oil_temperature_did_source_raw": can_telemetry.Calibration(
-        "oil_temperature_deg_c", 1.0, -50
-    ),
-    "apc_command_raw": can_telemetry.Calibration("apc_command_deg", -1.0, 110),
-    "throttle_request_bounded_raw": can_telemetry.Calibration(
-        "torque_request_nm", 0.1
-    ),
-    "throttle_target_shared_raw": can_telemetry.Calibration(
-        "throttle_area_request_cm2", 0.0008
-    ),
-    # One target count is one count of throttle opening coordinate table
-    # 0x155A0, whose code scale is the J1979 PID 0x11 gradient
-    # 0x505B / 65536 / 4 * 100 / 255 percent.
-    "throttle_target_channel_0_raw": can_telemetry.Calibration(
-        "throttle_target_b1_percent", 34285 / 1114112
-    ),
-    "throttle_target_channel_1_raw": can_telemetry.Calibration(
-        "throttle_target_b2_percent", 34285 / 1114112
-    ),
-    # One coordinate count is one count of the column axis the coordinate
-    # indexes directly, 0x14114 and 0x11D4C, so the conversion is the
-    # candidate percent scale of that axis.
-    "request_flow_raw": can_telemetry.Calibration(
-        "request_flow_percent", 0.00152588
-    ),
-    "alpha_n_flow_raw": can_telemetry.Calibration(
-        "alpha_n_flow_percent", 0.390625
-    ),
-    "front_af_sensor_b1_word_raw": can_telemetry.Calibration(
-        "af_sensor_b1_v", 1 / 200
-    ),
-    "front_af_sensor_b2_word_raw": can_telemetry.Calibration(
-        "af_sensor_b2_v", 1 / 200
-    ),
-    "af_adjustment_b1_raw": can_telemetry.Calibration("af_adjustment_b1", 0.002),
-    "af_adjustment_b2_raw": can_telemetry.Calibration("af_adjustment_b2", 0.002),
-    # The zero-based slot index of the map-switching runtime names Map
-    # index + 1; the runtime reads an index outside the slots as Map 1.
-    "active_map_index": can_telemetry.Calibration(
-        "selected_map_number", 1.0, 1
-    ),
-}
-
+# A knock surface state with bit 6 set selects the high-detonation ignition
+# surface, and one with bit 6 clear the high-octane surface.
+HIGH_DETONATION_MASK = 0x40
 FUEL_INHIBIT_ALL = 0x3F
 
 
@@ -184,48 +97,49 @@ def knock_channels(mask):
     return "none" if mask == 0 else f"ch {_set_bits(mask)}"
 
 
-def _code_name(names, code):
-    return names[code] if 0 <= code < len(names) else f"0x{code:02X}"
+def knock_surface_mode(state):
+    """Name the ignition surface a knock surface state selects."""
+    return "HIGH DETONATION" if state & HIGH_DETONATION_MASK else "HIGH OCTANE"
 
 
-def profile_field_names(profile):
-    """Return the fixed and context field names of one profile."""
-    return tuple(field["name"] for field in profile["fields"]) + tuple(
-        field["name"]
-        for context in profile.get("contexts", ())
-        for field in context["fields"]
-    )
+# Fields whose value the dashboard names in code rather than by the values or
+# bits of their scale.
+CODE_DISPLAYS = {
+    "fuel_inhibit_mask": inhibited_cylinders,
+    "knock_channel_mask_latched": knock_channels,
+    "knock_surface_state": knock_surface_mode,
+}
 
 
-def _dashboard_engineering_values(raw):
-    values = {
-        calibration.target: calibration.apply(raw[source])
-        for source, calibration in DASHBOARD_CALIBRATIONS.items()
-        if source in raw
-    }
-    if "knock_surface_state" in raw:
-        values["knock_surface_mode"] = (
-            "HIGH DETONATION"
-            if raw["knock_surface_state"] & 0x40
-            else "HIGH OCTANE"
+def _spelled(name):
+    return name.replace("_", " ")
+
+
+def field_display(field, calibration=None):
+    """Return the function from the raw value of a field to the value the
+    dashboard shows, or None for a field it shows raw.
+
+    A code display names a mask in code; otherwise the calibration of the
+    field applies, or the named values or named bits of its scale. A code
+    without a name reads in hexadecimal.
+    """
+    if field["name"] in CODE_DISPLAYS:
+        return CODE_DISPLAYS[field["name"]]
+    if calibration is not None:
+        return calibration.apply
+    if "values" in field:
+        names = {
+            entry["value"]: _spelled(entry["name"]) for entry in field["values"]
+        }
+        return lambda code: names.get(code, f"0x{code:02X}")
+    if "bits" in field:
+        bits = tuple(
+            (entry["bit"], _spelled(entry["name"])) for entry in field["bits"]
         )
-    if "fuel_inhibit_mask" in raw:
-        values["fuel_inhibit_cylinders"] = inhibited_cylinders(
-            raw["fuel_inhibit_mask"]
-        )
-    if "knock_channel_mask_latched" in raw:
-        values["knock_channels_latched"] = knock_channels(
-            raw["knock_channel_mask_latched"]
-        )
-    if "rolling_launch_phase" in raw:
-        values["rolling_launch_phase_name"] = _code_name(
-            ROLLING_LAUNCH_PHASES, raw["rolling_launch_phase"]
-        )
-    if "rolling_launch_abort_reason" in raw:
-        values["rolling_launch_abort_name"] = _code_name(
-            ROLLING_LAUNCH_ABORT_REASONS, raw["rolling_launch_abort_reason"]
-        )
-    return values
+        return lambda mask: ", ".join(
+            name for bit, name in bits if mask >> bit & 1
+        ) or "none"
+    return None
 
 
 @dataclass(frozen=True)
@@ -461,7 +375,21 @@ class DashboardModel:
         self._record_tick = None
         self._record_run = 0
         self._record_unwrapped = None
-        self._field_names = profile_field_names(self.decoder.profile)
+        fields = can_telemetry.profile_fields(self.decoder.profile)
+        self._field_names = tuple(field["name"] for field in fields)
+        # The display of each field by engineering key, and the fields the
+        # dashboard shows raw, whose value needs no verified schema.
+        self._displays = {}
+        self._raw_keys = {}
+        for field in fields:
+            key = can_telemetry.engineering_key(field["name"])
+            display = field_display(
+                field, self.decoder.calibrations.get(field["name"])
+            )
+            if display is None:
+                self._raw_keys[key] = field["name"]
+            else:
+                self._displays[key] = (field["name"], display)
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 
@@ -597,9 +525,11 @@ class DashboardModel:
         for name in fields:
             self.updated_at[name] = now
         if self.schema_verified:
-            retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
-            self.engineering.update(can_telemetry.engineering_values(retained))
-            self.engineering.update(_dashboard_engineering_values(self.raw))
+            self.engineering.update(
+                (key, display(self.raw[name]))
+                for key, (name, display) in self._displays.items()
+                if name in self.raw
+            )
 
     def _set_gear(self, code):
         self.gear_raw = code
@@ -689,10 +619,13 @@ class DashboardModel:
         updated = self.updated_at.get(name)
         return None if updated is None else max(0.0, now - updated)
 
-    def value(self, name, default=None):
-        if self.schema_verified and name in self.engineering:
-            return self.engineering[name]
-        return self.raw.get(name, default)
+    def value(self, key, default=None):
+        """The shown value of a metric key: the engineering value of a
+        verified schema, or the raw value of a field shown raw."""
+        if self.schema_verified and key in self.engineering:
+            return self.engineering[key]
+        name = self._raw_keys.get(key)
+        return default if name is None else self.raw.get(name, default)
 
     @property
     def engine_speed_counts(self):
@@ -708,11 +641,11 @@ class DashboardModel:
         """Return the map the telemetry map index names, or None."""
         if not self.schema_verified:
             return None
-        number = self.engineering.get("selected_map_number")
-        if number is None:
+        index = self.raw.get("active_map_index")
+        if index is None:
             return None
-        number = int(number)
-        return number if 1 <= number <= MAP_COUNT else 1
+        # The runtime reads an index outside the map slots as Map 1.
+        return index + 1 if 0 <= index < MAP_COUNT else 1
 
     @property
     def selected_map(self):
@@ -724,7 +657,7 @@ class DashboardModel:
     def high_detonation_selected(self):
         if not self.schema_verified or "knock_surface_state" not in self.raw:
             return None
-        return int(bool(self.raw["knock_surface_state"] & 0x40))
+        return int(bool(self.raw["knock_surface_state"] & HIGH_DETONATION_MASK))
 
     @property
     def telemetry_status_flags(self):

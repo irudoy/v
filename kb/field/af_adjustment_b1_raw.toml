@@ -5,3 +5,16 @@ width = 2
 signed = true
 context = "front_af_and_adjustment_b1"
 position = 2
+
+[dashboard]
+label = "A/F adjustment B1"
+digits = 3
+group = "Fuel"
+panel = "Trims and supply"
+panel_label = "A/F ADJ B1"
+order = 30
+description = """
+A/F adjustment of bank 1: the signed correction that the ECU integrates from \
+the difference between the target mixture and the A/F sensor 1 mixture, \
+bounded to -500..500 counts. The candidate factor 0.002 maps the factory \
+running range to -0.33..0.33. Every recording so far reads 0."""

@@ -3,7 +3,23 @@ origin = "runtime_state"
 width = 1
 signed = false
 scale = """
-enumeration: the latest Rolling Launch abort reason, 0 NONE through 18 \
-MODE_CHANGED"""
+enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, \
+4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 \
+BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, \
+13 RESERVED_13, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 \
+MAP_CHANGED, 18 MODE_CHANGED"""
 context = "launch_abort_voltage_and_trim_terms"
 position = 0
+
+[dashboard]
+label = "Rolling Launch reason"
+digits = 0
+group = "Context"
+panel = "Temperatures and context"
+order = 90
+description = """
+Reason code of the Rolling Launch runtime. In IDLE it names the first \
+activation gate that fails, such as MAP DISABLED on a map without Rolling \
+Launch or BUTTON INVALID while CANCEL is not held. ACTIVE reads NONE, and \
+COOLDOWN keeps the reason that ended the run, such as BUTTON RELEASED, \
+TIMEOUT, or MAP REQUEST."""

@@ -42,6 +42,7 @@ SOURCE_FILES = (
     "tools/can_dashboard/live_feed.py",
     "tools/can_dashboard/logfile.py",
     "tools/can_dashboard/model.py",
+    "tools/can_dashboard/presentation.py",
     "tools/can_dashboard/recording.py",
     "tools/can_dashboard/replay.py",
     "tools/can_dashboard/selected_map.py",

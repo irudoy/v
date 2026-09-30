@@ -6,3 +6,13 @@ signed = true
 profiles = ["tuning"]
 page = 4
 offset = 0x3
+
+[dashboard]
+label = "Knock timing state"
+digits = 3
+group = "Knock"
+panel = "Injection and knock"
+order = 80
+description = """
+Signed timing state of the knock and high-detonation coordinator in 1/256 \
+degree; its whole-number part enters the engine-event timing correction."""

@@ -5,3 +5,22 @@ width = 2
 signed = true
 context = "long_fuel_trim_map_index_flow"
 position = 1
+
+[dashboard]
+label = "LTFT bank 2"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 120
+description = """
+Long-term fuel trim of bank 2 as diagnostics report it: the learned cell of \
+the operating region plus the running adjustment, in percent. A positive \
+value adds fuel."""
+
+[dashboard.feed]
+key = "ltft_b2_pct"
+name = "VQ LTFT B2"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5

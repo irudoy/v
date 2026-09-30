@@ -6,3 +6,20 @@ signed = true
 profiles = ["tuning"]
 page = 0
 offset = 0x5
+
+[dashboard]
+label = "Timing command"
+digits = 0
+group = "Ignition"
+description = """
+Final ignition timing coordinate in degrees before TDC. A software command, \
+not a measured spark angle. During a Rolling Launch late override it is the \
+upstream stock coordinate, and APC command carries the effective value."""
+
+[dashboard.feed]
+key = "timing_deg"
+name = "VQ Timing Command"
+format = "0"
+minimum = -20
+maximum = 60
+step = 10

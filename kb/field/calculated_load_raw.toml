@@ -6,3 +6,12 @@ signed = false
 profiles = ["tuning"]
 page = 6
 offset = 0x7
+
+[dashboard]
+label = "Calculated load"
+digits = 1
+group = "Engine"
+description = """
+Calculated load value of J1979 PID 0x04: the current airflow divided by the \
+peak airflow. It is not the normalized Base Fuel Schedule that indexes the \
+ignition and CVTC maps; Engine load carries that coordinate."""

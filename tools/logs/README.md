@@ -59,8 +59,12 @@ The schema-2 `tuning` profile requires pages 0 through 10. It starts with
 page 9 context tag 3 reports the exact protocol version, profile ID, and
 profile CRC16 of the schema. A later health mismatch disables conversion and
 increments the reported mismatch counter. Raw source values remain present in
-every accepted snapshot; transforms are emitted only for scales explicitly
-declared by the schema.
+every accepted snapshot under their field names, and a verified snapshot adds
+`engineering`, the value of every field whose scale states a conversion, keyed
+by the field name without the `_raw` suffix. The schema gives each field the
+factor and offset, unit, candidate flag, values, or named bits that its scale
+string states, and the decoder refuses a schema whose terms differ from its
+scale strings.
 
 Fuel-trim words retain the firmware's Q8.8 absolute-percent representation,
 whose neutral value is 100.00%. The engineering correction emitted by the
@@ -334,9 +338,10 @@ MegaLogViewer evaluates a channel as `(raw + transform) * scale`, so a
 descriptor transform is expressed in raw counts rather than in engineering
 units. It also refuses to plot a channel whose name contains `*`: the channel
 is listed and selectable, and its graph stays empty, observed in MegaLogViewer
-MS Lite 4.6.09. Candidate transforms are therefore marked in the units. Recorded channels derive both numbers from the same calibrations the
-dashboard applies, and the recorder tests bind every channel value to the live
-engineering value across a raw range.
+MS Lite 4.6.09. Candidate transforms are therefore marked in the units.
+Recorded channels take both numbers from the conversion that the schema states
+for the field, the one the dashboard applies, and the recorder tests bind every
+channel value to the live engineering value across a raw range.
 
 ## JK08A MLG relation audit
 

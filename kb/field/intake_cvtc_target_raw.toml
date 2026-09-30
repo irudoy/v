@@ -6,3 +6,13 @@ signed = false
 profiles = ["tuning"]
 page = 6
 offset = 0x5
+
+[dashboard]
+label = "Intake CVTC target"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 90
+description = """
+Intake camshaft advance target common to both banks, in crank degrees. The \
+CVTC controller drives the measured positions toward it."""

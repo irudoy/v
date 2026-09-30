@@ -6,3 +6,15 @@ signed = false
 profiles = ["tuning"]
 page = 8
 offset = 0x5
+
+[dashboard]
+label = "Throttle target channel 1"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle target B2"
+order = 60
+description = """
+Bank 2 throttle target as throttle opening above the learned closed \
+position, on the percent scale the ECU publishes as J1979 absolute \
+throttle."""

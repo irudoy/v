@@ -1,11 +1,25 @@
-"""ROM-neutral CAN telemetry wire-schema identity helpers."""
+"""ROM-neutral CAN telemetry wire-schema identity and scale helpers."""
 
 from __future__ import annotations
 
+from fractions import Fraction
 import json
+import re
 
 
 CONTROL_CAN_ID_EXPRESSION = "data_can_id + 1"
+# A term of the arithmetic of a scale: the raw value, a decimal number, or an
+# operator.
+SCALE_TERM = re.compile(r"raw|\d+(?:\.\d+)?|[-+*/]")
+RAW_WORD = re.compile(r"\braw\b")
+CANDIDATE = "candidate "
+# The prefix of the named entries of an enumeration and of a bit list, the
+# schema key of the entries, and the key of the number of each entry.
+NAMED_SCALES = (
+    ("enumeration: ", "values", "value"),
+    ("bits: ", "bits", "bit"),
+)
+NAMED_ENTRY = re.compile(r"(\d+) ([A-Z][A-Z0-9_]*)")
 
 
 def crc16_ccitt_false(data):
@@ -112,3 +126,108 @@ def control_frame(document, data_can_id, command):
             f"telemetry control command {command!r} has an invalid payload"
         )
     return data_can_id + 1, payload
+
+
+def scale_terms(scale):
+    """Return what the scale string of a field states for a host.
+
+    Arithmetic in ``raw`` opens the scale, after ``candidate`` for a
+    candidate conversion: the terms ``raw`` and decimal numbers joined by
+    ``+``, ``-``, ``*``, and ``/`` with the usual precedence, each separated
+    by a space, then an optional unit, then an optional ``; note``. It gives
+    ``conversion``, the factor and offset of the affine value in ``raw``,
+    ``candidate``, and the ``unit`` it names. ``enumeration: <n> <NAME>,
+    ...`` gives ``values`` and ``bits: <n> <NAME>, ...`` gives ``bits``, each
+    entry with its number and name. Any other scale describes the value and
+    gives nothing. A scale that names ``raw`` states arithmetic, so one that
+    does not parse raises ValueError, as does a named entry that is not
+    ``<n> <NAME>`` or that repeats a number or a name.
+    """
+    for prefix, key, number in NAMED_SCALES:
+        if scale.startswith(prefix):
+            entries = []
+            for item in scale[len(prefix):].split(", "):
+                match = NAMED_ENTRY.fullmatch(item)
+                if match is None:
+                    raise ValueError(
+                        f"scale {scale!r}: {item!r} is not <n> <NAME>"
+                    )
+                entries.append({number: int(match[1]), "name": match[2]})
+            if len({item[number] for item in entries}) != len(entries) or len(
+                {item["name"] for item in entries}
+            ) != len(entries):
+                raise ValueError(f"scale {scale!r} repeats a number or a name")
+            return {key: sorted(entries, key=lambda item: item[number])}
+    if not RAW_WORD.search(scale):
+        return {}
+    head = scale.split(";", 1)[0]
+    candidate = head.startswith(CANDIDATE)
+    words = (head[len(CANDIDATE):] if candidate else head).split()
+    count = 0
+    while count < len(words) and SCALE_TERM.fullmatch(words[count]):
+        count += 1
+    unit = words[count:]
+    if len(unit) > 1:
+        raise ValueError(f"scale {scale!r}: {' '.join(unit)!r} is no unit")
+    factor, offset = _affine(words[:count], scale)
+    terms = {
+        "conversion": {"factor": float(factor), "offset": float(offset)},
+        "candidate": candidate,
+    }
+    if unit:
+        terms["unit"] = unit[0]
+    return terms
+
+
+def _affine(tokens, scale):
+    """Return (factor, offset) of affine arithmetic in ``raw`` as fractions."""
+    position = 0
+
+    def fail(reason):
+        raise ValueError(f"scale {scale!r}: {reason}")
+
+    def operand():
+        nonlocal position
+        if position == len(tokens):
+            fail("the arithmetic ends without a term")
+        token = tokens[position]
+        position += 1
+        if token == "raw":
+            return Fraction(1), Fraction(0)
+        if token in ("+", "-", "*", "/"):
+            fail(f"{token} stands where a term belongs")
+        return Fraction(0), Fraction(token)
+
+    def product():
+        nonlocal position
+        factor, offset = operand()
+        while position < len(tokens) and tokens[position] in ("*", "/"):
+            operator = tokens[position]
+            position += 1
+            other_factor, other_offset = operand()
+            if operator == "*":
+                if factor and other_factor:
+                    fail("the arithmetic multiplies raw by raw")
+                factor, offset = (
+                    factor * other_offset + other_factor * offset,
+                    offset * other_offset,
+                )
+            else:
+                if other_factor or not other_offset:
+                    fail("the arithmetic divides by raw or by zero")
+                factor, offset = factor / other_offset, offset / other_offset
+        return factor, offset
+
+    factor, offset = product()
+    while position < len(tokens):
+        operator = tokens[position]
+        position += 1
+        if operator not in ("+", "-"):
+            fail(f"{operator} stands where an operator belongs")
+        other_factor, other_offset = product()
+        sign = 1 if operator == "+" else -1
+        factor = factor + sign * other_factor
+        offset = offset + sign * other_offset
+    if tokens.count("raw") != 1 or not factor:
+        fail("the arithmetic holds raw once")
+    return factor, offset

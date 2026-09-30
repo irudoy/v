@@ -51,6 +51,7 @@ class FeedDialog(tk.Toplevel):
         on_apply,
         tooltip_options=None,
         plugin_path=None,
+        channels=None,
     ):
         super().__init__(master, bg=colors["bg"])
         self.title("RomRaider live value feed")
@@ -61,6 +62,9 @@ class FeedDialog(tk.Toplevel):
         self.plugin_path = (
             live_feed.plugin_path() if plugin_path is None else plugin_path
         )
+        # The channel table of the plugin file: the channels the dashboard
+        # feed publishes, else those of the bundled profile.
+        self.channels = channels
         self.enabled = feed.enabled
         self.endpoint_var = tk.StringVar(
             self, value=endpoint_text(feed.host, feed.port)
@@ -216,7 +220,9 @@ class FeedDialog(tk.Toplevel):
             host, port = live_feed.parse_endpoint(self.endpoint_var.get())
         except ValueError:
             return None
-        return live_feed.plugin_state(self.plugin_path, host, port)
+        return live_feed.plugin_state(
+            self.plugin_path, host, port, self.channels
+        )
 
     def show_plugin_state(self):
         caption, role = PLUGIN_STATES[self.plugin_state()]
@@ -230,7 +236,9 @@ class FeedDialog(tk.Toplevel):
             self._report(str(error), "error")
             return None
         try:
-            path = live_feed.install_plugin(self.plugin_path, host, port)
+            path = live_feed.install_plugin(
+                self.plugin_path, host, port, self.channels
+            )
         except OSError as error:
             self._report(f"Plugin file was not written: {error}", "error")
             return None

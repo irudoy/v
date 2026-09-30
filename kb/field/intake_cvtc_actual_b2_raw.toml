@@ -6,3 +6,21 @@ signed = false
 profiles = ["tuning"]
 page = 6
 offset = 0x4
+
+[dashboard]
+label = "Intake CVTC actual B2"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 80
+description = """
+Measured intake camshaft advance of bank 2 in crank degrees, from the phase \
+of the cam sensor edges; a larger value is more advance."""
+
+[dashboard.feed]
+key = "intake_cam_b2_deg"
+name = "VQ Intake Cam B2"
+format = "0.0"
+minimum = -64
+maximum = 64
+step = 16

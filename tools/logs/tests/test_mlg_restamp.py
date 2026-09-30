@@ -24,13 +24,16 @@ MARKED_UNITS_4_0_1 = frozenset(
     }
     | {f"Injection calc {index}" for index in range(6)}
 )
+# The MegaLogViewer transform of the CVTC angles, raw * 0.5 - 64 degCA, in raw
+# counts.
+CVTC_TRANSFORM = -128.0
 
 
 def stale_specs():
     """Return the field table as earlier recordings declared it.
 
     Version 2.0.0 carried the candidate marker in the channel name and a
-    degCA transform of -64; version 4.0.1 carried the marker in the units of
+    CVTC transform of -64; version 4.0.1 carried the marker in the units of
     scales that code fixes.
     """
 
@@ -45,7 +48,7 @@ def stale_specs():
             )
         elif spec.name in MARKED_UNITS_4_0_1:
             spec = replace(spec, units=spec.units + "*")
-        if spec.units == "degCA":
+        if spec.units == "degCA" and spec.transform == CVTC_TRANSFORM:
             spec = replace(spec, transform=-64.0)
         specs.append(spec)
     specs.append(
@@ -92,9 +95,15 @@ class MlgRestampTest(unittest.TestCase):
             )
             self.assertIn("Intake CVTC actual B1", names)
             self.assertIn("gps_lat", names)
+            cvtc = {
+                binding.spec.name
+                for binding in recording.build_bindings("tuning")
+                if binding.spec.transform == CVTC_TRANSFORM
+            }
+            self.assertTrue(cvtc)
             for field in fields:
-                if field.units == "degCA":
-                    self.assertEqual(field.transform, -128.0)
+                if field.name in cvtc:
+                    self.assertEqual(field.transform, CVTC_TRANSFORM)
                 if field.name in MARKED_UNITS_4_0_1:
                     self.assertNotIn("*", field.units)
             self.assertTrue(MARKED_UNITS_4_0_1 <= set(names))

@@ -5,3 +5,8 @@ signed = false
 scale = "saturating count"
 context = "health"
 position = 3
+
+[dashboard]
+label = "Snapshot overrun count"
+digits = 0
+group = "Transport"

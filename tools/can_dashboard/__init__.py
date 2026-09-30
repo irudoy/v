@@ -3,4 +3,4 @@
 PRODUCT_NAME = "VQ CAN Telemetry"
 PRODUCT_SHORT_NAME = "VQCT"
 PRODUCT_SLUG = "vq-can-telemetry"
-__version__ = "9.0.0"
+__version__ = "10.0.0"

@@ -6,3 +6,24 @@ signed = false
 profiles = ["tuning"]
 page = 8
 offset = 0x3
+
+[dashboard]
+label = "Throttle target channel 0"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle target B1"
+order = 50
+description = """
+Bank 1 throttle target as throttle opening above the learned closed \
+position, on the percent scale the ECU publishes as J1979 absolute throttle. \
+It is the coordinate of the throttle opening tables, and the live value feed \
+publishes it for RomRaider Overlay Log."""
+
+[dashboard.feed]
+key = "throttle_target_pct"
+name = "VQ Throttle Target"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10

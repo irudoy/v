@@ -372,6 +372,7 @@ inputs = [
     "patches/can_telemetry_profile.py",
     "patches/can_telemetry.py",
     "tools/logs/can_telemetry_schema.py",
+    "tools/logs/can_telemetry.py",
 ]
 consumers = [
     "patches/can_telemetry_assembly.py",
@@ -380,9 +381,9 @@ consumers = [
     "patches/runtime_targets.py",
     "tools/sh-elf-run/verify_can_telemetry.py",
     "tools/sh-elf-run/can_telemetry_harness.c",
-    "tools/logs/can_telemetry.py",
-    "tools/logs/trc_to_mlg.py",
+    "tools/logs/",
     "tools/can_dashboard/",
+    "tools/mapkit/definition_projections.py",
 ]
 read = "open"
 

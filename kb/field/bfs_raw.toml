@@ -6,3 +6,24 @@ signed = false
 profiles = ["tuning"]
 page = 2
 offset = 0x1
+
+[dashboard]
+label = "Base fuel schedule"
+digits = 3
+group = "Fuel"
+panel = "Air and fuel"
+panel_label = "BFS"
+order = 30
+description = """
+Base Fuel Schedule: the base injection time in ms for the measured air \
+charge, before the fuel trims, the target-mixture factor, and the injector \
+opening time. Normalized to its reference constant, it is the load axis of \
+the ignition and CVTC maps, which Engine load shows."""
+
+[dashboard.feed]
+key = "bfs_ms"
+name = "VQ Base Fuel Schedule"
+format = "0.000"
+minimum = 0
+maximum = 20
+step = 2

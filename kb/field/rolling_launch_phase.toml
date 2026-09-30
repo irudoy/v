@@ -6,3 +6,16 @@ scale = "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN"
 profiles = ["tuning"]
 page = 2
 offset = 0x3
+
+[dashboard]
+label = "Rolling Launch phase"
+digits = 0
+group = "Context"
+panel = "Temperatures and context"
+panel_label = "Rolling Launch"
+order = 80
+description = """
+Phase of the Rolling Launch runtime: IDLE while it evaluates the activation \
+gates, ACTIVE while it owns the launch fuel cut and the optional ignition \
+retard, and COOLDOWN after a run ends, until the buttons stay released for \
+the rearm period."""

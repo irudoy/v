@@ -6,3 +6,8 @@ scale = "base scheduler ticks"
 profiles = ["tuning"]
 page = 0
 offset = 0x1
+
+[dashboard]
+label = "Telemetry tick"
+digits = 0
+group = "Transport"

@@ -5,3 +5,14 @@ width = 1
 signed = false
 context = "short_fuel_trim_cvtc_duty"
 position = 3
+
+[dashboard]
+label = "CVTC duty B2"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 120
+description = """
+Duty of the bank 2 intake valve timing solenoid, in percent of its PWM \
+period; the output that moves the camshaft. A larger duty advances the \
+camshaft."""

@@ -6,3 +6,13 @@ signed = false
 profiles = ["tuning"]
 page = 1
 offset = 0x1
+
+[dashboard]
+label = "MAF bank 1"
+digits = 3
+group = "Air"
+panel = "Air and fuel"
+order = 10
+description = """
+Mass airflow sensor signal of bank 1 in volts, the ten-bit ADC count after a \
+unit-nominal trim. The ECU converts it to airflow through its sensor table."""

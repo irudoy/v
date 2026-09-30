@@ -6,3 +6,14 @@ signed = false
 profiles = ["tuning"]
 page = 6
 offset = 0x1
+
+[dashboard]
+label = "TPS bank 2"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 50
+description = """
+Throttle position sensor 1 of the bank 2 electric throttle body in volts; it \
+rises with opening. Factory criteria: above 0.36 V released and below 4.75 V \
+fully depressed."""

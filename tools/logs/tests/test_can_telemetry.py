@@ -1,3 +1,5 @@
+import contextlib
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -69,6 +71,8 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         field = document["profiles"][0]["fields"][-1]
         field["name"] = "restated_" + field["name"]
         field["scale"] = "restated"
+        for key in ("conversion", "candidate", "unit", "values", "bits"):
+            field.pop(key, None)
         with tempfile.TemporaryDirectory() as directory:
             schema_path = Path(directory) / "restated-schema.json"
             schema_path.write_text(
@@ -127,7 +131,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertIn("injection_end_angle_raw", snapshot.fields)
         self.assertIn("throttle_request_bounded_raw", snapshot.fields)
         with self.assertRaises(can_telemetry.DecodeError):
-            can_telemetry.engineering_values(snapshot)
+            can_telemetry.engineering_values(snapshot, decoder.calibrations)
         self.assertEqual(decoder.completed_groups, 1)
 
     def test_context_pairs_and_in_band_health_verification(self):
@@ -144,7 +148,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertIn("ltft_learned_b1_raw", temperature.fields)
         self.assertIn("rolling_launch_abort_reason", temperature.fields)
         with self.assertRaises(can_telemetry.DecodeError):
-            can_telemetry.engineering_values(temperature)
+            can_telemetry.engineering_values(temperature, decoder.calibrations)
 
         health = feed_group(
             decoder, frames("tuning", 2, context_tag=3)
@@ -162,39 +166,45 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             "temperatures_af + launch_abort_voltage_and_trim_terms",
         )
         self.assertIn("rolling_launch_abort_reason", verified_temperature.fields)
-        physical = can_telemetry.engineering_values(verified_temperature)
+        physical = can_telemetry.engineering_values(
+            verified_temperature, decoder.calibrations
+        )
         self.assertEqual(
-            physical["coolant_deg_c"],
+            physical["coolant"],
             verified_temperature.fields["coolant_raw"] - 50,
         )
-        fixed_physical = can_telemetry.engineering_values(health)
+        fixed_physical = can_telemetry.engineering_values(
+            health, decoder.calibrations
+        )
         self.assertEqual(
-            fixed_physical["intake_cvtc_actual_b1_deg_ca"],
+            fixed_physical["intake_cvtc_actual_b1"],
             health.fields["intake_cvtc_actual_b1_raw"] * 0.5 - 64,
         )
         self.assertAlmostEqual(
-            fixed_physical["calculated_load_percent"],
+            fixed_physical["calculated_load"],
             health.fields["calculated_load_raw"] * 100 / 255,
         )
         self.assertAlmostEqual(
-            fixed_physical["engine_torque_state_nm"],
+            fixed_physical["engine_torque_state"],
             health.fields["engine_torque_state_raw"] * 0.1,
         )
         self.assertAlmostEqual(
-            physical["battery_voltage_v"],
+            physical["battery_voltage"],
             verified_temperature.fields["battery_voltage_raw"] * 0.08,
         )
         self.assertAlmostEqual(
-            physical["ltft_learned_b1_percent"],
+            physical["ltft_learned_b1"],
             verified_temperature.fields["ltft_learned_b1_raw"] / 256 - 100,
         )
 
         trims = feed_group(
             decoder, frames("tuning", 4, context_tag=1)
         )
-        trim_physical = can_telemetry.engineering_values(trims)
+        trim_physical = can_telemetry.engineering_values(
+            trims, decoder.calibrations
+        )
         self.assertAlmostEqual(
-            trim_physical["stft_b1_percent"],
+            trim_physical["stft_b1"],
             trims.fields["stft_b1_raw"] / 256 - 100,
         )
         self.assertEqual(
@@ -204,17 +214,17 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         )
         for bank in (1, 2):
             self.assertAlmostEqual(
-                trim_physical[f"intake_cvtc_duty_b{bank}_percent"],
+                trim_physical[f"intake_cvtc_duty_b{bank}"],
                 trims.fields[f"intake_cvtc_duty_b{bank}_raw"] * 39 / 100,
             )
             self.assertAlmostEqual(
-                trim_physical[f"intake_cvtc_duty_command_b{bank}_percent"],
+                trim_physical[f"intake_cvtc_duty_command_b{bank}"],
                 trims.fields[f"intake_cvtc_duty_command_b{bank}_raw"]
                 * 39
                 / 100,
             )
         self.assertAlmostEqual(
-            fixed_physical["injection_end_angle_deg"],
+            fixed_physical["injection_end_angle"],
             health.fields["injection_end_angle_raw"] * 2 - 590,
         )
 
@@ -420,6 +430,258 @@ class CanTelemetryControlTest(unittest.TestCase):
             can_telemetry_schema.control_frame(
                 damaged, 0x6F0, "start"
             )
+
+
+def schema_document():
+    return json.loads(can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8"))
+
+
+def load_document(document):
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "schema.json"
+        path.write_text(json.dumps(document), encoding="utf-8")
+        return can_telemetry.load_schema(path)
+
+
+def field_of(document, name):
+    for field in can_telemetry.profile_fields(document["profiles"][0]):
+        if field["name"] == name:
+            return field
+    raise KeyError(name)
+
+
+class ScaleTermsTest(unittest.TestCase):
+    """A scale string states what a host needs of its field."""
+
+    def test_arithmetic_gives_the_affine_conversion_and_the_unit(self):
+        cases = (
+            ("raw / 256 - 100 percent", 1 / 256, -100, "percent", False),
+            ("raw * 0.5 - 64 degCA", 0.5, -64, "degCA", False),
+            ("raw * 100 / 255 percent", 100 / 255, 0, "percent", False),
+            ("raw - 50 degC", 1, -50, "degC", False),
+            ("candidate raw * 0.1 Nm", 0.1, 0, "Nm", True),
+            ("110 - raw degBTDC", -1, 110, "degBTDC", False),
+            ("raw degBTDC", 1, 0, "degBTDC", False),
+            ("raw / 16384 ratio", 2**-14, 0, "ratio", False),
+            ("raw * 2 - 590 degCA", 2, -590, "degCA", False),
+            ("100 - raw / 2 percent", -0.5, 100, "percent", False),
+            ("raw * 34285 / 1114112 percent", 34285 / 1114112, 0, "percent", False),
+            ("raw + 1; any other value selects Map 1", 1, 1, None, False),
+            ("candidate raw * 0.002 ratio", 0.002, 0, "ratio", True),
+        )
+        for scale, factor, offset, unit, candidate in cases:
+            with self.subTest(scale=scale):
+                terms = can_telemetry_schema.scale_terms(scale)
+                self.assertAlmostEqual(terms["conversion"]["factor"], factor)
+                self.assertAlmostEqual(terms["conversion"]["offset"], offset)
+                self.assertEqual(terms.get("unit"), unit)
+                self.assertIs(terms["candidate"], candidate)
+
+    def test_named_scales_give_their_values_and_bits(self):
+        self.assertEqual(
+            can_telemetry_schema.scale_terms(
+                "enumeration: 1 ACTIVE, 0 IDLE, 2 COOLDOWN"
+            ),
+            {
+                "values": [
+                    {"value": 0, "name": "IDLE"},
+                    {"value": 1, "name": "ACTIVE"},
+                    {"value": 2, "name": "COOLDOWN"},
+                ]
+            },
+        )
+        self.assertEqual(
+            can_telemetry_schema.scale_terms("bits: 6 HIGH_DETONATION"),
+            {"bits": [{"bit": 6, "name": "HIGH_DETONATION"}]},
+        )
+
+    def test_a_description_without_raw_states_nothing(self):
+        for scale in (
+            "bit mask",
+            "base scheduler ticks",
+            "CRC-16/CCITT-FALSE",
+            "Q14 factor",
+            "signed internal request coordinate",
+        ):
+            with self.subTest(scale=scale):
+                self.assertEqual(can_telemetry_schema.scale_terms(scale), {})
+
+    def test_arithmetic_that_does_not_parse_is_refused(self):
+        for scale in (
+            "raw target coordinate",
+            "raw * raw V",
+            "raw / raw V",
+            "raw / 0 V",
+            "raw - raw V",
+            "raw + V",
+            "raw 2 V",
+            "raw + 1 map number",
+            "enumeration: the latest, 0 NONE",
+            "bits: 0 CYLINDER_1, 0 CYLINDER_2",
+            "enumeration: 0 NONE, 1 NONE",
+        ):
+            with self.subTest(scale=scale), self.assertRaises(ValueError):
+                can_telemetry_schema.scale_terms(scale)
+
+
+class HostContractTest(unittest.TestCase):
+    """The schema carries the conversion and presentation of each field."""
+
+    def test_calibrations_follow_the_scales_under_engineering_keys(self):
+        calibrations = can_telemetry.Decoder("tuning").calibrations
+        self.assertEqual(
+            calibrations["coolant_raw"],
+            can_telemetry.Calibration("coolant", 1.0, -50.0),
+        )
+        self.assertEqual(
+            calibrations["apc_command_raw"],
+            can_telemetry.Calibration("apc_command", -1.0, 110.0),
+        )
+        self.assertEqual(
+            calibrations["active_map_index"],
+            can_telemetry.Calibration("active_map_index", 1.0, 1.0),
+        )
+        self.assertAlmostEqual(
+            calibrations["calculated_load_raw"].factor, 100 / 255
+        )
+        for name in (
+            "knock_margin_min_ch1_raw",
+            "rolling_launch_phase",
+            "fuel_inhibit_mask",
+            "profile_crc16",
+        ):
+            self.assertNotIn(name, calibrations)
+        for name, calibration in calibrations.items():
+            self.assertEqual(
+                calibration.target, can_telemetry.engineering_key(name)
+            )
+
+    def test_display_units_spell_the_scale_unit_and_mark_candidates(self):
+        document = schema_document()
+        for name, unit in {
+            "stft_b1_raw": "%",
+            "af_state_factor_raw": "",
+            "af_adjustment_b1_raw": "*",
+            "engine_torque_state_raw": "Nm*",
+            "coolant_raw": "degC",
+            "knock_margin_min_ch1_raw": "cnt",
+            "fuel_inhibit_mask": "",
+        }.items():
+            with self.subTest(name=name):
+                self.assertEqual(
+                    can_telemetry.display_unit(field_of(document, name)), unit
+                )
+
+    def test_a_field_without_a_presentation_loads(self):
+        document = schema_document()
+        del field_of(document, "tick16")["dashboard"]
+        _raw, profiles = load_document(document)
+        self.assertIn("tuning", profiles)
+
+    def test_keys_that_differ_from_the_scale_are_refused(self):
+        def factor(field):
+            field["conversion"]["factor"] = 0.02
+
+        def unit(field):
+            del field["unit"]
+
+        def values(field):
+            field["values"][0]["name"] = "WAITING"
+
+        def conversion(field):
+            field["conversion"] = {"factor": 1.0, "offset": 0.0}
+
+        for name, change in (
+            ("maf_total_raw", factor),
+            ("coolant_raw", unit),
+            ("rolling_launch_phase", values),
+            ("telemetry_status", conversion),
+        ):
+            document = schema_document()
+            change(field_of(document, name))
+            with self.subTest(name=name), self.assertRaisesRegex(
+                can_telemetry.DecodeError, "differs from the conversion"
+            ):
+                load_document(document)
+
+    def test_an_invalid_presentation_is_refused(self):
+        def unit(document):
+            field_of(document, "coolant_raw")["dashboard"]["unit"] = "C"
+
+        def label(document):
+            field_of(document, "iat_raw")["dashboard"]["label"] = "Coolant"
+
+        def feed_key(document):
+            field_of(document, "iat_raw")["dashboard"]["feed"]["key"] = (
+                "coolant_c"
+            )
+
+        def feed_range(document):
+            field_of(document, "coolant_raw")["dashboard"]["feed"][
+                "minimum"
+            ] = 200
+
+        def order(document):
+            field_of(document, "coolant_raw")["dashboard"]["order"] = 10
+
+        def unknown(document):
+            field_of(document, "coolant_raw")["dashboard"]["color"] = "red"
+
+        def digits(document):
+            del field_of(document, "coolant_raw")["dashboard"]["digits"]
+
+        def raw_feed(document):
+            feed = dict(field_of(document, "coolant_raw")["dashboard"]["feed"])
+            feed.update(key="knock_count", name="VQ Knock Count")
+            field_of(document, "knock_count_latched")["dashboard"]["feed"] = (
+                feed
+            )
+
+        for change, message in (
+            (unit, "states a unit that the scale states"),
+            (label, "repeats the presentation label"),
+            (feed_key, "repeats the presentation key"),
+            (feed_range, "invalid feed channel"),
+            (order, "invalid presentation"),
+            (unknown, "presentation keys"),
+            (digits, "invalid presentation"),
+            (raw_feed, "publishes a field without a conversion"),
+        ):
+            document = schema_document()
+            change(document)
+            with self.subTest(change=change.__name__), self.assertRaisesRegex(
+                can_telemetry.DecodeError, message
+            ):
+                load_document(document)
+
+    def test_the_decoder_nests_engineering_values_by_engineering_key(self):
+        lines = []
+        for tick, tag in ((1, 3), (2, 0), (3, 2)):
+            for payload in frames("tuning", tick, context_tag=tag):
+                lines.append(f"(0.{tick:06d}) can0 6F0#{payload.hex().upper()}")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.log"
+            path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output), contextlib.redirect_stderr(
+                io.StringIO()
+            ):
+                self.assertEqual(can_telemetry.main([str(path)]), 0)
+        rows = [json.loads(line) for line in output.getvalue().splitlines()]
+        self.assertEqual(len(rows), 3)
+        for row in rows:
+            self.assertTrue(row["schema_verified"])
+            self.assertNotIn("coolant", row)
+            self.assertEqual(
+                row["engineering"]["maf_total"], row["maf_total_raw"] / 100
+            )
+        self.assertEqual(
+            rows[1]["engineering"]["coolant"], rows[1]["coolant_raw"] - 50
+        )
+        self.assertEqual(
+            rows[2]["engineering"]["active_map_index"],
+            rows[2]["active_map_index"] + 1,
+        )
 
 
 if __name__ == "__main__":

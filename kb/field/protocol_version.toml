@@ -5,3 +5,13 @@ signed = false
 scale = "identity"
 context = "health"
 position = 0
+
+[dashboard]
+label = "Protocol version"
+digits = 0
+group = "Transport"
+panel = "Throttle sensors and protocol"
+order = 30
+description = """
+Telemetry protocol version that the ECU reports in the health context. \
+Values are converted only when it matches the bundled schema."""

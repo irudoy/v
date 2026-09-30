@@ -5,3 +5,16 @@ width = 2
 signed = false
 context = "front_af_and_adjustment_b1"
 position = 1
+
+[dashboard]
+label = "Front A/F sensor B2"
+digits = 3
+group = "Fuel"
+panel = "Air and fuel"
+panel_label = "A/F sensor 1 B2"
+order = 70
+description = """
+Front A/F sensor signal of bank 2 in volts, the item the factory data \
+monitor calls A/F SEN1: 2.20 V is the sensor reference, and lower is richer. \
+It is not converted to AFR: the ECU curve from voltage to lambda is not \
+identified, and under sustained enrichment the reading moves lean."""

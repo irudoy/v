@@ -6,3 +6,25 @@ signed = false
 profiles = ["tuning"]
 page = 0
 offset = 0x3
+
+[dashboard]
+label = "QH0 flow potential"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+order = 30
+description = """
+QH0 flow potential: the column coordinate of Requested Torque Conversion by \
+QH0 - Primary. The ECU looks it up from the opening area over engine speed \
+through curve 0x15690 or 0x156D0, and the word lookup compares each point of \
+axis 0x14114 with it directly. The percent scale, 0.00152588 per count, is \
+the catalog candidate of that axis. The live value feed sends it as VQ QH0 \
+Flow Potential."""
+
+[dashboard.feed]
+key = "request_flow_pct"
+name = "VQ QH0 Flow Potential"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10

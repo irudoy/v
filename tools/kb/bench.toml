@@ -11,7 +11,10 @@
 # counts its output, or with `read = true` counts the files whose paths it
 # prints. Tokens are UTF-8 bytes divided by three, rounded up.
 stage = 4
-converted = ["Ghidra export directories"]
+converted = [
+    "Ghidra export directories",
+    "Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata",
+]
 
 [[question]]
 id = 1

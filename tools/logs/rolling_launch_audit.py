@@ -52,6 +52,7 @@ from tools.can_dashboard.model import (
     FrameRecord,
     RPM_PER_COUNT,
 )
+from tools.logs import can_telemetry
 from tools.logs import cvtc_target_audit
 from tools.logs import mlg_relation_audit
 from tools.logs import mlg_retime
@@ -60,7 +61,9 @@ from tools.mapkit import rom as romkit
 
 FULL_MASK = 0x3F
 APC_COMMAND_BASE = mlg_relation_audit.APC_COMMAND_BASE
-APP1_VOLTS_PER_COUNT = recording.MLG_CALIBRATIONS["app1_raw"].factor
+APP1_VOLTS_PER_COUNT = can_telemetry.calibrations(
+    can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)[1]["tuning"]
+)["app1_raw"].factor
 ACTIVE_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE_SET >> 4
 FAILED_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE >> 4
 EXHAUST_FAMILY = "exhaust_cvtc_target"

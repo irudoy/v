@@ -1,3 +1,4 @@
+import copy
 import math
 from pathlib import Path
 import socket
@@ -23,21 +24,55 @@ def verified_model():
     return dashboard
 
 
+def tuning_profile():
+    _document, profiles = can_telemetry.load_schema(
+        can_telemetry.DEFAULT_SCHEMA
+    )
+    return profiles["tuning"]
+
+
+def schema_calibrations():
+    return can_telemetry.calibrations(tuning_profile())
+
+
 class ChannelTableTest(unittest.TestCase):
     def test_every_source_is_a_declared_engineering_value(self):
-        targets = {
-            calibration.target
-            for table in (
-                can_telemetry.RAW_CALIBRATIONS,
-                model.DASHBOARD_CALIBRATIONS,
-            )
-            for calibration in table.values()
+        calibrations = schema_calibrations()
+        for channel in live_feed.default_channels():
+            with self.subTest(channel=channel.key):
+                if channel.field is None:
+                    self.assertTrue(
+                        hasattr(model.DashboardModel(), channel.source)
+                    )
+                    continue
+                self.assertEqual(
+                    calibrations[channel.field].target, channel.source
+                )
+
+    def test_the_stock_channels_lead_and_fed_fields_follow_in_profile_order(
+        self,
+    ):
+        channels = live_feed.default_channels()
+        stock = len(live_feed.STOCK_CHANNELS)
+        self.assertEqual(channels[:stock], live_feed.STOCK_CHANNELS)
+        self.assertEqual(
+            [channel.field for channel in channels[stock:]],
+            [
+                field["name"]
+                for field in can_telemetry.profile_fields(tuning_profile())
+                if "feed" in field.get("dashboard", {})
+            ],
+        )
+
+    def test_a_channel_shows_the_display_unit_of_its_scale(self):
+        units = {
+            channel.key: channel.units
+            for channel in live_feed.default_channels()
         }
-        for channel in live_feed.CHANNELS:
-            if channel.source in live_feed.STOCK_FRAME_SOURCES:
-                self.assertTrue(hasattr(model.DashboardModel(), channel.source))
-                continue
-            self.assertIn(channel.source, targets)
+        self.assertEqual(units["coolant_c"], "degC")
+        self.assertEqual(units["load"], "%")
+        self.assertEqual(units["bfs_ms"], "ms")
+        self.assertEqual(units["alpha_n_flow_pct"], "%*")
 
     def test_published_fields_name_the_telemetry_source_of_each_channel(self):
         fields = live_feed.published_fields()
@@ -46,8 +81,8 @@ class ChannelTableTest(unittest.TestCase):
         self.assertEqual(
             len(fields),
             sum(
-                channel.source not in live_feed.STOCK_FRAME_SOURCES
-                for channel in live_feed.CHANNELS
+                channel.field is not None
+                for channel in live_feed.default_channels()
             ),
         )
         self.assertEqual(fields["X_VQ_Engine_Load"], "normalized_load_raw")
@@ -58,18 +93,22 @@ class ChannelTableTest(unittest.TestCase):
         self.assertEqual(fields["X_VQ_QH0_Flow_Quantity"], "alpha_n_flow_raw")
 
     def test_keys_and_logger_ids_are_unique_wire_safe_tokens(self):
-        keys = [channel.key for channel in live_feed.CHANNELS]
-        ids = [channel.logger_id for channel in live_feed.CHANNELS]
+        channels = live_feed.default_channels()
+        keys = [channel.key for channel in channels]
+        ids = [channel.logger_id for channel in channels]
         self.assertEqual(len(set(keys)), len(keys))
         self.assertEqual(len(set(ids)), len(ids))
-        for channel in live_feed.CHANNELS:
+        for channel in channels:
             self.assertRegex(channel.key, r"^[a-z0-9_]+$")
             self.assertRegex(channel.logger_id, r"^X_[A-Za-z0-9_]+$")
             for text in (channel.name, channel.units, channel.format):
                 self.assertNotIn("|", text)
 
     def test_axis_channels_keep_the_ids_the_definitions_bind(self):
-        ids = {channel.key: channel.logger_id for channel in live_feed.CHANNELS}
+        ids = {
+            channel.key: channel.logger_id
+            for channel in live_feed.default_channels()
+        }
         self.assertEqual(ids["rpm"], "X_VQ_Engine_Speed")
         self.assertEqual(ids["load"], "X_VQ_Engine_Load")
         self.assertEqual(ids["throttle_target_pct"], "X_VQ_Throttle_Target")
@@ -81,13 +120,17 @@ class ChannelTableTest(unittest.TestCase):
         # ffff1980, and byte core 00026944 those of axis 00011d4c with
         # ffff1170, so each channel publishes its coordinate at the candidate
         # percent scale of the axis, and the largest stored point fits.
-        channels = {channel.key: channel for channel in live_feed.CHANNELS}
+        channels = {
+            channel.key: channel for channel in live_feed.default_channels()
+        }
+        calibrations = schema_calibrations()
         for key, field, factor, largest in (
             ("request_flow_pct", "request_flow_raw", 0.00152588, 65535),
             ("alpha_n_flow_pct", "alpha_n_flow_raw", 0.390625, 255),
         ):
             with self.subTest(channel=key):
-                calibration = model.DASHBOARD_CALIBRATIONS[field]
+                calibration = calibrations[field]
+                self.assertEqual(channels[key].field, field)
                 self.assertEqual(channels[key].source, calibration.target)
                 self.assertEqual(calibration.factor, factor)
                 self.assertEqual(calibration.apply(0), channels[key].minimum)
@@ -100,27 +143,35 @@ class ChannelTableTest(unittest.TestCase):
         # Overlay Log compares the published value with the stored points of
         # opening coordinate table 000155a0, whose code scale is the gradient
         # that FUN 0006f236 applies before J1979 publishes the byte as percent.
-        sources = {channel.key: channel.source for channel in live_feed.CHANNELS}
-        calibration = model.DASHBOARD_CALIBRATIONS[
-            "throttle_target_channel_0_raw"
-        ]
-        self.assertEqual(sources["throttle_target_pct"], calibration.target)
-        self.assertEqual(calibration.factor, 0x505B / 65536 / 4 * 100 / 255)
-        self.assertEqual(calibration.apply(0), 0.0)
         target = next(
             channel
-            for channel in live_feed.CHANNELS
+            for channel in live_feed.default_channels()
             if channel.key == "throttle_target_pct"
         )
+        calibration = schema_calibrations()["throttle_target_channel_0_raw"]
+        self.assertEqual(target.source, calibration.target)
+        self.assertEqual(calibration.factor, 0x505B / 65536 / 4 * 100 / 255)
+        self.assertEqual(calibration.apply(0), 0.0)
         # The stored points span 0..3172 counts, the range the channel declares.
         self.assertLessEqual(calibration.apply(3172), target.maximum)
+
+    def test_a_profile_without_feed_channels_keeps_the_stock_channels(self):
+        profile = copy.deepcopy(tuning_profile())
+        for field in can_telemetry.profile_fields(profile):
+            field.get("dashboard", {}).pop("feed", None)
+        self.assertEqual(
+            live_feed.feed_channels(profile), live_feed.STOCK_CHANNELS
+        )
 
 
 class EngineLoadTest(unittest.TestCase):
     def test_load_is_the_normalized_load_the_ecu_computes(self):
-        sources = {channel.key: channel.source for channel in live_feed.CHANNELS}
-        calibration = can_telemetry.RAW_CALIBRATIONS["normalized_load_raw"]
-        self.assertEqual(sources[live_feed.LOAD_KEY], calibration.target)
+        sources = {
+            channel.key: channel.source
+            for channel in live_feed.default_channels()
+        }
+        calibration = schema_calibrations()["normalized_load_raw"]
+        self.assertEqual(sources["load"], calibration.target)
         # Raw 128 is the reference schedule, and one code is 0.78125 percent.
         self.assertEqual(calibration.apply(128), 100.0)
         self.assertEqual(calibration.apply(1), 0.78125)
@@ -128,10 +179,10 @@ class EngineLoadTest(unittest.TestCase):
     def test_saturated_load_fits_the_logger_range(self):
         load = next(
             channel
-            for channel in live_feed.CHANNELS
-            if channel.key == live_feed.LOAD_KEY
+            for channel in live_feed.default_channels()
+            if channel.key == "load"
         )
-        calibration = can_telemetry.RAW_CALIBRATIONS["normalized_load_raw"]
+        calibration = schema_calibrations()["normalized_load_raw"]
         self.assertEqual(calibration.apply(0), load.minimum)
         self.assertLessEqual(calibration.apply(255), load.maximum)
 
@@ -141,7 +192,8 @@ class FeedValuesTest(unittest.TestCase):
         dashboard = verified_model()
         values = live_feed.feed_values(dashboard)
         self.assertEqual(
-            list(values), [channel.key for channel in live_feed.CHANNELS]
+            list(values),
+            [channel.key for channel in live_feed.default_channels()],
         )
         self.assertEqual(values["rpm"], dashboard.stock_rpm)
         self.assertEqual(
@@ -158,7 +210,7 @@ class FeedValuesTest(unittest.TestCase):
     def test_missing_and_non_finite_values_are_left_out(self):
         dashboard = verified_model()
         dashboard.stock_rpm = math.nan
-        del dashboard.engineering["coolant_deg_c"]
+        del dashboard.engineering["coolant"]
         values = live_feed.feed_values(dashboard)
         for key in ("rpm", "coolant_c"):
             self.assertNotIn(key, values)
@@ -213,7 +265,7 @@ class LiveFeedTest(unittest.TestCase):
             round(float(received["bfs_ms"]) * 2048), dashboard.raw["bfs_raw"]
         )
         self.assertEqual(
-            float(received[live_feed.LOAD_KEY]),
+            float(received["load"]),
             float(f"{dashboard.raw['normalized_load_raw'] * 100 / 128:.7g}"),
         )
         self.assertEqual(feed.sent, 1)
@@ -254,13 +306,15 @@ class PluginFileTest(unittest.TestCase):
             properties["datasource.class"], live_feed.DATASOURCE_CLASS
         )
         self.assertEqual(properties["udp.port"], "47809")
+        channels = live_feed.default_channels()
         items = [
             properties[f"udp.item.{index}"].split("|")
-            for index in range(1, len(live_feed.CHANNELS) + 1)
+            for index in range(1, len(channels) + 1)
         ]
+        self.assertNotIn(f"udp.item.{len(channels) + 1}", properties)
         self.assertEqual(
             [item[0] for item in items],
-            [channel.key for channel in live_feed.CHANNELS],
+            [channel.key for channel in channels],
         )
         self.assertEqual(
             items[0], ["rpm", "VQ Engine Speed", "RPM", "0", "0", "8000", "1000"]

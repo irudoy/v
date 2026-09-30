@@ -6,3 +6,13 @@ signed = false
 profiles = ["tuning"]
 page = 5
 offset = 0x1
+
+[dashboard]
+label = "APP 1"
+digits = 3
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 20
+description = """
+Accelerator pedal position sensor 1 in volts; it rises with pedal travel. \
+Factory bands: 0.5..1.0 V released and 4.2..4.8 V fully depressed."""

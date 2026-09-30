@@ -6,3 +6,11 @@ signed = false
 profiles = ["tuning"]
 page = 6
 offset = 0x6
+
+[dashboard]
+label = "Exhaust CVTC target"
+digits = 1
+group = "CVTC"
+panel = "Ignition, throttle, and CVTC"
+order = 100
+description = "Exhaust camshaft target common to both banks, in crank degrees."

@@ -5,3 +5,25 @@ width = 1
 signed = false
 context = "long_fuel_trim_map_index_flow"
 position = 3
+
+[dashboard]
+label = "QH0 flow quantity"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 50
+description = """
+QH0 flow quantity: the column coordinate of the five Fuel Compensation Main \
+surfaces. The ECU writes it as the high byte of curve 0x15042 or 0x15022 \
+over the throttle opening area divided by engine speed, and the byte lookup \
+compares each point of axis 0x11D4C with it directly. The percent scale, \
+0.390625 per count, is the catalog candidate of that axis. The live value \
+feed sends it as VQ QH0 Flow Quantity."""
+
+[dashboard.feed]
+key = "alpha_n_flow_pct"
+name = "VQ QH0 Flow Quantity"
+format = "0.00"
+minimum = 0
+maximum = 100
+step = 10

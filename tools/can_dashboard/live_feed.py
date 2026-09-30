@@ -9,27 +9,28 @@ The first token names the format and its version. Every other token is
 ``key=value`` with a finite decimal value; a channel without a finite value is
 left out of the datagram, and the receiver keeps its previous value. The
 receiver is a RomRaider Logger external data source that is configured by the
-plugin file this module writes, so both sides share one channel table.
+plugin file this module writes, so both sides share one channel table: the
+engine speed of the stock bus, then every telemetry field whose presentation
+in the schema declares a feed channel, in profile order.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from functools import lru_cache
 import math
 from pathlib import Path
 import socket
 
 from tools.can_dashboard import PRODUCT_NAME
-from tools.can_dashboard.model import DASHBOARD_CALIBRATIONS
-from tools.logs.can_telemetry import RAW_CALIBRATIONS
+from tools.logs import can_telemetry
 
 MAGIC = "RRUDP1"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 47809
 DATASOURCE_CLASS = "com.romraider.logger.external.udp.plugin.UdpDataSource"
 DATASOURCE_NAME = PRODUCT_NAME
-LOAD_KEY = "load"
 # RomRaider keeps its per-user files in this folder of the home directory and
 # reads external data source plugin files from its plugins folder.
 ROMRAIDER_USER_DIRECTORY = ".RomRaider"
@@ -39,7 +40,12 @@ PLUGIN_FILE_NAME = "vq-telemetry.plugin"
 
 @dataclass(frozen=True)
 class FeedChannel:
-    """One published value and its RomRaider Logger presentation."""
+    """One published value and its RomRaider Logger presentation.
+
+    ``source`` is the metric key the model shows, and ``field`` the
+    telemetry field of that key, or None for a value of the stock bus that
+    the model attribute ``source`` holds.
+    """
 
     key: str
     name: str
@@ -49,6 +55,7 @@ class FeedChannel:
     maximum: float
     step: float
     source: str
+    field: str | None = None
 
     @property
     def logger_id(self):
@@ -56,162 +63,79 @@ class FeedChannel:
         return "X_" + self.name.replace(" ", "_")
 
 
-# Sources the stock bus carries rather than the telemetry profile. The model
-# attribute of the same name holds the decoded value, so the channel follows
-# the bus whatever the telemetry profile publishes. Engine speed is frame
-# 0x180 at RPM * 8 every 10.24 ms; defs/JK08A.can.md states that frame.
-STOCK_FRAME_SOURCES = frozenset({"stock_rpm"})
-
-CHANNELS = (
+# Channels of the stock bus, which follow the bus whatever the telemetry
+# profile publishes. Engine speed is frame 0x180 at RPM * 8 every 10.24 ms;
+# defs/JK08A.can.md states that frame.
+STOCK_CHANNELS = (
     FeedChannel(
         "rpm", "VQ Engine Speed", "RPM", "0", 0, 8000, 1000, "stock_rpm"
-    ),
-    FeedChannel(
-        LOAD_KEY,
-        "VQ Engine Load",
-        "%",
-        "0.00",
-        0,
-        200,
-        20,
-        "normalized_load_percent",
-    ),
-    FeedChannel(
-        "bfs_ms", "VQ Base Fuel Schedule", "ms", "0.000", 0, 20, 2, "bfs_ms"
-    ),
-    FeedChannel(
-        "timing_deg",
-        "VQ Timing Command",
-        "degBTDC",
-        "0",
-        -20,
-        60,
-        10,
-        "timing_command_deg",
-    ),
-    FeedChannel(
-        "maf_g_s", "VQ Total Airflow", "g/s", "0.00", 0, 400, 50, "maf_total_g_s"
-    ),
-    FeedChannel(
-        "throttle_pct",
-        "VQ Absolute Throttle",
-        "%",
-        "0.0",
-        0,
-        100,
-        10,
-        "absolute_throttle_percent",
-    ),
-    FeedChannel(
-        "coolant_c", "VQ Coolant Temperature", "C", "0", -40, 140, 20,
-        "coolant_deg_c",
-    ),
-    FeedChannel(
-        "iat_c", "VQ Intake Air Temperature", "C", "0", -40, 140, 20,
-        "iat_deg_c",
-    ),
-    FeedChannel(
-        "intake_cam_b1_deg",
-        "VQ Intake Cam B1",
-        "degCA",
-        "0.0",
-        -64,
-        64,
-        16,
-        "intake_cvtc_actual_b1_deg_ca",
-    ),
-    FeedChannel(
-        "intake_cam_b2_deg",
-        "VQ Intake Cam B2",
-        "degCA",
-        "0.0",
-        -64,
-        64,
-        16,
-        "intake_cvtc_actual_b2_deg_ca",
-    ),
-    FeedChannel(
-        "stft_b1_pct", "VQ STFT B1", "%", "0.00", -25, 25, 5, "stft_b1_percent"
-    ),
-    FeedChannel(
-        "stft_b2_pct", "VQ STFT B2", "%", "0.00", -25, 25, 5, "stft_b2_percent"
-    ),
-    FeedChannel(
-        "ltft_b1_pct", "VQ LTFT B1", "%", "0.00", -25, 25, 5, "ltft_b1_percent"
-    ),
-    FeedChannel(
-        "ltft_b2_pct", "VQ LTFT B2", "%", "0.00", -25, 25, 5, "ltft_b2_percent"
-    ),
-    FeedChannel(
-        "battery_v", "VQ Battery Voltage", "V", "0.00", 8, 16, 1,
-        "battery_voltage_v",
-    ),
-    FeedChannel(
-        "throttle_target_pct",
-        "VQ Throttle Target",
-        "%",
-        "0.00",
-        0,
-        100,
-        10,
-        "throttle_target_b1_percent",
-    ),
-    # The column coordinates of the requested-torque conversion surfaces and
-    # of Fuel Compensation Main carry the candidate percent scales of axes
-    # 0x14114 and 0x11D4C, which their lookups compare directly.
-    FeedChannel(
-        "request_flow_pct",
-        "VQ QH0 Flow Potential",
-        "%*",
-        "0.00",
-        0,
-        100,
-        10,
-        "request_flow_percent",
-    ),
-    FeedChannel(
-        "alpha_n_flow_pct",
-        "VQ QH0 Flow Quantity",
-        "%*",
-        "0.00",
-        0,
-        100,
-        10,
-        "alpha_n_flow_percent",
     ),
 )
 
 
-def feed_values(model):
-    """Return the finite channel values of a schema-verified model."""
+def feed_channels(profile):
+    """The feed channels of one profile of the schema: the stock channels,
+    then the fields whose presentation declares a feed channel, in profile
+    order, with the display units of their scales."""
+    fed = []
+    for field in can_telemetry.profile_fields(profile):
+        feed = field.get("dashboard", {}).get("feed")
+        if feed is None:
+            continue
+        fed.append(
+            FeedChannel(
+                feed["key"],
+                feed["name"],
+                can_telemetry.display_unit(field),
+                feed["format"],
+                feed["minimum"],
+                feed["maximum"],
+                feed["step"],
+                can_telemetry.engineering_key(field["name"]),
+                field["name"],
+            )
+        )
+    return STOCK_CHANNELS + tuple(fed)
+
+
+@lru_cache(maxsize=None)
+def default_channels():
+    """The feed channels of the bundled tuning profile."""
+    _document, profiles = can_telemetry.load_schema(
+        can_telemetry.DEFAULT_SCHEMA
+    )
+    return feed_channels(profiles["tuning"])
+
+
+def feed_values(model, channels=None):
+    """Return the finite channel values of a schema-verified model; the
+    channels default to those of the profile the model decodes."""
     if not model.schema_verified:
         return {}
+    if channels is None:
+        channels = feed_channels(model.decoder.profile)
     values = {}
-    for channel in CHANNELS:
-        if channel.source in STOCK_FRAME_SOURCES:
+    for channel in channels:
+        if channel.field is None:
             value = getattr(model, channel.source, None)
         else:
-            value = model.engineering.get(channel.source)
+            value = model.value(channel.source)
         if isinstance(value, (int, float)) and math.isfinite(value):
             values[channel.key] = float(value)
     return values
 
 
-def published_fields():
+def published_fields(channels=None):
     """Return the telemetry field each channel publishes, by Logger ID.
 
     A channel that follows the stock bus publishes no telemetry field and is
     left out.
     """
-    fields = {
-        calibration.target: field
-        for table in (RAW_CALIBRATIONS, DASHBOARD_CALIBRATIONS)
-        for field, calibration in table.items()
-    }
+    channels = default_channels() if channels is None else channels
     return {
-        channel.logger_id: fields[channel.source]
-        for channel in CHANNELS
-        if channel.source not in STOCK_FRAME_SOURCES
+        channel.logger_id: channel.field
+        for channel in channels
+        if channel.field is not None
     }
 
 
@@ -222,15 +146,17 @@ def encode(values):
     return " ".join(tokens).encode("ascii")
 
 
-def plugin_properties(host=DEFAULT_HOST, port=DEFAULT_PORT):
-    """Return the RomRaider plugin file that declares the channel table."""
+def plugin_properties(host=DEFAULT_HOST, port=DEFAULT_PORT, channels=None):
+    """Return the RomRaider plugin file that declares the channel table; the
+    channels default to those of the bundled tuning profile."""
+    channels = default_channels() if channels is None else channels
     lines = [
         f"datasource.class={DATASOURCE_CLASS}",
         f"udp.name={DATASOURCE_NAME}",
         f"udp.host={host}",
         f"udp.port={port}",
     ]
-    for index, channel in enumerate(CHANNELS, start=1):
+    for index, channel in enumerate(channels, start=1):
         fields = (
             channel.key,
             channel.name,
@@ -250,7 +176,7 @@ def plugin_path(home=None):
     return home / ROMRAIDER_USER_DIRECTORY / PLUGIN_DIRECTORY / PLUGIN_FILE_NAME
 
 
-def plugin_state(path, host=DEFAULT_HOST, port=DEFAULT_PORT):
+def plugin_state(path, host=DEFAULT_HOST, port=DEFAULT_PORT, channels=None):
     """Compare the plugin file with this endpoint and channel table."""
     try:
         text = Path(path).read_text(encoding="ascii")
@@ -258,14 +184,15 @@ def plugin_state(path, host=DEFAULT_HOST, port=DEFAULT_PORT):
         return "missing"
     except (OSError, ValueError):
         return "outdated"
-    return "current" if text == plugin_properties(host, port) else "outdated"
+    current = plugin_properties(host, port, channels)
+    return "current" if text == current else "outdated"
 
 
-def install_plugin(path, host=DEFAULT_HOST, port=DEFAULT_PORT):
+def install_plugin(path, host=DEFAULT_HOST, port=DEFAULT_PORT, channels=None):
     """Write the plugin file, creating its folders; return its path."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(plugin_properties(host, port), encoding="ascii")
+    path.write_text(plugin_properties(host, port, channels), encoding="ascii")
     return path
 
 
@@ -289,8 +216,9 @@ def parse_endpoint(text):
 class LiveFeed:
     """Send the latest model values to one UDP endpoint."""
 
-    def __init__(self, host, port, sock=None):
+    def __init__(self, host, port, sock=None, channels=None):
         self.endpoint = (host, port)
+        self.channels = channels
         self.sent = 0
         self.errors = 0
         self.last_error = None
@@ -298,7 +226,9 @@ class LiveFeed:
 
     def publish(self, model):
         """Send one datagram; return whether the model had values to send."""
-        values = feed_values(model)
+        if self.channels is None:
+            self.channels = feed_channels(model.decoder.profile)
+        values = feed_values(model, self.channels)
         if not values:
             return False
         try:

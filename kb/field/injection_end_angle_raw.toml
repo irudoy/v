@@ -6,3 +6,14 @@ signed = false
 profiles = ["tuning"]
 page = 7
 offset = 0x5
+
+[dashboard]
+label = "End of injection after intake TDC"
+digits = 0
+group = "Injection"
+panel = "Torque and requests"
+order = 70
+description = """
+End of injection in crank degrees after intake TDC of the injected cylinder. \
+A firmware coordinate from the injection-end tables, not a measured injector \
+event."""

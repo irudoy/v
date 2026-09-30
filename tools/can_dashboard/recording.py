@@ -10,7 +10,6 @@ import tempfile
 
 from tools.logs import mlvlg
 from tools.logs import can_telemetry
-from tools.can_dashboard import model
 
 
 DEFAULT_SCHEMA = can_telemetry.DEFAULT_SCHEMA
@@ -40,117 +39,6 @@ class RecordingSummary:
         return self.event_records + self.bridge_records
 
 
-# Field identity for the MLVLG header. Scale and transform never appear here:
-# they are derived from the calibrations the dashboard itself applies, so a
-# recorded channel cannot drift away from the live value. An asterisk in the
-# units marks a candidate transform, exactly as the dashboard marks it.
-RAW_FIELD_DISPLAY = {
-    "tick16": ("Telemetry tick", "", 0, "Transport"),
-    "request_flow_raw": ("QH0 flow potential", "%*", 2, "Throttle"),
-    "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
-    "apc_command_raw": ("APC command", "degBTDC", 0, "Ignition"),
-    "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
-    "maf_b1_raw": ("MAF bank 1", "V", 3, "Air"),
-    "maf_b2_raw": ("MAF bank 2", "V", 3, "Air"),
-    "maf_total_raw": ("Total airflow", "g/s", 2, "Air"),
-    "normalized_load_raw": ("Engine load", "%", 1, "Engine"),
-    "bfs_raw": ("Base fuel schedule", "ms", 3, "Fuel"),
-    "rolling_launch_phase": ("Rolling Launch phase", "", 0, "Context"),
-    "telemetry_status": ("Telemetry status", "raw", 0, "Transport"),
-    "knock_timing_state_raw": ("Knock timing state", "deg", 3, "Knock"),
-    "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
-    "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
-    "knock_channel_mask_latched": ("Knock channel mask", "", 0, "Knock"),
-    **{
-        f"knock_margin_min_ch{channel}_raw": (
-            f"Knock margin ch {channel}", "cnt", 0, "Knock"
-        )
-        for channel in range(1, 7)
-    },
-    "app1_raw": ("APP 1", "V", 3, "Throttle"),
-    "app2_raw": ("APP 2", "V", 3, "Throttle"),
-    "tps_b1_raw": ("TPS bank 1", "V", 3, "Throttle"),
-    "absolute_throttle_raw": ("Absolute throttle", "%", 1, "Throttle"),
-    "tps_b2_raw": ("TPS bank 2", "V", 3, "Throttle"),
-    "intake_cvtc_actual_b1_raw": (
-        "Intake CVTC actual B1", "degCA", 1, "CVTC"
-    ),
-    "intake_cvtc_actual_b2_raw": (
-        "Intake CVTC actual B2", "degCA", 1, "CVTC"
-    ),
-    "intake_cvtc_target_raw": ("Intake CVTC target", "degCA", 1, "CVTC"),
-    "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA", 1, "CVTC"),
-    "calculated_load_raw": ("Calculated load", "%", 1, "Engine"),
-    "throttle_request_bounded_raw": (
-        "Bounded throttle request", "Nm*", 1, "Throttle"
-    ),
-    "engine_torque_state_raw": ("Engine torque state", "Nm*", 1, "Engine"),
-    "injection_end_angle_raw": (
-        "End of injection after intake TDC", "degATDC", 0, "Injection"
-    ),
-    "exhaust_cvtc_actual_b1_raw": (
-        "Exhaust CVTC actual B1", "degCA", 1, "CVTC"
-    ),
-    "exhaust_cvtc_actual_b2_raw": (
-        "Exhaust CVTC actual B2", "degCA", 1, "CVTC"
-    ),
-    "throttle_target_shared_raw": (
-        "Shared throttle target", "cm2*", 2, "Throttle"
-    ),
-    "throttle_target_channel_0_raw": (
-        "Throttle target channel 0", "%", 2, "Throttle"
-    ),
-    "throttle_target_channel_1_raw": (
-        "Throttle target channel 1", "%", 2, "Throttle"
-    ),
-    "coolant_raw": ("Coolant", "degC", 0, "Temperature"),
-    "iat_raw": ("Intake air", "degC", 0, "Temperature"),
-    "fuel_temperature_did_source_raw": (
-        "Fuel temperature", "degC", 0, "Temperature"
-    ),
-    "oil_temperature_did_source_raw": (
-        "Oil temperature", "degC", 0, "Temperature"
-    ),
-    "af_state_factor_raw": ("A/F state factor", "", 4, "Fuel"),
-    "stft_b1_raw": ("STFT bank 1", "%", 2, "Fuel"),
-    "stft_b2_raw": ("STFT bank 2", "%", 2, "Fuel"),
-    "intake_cvtc_duty_b1_raw": ("CVTC duty B1", "%", 1, "CVTC"),
-    "intake_cvtc_duty_b2_raw": ("CVTC duty B2", "%", 1, "CVTC"),
-    "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
-    "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
-    "active_map_index": ("Selected map", "", 0, "Context"),
-    "alpha_n_flow_raw": ("QH0 flow quantity", "%*", 2, "Fuel"),
-    "protocol_version": ("Protocol version", "", 0, "Transport"),
-    "profile_id": ("Profile ID", "", 0, "Transport"),
-    "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
-    "snapshot_overrun_count": ("Snapshot overrun count", "", 0, "Transport"),
-    "tx_abort_count": ("TX abort count", "", 0, "Transport"),
-    "intake_cvtc_duty_command_b1_raw": (
-        "Intake CVTC duty command B1", "%", 1, "CVTC"
-    ),
-    "intake_cvtc_duty_command_b2_raw": (
-        "Intake CVTC duty command B2", "%", 1, "CVTC"
-    ),
-    "ltft_learned_b1_raw": ("LTFT learned bank 1", "%", 2, "Fuel"),
-    "ltft_adjustment_b1_raw": ("LTFT adjustment bank 1", "%", 2, "Fuel"),
-    "exhaust_cvtc_duty_b1_word_raw": (
-        "Exhaust CVTC duty B1 word", "%", 1, "CVTC"
-    ),
-    "exhaust_cvtc_duty_b2_word_raw": (
-        "Exhaust CVTC duty B2 word", "%", 1, "CVTC"
-    ),
-    "rolling_launch_abort_reason": (
-        "Rolling Launch reason", "", 0, "Context"
-    ),
-    "battery_voltage_raw": ("Battery voltage", "V", 2, "Context"),
-    "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "V", 3, "Fuel"),
-    "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "V", 3, "Fuel"),
-    "af_adjustment_b1_raw": ("A/F adjustment B1", "*", 3, "Fuel"),
-    "af_adjustment_b2_raw": ("A/F adjustment B2", "*", 3, "Fuel"),
-    "secondary_tps_b1_raw": ("Secondary TPS B1", "V", 3, "Throttle"),
-    "secondary_tps_b2_raw": ("Secondary TPS B2", "V", 3, "Throttle"),
-}
-
 def current_channel_name(name: str) -> str:
     """Return the name of a recorded channel without candidate marks.
 
@@ -161,50 +49,43 @@ def current_channel_name(name: str) -> str:
     return name.replace("*", "").strip()
 
 
-MLG_CALIBRATIONS = {
-    **can_telemetry.RAW_CALIBRATIONS,
-    **model.DASHBOARD_CALIBRATIONS,
-}
-
-
-def mlg_scaling(source: str) -> tuple[float, float]:
-    """Return the MLVLG scale and transform for one raw telemetry field.
+def mlg_scaling(calibration) -> tuple[float, float]:
+    """Return the MLVLG scale and transform of one field calibration.
 
     MegaLogViewer evaluates ``(raw + transform) * scale``, so the transform is
-    expressed in raw counts rather than in engineering units.
+    expressed in raw counts rather than in engineering units. A field without
+    a calibration records its raw value.
     """
 
-    calibration = MLG_CALIBRATIONS.get(source)
     if calibration is None:
         return 1.0, 0.0
     return calibration.factor, calibration.offset / calibration.factor
 
 
+def _field_binding(field, calibration) -> FieldBinding:
+    """The MLVLG channel of one telemetry field.
 
-def _injection_display(index: int):
-    return (f"Injection calc {index}", "ms", 2, "Injection")
+    The name, digits, and category are the presentation of the field in the
+    schema, the units are its display unit, and the scale and transform are
+    the calibration the dashboard itself applies, so a recorded channel
+    cannot drift away from the live value. An asterisk in the units marks a
+    candidate conversion, exactly as the dashboard marks it.
+    """
 
-
-def _raw_binding(name: str) -> FieldBinding:
-    display = RAW_FIELD_DISPLAY.get(name)
-    if display is None and name.startswith("injection_") and name.endswith("_raw"):
-        display = _injection_display(int(name.split("_")[1]))
-    if display is None:
-        display = (name, "raw", 0, "Telemetry")
-    field_name, units, digits, category = display
-    scale, transform = mlg_scaling(name)
+    dashboard = field.get("dashboard", {})
+    scale, transform = mlg_scaling(calibration)
     return FieldBinding(
         spec=mlvlg.FieldSpec(
-            name=field_name,
-            units=units,
-            category=category,
+            name=dashboard.get("label", field["name"]),
+            units=can_telemetry.display_unit(field),
+            category=dashboard.get("group", "Telemetry"),
             field_type=mlvlg.MLG_F32,
             display_style=mlvlg.MLG_FLOAT,
             scale=scale,
             transform=transform,
-            digits=digits,
+            digits=dashboard.get("digits", 0),
         ),
-        source=name,
+        source=field["name"],
     )
 
 
@@ -217,9 +98,7 @@ def build_bindings(
     except KeyError as error:
         raise ValueError(f"unknown telemetry profile: {profile}") from error
 
-    names = [field["name"] for field in selected["fields"]]
-    for context in selected.get("contexts", ()):
-        names.extend(field["name"] for field in context["fields"])
+    calibrations = can_telemetry.calibrations(selected)
 
     bindings = [
         FieldBinding(
@@ -254,7 +133,10 @@ def build_bindings(
             "attribute",
         ),
     ]
-    bindings.extend(_raw_binding(name) for name in names)
+    bindings.extend(
+        _field_binding(field, calibrations.get(field["name"]))
+        for field in can_telemetry.profile_fields(selected)
+    )
     bindings.extend(
         (
             FieldBinding(

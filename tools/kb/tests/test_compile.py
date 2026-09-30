@@ -916,6 +916,20 @@ class TelemetryAdapterTest(unittest.TestCase):
                            "scale 'Q14 factor' gives the source meaning no keys")])
         self.assertNotIn("scale", b.entities[("field", "loose_raw")].props)
 
+    def test_a_field_carries_its_presentation_and_another_key_fails_the_schema(self):
+        presentation = {"label": "Probe", "digits": 2, "group": "Probe",
+                        "feed": {"key": "probe", "name": "VQ Probe", "format": "0.00",
+                                 "minimum": 0, "maximum": 5, "step": 1}}
+        b = _declare_telemetry(_telemetry([
+            _field(name="shown_raw", dashboard=presentation),
+            _field(name="plain_raw", offset=3),
+            _field(name="loose_raw", offset=5, display={"label": "Loose"})]),
+            {"shown_raw": "probe", "plain_raw": "probe"})
+        self.assertEqual([(issue.check, issue.subject, issue.message) for issue in b.issues],
+                         [("schema", "field.loose_raw", "missing []; unknown ['display']")])
+        self.assertEqual(b.entities[("field", "shown_raw")].props["dashboard"], presentation)
+        self.assertNotIn("dashboard", b.entities[("field", "plain_raw")].props)
+
     def test_the_fields_of_the_model_pass_the_fields_and_widths_checks(self):
         m = model()
         self.assertEqual((checks.fields(m), checks.widths(m)), ([], []))

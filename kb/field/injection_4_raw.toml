@@ -6,3 +6,14 @@ signed = false
 profiles = ["tuning"]
 page = 3
 offset = 0x5
+
+[dashboard]
+label = "Injection calc 4"
+digits = 2
+group = "Injection"
+panel = "Injection and knock"
+order = 50
+description = """
+Calculated injection pulse of channel 4, which drives cylinder 5 by the \
+diagnostic Power Balance order: the compensated software command in ms at 10 \
+us per count, not a measured injector-open time."""

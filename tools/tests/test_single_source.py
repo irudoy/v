@@ -28,48 +28,12 @@ def test_the_tree_matches_its_sources(facts):
     assert single_source.check_export_root() == "~/tools/ghidra-projects"
     assert single_source.check_can_id() > 0
     single_source.check_product_identity()
-    assert single_source.check_conversions() > 0
     single_source.check_stock_hashes()
     assert single_source.check_kb_questions() == 12
     assert single_source.check_rom_registries() == len(
         single_source.registered_labels()
     )
     single_source.check_published(facts)
-
-
-@pytest.mark.parametrize(
-    "scale, conversion",
-    [
-        ("raw / 256 - 100 percent", (1 / 256, -100.0)),
-        ("raw * 0.5 - 64 degCA", (0.5, -64.0)),
-        ("raw * 100 / 255 percent", (100 / 255, 0.0)),
-        ("raw - 50 degC", (1.0, -50.0)),
-        ("candidate raw * 0.1 Nm", (0.1, 0.0)),
-        ("Q14 factor", (2**-14, 0.0)),
-        ("Q8 software state", (1 / 256, 0.0)),
-        (
-            "raw * 2 - 590 deg after intake TDC of the injected cylinder; "
-            "raw * 2 degCA after the reference tooth",
-            (2.0, -590.0),
-        ),
-        ("raw target coordinate", (1.0, 0.0)),
-        ("identity", (1.0, 0.0)),
-        ("110 - raw degBTDC", (-1.0, 110.0)),
-        ("raw degBTDC", (1.0, 0.0)),
-        ("raw / 16384 ratio", (2**-14, 0.0)),
-        ("raw * 2 - 590 degCA", (2.0, -590.0)),
-        ("100 - raw / 2 percent", (-0.5, 100.0)),
-        ("110 - raw + 3 deg", None),
-        ("raw / 800 V above the learned closed position", (1 / 800, 0.0)),
-        ("candidate raw * 0.002 A/F ADJ factor, bounded -1..1", (0.002, 0.0)),
-        ("signed internal request coordinate", None),
-        ("bit mask", None),
-        ("bits: 0 CYLINDER_1, 1 CYLINDER_2", None),
-        ("unresolved physical conversion", None),
-    ],
-)
-def test_a_scale_string_declares_its_conversion(scale, conversion):
-    assert single_source.declared_conversion(scale) == conversion
 
 
 @pytest.mark.parametrize(
@@ -154,15 +118,6 @@ def test_a_copy_that_leaves_its_owner_fails(monkeypatch, check, path, old, new):
     with pytest.raises(single_source.SourceError) as error:
         check()
     assert path in str(error.value) or "unregistered" in str(error.value)
-
-
-def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
-    scales = single_source._profile_scales()
-    scales["stft_b1_raw"] = {"Q8.8 percent"}
-    monkeypatch.setattr(single_source, "_profile_scales", lambda: scales)
-    with pytest.raises(single_source.SourceError) as error:
-        single_source.check_conversions()
-    assert "stft_b1_raw" in str(error.value)
 
 
 @pytest.mark.parametrize(

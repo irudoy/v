@@ -697,7 +697,7 @@ the diagnostic bindings read these tables.
 | `endpoint` | `title`, `direction` (`input`, `output`, or `bidirectional`), `block`, `peripheral`, `summary`, `registers` (`reg` references), `functions` (`fn` references), `specs` |
 | `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, and `[[step]]` |
 | `signal` | `title`, `domain`, `priority`, `coverage`, `basis`, `observes`, `note` |
-| `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position` |
+| `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position`, and `[dashboard]` |
 | `feature` | `title`, `summary`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
 
 `specs` is an array of repository paths of narrow specifications.
@@ -760,6 +760,18 @@ Fields:
   symbol states.
 - `profiles`, `page`, and `offset` place a stream field; `context` and
   `position` place a context field.
+- `[dashboard]` is the host presentation of the field: `label`, the name of
+  its recorded channel and of its row; `digits`; `group`, the category of
+  the recorded channel; and optionally `description`, the text shown over the
+  name; `unit`, for a value whose scale states no unit; `hexadecimal`;
+  `panel` with `order`, the panel of the dashboard that shows the field and
+  its position there, and `panel_label`, the name of the row where it
+  differs from `label`; and `[dashboard.feed]` with `key`, `name`, `format`,
+  `minimum`, `maximum`, and `step`, the channel of the live feed that
+  publishes the value. The unit, the conversion, and the names of the values
+  and bits come from the scale, and a feed channel publishes a conversion.
+  A field without `[dashboard]` is recorded under its name and stays off
+  the panels.
 
 Features:
 
@@ -2176,7 +2188,7 @@ that no registry states.
 | `defs/JK08A.tuning-signals.toml` | Observation needs | 4 | `kb/signal/` | Projection |
 | `patches/can-telemetry-profile.toml` | Fields, contexts, and wire constants | 4 | `kb/field/`; `can_telemetry` | Projection |
 | `defs/JK08A.overrides.toml` | Editor presentation, logger parameters, checksums, and switches | 4 | `[editor]` and `[logparam]` tables; `definitions` | Projection |
-| Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata | Copies checked by `tools/single_source.py` | 4 | Generated from fields and meanings | Projection; the copy checks leave `single_source.py` |
+| Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata | Placement, conversions, units, names of values and bits, and host presentation of the fields | 4 | Generated from fields and meanings | Projection; the copy checks leave `single_source.py` |
 | `defs/JK08A.funcs.csv`, `defs/JK08A.vars.csv`, `defs/JK08A.findings.csv`, `defs/JK08A.axes.csv` | Code knowledge of `7mfk` | 5 | `kb/fn/`, `kb/ram/`, `kb/reg/`, `kb/tbl/`, `kb/axis/` | Projection |
 | `defs/JK08A.dtc.csv` | DTC descriptors of `7mfk` | 5 | `kb/dtc/` | Projection; the `dtc.csv` files of other images follow the `dtc` symbols of their layouts in stage 9 |
 | `defs/JK08A.diagnostic-bindings.csv` | Diagnostic bindings | 5 | `[[diagnostic]]` tables | Projection |
@@ -2800,11 +2812,36 @@ The service 0x22 table of `7mfk`:
 - The wire constants, `[[profile]]`, and the contexts become keys of
   `can_telemetry`; `mailbox` becomes `mailbox_index`, and the table,
   configuration, and state addresses become keys of its `7mfk` target.
+- `[field.dashboard]` and `[field.dashboard.feed]` become the `[dashboard]`
+  table of the field.
 - The regenerated profile renders each `ecu_ram` scale from its meaning:
   the scale and unit, or else `enumeration: <n> <NAME>, ...` from its values
-  or `bits: <n> <NAME>, ...` from its named bits, each list by number; the conversion
-  commit lists every string that changes, and the consumers pass their tests
-  on the regenerated file.
+  or `bits: <n> <NAME>, ...` from its named bits, each list by number, and
+  the `[dashboard]` table of each field as its `[field.dashboard]`; the
+  conversion commit lists every string that changes, and the consumers pass
+  their tests on the regenerated file.
+
+The host copies of the profile:
+
+- `patches/can_telemetry_profile.py` generates from the profile the payload
+  tables, the identity header, and `patches/can-telemetry-schema.json`. The
+  schema gives each field its `scale`, the terms that the scale states, and
+  its `dashboard`: `conversion` with the `factor` and `offset` of the affine
+  value in `raw`, `candidate`, and `unit` for arithmetic, `values` for an
+  enumeration, and `bits` for a list of named bits. The generator validates
+  the schema with the decoder of `tools/logs/can_telemetry.py`, which
+  refuses terms that differ from the scale, an invalid presentation, a
+  presentation `unit` beside a unit of the scale, a feed channel of a field
+  without a conversion, and a label, feed key, or feed name that two fields
+  share.
+- The engineering value of a field is its conversion of the raw value,
+  keyed by the field name without the `_raw` suffix. The decoder, the MLG
+  recording, the panels, hero cards, and descriptions of the dashboard, and
+  the live feed build their tables from the schema when they load it; the
+  quantities of the stock frames, the drive runs, and the GPS source, the
+  map that the dashboard selects from `active_map_index`, and the names of
+  the fuel-inhibit, knock-channel, and knock-surface masks stay code of the
+  dashboard.
 
 `defs/JK08A.overrides.toml`:
 

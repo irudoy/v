@@ -5,3 +5,17 @@ width = 1
 signed = false
 context = "temperatures_af"
 position = 0
+
+[dashboard]
+label = "Coolant"
+digits = 0
+group = "Temperature"
+description = "Engine coolant temperature."
+
+[dashboard.feed]
+key = "coolant_c"
+name = "VQ Coolant Temperature"
+format = "0"
+minimum = -40
+maximum = 140
+step = 20

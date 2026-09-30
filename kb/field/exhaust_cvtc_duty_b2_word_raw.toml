@@ -5,3 +5,11 @@ width = 2
 signed = false
 context = "exhaust_cvtc_duty_and_intake_duty_command"
 position = 1
+
+[dashboard]
+label = "Exhaust CVTC duty B2 word"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 60
+description = "Duty of the bank 2 exhaust valve timing solenoid, in percent."

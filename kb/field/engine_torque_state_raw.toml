@@ -6,3 +6,13 @@ signed = true
 profiles = ["tuning"]
 page = 7
 offset = 0x3
+
+[dashboard]
+label = "Engine torque state"
+digits = 1
+group = "Engine"
+panel = "Torque and requests"
+order = 10
+description = """
+Signed engine torque state of the torque and throttle calibration path, \
+candidate 0.1 Nm per count."""

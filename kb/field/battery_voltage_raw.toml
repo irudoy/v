@@ -5,3 +5,19 @@ width = 1
 signed = false
 context = "launch_abort_voltage_and_trim_terms"
 position = 1
+
+[dashboard]
+label = "Battery voltage"
+digits = 2
+group = "Context"
+panel = "Trims and supply"
+order = 50
+description = "Battery voltage at the ECU supply."
+
+[dashboard.feed]
+key = "battery_v"
+name = "VQ Battery Voltage"
+format = "0.00"
+minimum = 8
+maximum = 16
+step = 1

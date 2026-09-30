@@ -7,17 +7,18 @@ JK08A firmware producer. The firmware, generated source-pointer table, strict
 host decoder, dashboard, MLVLG recorder, ROM builder, and GNU SH-2E executable
 gate use the same profile identity.
 
-The generated host schema contains only transport layout, field semantics, and
-profile identity. It contains no ROM name, producer RAM address, physical
-mailbox, or patch location. Host tools load that file directly and do not import
-the JK08A producer manifest. The producer binding retains the exact ROM, RAM,
-hook, source-address, and mailbox constraints required to build safe firmware.
-The profile CRC covers the wire layout alone: protocol version, profile ID,
-page count, the page, offset, width, and signedness of every fixed field, and
-the page, tag, and ordered widths and signedness of every context. ROM
-identity, source addresses, producer storage kinds, field names, context
-names, and scale strings are outside it, so a renamed field or a restated
-scale keeps the CRC and the firmware bytes. The profile ID states which
+The generated host schema contains only transport layout, field semantics, the
+host presentation of each field, and profile identity. It contains no ROM name,
+producer RAM address, physical mailbox, or patch location. Host tools load that
+file directly and do not import the JK08A producer manifest. The producer
+binding retains the exact ROM, RAM, hook, source-address, and mailbox
+constraints required to build safe firmware. The profile CRC covers the wire
+layout alone: protocol version, profile ID, page count, the page, offset,
+width, and signedness of every fixed field, and the page, tag, and ordered
+widths and signedness of every context. ROM identity, source addresses,
+producer storage kinds, field names, context names, scale strings, and the host
+presentation are outside it, so a renamed field, a restated scale, or another
+presentation keeps the CRC and the firmware bytes. The profile ID states which
 quantity each slot carries: a slot that carries a different quantity takes a
 new profile ID, and the producer test suite pins one digest of the
 slot-to-field assignment per profile ID. Two producers implementing the same
@@ -107,8 +108,11 @@ immediately afterward without another interrupt-state transition.
 
 All multi-byte values retain ECU big-endian representation. Firmware performs
 no engineering conversion. The generated host schema owns placement,
-signedness, scale, and candidate semantic labels. Exact producer source
-addresses remain only in the firmware manifest and generated pointer table.
+signedness, the scale with the conversion, unit, candidate flag, values, or
+named bits that it states, and the host presentation of each field: the
+label, digits, recording group, dashboard panel, description, and live feed
+channel. Exact producer source addresses remain only in the firmware manifest
+and generated pointer table.
 
 `FUN_000493E8` consumes and clears the knock interval count before the final
 capture boundary. The wrapper at periodic entry 65 therefore latches

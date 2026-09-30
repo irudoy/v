@@ -6,3 +6,14 @@ signed = false
 profiles = ["tuning"]
 page = 8
 offset = 0x1
+
+[dashboard]
+label = "Shared throttle target"
+digits = 2
+group = "Throttle"
+panel = "Torque and requests"
+panel_label = "Throttle area request"
+order = 40
+description = """
+Target opening area of both throttle bodies, candidate 0.0008 cm2 per count; \
+the channel targets derive from it."""

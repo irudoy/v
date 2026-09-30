@@ -5,3 +5,21 @@ width = 2
 signed = true
 context = "short_fuel_trim_cvtc_duty"
 position = 1
+
+[dashboard]
+label = "STFT bank 2"
+digits = 2
+group = "Fuel"
+panel = "Air and fuel"
+order = 100
+description = """
+Short-term fuel trim of bank 2: the fast closed-loop correction from the A/F \
+sensor, in percent. A positive value adds fuel."""
+
+[dashboard.feed]
+key = "stft_b2_pct"
+name = "VQ STFT B2"
+format = "0.00"
+minimum = -25
+maximum = 25
+step = 5

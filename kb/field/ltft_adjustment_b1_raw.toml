@@ -5,3 +5,11 @@ width = 2
 signed = false
 context = "launch_abort_voltage_and_trim_terms"
 position = 3
+
+[dashboard]
+label = "LTFT adjustment bank 1"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 20
+description = "Running adjustment of the bank 1 long-term trim, in percent."

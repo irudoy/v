@@ -5,7 +5,8 @@
   `name` with `kind` as `origin`, `width`, `signed`, and its place: `page`,
   `offset`, and `profiles` in the stream, or the `context` and the `position`
   inside it. The signal whose `current_fields` lists the field is its
-  `signal`.
+  `signal`, and its `dashboard` table, where the registry states one, is its
+  `dashboard`.
 - The source of an `ecu_ram` field is the `7mfk` symbol at its address, joined
   by the field as a telemetry source of the address profiles is. Its `scale`
   parses into the source meaning: the arithmetic in `raw`, a bare `raw`
@@ -33,8 +34,9 @@
 From stage 4 the profile is a projection of the fields and of `can_telemetry`
 (`profile`): the stream fields by page and offset, the fields of each context
 by position, the source of an `ecu_ram` field at the address of its `7mfk`
-symbol with the scale of its meaning, its values, or its named bits, and the
-source of another field at its allocation.
+symbol with the scale of its meaning, its values, or its named bits, the
+source of another field at its allocation, and the `[dashboard]` table of each
+field as its `[field.dashboard]`.
 """
 
 from pathlib import Path
@@ -60,6 +62,8 @@ ADDRESS_KEYS = ("table_address", "table_end", "configuration_address", "state_ad
 DOCUMENT_KEYS = frozenset({"schema_version", "rom", "mailbox", "profile", "field", "context",
                            *WIRE_KEYS, *ADDRESS_KEYS})
 FIELD_KEYS = frozenset({"name", "width", "source", "kind", "signed", "scale"})
+# The presentation of a field, which a field may state.
+OPTIONAL_FIELD_KEYS = frozenset({"dashboard"})
 STREAM_KEYS = FIELD_KEYS | {"page", "offset", "profiles"}
 CONTEXT_KEYS = frozenset({"page", "tag", "name", "field"})
 PROFILE_KEYS = frozenset({"name", "id", "page_count"})
@@ -167,9 +171,10 @@ def declare_profile(b, document, regions, src):
     for item, keys, place in fields:
         name = item.get("name")
         subject = f"field.{name}"
-        if set(item) != keys:
-            b.issue("schema", src, subject, f"missing {sorted(keys - set(item))}; "
-                    f"unknown {sorted(set(item) - keys)}")
+        missing, unknown = keys - set(item), set(item) - keys - OPTIONAL_FIELD_KEYS
+        if missing or unknown:
+            b.issue("schema", src, subject, f"missing {sorted(missing)}; "
+                    f"unknown {sorted(unknown)}")
             continue
         if name in seen:
             b.issue("schema", src, subject, "a second field of the name")
@@ -177,6 +182,8 @@ def declare_profile(b, document, regions, src):
         seen.add(name)
         kind = item["kind"]
         props = {"origin": kind, "width": item["width"], "signed": item["signed"], **place}
+        if "dashboard" in item:
+            props["dashboard"] = item["dashboard"]
         refs = {}
         signal = owners.get(name)
         if signal is not None:
@@ -263,10 +270,10 @@ HEADER = """\
 # addresses, mailbox ownership, and ROM identity are not part of the host
 # contract. The profile CRC covers the wire layout alone: protocol version,
 # profile ID, page count, and the placement, width, and signedness of every
-# slot. Names and scale strings are outside it, and a slot that carries a
-# different quantity takes a new profile ID. The host decodes the current
-# profile ID alone. Runtime arbitrary-address interpretation is intentionally
-# unsupported.
+# slot. Names, scale strings, and the host presentation of [field.dashboard]
+# are outside it, and a slot that carries a different quantity takes a new
+# profile ID. The host decodes the current profile ID alone. Runtime
+# arbitrary-address interpretation is intentionally unsupported.
 """
 # The keys of the profile, its profiles, its fields, and its contexts in the
 # order of the file.
@@ -279,6 +286,10 @@ STREAM_ORDER = ("name", "page", "offset", "width", "source", "profiles", "kind",
                 "scale")
 CONTEXT_ORDER = ("page", "tag", "name")
 FIELD_ORDER = ("name", "width", "source", "kind", "signed", "scale")
+# The keys of the presentation of a field and of its feed channel in the order
+# of the file; each is optional.
+DASHBOARD_ORDER = tuple(name for name, _ in store.DASHBOARD.keys if name != "feed")
+FEED_ORDER = tuple(name for name, _ in store.FEED.keys)
 # The integer keys that the file writes in hexadecimal.
 HEXADECIMAL = {"candidate_can_id": "0x{:X}", "source": "0x{:08X}",
                **{key: "0x{:08X}" for key in ADDRESS_KEYS}}
@@ -348,6 +359,8 @@ def profile_document(model):
         props = entity.props
         item = {"name": entity.slug, "width": props.get("width"), "kind": props.get("origin"),
                 "signed": props.get("signed"), **_source(model, entity, allocations)}
+        if props.get("dashboard"):
+            item["dashboard"] = props["dashboard"]
         if "context" in props:
             contexts[props["context"]]["field"].append(item)
         else:
@@ -389,14 +402,35 @@ def _toml(key, value):
     raise KbError(f"no profile form of {key} = {value!r}", code=3)
 
 
-def _block(header, item, order, subject):
-    """The lines of one table of the profile with the keys of `order`."""
-    unknown = sorted(set(item) - set(order) - {"field"})
-    missing = [key for key in order if item.get(key) is None]
+def _assignment(key, value):
+    """The lines of one key: a string longer than a short line as the store
+    writes it, a multiline basic string whose value holds no newline."""
+    if isinstance(value, str) and len(value) > store.SHORT:
+        return store.string_lines(value, f"{key} = ", "")
+    return [f"{key} = {_toml(key, value)}"]
+
+
+def _block(header, item, order, subject, optional=False):
+    """The lines of one table of the profile with the keys of `order`, each
+    of which the table states unless they are `optional`, followed by its
+    presentation and the feed channel of the presentation."""
+    unknown = sorted(set(item) - set(order) - {"field", "dashboard", "feed"})
+    missing = [] if optional else [key for key in order if item.get(key) is None]
     if unknown or missing:
         raise KbError(f"{subject}: unknown keys {unknown}, no value of {missing}", code=3)
-    return "\n".join(([header] if header else []) +
-                     [f"{key} = {_toml(key, item[key])}" for key in order])
+    lines = [header] if header else []
+    for key in order:
+        if item.get(key) is not None:
+            lines += _assignment(key, item[key])
+    blocks = ["\n".join(lines)]
+    table = header.strip("[]") if header else None
+    if item.get("dashboard"):
+        blocks.append(_block(f"[{table}.dashboard]", item["dashboard"], DASHBOARD_ORDER,
+                             f"{subject}.dashboard", optional=True))
+    if item.get("feed"):
+        blocks.append(_block(f"[{table}.feed]", item["feed"], FEED_ORDER, f"{subject}.feed",
+                             optional=True))
+    return "\n\n".join(blocks)
 
 
 def render_profile(document):

@@ -6,3 +6,21 @@ signed = false
 profiles = ["tuning"]
 page = 5
 offset = 0x7
+
+[dashboard]
+label = "Absolute throttle"
+digits = 1
+group = "Throttle"
+panel = "Ignition, throttle, and CVTC"
+order = 60
+description = """
+Absolute throttle position as J1979 PID 0x11 reports it, in percent of the \
+byte range."""
+
+[dashboard.feed]
+key = "throttle_pct"
+name = "VQ Absolute Throttle"
+format = "0.0"
+minimum = 0
+maximum = 100
+step = 10

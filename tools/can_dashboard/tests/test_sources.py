@@ -5,7 +5,7 @@ import unittest
 from unittest import mock
 
 from tools.can_dashboard import app
-from tools.can_dashboard import model, sources
+from tools.can_dashboard import model, presentation, sources
 
 
 class ReplayOptionTest(unittest.TestCase):
@@ -457,15 +457,16 @@ class DashboardPresentationTest(unittest.TestCase):
     def test_cvtc_target_labels_match_recovered_roles(self):
         metrics = {
             metric.key: metric.label
-            for _, panel_metrics in app.PANELS
+            for _tab, panels in presentation.default().tabs
+            for _title, panel_metrics in panels
             for metric in panel_metrics
         }
         self.assertEqual(
-            metrics["intake_cvtc_target_deg_ca"],
+            metrics["intake_cvtc_target"],
             "Intake CVTC target",
         )
         self.assertEqual(
-            metrics["exhaust_cvtc_target_deg_ca"],
+            metrics["exhaust_cvtc_target"],
             "Exhaust CVTC target",
         )
 

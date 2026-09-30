@@ -5,3 +5,8 @@ signed = false
 scale = "identity"
 context = "health"
 position = 1
+
+[dashboard]
+label = "Profile ID"
+digits = 0
+group = "Transport"

@@ -3,19 +3,18 @@
 
 A value that several files need has one owning file. The Memgraph compose file
 publishes the Bolt port, `tools/rom_sources.py` the Ghidra export root, the
-telemetry profile the data CAN ID and every field conversion, the dashboard
-package its product identity, `tools/kb/bench.toml` the acceptance questions
-of the kb specification, and the ROM registries the label sets. A copy
-that a standalone script, a command default, or a document keeps is compared
-here with its owner, and every ROM list and count a document publishes is
-compared with the registry, profile, or image that determines it.
+telemetry profile the data CAN ID, the dashboard package its product identity,
+`tools/kb/bench.toml` the acceptance questions of the kb specification, and
+the ROM registries the label sets. A copy that a standalone script, a command
+default, or a document keeps is compared here with its owner, and every ROM
+list and count a document publishes is compared with the registry, profile,
+or image that determines it.
 """
 
 import argparse
 import csv
 from dataclasses import dataclass
 import io
-import math
 from pathlib import Path
 import re
 import subprocess
@@ -33,10 +32,8 @@ from tools.can_dashboard import (
     PRODUCT_NAME,
     PRODUCT_SHORT_NAME,
     PRODUCT_SLUG,
-    model,
     recording,
 )
-from tools.logs import can_telemetry
 from tools.mapkit import dtc_projection
 from tools.mapkit import rom as romkit
 
@@ -73,20 +70,6 @@ CAN_ID_DEFAULTS = (
     re.compile(r'"--(?:can|candidate)-id",[^\n]*?\bdefault=(0x[0-9A-Fa-f]+)'),
 )
 CAN_ID_COMMAND = re.compile(r"--(?:can|candidate)-id[ =](0x[0-9A-Fa-f]+)")
-
-# A profile scale string either states an affine conversion of the raw field or
-# a fixed-point format, or it describes a quantity without a numeric claim.
-# "N - raw" subtracts the scaled raw value from N.
-AFFINE_SCALE = re.compile(
-    r"(?:candidate )?"
-    r"(?:(?P<base>\d+(?:\.\d+)?) - )?"
-    r"raw"
-    r"(?: \* (?P<factor>\d+(?:\.\d+)?))?"
-    r"(?: / (?P<divisor>\d+(?:\.\d+)?))?"
-    r"(?: (?P<sign>[-+]) (?P<offset>\d+(?:\.\d+)?))?"
-    r"(?= |$)"
-)
-FIXED_POINT_SCALE = re.compile(r"Q(?:\d+\.)?(?P<bits>\d+) ")
 
 NUMBER_WORDS = (
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
@@ -264,78 +247,6 @@ def check_kb_questions():
             f"{differing}"
         )
     return len(owned)
-
-
-def declared_conversion(scale):
-    """Return the `(factor, offset)` a profile scale string declares, if any."""
-    if scale == "identity":
-        return 1.0, 0.0
-    match = AFFINE_SCALE.match(scale)
-    if match:
-        factor = float(match["factor"] or 1) / float(match["divisor"] or 1)
-        offset = float(match["offset"] or 0)
-        if match["base"] is not None:
-            # "N - raw + M" has no single reading, so it declares nothing.
-            if match["offset"] is not None:
-                return None
-            return -factor, float(match["base"])
-        return factor, -offset if match["sign"] == "-" else offset
-    match = FIXED_POINT_SCALE.match(scale)
-    if match:
-        return 2.0 ** -int(match["bits"]), 0.0
-    return None
-
-
-def _profile_fields():
-    manifest = can_telemetry_profile.load_manifest()
-    return (*manifest.fields, *(f for c in manifest.contexts for f in c.fields))
-
-
-def _profile_scales():
-    scales = {}
-    for field in _profile_fields():
-        scales.setdefault(field.name, set()).add(field.scale)
-    return scales
-
-
-def check_conversions():
-    """Require every host conversion to be the one the profile declares."""
-    decoder = can_telemetry.RAW_CALIBRATIONS
-    dashboard = model.DASHBOARD_CALIBRATIONS
-    shared = set(decoder) & set(dashboard)
-    if shared:
-        raise SourceError(
-            "the decoder and the dashboard both convert " + ", ".join(sorted(shared))
-        )
-    scales = _profile_scales()
-    for name, calibration in sorted({**decoder, **dashboard}.items()):
-        if len(scales.get(name, ())) != 1:
-            raise SourceError(
-                f"the host converts {name}, which {TELEMETRY_PROFILE} does "
-                "not declare with one scale"
-            )
-        (scale,) = scales[name]
-        _check_conversion(name, calibration, scale)
-    return len(decoder) + len(dashboard)
-
-
-def _check_conversion(name, calibration, scale):
-    """Require one host conversion to equal its declared scale."""
-    declared = declared_conversion(scale)
-    if declared is None:
-        raise SourceError(
-            f"the host converts {name}, whose scale {scale!r} declares no "
-            "numeric conversion"
-        )
-    factor, offset = declared
-    if not (
-        math.isclose(calibration.factor, factor, rel_tol=1e-12)
-        and math.isclose(calibration.offset, offset, abs_tol=1e-12)
-    ):
-        raise SourceError(
-            f"the host converts {name} as raw * {calibration.factor} + "
-            f"{calibration.offset}, {TELEMETRY_PROFILE} declares {scale!r}"
-        )
 
 
 def _image_rows():
@@ -912,7 +823,6 @@ def main(argv=None):
         check_export_root()
         can_ids = check_can_id()
         check_product_identity()
-        conversions = check_conversions()
         check_stock_hashes()
         questions = check_kb_questions()
         images = check_rom_registries()
@@ -930,8 +840,8 @@ def main(argv=None):
         return 1
     print(
         f"single source: {endpoints} Bolt endpoints, {can_ids} CAN ID copies, "
-        f"{conversions} host conversions, {questions} kb questions, {images} "
-        f"registered images, and {len(facts)} published facts match their sources"
+        f"{questions} kb questions, {images} registered images, and "
+        f"{len(facts)} published facts match their sources"
     )
     return 0
 

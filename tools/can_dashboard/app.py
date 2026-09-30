@@ -28,8 +28,8 @@ from tools.can_dashboard import (
 )
 from tools.can_dashboard import excerpt as replay_excerpt
 from tools.can_dashboard import logfile as dashboard_log
+from tools.can_dashboard import presentation as dashboard_presentation
 from tools.can_dashboard import settings as dashboard_settings
-from tools.can_dashboard.descriptions import describe
 from tools.can_dashboard.feed_dialog import FeedDialog
 from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
 from tools.can_dashboard.model import (
@@ -40,7 +40,8 @@ from tools.can_dashboard.model import (
     FrameRecord,
     SnapshotRecord,
 )
-from tools.can_dashboard.live_feed import LiveFeed, parse_endpoint
+from tools.can_dashboard.live_feed import LiveFeed, feed_channels, parse_endpoint
+from tools.can_dashboard.presentation import Metric
 from tools.can_dashboard.recording import TelemetryMlgRecorder
 from tools.can_dashboard.replay import (
     ReplayError,
@@ -229,15 +230,6 @@ HEALTH_FIELDS = (
 
 
 @dataclass(frozen=True)
-class Metric:
-    key: str
-    label: str
-    unit: str = ""
-    digits: int = 1
-    hexadecimal: bool = False
-
-
-@dataclass(frozen=True)
 class SourceEnvelope:
     generation: int
     event: SourceStatus | ControlStatus | FrameRecord | ReplayLoaded
@@ -253,157 +245,24 @@ def _parse_standard_can_id(value: str) -> int:
     return can_id
 
 
-HERO_METRICS = (
-    Metric("rpm", "ENGINE SPEED", "RPM", 0),
-    Metric("vehicle_speed_kmh", "VEHICLE SPEED", "km/h", 1),
-    Metric("calculated_load_percent", "CALCULATED LOAD", "%", 1),
-    Metric("timing_command_deg", "TIMING COMMAND", "degBTDC", 0),
-    Metric("maf_total_g_s", "TOTAL AIRFLOW", "g/s", 2),
-    Metric("injection_average_ms", "INJECTION CALC", "ms", 2),
-    Metric("coolant_deg_c", "COOLANT", "degC", 0),
-    Metric("gear", "SELECTOR", "", 0),
-    Metric("tcm_gear", "GEAR", "", 0),
-    Metric("selected_map", "SELECTED MAP", "", 0),
-    Metric("zero_to_100_s", "0-100 KM/H", "s", 2),
-    Metric("hundred_to_200_s", "100-200 KM/H", "s", 2),
-)
-OPTIONAL_HERO_KEYS = frozenset({
-    "gear",
-    "tcm_gear",
-    "selected_map",
-    "zero_to_100_s",
-    "hundred_to_200_s",
-})
-
-PANELS = (
-    ("Air and fuel", (
-        Metric("maf_b1_v", "MAF bank 1", "V", 3),
-        Metric("maf_b2_v", "MAF bank 2", "V", 3),
-        Metric("bfs_ms", "BFS", "ms", 3),
-        Metric("normalized_load_percent", "Engine load", "%", 1),
-        Metric("alpha_n_flow_percent", "QH0 flow quantity", "%*", 2),
-        Metric("af_sensor_b1_v", "A/F sensor 1 B1", "V", 3),
-        Metric("af_sensor_b2_v", "A/F sensor 1 B2", "V", 3),
-        Metric("af_state_factor", "A/F state factor", "", 4),
-        Metric("stft_b1_percent", "STFT bank 1", "%", 2),
-        Metric("stft_b2_percent", "STFT bank 2", "%", 2),
-        Metric("ltft_b1_percent", "LTFT bank 1", "%", 2),
-        Metric("ltft_b2_percent", "LTFT bank 2", "%", 2),
-    )),
-    ("Ignition, throttle, and CVTC", (
-        Metric("apc_command_deg", "APC command", "degBTDC", 0),
-        Metric("app1_v", "APP 1", "V", 3),
-        Metric("app2_v", "APP 2", "V", 3),
-        Metric("tps_b1_v", "TPS bank 1", "V", 3),
-        Metric("tps_b2_v", "TPS bank 2", "V", 3),
-        Metric("absolute_throttle_percent", "Absolute throttle", "%", 1),
-        Metric("intake_cvtc_actual_b1_deg_ca", "Intake CVTC actual B1", "degCA", 1),
-        Metric("intake_cvtc_actual_b2_deg_ca", "Intake CVTC actual B2", "degCA", 1),
-        Metric("intake_cvtc_target_deg_ca", "Intake CVTC target", "degCA", 1),
-        Metric("exhaust_cvtc_target_deg_ca", "Exhaust CVTC target", "degCA", 1),
-        Metric("intake_cvtc_duty_b1_percent", "CVTC duty B1", "%", 1),
-        Metric("intake_cvtc_duty_b2_percent", "CVTC duty B2", "%", 1),
-    )),
-    ("Injection and knock", (
-        Metric("injection_0_ms", "Injection calc 0", "ms", 2),
-        Metric("injection_1_ms", "Injection calc 1", "ms", 2),
-        Metric("injection_2_ms", "Injection calc 2", "ms", 2),
-        Metric("injection_3_ms", "Injection calc 3", "ms", 2),
-        Metric("injection_4_ms", "Injection calc 4", "ms", 2),
-        Metric("injection_5_ms", "Injection calc 5", "ms", 2),
-        Metric("fuel_inhibit_cylinders", "Fuel inhibit"),
-        Metric("knock_timing_state", "Knock timing state", "deg", 3),
-        Metric("knock_surface_mode", "Active hot surface"),
-        Metric("knock_count_latched", "Knock interval count", "", 0),
-        Metric("knock_channels_latched", "Knock channels"),
-        Metric("knock_margin_min_ch1_raw", "Knock margin ch 1", "cnt", 0),
-        Metric("knock_margin_min_ch2_raw", "Knock margin ch 2", "cnt", 0),
-        Metric("knock_margin_min_ch3_raw", "Knock margin ch 3", "cnt", 0),
-        Metric("knock_margin_min_ch4_raw", "Knock margin ch 4", "cnt", 0),
-        Metric("knock_margin_min_ch5_raw", "Knock margin ch 5", "cnt", 0),
-        Metric("knock_margin_min_ch6_raw", "Knock margin ch 6", "cnt", 0),
-    )),
-    ("Temperatures and context", (
-        Metric("iat_deg_c", "Intake air", "degC", 0),
-        Metric("fuel_temperature_deg_c", "Fuel temperature", "degC", 0),
-        Metric("oil_temperature_deg_c", "Oil temperature", "degC", 0),
-        Metric("stock_rpm", "Stock CAN RPM", "RPM", 0),
-        Metric("gear", "Selector"),
-        Metric("tcm_gear", "Gear", "", 0),
-        Metric("selected_map", "Selected map", "", 0),
-        Metric("rolling_launch_phase_name", "Rolling Launch"),
-        Metric("rolling_launch_abort_name", "Rolling Launch reason"),
-        Metric("ascd_button", "ASCD input"),
-        Metric("dashboard_state", "Dashboard state"),
-        Metric("gps_lat", "GPS latitude", "deg", 6),
-        Metric("gps_lon", "GPS longitude", "deg", 6),
-        Metric("gps_status", "GPS source"),
-    )),
-)
-
-EXTENDED_PANELS = (
-    ("Torque and requests", (
-        Metric("engine_torque_state_nm", "Engine torque state", "Nm*", 1),
-        Metric("torque_request_nm", "Torque request", "Nm*", 1),
-        Metric("request_flow_percent", "QH0 flow potential", "%*", 2),
-        Metric("throttle_area_request_cm2", "Throttle area request", "cm2*", 2),
-        Metric("throttle_target_b1_percent", "Throttle target B1", "%", 2),
-        Metric("throttle_target_b2_percent", "Throttle target B2", "%", 2),
-        Metric(
-            "injection_end_angle_deg",
-            "End of injection after intake TDC",
-            "degATDC",
-            0,
-        ),
-    )),
-    ("CVTC detail", (
-        Metric("exhaust_cvtc_actual_b1_deg_ca", "Exhaust CVTC actual B1", "degCA", 1),
-        Metric("exhaust_cvtc_actual_b2_deg_ca", "Exhaust CVTC actual B2", "degCA", 1),
-        Metric("intake_cvtc_duty_command_b1_percent", "Intake CVTC duty command B1", "%", 1),
-        Metric("intake_cvtc_duty_command_b2_percent", "Intake CVTC duty command B2", "%", 1),
-        Metric("exhaust_cvtc_duty_b1_word_percent", "Exhaust CVTC duty B1 word", "%", 1),
-        Metric("exhaust_cvtc_duty_b2_word_percent", "Exhaust CVTC duty B2 word", "%", 1),
-    )),
-    ("Trims and supply", (
-        Metric("ltft_learned_b1_percent", "LTFT learned bank 1", "%", 2),
-        Metric("ltft_adjustment_b1_percent", "LTFT adjustment bank 1", "%", 2),
-        Metric("af_adjustment_b1", "A/F ADJ B1", "*", 3),
-        Metric("af_adjustment_b2", "A/F ADJ B2", "*", 3),
-        Metric("battery_voltage_v", "Battery voltage", "V", 2),
-    )),
-    ("Throttle sensors and protocol", (
-        Metric("secondary_tps_b1_v", "Secondary TPS B1", "V", 3),
-        Metric("secondary_tps_b2_v", "Secondary TPS B2", "V", 3),
-        Metric("protocol_version", "Protocol version", "", 0),
-        Metric("profile_crc16", "Profile CRC16", "", 0, True),
-    )),
-)
-
-
-TABS = (
-    ("Primary", PANELS),
-    ("Extended", EXTENDED_PANELS),
-)
-DEFAULT_HERO_KEYS = tuple(
-    metric.key for metric in HERO_METRICS if metric.key not in OPTIONAL_HERO_KEYS
-)
 RUN_METRICS = {"zero_to_100_s": "0-100", "hundred_to_200_s": "100-200"}
 TELEMETRY_MAP_SOURCE = "the map index of the telemetry stream"
 
 
-def _hero_catalog():
-    """Every metric a hero card can show, the dedicated hero metrics first."""
-    metrics = {metric.key: metric for metric in HERO_METRICS}
+def hero_catalog(layout):
+    """Every metric a hero card can show, the dedicated hero metrics first,
+    and the choices of the hero picker in that order."""
+    metrics = {metric.key: metric for metric in layout.hero}
     choices = [
         HeroChoice(
             metric.key,
             metric.label.title(),
             "Summary",
-            describe(metric.key),
+            layout.describe(metric.key),
         )
-        for metric in HERO_METRICS
+        for metric in layout.hero
     ]
-    for _tab, panels in TABS:
+    for _tab, panels in layout.tabs:
         for title, panel_metrics in panels:
             for metric in panel_metrics:
                 if metric.key in metrics:
@@ -414,13 +273,10 @@ def _hero_catalog():
                         metric.key,
                         metric.label,
                         title,
-                        describe(metric.key),
+                        layout.describe(metric.key),
                     )
                 )
     return metrics, tuple(choices)
-
-
-HERO_CATALOG, HERO_CHOICES = _hero_catalog()
 
 
 class Sparkline(tk.Canvas):
@@ -834,6 +690,11 @@ class DashboardApp:
             args.tick_divisor,
             args.schema,
         )
+        self.presentation = dashboard_presentation.build(
+            self.model.decoder.profile
+        )
+        self.hero_catalog, self.hero_choices = hero_catalog(self.presentation)
+        self.feed_channels = feed_channels(self.model.decoder.profile)
         self.recorder = None
         self.recording_clock = None
         self.feed = None
@@ -843,8 +704,8 @@ class DashboardApp:
         self.settings_path = getattr(args, "settings", None)
         self.settings = dashboard_settings.load(
             self.settings_path,
-            catalog=HERO_CATALOG,
-            default_hero=DEFAULT_HERO_KEYS,
+            catalog=self.hero_catalog,
+            default_hero=self.presentation.default_hero,
         )
         self.feed_settings = self._launch_feed_settings()
         self.palette = PALETTES[self.settings.theme]
@@ -1417,7 +1278,7 @@ class DashboardApp:
 
     def _describe(self, key):
         """What a metric means; the selected map adds its source."""
-        text = describe(key)
+        text = self.presentation.describe(key)
         if key == "selected_map":
             if self.model.telemetry_map is None:
                 source = f"Last observation: {self.model.drive.map.reason}."
@@ -1538,7 +1399,7 @@ class DashboardApp:
         host = tk.Frame(body, bg=palette.bg)
         host.pack(fill="both", expand=True, padx=12, pady=(4, 7))
         host.bind("<Configure>", self._layout_panel_grids, add="+")
-        for index, (tab_name, definitions) in enumerate(TABS):
+        for index, (tab_name, definitions) in enumerate(self.presentation.tabs):
             button = self._tool_button(
                 tabs,
                 tab_name.upper(),
@@ -1594,7 +1455,7 @@ class DashboardApp:
         self.hero_cards = {
             key: HeroCard(
                 self.hero_row,
-                HERO_CATALOG[key],
+                self.hero_catalog[key],
                 traces[index % len(traces)],
                 self.palette,
                 self.hero_history[key],
@@ -1660,9 +1521,9 @@ class DashboardApp:
         palette = self.palette
         self.picker = HeroPicker(
             self.root,
-            choices=HERO_CHOICES,
+            choices=self.hero_choices,
             selected=self.settings.hero,
-            defaults=DEFAULT_HERO_KEYS,
+            defaults=self.presentation.default_hero,
             limit=dashboard_settings.HERO_LIMIT,
             colors={
                 "bg": palette.bg,
@@ -1702,7 +1563,9 @@ class DashboardApp:
             self.feed_var.set("Feed: off")
             return
         try:
-            self.feed = LiveFeed(feed.host, feed.port)
+            self.feed = LiveFeed(
+                feed.host, feed.port, channels=self.feed_channels
+            )
         except OSError as error:
             self.feed_var.set(f"Feed: {error}")
             return
@@ -1736,6 +1599,7 @@ class DashboardApp:
             },
             on_apply=self.apply_feed,
             tooltip_options=palette.tooltip_options(),
+            channels=self.feed_channels,
         )
 
     def apply_feed(self, feed):
@@ -1746,7 +1610,7 @@ class DashboardApp:
         self._build_window()
 
     def apply_hero_keys(self, keys):
-        keys = dashboard_settings.normalize_hero(keys, HERO_CATALOG)
+        keys = dashboard_settings.normalize_hero(keys, self.hero_catalog)
         self._store_settings(hero=keys)
         self._build_hero_cards()
 
@@ -2406,7 +2270,7 @@ class DashboardApp:
             return getattr(self.model, key)
         if key == "injection_average_ms":
             values = [
-                self.model.value(f"injection_{index}_ms")
+                self.model.value(f"injection_{index}")
                 for index in range(6)
             ]
             values = [

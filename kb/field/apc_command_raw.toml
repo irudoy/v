@@ -6,3 +6,15 @@ signed = false
 profiles = ["tuning"]
 page = 0
 offset = 0x6
+
+[dashboard]
+label = "APC command"
+digits = 0
+group = "Ignition"
+panel = "Ignition, throttle, and CVTC"
+order = 10
+description = """
+Effective ignition timing command in degrees before TDC, as J1979 PID 0x0E \
+reports it: 110 minus the APC byte. It follows Rolling Launch and the stock \
+modes that move the command away from the timing coordinate. A software \
+command, not a measured spark angle."""

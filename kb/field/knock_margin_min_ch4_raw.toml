@@ -9,3 +9,18 @@ capture of this context; 32767 without an evaluation or for a margin of \
 32767 or more"""
 context = "knock_margin_channels_4_to_6"
 position = 0
+
+[dashboard]
+label = "Knock margin ch 4"
+digits = 0
+unit = "cnt"
+group = "Knock"
+panel = "Injection and knock"
+order = 150
+description = """
+Smallest knock margin of evaluator channel 4 since the previous capture of \
+its context: the knock threshold minus the knock metric, in evaluator counts \
+without a physical unit. A positive value is headroom below the threshold, \
+and a negative value is an evaluation that the ECU counts as knock. The \
+channel number is the cylinder number of the event that opens the knock \
+window."""

@@ -5,14 +5,9 @@ import tempfile
 import unittest
 from unittest import mock
 
-from tools.can_dashboard import model, recording
+from tools.can_dashboard import model, presentation, recording
+from tools.logs import can_telemetry
 from tools.logs import mlvlg
-
-
-try:
-    from tools.can_dashboard import app
-except ImportError:  # pragma: no cover - Tk is unavailable
-    app = None
 
 
 def feed_group(dashboard, group, base_time):
@@ -279,24 +274,25 @@ class MlgCalibrationGateTest(unittest.TestCase):
 
     def setUp(self):
         self.bindings = recording.build_bindings("tuning")
+        self.profile = model.DashboardModel().decoder.profile
+        self.calibrations = can_telemetry.calibrations(self.profile)
 
-    def test_every_declared_calibration_reaches_a_recorded_channel(self):
-        # A calibration converts one field of the profile, and every field
-        # that a calibration names reaches a channel.
-        dashboard = model.DashboardModel()
-        fields = set(model.profile_field_names(dashboard.decoder.profile))
-        declared = set(recording.MLG_CALIBRATIONS)
-        calibrated = {
+    def test_every_field_of_the_profile_reaches_one_channel_in_order(self):
+        fields = [
+            field["name"]
+            for field in can_telemetry.profile_fields(self.profile)
+        ]
+        recorded = [
             binding.source
             for binding in self.bindings
-            if binding.source in declared
-        }
-        self.assertEqual(calibrated, declared)
-        self.assertLessEqual(declared, fields)
+            if binding.source_kind == "raw"
+        ]
+        self.assertEqual(recorded, fields)
+        self.assertGreater(len(self.calibrations), 50)
 
     def test_channel_values_equal_dashboard_engineering_values(self):
         for binding in self.bindings:
-            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
+            calibration = self.calibrations.get(binding.source)
             if calibration is None:
                 self.assertEqual(binding.spec.scale, 1.0)
                 self.assertEqual(binding.spec.transform, 0.0)
@@ -316,20 +312,26 @@ class MlgCalibrationGateTest(unittest.TestCase):
             with self.subTest(field=binding.spec.name):
                 self.assertNotIn("*", binding.spec.name)
 
-    @unittest.skipIf(app is None, "Tk is unavailable")
+    def test_a_channel_takes_the_presentation_of_its_field(self):
+        specs = {binding.source: binding.spec for binding in self.bindings}
+        for field in can_telemetry.profile_fields(self.profile):
+            spec = specs[field["name"]]
+            dashboard = field["dashboard"]
+            with self.subTest(field=field["name"]):
+                self.assertEqual(spec.name, dashboard["label"])
+                self.assertEqual(spec.category, dashboard["group"])
+                self.assertEqual(spec.digits, dashboard["digits"])
+                self.assertEqual(spec.units, can_telemetry.display_unit(field))
+
     def test_candidate_marker_matches_the_dashboard_units(self):
-        metrics = {metric.key: metric for metric in app.HERO_METRICS}
-        for _title, panel in app.PANELS + app.EXTENDED_PANELS:
-            metrics.update({metric.key: metric for metric in panel})
+        layout = presentation.default()
+        metrics = {metric.key: metric for metric in layout.hero}
+        for _tab, panels in layout.tabs:
+            for _title, panel in panels:
+                metrics.update({metric.key: metric for metric in panel})
         compared = 0
         for binding in self.bindings:
-            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
-            key = (
-                calibration.target
-                if calibration is not None
-                else binding.source
-            )
-            metric = metrics.get(key)
+            metric = metrics.get(can_telemetry.engineering_key(binding.source))
             if metric is None:
                 continue
             compared += 1
@@ -339,7 +341,6 @@ class MlgCalibrationGateTest(unittest.TestCase):
                     "*" in metric.unit,
                 )
         self.assertGreater(compared, 50)
-
 
 if __name__ == "__main__":
     unittest.main()

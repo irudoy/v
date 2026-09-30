@@ -5,3 +5,11 @@ width = 1
 signed = false
 context = "temperatures_af"
 position = 2
+
+[dashboard]
+label = "Fuel temperature"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 20
+description = "Fuel temperature from the fuel tank temperature sensor."

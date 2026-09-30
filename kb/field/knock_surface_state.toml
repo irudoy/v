@@ -6,3 +6,15 @@ signed = false
 profiles = ["tuning"]
 page = 4
 offset = 0x5
+
+[dashboard]
+label = "Knock surface state"
+digits = 0
+group = "Knock"
+panel = "Injection and knock"
+panel_label = "Active hot surface"
+order = 90
+description = """
+Hot ignition surface in use: HIGH OCTANE or HIGH DETONATION. The knock \
+coordinator selects it through several gates, one of them a hysteresis on a \
+knock state, and the same bit scales the target mixture."""

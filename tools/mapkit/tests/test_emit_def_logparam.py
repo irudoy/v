@@ -4,7 +4,7 @@ import tomllib
 import unittest
 import xml.etree.ElementTree as ET
 
-from tools.can_dashboard import live_feed, model
+from tools.can_dashboard import live_feed
 from tools.logs import can_telemetry
 from patches import rom_address_profiles
 from tools.mapkit import definition_projections, emit_def
@@ -240,7 +240,9 @@ class LogparamDeclarationTest(unittest.TestCase):
         self.assertIsNone(binding.static_axis_name)
 
     def test_tracked_declaration_names_published_feed_parameters(self):
-        published = {channel.logger_id for channel in live_feed.CHANNELS}
+        published = {
+            channel.logger_id for channel in live_feed.default_channels()
+        }
         bindings = emit_def.logparam_bindings(tracked_overrides())
         self.assertTrue(bindings)
         for operand, binding in bindings.items():
@@ -262,15 +264,14 @@ class LogparamDeclarationTest(unittest.TestCase):
             for field in stream_fields()
             if "source" in field
         }
-        channels = {channel.logger_id: channel for channel in live_feed.CHANNELS}
-        conversions = {
-            calibration.target: (source, calibration)
-            for table in (
-                can_telemetry.RAW_CALIBRATIONS,
-                model.DASHBOARD_CALIBRATIONS,
-            )
-            for source, calibration in table.items()
+        channels = {
+            channel.logger_id: channel
+            for channel in live_feed.default_channels()
         }
+        _document, profiles = can_telemetry.load_schema(
+            can_telemetry.DEFAULT_SCHEMA
+        )
+        calibrations = can_telemetry.calibrations(profiles["tuning"])
         checked = {}
         for row in tracked_axes().values():
             parameter = emit_def.axis_logparam(row, overrides)
@@ -287,8 +288,9 @@ class LogparamDeclarationTest(unittest.TestCase):
             if field is None:
                 continue
             with self.subTest(axis=row["addr"], operand=operand):
-                source, calibration = conversions[channels[parameter].source]
+                source = channels[parameter].field
                 self.assertEqual(source, field)
+                calibration = calibrations[source]
                 self.assertEqual(calibration.offset, 0)
                 point = eval(  # the scaling vocabulary the ledger validates
                     row["scale_expr"], {"__builtins__": {}}, {"x": 1}
