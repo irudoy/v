@@ -131,10 +131,10 @@ stage = "estimation"
 summary = "Dual-bank MAF transfer, filtering, and correction, combined MAF 0xFFFF1E38, Base Fuel Schedule 0xFFFF1024, normalized load, and the MAF coefficient calibration sequence."
 specs = ["defs/JK08A.fuel.md", "defs/JK08A.load.md", "defs/JK08A.maf-range-monitor.md"]
 functions = [
-  "00039316", "0003a750", "0003a904", "0003a982", "0003a9aa", "0003ae8a",
-  "0003af42", "0003b224", "0003b252", "0003b27e", "0003b320", "0003b468",
-  "0003b520", "0003b75c", "0003c3ac", "0003c408", "0003c45c", "000662f6",
-  "0006635c", "00068724",
+  "00039316", "0003a750", "0003a904", "0003a982", "0003a9aa", "0003aa12",
+  "0003ae8a", "0003af42", "0003b224", "0003b252", "0003b27e", "0003b320",
+  "0003b468", "0003b520", "0003b75c", "0003c3ac", "0003c408", "0003c45c",
+  "000662f6", "0006635c", "00068724",
 ]
 
 [[block]]
@@ -175,8 +175,9 @@ stage = "estimation"
 summary = "Engine Torque Map lookup, RPM-curve correction, net engine torque, and accessory-load subtraction that the CAN torque words publish."
 specs = ["defs/JK08A.can.md"]
 functions = [
-  "000655b4", "00065860", "000658a4", "00065928", "000659ae", "00065b08",
-  "00065c26", "00065cd8", "00065de4", "00065e2c", "00065f9c", "00066186",
+  "00064a1c", "000655b4", "00065860", "000658a4", "00065928", "000659ae",
+  "00065b08", "00065c26", "00065cd8", "00065de4", "00065e2c", "00065f9c",
+  "00066186",
 ]
 
 [[block]]
@@ -185,7 +186,10 @@ name = "Knock detection"
 stage = "estimation"
 summary = "ADC2 DMAC acquisition of the knock signal, per-channel slice thresholds, the knock monitor, and the knock-circuit monitor surfaces."
 specs = ["defs/JK08A.knock-detection.md"]
-functions = ["00049ffc", "0004a238", "0004a5ac", "0004a6d4", "0004a8d4", "000a52e4"]
+functions = [
+  "00049ffc", "0004a238", "0004a5ac", "0004a6d4", "0004a8d4", "000a52e4",
+  "000a543c",
+]
 
 [[block]]
 id = "fuel-quantity"
@@ -210,7 +214,8 @@ summary = "A/F sensor words, short-term correction, and the learned long-term fu
 specs = ["defs/JK08A.fuel.md"]
 functions = [
   "0005796c", "00057b26", "00057d1e", "00058168", "0005911c", "000593ac",
-  "00059d9a", "00059e7c", "0005ac54", "0005c910", "0005cbec", "000a0ee8",
+  "00059d9a", "00059e7c", "0005ac54", "0005c910", "0005cbec", "0005d6ae",
+  "000a0ee8",
 ]
 
 [[block]]
@@ -232,7 +237,7 @@ functions = [
   "0004afdc", "0004b790", "0004b9b4", "0004ba48", "0004bb6a", "0004bbac",
   "0004bbee", "0004bdc2", "0004c02e", "0004c136", "0004cadc", "0004d2a6",
   "0004d888", "0004d99c", "0004dbe8", "0004e0c2", "0004e112", "0004e162",
-  "0004e1c0", "00062e10", "00063f30", "0006469c", "00065434",
+  "0004e1c0", "00062e10", "00063f30", "0006425a", "0006469c", "00065434",
 ]
 
 [[block]]
@@ -274,8 +279,9 @@ specs = ["defs/JK08A.throttle-control.md"]
 functions = [
   "0002c626", "0004121c", "000413cc", "00041750", "00041db6", "000420b8",
   "00043aee", "00044500", "00044910", "0004569c", "00045758", "000464de",
-  "0004673c", "000468b0", "00046938", "00046c70", "000473ac", "000474a4",
-  "000476a0", "000476d2", "0004776c", "00068cb8", "00069374", "0006e3d8",
+  "0004673c", "000468b0", "00046938", "00046c70", "00047120", "000473ac",
+  "000474a4", "000476a0", "000476d2", "0004776c", "00068cb8", "00069374",
+  "0006e3d8",
 ]
 
 [[block]]
@@ -287,11 +293,12 @@ specs = ["defs/JK08A.request-conditioning.md", "defs/JK08A.limiters.md"]
 functions = [
   "0006f8fa", "000702a0", "000702c6", "0007054a", "00070d20", "00070d82",
   "00070e4c", "00071448", "00071508", "00071650", "0007173c", "000720c4",
-  "00074028", "000740ae", "000740e2", "00074c08", "00074c82", "0007604c",
-  "000760d2", "00076108", "00076250", "000763e2", "0007654c", "00076770",
-  "00076ad0", "00079030", "00079538", "00079a98", "00079ba4", "00079dd8",
-  "0007a090", "0007a43e", "0007a4de", "0007a592", "0007a804", "0007ab18",
-  "0007ae80", "0007af78", "0007b0a0", "0007b2c8", "0007b3f4",
+  "00074028", "000740ae", "000740e2", "000743c4", "00074c08", "00074c82",
+  "00075174", "0007604c", "000760d2", "00076108", "00076250", "000763e2",
+  "0007654c", "00076770", "00076ad0", "00079030", "000793d2", "00079538",
+  "00079a98", "00079ba4", "00079dd8", "0007a090", "0007a43e", "0007a4de",
+  "0007a592", "0007a804", "0007a9fc", "0007ab18", "0007ae80", "0007af78",
+  "0007b0a0", "0007b2c8", "0007b3f4",
 ]
 
 [[block]]
@@ -301,10 +308,11 @@ stage = "control"
 summary = "Request-to-area conversion, shared throttle area 0xFFFF19B2, and per-channel target openings."
 specs = ["defs/JK08A.throttle-control.md"]
 functions = [
-  "0003b498", "0006f236", "0006f454", "0006f464", "0006f48c", "000710bc",
-  "00072378", "0007249e", "00072c3c", "00072e5e", "00072f1e", "000730fc",
-  "00073432", "00073628", "00073824", "00073948", "00073a44", "00073bdc",
-  "00074728", "000749bc", "00074e4e", "0007acb4",
+  "0003b498", "0006e4c8", "0006f236", "0006f454", "0006f464", "0006f48c",
+  "000710bc", "00072378", "0007240c", "0007249e", "00072c3c", "00072d32",
+  "00072dfc", "00072e5e", "00072f1e", "00073040", "000730fc", "00073432",
+  "00073628", "00073824", "00073948", "00073a44", "00073bdc", "00074728",
+  "000749bc", "00074e4e", "0007acb4",
 ]
 
 [[block]]
@@ -354,7 +362,7 @@ name = "Request limiters"
 stage = "arbitration"
 summary = "Rotational-speed request limiter and the request-limit source coordinator."
 specs = ["defs/JK08A.limiters.md"]
-functions = ["00075798", "0007584e", "00075e9e", "000769c0"]
+functions = ["00075798", "0007584e", "00075c48", "00075e9e", "000769c0"]
 
 [[block]]
 id = "immobilizer"
@@ -432,13 +440,13 @@ functions = ["00080e20", "00080f82", "0008152a", "00081d74", "00082604"]
 id = "o2-catalyst"
 name = "Oxygen sensors and catalyst"
 stage = "diagnostics"
-summary = "Rear O2 and heater monitors, catalyst-efficiency metrics, and the AN1-derived two-lane readiness sources."
+summary = "Rear O2 and heater monitors, catalyst-efficiency metrics, the AN1-derived two-lane readiness sources, the P1148 and P1168 closed-loop monitors, and the P0133 and P0153 A/F sensor 1 slow-response model."
 specs = ["defs/JK08A.diagnostics.md"]
 functions = [
   "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d702", "0003d7b4",
-  "0003d832", "00089310", "00089a88", "00089d92", "0008a258", "0008aa46",
-  "0008b604", "0008b93a", "000a2254", "000a25fa", "000a2d66", "000a2ee4",
-  "000a2f56", "000a38dc",
+  "0003d832", "00088bba", "00089310", "00089a88", "00089d92", "0008a258",
+  "0008aa46", "0008b604", "0008b93a", "0009de58", "000a2254", "000a25fa",
+  "000a2d66", "000a2ee4", "000a2f56", "000a38dc", "000a3c00",
 ]
 
 [[block]]
@@ -478,12 +486,13 @@ functions = [
 id = "sensor-monitors"
 name = "Sensor and actuator monitors"
 stage = "diagnostics"
-summary = "Pedal and throttle sensor range monitors, oil temperature rationality, critical ECM and ETC aggregates, and table-driven monitors."
+summary = "Pedal and throttle sensor range and correlation monitors, the P0125 coolant, P0500 vehicle-speed, and P1550 to P1554 battery current sensor monitors, oil temperature rationality, critical ECM and ETC aggregates, and table-driven monitors."
 specs = ["defs/JK08A.diagnostics.md"]
 functions = [
   "0007c166", "0007d856", "0008d194", "000913d0", "00094f26", "00099e00",
   "00099efe", "0009a0d4", "0009cdd8", "000a5560", "000a5a06", "000a643c",
-  "000a6dc4", "000a6fee", "000a7040", "000a70f0", "000a7418", "000a75c0",
+  "000a6516", "000a681c", "000a6838", "000a6dc4", "000a6fee", "000a7040",
+  "000a70f0", "000a71a0", "000a7418", "000a75c0", "000a773a", "000bb844",
 ]
 
 [[block]]
@@ -551,8 +560,8 @@ summary = "Startup RAM initializers, retained-region checks, ATU-II initializati
 specs = ["defs/JK08A.cvtc.md"]
 functions = [
   "00021b98", "00026e1c", "00026f08", "00026f30", "0002718a", "000274ac",
-  "00027ac0", "00027c50", "00027ce4", "0002c648", "0002d120", "0002fc24",
-  "00034b70", "0003995a", "000d093c",
+  "00027ac0", "00027c50", "00027ce4", "0002c254", "0002c648", "0002d120",
+  "0002fc24", "00034b70", "0003995a", "000d093c",
 ]
 
 [[block]]
