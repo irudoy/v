@@ -1,3 +1,5 @@
+width = 8
+
 [[bit]]
 bit = 6
 name = "high_detonation"

@@ -1,0 +1,10 @@
+title = "Bank 1 long-term trim summands"
+domain = "fuel"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code"
+observes = ["ltft_learned_b1/ram", "ltft_adjustment_b1/ram"]
+note = """
+Diagnostic long-term trim is the selected learned cell plus the adjustment \
+term minus neutral 0x6400, so the pair separates the learned grid value from \
+the running adjustment."""

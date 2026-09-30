@@ -1,3 +1,4 @@
+width = 8
 unit = "percent"
 scale = "x*100/255"
 

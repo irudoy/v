@@ -1,0 +1,29 @@
+title = "Minimum knock threshold margin per evaluator channel"
+domain = "knock"
+priority = "high"
+coverage = "rotating"
+basis = "patch-design"
+observes = [
+    "can_telemetry.knock_margin_min_ch1",
+    "can_telemetry.knock_margin_min_ch2",
+    "can_telemetry.knock_margin_min_ch3",
+    "can_telemetry.knock_margin_min_ch4",
+    "can_telemetry.knock_margin_min_ch5",
+    "can_telemetry.knock_margin_min_ch6",
+]
+note = """
+Slice evaluator 0x0004A238 leaves the offset-binary metric of the evaluated \
+channel at int32[0xFFFF21D8 + 4 * (channel - 1)] and its threshold at \
+uint16[0xFFFF2144 + 2 * (channel - 1)], but each evaluation overwrites the \
+pair of its channel, so a sampled pointer misses the evaluations between two \
+snapshots. The wrapper behind the only literal of the evaluator at \
+0x0004A9C0 repeats the stock comparison after every evaluation and keeps the \
+per-channel minimum of threshold minus metric as a signed word; an \
+exceedance yields a negative margin limited at -32768. Context tag 4 \
+publishes the six minimums and rearms them with the idle value 32767, which \
+also stands for a margin of 32767 or more. Every channel is evaluated once \
+per engine cycle; stock threshold rows 3 and 5 hold 0xFFFF, so those \
+channels publish 32767 unless the metric exceeds 32768. The fields are named \
+by evaluator channel: the channel index is the cylinder number of the event \
+that opens the window, and the combustion event a window observes is not \
+measured."""

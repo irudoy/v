@@ -1,0 +1,9 @@
+title = "Battery voltage"
+domain = "electrical"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code+homologous-diagnostic"
+observes = ["battery_voltage/ram"]
+note = """
+The exact diagnostic source is available; raw*0.08 V remains a homologous \
+conversion pending synchronized target validation."""

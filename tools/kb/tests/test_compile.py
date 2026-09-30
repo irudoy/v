@@ -6,7 +6,7 @@ import tomllib
 from types import SimpleNamespace
 import unittest
 
-from kb import adapters, checks, compile, match, names, repo
+from kb import adapters, checks, compile, match, names, repo, vocab
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Builder, Ref, SymbolKey
@@ -727,9 +727,9 @@ class SignalAdapterTest(unittest.TestCase):
         self.assertEqual(entity.refs["observes"], [SymbolKey("7mfk", "ram", 0xFFFF11F4)])
         self.assertEqual(m.meaning_of(entity.refs["observes"][0]).props["width"], 16)
         margins = m.entities[("signal", "knock_margin")]
-        self.assertEqual((margins.refs.get("observes"), margins.props["observes"]),
-                         (None, [f"can_telemetry.knock_margin_min_ch{index}"
-                                 for index in range(1, 7)]))
+        allocations = [f"can_telemetry.knock_margin_min_ch{index}" for index in range(1, 7)]
+        self.assertEqual((margins.refs["observes"], margins.props["observes"]),
+                         (allocations, allocations))
         self.assertNotIn(SymbolKey("7mfk", "ram", 0xFFFF5E10), m.symbols)
 
     def test_the_catalog_constants_are_keys_of_can_telemetry(self):
@@ -738,9 +738,44 @@ class SignalAdapterTest(unittest.TestCase):
                          {"telemetry_profile": "tuning", "full_rate_hz": 97.65625,
                           "rotating_divisor": 5})
 
-    def test_the_stored_dids_of_every_signal_equal_the_derived_ones(self):
-        self.assertEqual([issue.subject for issue in model().issues
-                          if issue.path == signals.SIGNALS.as_posix()], [])
+    def test_the_catalog_is_the_projection_of_the_signal_files(self):
+        m = model()
+        text = (repo.ROOT / signals.SIGNALS).read_text(encoding="utf-8")
+        self.assertEqual(signals.render_catalog(signals.catalog_document(m)), text)
+        self.assertEqual(signals.render_catalog(tomllib.loads(text)), text)
+        self.assertNotIn(signals, adapters.ADAPTERS)
+        self.assertEqual(m.entities[("signal", "engine_speed")].sources,
+                         {"kb/signal/engine_speed.toml"})
+
+    def test_the_catalog_derives_the_fields_and_the_dids_of_each_signal(self):
+        document = signals.catalog_document(model())
+        items = {item["id"]: item for item in document["signal"]}
+        # The DIDs of each observed source in the order of the sources, and
+        # the fields of each source in the order of the profile.
+        self.assertEqual((items["ignition_control_state"]["sources"],
+                          items["ignition_control_state"]["dids"]),
+                         ([0xFFFF2023, 0xFFFF564C], [0x1162, 0x112D]))
+        self.assertEqual(items["temperatures"]["current_fields"],
+                         ["coolant_raw", "iat_raw", "fuel_temperature_did_source_raw",
+                          "oil_temperature_did_source_raw"])
+        self.assertEqual((items["knock_margin"]["current_fields"],
+                          items["knock_margin"]["sources"], items["knock_margin"]["widths"]),
+                         ([f"knock_margin_min_ch{index}_raw" for index in range(1, 7)],
+                          list(range(0xFFFF5E10, 0xFFFF5E1C, 2)), [2] * 6))
+        ranks = vocab.ENTITY_VOCABULARY["signal"]["priority"]
+        order = [(item["domain"], ranks.index(item["priority"]), item["id"])
+                 for item in document["signal"]]
+        self.assertEqual(order, sorted(order))
+
+    def test_a_source_without_a_catalog_form_refuses_the_projection(self):
+        m = model()
+        for item in (SymbolKey("jk00c", "ram", 0xFFFF11F4), SymbolKey("7mfk", "ram", 0xFFFF0001),
+                     "can_telemetry.probe"):
+            with self.subTest(source=item):
+                entity = SimpleNamespace(key="probe/signal", refs={"observes": [item]})
+                with self.assertRaises(KbError) as error:
+                    signals.observed(m, entity, {})
+                self.assertEqual(error.exception.code, 3)
 
     def test_stored_dids_that_differ_from_the_derived_ones_go_to_the_audit(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})

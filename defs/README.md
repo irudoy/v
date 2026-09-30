@@ -23,7 +23,7 @@ presentation and generated output.
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
 | `JK08A.vars.csv` | RAM and peripheral semantics and evidence | yes |
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
-| `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | yes |
+| `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | no, `kb` projection |
 | `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |

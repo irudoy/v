@@ -1,0 +1,7 @@
+title = "Intake CVTC actual positions"
+domain = "cvtc"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["intake_cvtc_actual_b1/ram", "intake_cvtc_actual_b2/ram"]
+note = "Both intake actual-position bytes are carried every scheduler pass."

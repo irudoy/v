@@ -1,0 +1,12 @@
+title = "A/F adjustment integrator states"
+domain = "fuel"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code+homologous-diagnostic"
+observes = ["af_adjustment_b1/ram", "af_adjustment_b2/ram"]
+note = """
+FUN 000A0EE8 integrates up steps from map 0x1462A and down steps from map \
+0x1463A into signed words bounded to -500..500, and every consumer reads \
+them as signed; the profile slots are unsigned, so hosts read them as signed \
+words. The candidate factor 0.002 per count maps the bounds to -1..1 and the \
+factory running range -0.330..0.330 to 165 counts. Every recording reads 0."""

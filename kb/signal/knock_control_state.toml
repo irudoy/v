@@ -1,0 +1,9 @@
+title = "Knock control state"
+domain = "knock"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["knock_timing_state/ram", "knock_surface_state/ram"]
+note = """
+The state word and surface-selector byte expose intervention state and the \
+active hot ignition surface."""

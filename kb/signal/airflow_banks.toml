@@ -1,0 +1,9 @@
+title = "Bank MAF sensor words"
+domain = "air"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["maf_b1/ram", "maf_b2/ram"]
+note = """
+Bank identity and diagnostic publication are exact; raw/200 V remains a \
+target-validation conversion."""

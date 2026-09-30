@@ -1,0 +1,8 @@
+title = "Delivered crank-referenced spark angle"
+domain = "ignition"
+priority = "research"
+coverage = "external"
+basis = "measurement-requirement"
+note = """
+Firmware exposes command coordinates but not independent physical feedback. \
+Crank-referenced external measurement is required."""

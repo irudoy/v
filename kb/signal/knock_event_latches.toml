@@ -1,0 +1,12 @@
+title = "Knock event latches"
+domain = "knock"
+priority = "core"
+coverage = "latched"
+basis = "patch-design"
+observes = [
+    "can_telemetry.knock_count_latched",
+    "can_telemetry.knock_channel_mask_latched",
+]
+note = """
+Firmware instrumentation accumulates transient evaluator events between \
+transmitted snapshots."""

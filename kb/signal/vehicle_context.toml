@@ -1,0 +1,9 @@
+title = "Vehicle speed, selector, ASCD input, and dashboard state"
+domain = "vehicle"
+priority = "core"
+coverage = "stock-can"
+basis = "passive-can"
+note = """
+The dashboard and MLG recorder already decode these values from stock CAN \
+frames 0x280, 0x421, 0x239, and 0x551 without consuming custom telemetry \
+bytes."""

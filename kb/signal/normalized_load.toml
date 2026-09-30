@@ -1,0 +1,14 @@
+title = "Normalized engine load"
+domain = "air"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["normalized_load/ram"]
+note = """
+FUN 0003B75C stores min(255, floor(uint16[0xFFFF1026] * 128 / \
+ROM16[0x9534])) at 0xFFFF1048, the Base Fuel Schedule as a ratio to the \
+calibration reference 0x6A5A in 1/128 steps, and scheduler FUN 00020DFE \
+copies it to 0xFFFF102C. The snapshot is the column coordinate of the \
+ignition and intake-cam target maps and the normal Y input of exhaust-CVTC \
+target accessor 0x000BFDC0. Raw 128 is 100 percent of the reference, and raw \
+255 is the saturation at 199.2 percent."""

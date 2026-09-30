@@ -11,3 +11,4 @@
 /patches/rom-address-profiles.toml
 /patches/*-runtime-correspondence.csv
 /patches/can-telemetry-profile.toml
+/defs/JK08A.tuning-signals.toml

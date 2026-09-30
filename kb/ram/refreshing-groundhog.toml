@@ -1,0 +1,13 @@
+width = 8
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2023"
+name = "refreshing-groundhog"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00035d6c"
+value = 1
+mode = "base"

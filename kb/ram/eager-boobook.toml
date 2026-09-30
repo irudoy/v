@@ -1,0 +1,6 @@
+width = 8
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4544"
+name = "eager-boobook"

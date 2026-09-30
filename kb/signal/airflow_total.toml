@@ -1,0 +1,9 @@
+title = "Total airflow"
+domain = "air"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["maf_total/ram"]
+note = """
+The combined producer is exact; raw/100 g/s remains a hardware-validation \
+conversion."""

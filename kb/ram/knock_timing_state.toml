@@ -1,3 +1,5 @@
+width = 16
+
 [[symbol]]
 layout = "1nd"
 address = "fffe8214"

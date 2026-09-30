@@ -27,6 +27,11 @@
   field, and `telemetry_units` of the stash holds the `7mfk` symbols of the
   source meanings whose files state their unit, whose unit the ledgers leave
   to the file.
+- A signal file `signal/<slug>.toml` gives the signal entity with its keys;
+  `observes` lists meaning references, which name the `7mfk` symbols of
+  their meanings, and allocation references `<feature>.<allocation>`, which
+  are also a key of the signal. An allocation reference that names no
+  allocation of a `7mfk` target fails the `references` check.
 """
 
 import tomllib
@@ -45,11 +50,12 @@ TARGET_ARRAYS = {"variants": "symbol", "omitted": "symbol", "unsupported": "symb
 TARGET_TABLES = ("families", "symbols")
 TARGET_LISTS = ("requires",)
 # Designed kinds that the store holds from the stage that converts them.
-CONVERTED_KINDS = ("feature", "field")
-# The feature that transmits the fields, and the layout of the symbol that the
-# source of an `ecu_ram` field names.
+CONVERTED_KINDS = ("feature", "field", "signal")
+# The feature that transmits the fields, and the layout of the symbols that
+# the source of an `ecu_ram` field and the observed meanings of a signal name
+# and of the targets whose allocations a signal observes.
 TELEMETRY = "can_telemetry"
-FIELD_LAYOUT = "7mfk"
+TELEMETRY_LAYOUT = "7mfk"
 
 
 def inputs(root):
@@ -80,6 +86,9 @@ def declare(b, root):
             fields.append(("field", name))
             if source is not None:
                 sources.append(source)
+        elif kind == "signal":
+            _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
+            _signal(b, name, document, src)
         else:
             b.issue("schema", src, f"{name}/{kind}",
                     f"the store holds no {kind} entities before their conversion stage")
@@ -91,12 +100,18 @@ def declare(b, root):
         found = MEANING_REF.fullmatch(text)
         place = (found["kind"], found["name"]) if found else None
         keys, unit = meanings.get(place, ({}, False))
-        if unit and FIELD_LAYOUT in keys:
-            units.add(keys[FIELD_LAYOUT])
+        if unit and TELEMETRY_LAYOUT in keys:
+            units.add(keys[TELEMETRY_LAYOUT])
 
 
 def relate(b, root):
-    pass
+    for slug, src, references in b.stash.get(__name__, ()):
+        for reference in references:
+            feature, _, name = reference.partition(".")
+            target = b.targets.get((feature, TELEMETRY_LAYOUT))
+            if target is None or name not in target.props.get("allocations", {}):
+                b.issue("references", src, f"{slug}/signal", f"{reference} is no allocation "
+                        f"of a {TELEMETRY_LAYOUT} target")
 
 
 def _unknown(b, src, subject, document, table, path=""):
@@ -247,7 +262,7 @@ def _field(b, name, document, src):
         return None
     source = props.pop("source", None)
     if isinstance(source, str):
-        refs["source"] = [Ref(source, src, FIELD_LAYOUT)]
+        refs["source"] = [Ref(source, src, TELEMETRY_LAYOUT)]
     else:
         b.issue("schema", src, subject, "an ecu_ram field without source")
         source = None
@@ -257,6 +272,24 @@ def _field(b, name, document, src):
         b.issue("unsplit", src, subject, f"scale {props['scale']!r}")
     b.entity("field", name, src, props=props, refs=refs)
     return source
+
+
+def _signal(b, slug, document, src):
+    """Declare a signal file: the meaning references of `observes` name the
+    `7mfk` symbols of their meanings, and its allocation references stay
+    text, which `relate` checks."""
+    props = {key: value for key, value in document.items() if key != "observes"}
+    observes = document.get("observes", [])
+    if not isinstance(observes, list) or not all(isinstance(item, str) for item in observes):
+        b.issue("schema", src, f"{slug}/signal", "observes is no array of references")
+        observes = []
+    allocated = [item for item in observes if not MEANING_REF.fullmatch(item)]
+    if allocated:
+        props["observes"] = allocated
+        b.stash.setdefault(__name__, []).append((slug, src, allocated))
+    refs = [Ref(item, src, TELEMETRY_LAYOUT) if MEANING_REF.fullmatch(item) else item
+            for item in observes]
+    b.entity("signal", slug, src, props=props, refs={"observes": refs} if refs else None)
 
 
 def _feature(b, slug, document, src):

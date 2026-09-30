@@ -1,0 +1,14 @@
+title = "Front A/F sensor words"
+domain = "fuel"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code+homologous-diagnostic"
+observes = ["front_af_sensor_b1_word/ram", "front_af_sensor_b2_word/ram"]
+note = """
+FUN 00059D9A and FUN 00059E7C store the A/F sensor 1 ADC count re-based so \
+that the filtered sensor reference reads 440, so raw/200 V is the sensor \
+voltage with the reference at 2.20 V, the value around which the factory \
+data monitor fluctuates warm at 2000 rpm. Lower words are richer. Under \
+sustained enrichment both words read lean of 440, which is unexplained, so \
+the words do not validate full-load fuelling without an independent \
+wideband."""

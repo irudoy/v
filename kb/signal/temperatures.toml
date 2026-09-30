@@ -1,0 +1,14 @@
+title = "Coolant, intake-air, fuel, and oil temperatures"
+domain = "temperature"
+priority = "core"
+coverage = "rotating"
+basis = "exact-code+homologous-diagnostic"
+observes = [
+    "coolant/ram",
+    "iat/ram",
+    "fuel_temperature_did_source/ram",
+    "oil_temperature_did_source/ram",
+]
+note = """
+All four source bytes are streamed once per four scheduler passes; coolant \
+and intake-air raw-minus-50 conversions have the strongest support."""

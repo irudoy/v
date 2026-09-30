@@ -1,0 +1,10 @@
+title = "Base fuel schedule"
+domain = "fuel"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["bfs/ram"]
+note = """
+The internal base schedule is available at full rate. One count is 1/2048 ms \
+in the time base of the injection-pulse words: the stage normalizers between \
+the schedule and the 10 us pulse words multiply to exactly 100/2048."""

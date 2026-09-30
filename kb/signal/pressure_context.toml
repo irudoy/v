@@ -1,0 +1,18 @@
+title = "Manifold and atmospheric pressure"
+domain = "air"
+priority = "high"
+coverage = "absent"
+basis = "exact-code+homologous-diagnostic"
+observes = [
+    "overjoyed-chameleon/ram",
+    "eager-boobook/ram",
+    "daffodil-ape/ram",
+]
+note = """
+Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure \
+byte. The target has no manifold-pressure sensor and both MAP-labelled bytes \
+hold zero. The barometric input is disabled by ROM8[0x893E] and \
+ROM8[0x893F], so FUN 0003CBE8 stores the calibration default ROM16[0x9382] = \
+0xCF00 on every pass and the atmospheric byte reads 207 without carrying \
+pressure. None of the three bytes carries a measurement, and none is \
+streamed."""

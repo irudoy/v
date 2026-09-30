@@ -3,9 +3,10 @@
 ## Scope
 
 This specification defines the runtime observation set used to interpret JK08A
-calibration behavior. The machine-readable authority is
-`JK08A.tuning-signals.toml`; `tools/diagnostics/tuning_signal_coverage.py`
-validates it against the exact service-0x22 publisher and custom CAN schema 2.
+calibration behavior. The machine-readable authority is the `signal` entities
+of `kb` under `kb/signal/`, which `JK08A.tuning-signals.toml` projects;
+`tools/diagnostics/tuning_signal_coverage.py` validates the catalog against the
+exact service-0x22 publisher and custom CAN schema 2.
 
 The catalog distinguishes:
 

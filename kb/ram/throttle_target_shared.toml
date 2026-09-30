@@ -1,4 +1,5 @@
 note = "The scaled value is the target opening area of both throttle bodies."
+width = 16
 unit = "cm2"
 scale = "x*0.0008"
 scale_level = "candidate"

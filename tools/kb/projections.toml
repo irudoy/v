@@ -232,6 +232,27 @@ consumers = [
 read = "guarded"
 
 [[projection]]
+path = "defs/JK08A.tuning-signals.toml"
+generator = "kb.adapters.signals:catalog"
+stage = 4
+inputs = [
+    "kb/signal/",
+    "kb/field/",
+    "kb/feature/",
+    "kb/ram/",
+    "kb/reg/",
+    "kb/did/",
+    "tools/diagnostics/sid22_inventory.py",
+    "tools/kb/src/kb/adapters/signals.py",
+]
+consumers = [
+    "tools/diagnostics/tuning_signal_coverage.py",
+    "tools/diagnostics/tests/test_tuning_signal_coverage.py",
+    "tools/memgraph/tests/test_base_fuel_schedule_scale.py",
+]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

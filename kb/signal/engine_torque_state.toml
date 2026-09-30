@@ -1,0 +1,9 @@
+title = "Engine torque state"
+domain = "torque"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["engine_torque_state/ram"]
+note = """
+The saturated signed state is code-traced through torque and throttle \
+calibration families. The candidate x*0.1 Nm conversion remains unverified."""

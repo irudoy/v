@@ -1,0 +1,22 @@
+title = "Bounded throttle request and target path"
+domain = "throttle"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = [
+    "throttle_request_bounded/ram",
+    "throttle_target_shared/ram",
+    "throttle_target_channel_0/ram",
+    "throttle_target_channel_1/ram",
+]
+note = """
+The bounded shared request, shared target area, and two final channel \
+targets close the command side of the electronic-throttle loop. The request \
+is the output of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. The \
+shared target is the opening area of both throttle bodies in the counts of \
+table 0x13202, candidate 0.0008 cm2 per count. Each channel target is 4 * \
+(TPS counts - learned closed position), so raw/800 V is the target sensor \
+voltage above the learned closed position; the target is the coordinate of \
+throttle opening table 0x155A0, whose J1979 PID 0x11 gradient makes one \
+count 34285/1114112 percent of throttle opening, and recordings bind channel \
+0 to bank 1."""

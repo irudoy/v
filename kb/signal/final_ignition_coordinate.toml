@@ -1,0 +1,9 @@
+title = "Final ignition software coordinate"
+domain = "ignition"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["final_timing/ram"]
+note = """
+This byte is a final software timing coordinate, not a crank-referenced \
+measurement of delivered spark angle."""

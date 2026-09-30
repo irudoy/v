@@ -1,0 +1,15 @@
+title = "Fuel pressure"
+domain = "fuel"
+priority = "medium"
+coverage = "absent"
+basis = "exact-code"
+note = """
+The ECM has no fuel-pressure input. The complete DTC descriptor tables at \
+JK08A 0x19360 to 0x1A14C, JK78C 0x1B7AC to 0x1C5EC, and 1ND0A 0x1BE00 to \
+0x1CD84 declare 227, 217, and 237 distinct codes and none of P0087, P0088, \
+P0190 to P0194, P0230 to P0232, or P0627 to P0629. Each table runs from \
+P0183 straight to P0196. The service-0x22 pointer table declares manifold, \
+atmospheric, and EVAP pressure DIDs but no fuel-pressure DID, and fuel-side \
+sensing is limited to tank temperature through DID 0x1104 with codes P0181 \
+to P0183. The factory VQ35HR manual treats fuel pressure as a gauge \
+measurement during service rather than an ECM signal."""

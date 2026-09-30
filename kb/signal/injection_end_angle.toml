@@ -1,0 +1,12 @@
+title = "End-of-injection angle"
+domain = "fuel"
+priority = "medium"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["injection_end_angle/ram"]
+note = """
+FUN 00056BD0 stores 2*min(y, 209) from tables 0x12302 and 0x1230A, and FUN \
+000521A8 reads raw*2 as the injection-end delay in crank degrees after the \
+reference tooth of the scheduled cylinder. The end of injection lies raw*2 - \
+590 degrees after intake TDC of the injected cylinder. No service-0x22 DID \
+publishes the word."""

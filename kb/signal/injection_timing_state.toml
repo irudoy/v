@@ -1,0 +1,11 @@
+title = "Injection timing state"
+domain = "fuel"
+priority = "research"
+coverage = "absent"
+basis = "exact-code"
+observes = ["spectacular-seahorse/ram"]
+note = """
+Four declared DIDs publish the high byte of word 0xFFFF162E, which has no \
+runtime producer: the startup initializer clears it and no other code \
+accesses it, so the DIDs read constant zero and the word is not streamed. \
+The live end-of-injection angle is signal injection_end_angle."""

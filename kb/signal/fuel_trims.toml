@@ -1,0 +1,9 @@
+title = "Short- and long-term fuel trims"
+domain = "fuel"
+priority = "core"
+coverage = "rotating"
+basis = "exact-code"
+observes = ["stft_b1/ram", "stft_b2/ram", "ltft_b1/ram", "ltft_b2/ram"]
+note = """
+The stream carries complete Q8.8-percent words instead of the high-byte-only \
+service-0x22 representation."""

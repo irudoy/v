@@ -1,0 +1,12 @@
+title = "Fuel output inhibit mask"
+domain = "fuel"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["fuel_inhibit_mask/ram"]
+note = """
+The byte exposes the final per-cylinder fuel-output inhibit arbitration. FUN \
+0004ED88 stores it masked to 0x3F, and bit k inhibits injector output k: FUN \
+0004EBA2 replaces channel word k with the opening time and FUN 0002C13C \
+withholds channel k from the fire mask. Output k drives cylinder k + 1 by \
+the diagnostic Power Balance order, which is not measured electrically."""

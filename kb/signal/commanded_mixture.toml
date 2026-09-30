@@ -1,0 +1,13 @@
+title = "Commanded mixture"
+domain = "fuel"
+priority = "core"
+coverage = "rotating"
+basis = "exact-code"
+observes = ["af_state_factor/ram"]
+note = """
+Q14 fuel-multiplier command against the stoichiometric base schedule, \
+streamed once per four scheduler passes: 0x4000 is the closed-loop \
+stoichiometric target and target map 0xA9AA supplies 128..149 (1.00..1.16) \
+through stage 0x5594A, the sole stock writer. DID 0x1134 publishes only the \
+high byte. Commanded lambda = 16384/x; the gasoline AFR scale 1881.6/(x/128) \
+of the public HR A2L remains a candidate."""

@@ -1,0 +1,9 @@
+title = "Calculated load"
+domain = "air"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["calculated_load/ram"]
+note = """
+This is the J1979-style calculated-load byte, not the normalized BFS map \
+coordinate of signal normalized_load."""

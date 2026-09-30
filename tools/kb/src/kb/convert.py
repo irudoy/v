@@ -119,6 +119,18 @@ The telemetry profile (section 20.5):
 - The profile becomes the projection of the fields; the conversion lists each
   `ecu_ram` scale that the projection renders from its meaning in another
   string, and refuses any other change of the file.
+
+The signal catalog (section 20.5):
+
+- Each signal takes `signal/<id>.toml` with its keys and, in `observes`, the
+  reference of the meaning of each `7mfk` symbol that it observes and each
+  allocation, in the order of `sources`; the entry of an observed symbol that
+  no evidence grounds, as a byte that only the DID table resolves, takes its
+  identity item.
+- The `width` of each observed symbol becomes the key of its meaning where
+  the meaning has that width, or else the override of its entry.
+- `feature/can_telemetry.toml` takes the catalog keys, and the catalog
+  becomes the projection of the signals, which must equal the file.
 """
 
 import argparse
@@ -127,7 +139,7 @@ from pathlib import Path
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import definitions, interp, native, profiles, telemetry
+from kb.adapters import definitions, interp, native, profiles, signals, telemetry
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
@@ -234,7 +246,16 @@ class Conversion:
                 for (kind, slug), entity in before.entities.items()
                 if kind == "field" and entity.refs.get("signal")}
         adapter.declare(self.facts, root)
-        adapter.relate(self.facts, root)
+        if adapter is signals:
+            # The signals relate their sources to the RAM that the features
+            # allocate, the DIDs that return them, the allocations of the
+            # targets, and the fields of the model.
+            self.facts.stash.update({name: before.stash[name]
+                                     for name in ("feature_ram", "did_sources")})
+            signals.relate_signals(self.facts, signals.allocations(before.targets),
+                                   signals.served(before.entities))
+        else:
+            adapter.relate(self.facts, root)
         # Legacy evidence without the keys of its kind is what a conversion
         # types, and a scale that the parser cannot split stays the scale of
         # its field.
@@ -959,6 +980,59 @@ class Conversion:
             document["note"] = notes[0] if len(notes) == 1 else notes
         self.meaning_notes[meaning.key] = notes
 
+    def signals(self):
+        before, facts = self.before, self.facts
+        keys = sorted({key for key, _, _ in facts.symbol_keys})
+        ranks = match.grounded(before, keys)
+        for key in keys:
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f"{key.key} has no meaning in the model", code=3)
+            entry = self._entry(self._document(symbol.meaning), symbol)
+            if ranks[key][0] < match.CANDIDATE:
+                # A symbol that no evidence grounds, as one that only the DID
+                # table resolves, takes its identity item.
+                items = list(entry.get("evidence", ()))
+                found = self._identity(symbol, None)
+                if found not in items:
+                    items.append(found)
+                entry["evidence"] = items
+                self.evidence[key] = (items, [])
+        for key, props, _ in facts.symbol_keys:
+            symbol = before.symbols[key]
+            document = self._document(symbol.meaning)
+            entry = self._entry(document, symbol)
+            for name, value in props.items():
+                if symbol.value(name) != value:
+                    raise KbError(f"{key.key}: {name} = {value!r} of the signals disagrees "
+                                  f"with {symbol.value(name)!r}", code=3)
+                # The key of the meaning, or else the override of the symbol.
+                if symbol.meaning.props.get(name) == value:
+                    _agree(document, {name: value}, symbol.meaning.key)
+                else:
+                    _agree(entry, {name: value}, key.key)
+        for (kind, slug), entity in sorted(facts.entities.items()):
+            if kind == "signal":
+                _, document = self.change.designed(kind, slug)
+                _agree(document, self._signal(entity), f"{slug}/signal")
+        _, document = self.change.designed("feature", signals.FEATURE)
+        _agree(document, facts.entities[("feature", signals.FEATURE)].props,
+               f"{signals.FEATURE}/feature")
+
+    def _signal(self, entity):
+        """The document of a signal: its keys, and in `observes` the meanings
+        of its symbols and its allocations in the order of the catalog."""
+        found = {key: value for key, value in entity.props.items()
+                 if key not in ("observes", "note")}
+        observes = [self.before.symbols[item].meaning.key if isinstance(item, SymbolKey)
+                    else item for item in entity.refs.get("observes", ())]
+        if observes:
+            found["observes"] = observes
+        notes = _notes(entity.props.get("note"))
+        if notes:
+            found["note"] = notes[0] if len(notes) == 1 else notes
+        return found
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -1196,6 +1270,9 @@ def projections(adapter, model):
     if adapter is telemetry:
         return {telemetry.PROFILE.as_posix(): telemetry.render_profile(
             telemetry.profile_document(model))}
+    if adapter is signals:
+        return {signals.SIGNALS.as_posix(): signals.render_catalog(
+            signals.catalog_document(model))}
     return {}
 
 

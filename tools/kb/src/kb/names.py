@@ -25,8 +25,7 @@ from kb import repo, vocab
 PATH = Path("kb/names.csv")
 DOMAIN = Path("tools/kb/domain-words.txt")
 HEADER = ("layout", "kind", "address", "name", "former")
-# Registries whose labels and editor names join the domain dictionary.
-SIGNALS = Path("defs/JK08A.tuning-signals.toml")
+# The registry whose editor names join the domain dictionary.
 OVERRIDES = Path("defs/JK08A.overrides.toml")
 WORD = re.compile(r"[a-z]+")
 HEX_WORD = re.compile(r"[a-f]+")
@@ -46,7 +45,7 @@ class Row:
 
 
 def inputs():
-    return [PATH.as_posix(), DOMAIN.as_posix(), SIGNALS.as_posix(), OVERRIDES.as_posix()]
+    return [PATH.as_posix(), DOMAIN.as_posix(), OVERRIDES.as_posix()]
 
 
 def read(root=repo.ROOT, overlay=None):
@@ -93,7 +92,8 @@ def words(text):
 
 def domain_dictionary(model, root=repo.ROOT):
     """Words that a generated name must not contain: the domain word list and
-    the words of semantic names, signal labels, and editor table names."""
+    the words of semantic names, entity slugs, signal titles, and editor
+    table names."""
     found = set()
     for line in (root / DOMAIN).read_text(encoding="utf-8").splitlines():
         line = line.split("#", 1)[0].strip()
@@ -104,9 +104,8 @@ def domain_dictionary(model, root=repo.ROOT):
             found |= words(meaning.name)
     for entity in model.entities.values():
         found |= words(entity.slug)
-    signals = tomllib.loads((root / SIGNALS).read_text(encoding="utf-8"))
-    for signal in signals.get("signal", ()):
-        found |= words(signal.get("label", ""))
+        if entity.kind == "signal":
+            found |= words(entity.props.get("title", ""))
     overrides = tomllib.loads((root / OVERRIDES).read_text(encoding="utf-8"))
     for table in ("table", "axis"):
         for entry in overrides.get(table, {}).values():

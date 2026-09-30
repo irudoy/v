@@ -1,6 +1,7 @@
 note = """
 The percentage is the throttle opening above the learned closed position of \
 the throttle position sensor."""
+width = 16
 unit = "percent"
 scale = "x*34285/1114112"
 

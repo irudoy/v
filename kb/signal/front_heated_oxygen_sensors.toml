@@ -1,0 +1,14 @@
+title = "Front heated oxygen sensor bytes"
+domain = "fuel"
+priority = "research"
+coverage = "absent"
+basis = "exact-code+homologous-diagnostic"
+observes = ["copper-wombat/ram", "attentive-tarantula/ram"]
+note = """
+Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank \
+2 bytes. The engine has front A/F sensors, and no traced code writes the \
+bytes: only the DID records reference them, a whole-program trace of \
+0xFFFF22C0..0xFFFF22C7 finds writes to the neighbouring bytes alone, \
+ROM8[0x8936] = 0 declares no J1979 oxygen sensor, and every recording reads \
+0, so the bytes are not streamed. The live front-sensor signal is \
+front_af_sensor_words."""

@@ -1,4 +1,5 @@
 note = "The scaled value is the voltage of A/F sensor 1."
+width = 16
 unit = "V"
 scale = "x/200"
 

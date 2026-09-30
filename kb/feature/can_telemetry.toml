@@ -5,9 +5,12 @@ candidate_tick_divisor = 1
 context_count = 5
 context_pages = [9, 10]
 fixed_page_count = 9
+full_rate_hz = 97.65625
 header_sequence_bits = 4
 pphi_hz = 20000000
 protocol_version = 2
+rotating_divisor = 5
+telemetry_profile = "tuning"
 
 [[target]]
 layout = "1me3b"

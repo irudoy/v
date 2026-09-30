@@ -1,0 +1,9 @@
+title = "Low-resolution intake CVTC duty"
+domain = "cvtc"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code"
+observes = ["intake_cvtc_duty_b1/ram", "intake_cvtc_duty_b2/ram"]
+note = """
+The byte channels are present once per four scheduler passes and share their \
+conversion with the solenoid command pair."""

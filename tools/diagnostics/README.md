@@ -80,7 +80,8 @@ uv run python tools/diagnostics/tuning_signal_coverage.py
 uv run python tools/diagnostics/tuning_signal_coverage.py --format json
 ```
 
-Its source is `defs/JK08A.tuning-signals.toml`. The report distinguishes
+Its source is `defs/JK08A.tuning-signals.toml`, the projection of the `signal`
+entities of `kb`. The report distinguishes
 fixed-rate and rotating stream coverage, stock-CAN context, quantities absent
 from the ECU, unresolved runtime semantics, and observations requiring new
 instrumentation or external measurement.

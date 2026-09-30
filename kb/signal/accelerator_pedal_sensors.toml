@@ -1,0 +1,9 @@
+title = "Accelerator pedal sensor words"
+domain = "throttle"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code+homologous-diagnostic"
+observes = ["app1/ram", "app2/ram"]
+note = """
+Both diagnostic words are streamed at full rate; raw/200 V agrees with \
+near-adjacent vehicle observations."""

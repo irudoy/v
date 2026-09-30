@@ -1,0 +1,9 @@
+title = "Common intake and exhaust CVTC targets"
+domain = "cvtc"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["intake_cvtc_target/ram", "exhaust_cvtc_target/ram"]
+note = """
+Exact code identifies a common intake target at ffff2326 and a common \
+exhaust target at ffff2327."""

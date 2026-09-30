@@ -1,0 +1,14 @@
+title = "Requested-torque surface column coordinate"
+domain = "torque"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["request_flow/ram"]
+note = """
+FUN 00073948 interpolates curve 0x15690 over axis 0x15500 at area-over-speed \
+coordinate 0xFFFF1824, 8192 * 0xFFFF12A0 / RPM, while that coordinate does \
+not exceed ROM16[0x1553E] = 45187, and curve 0x156D0 over axis 0x15540 at \
+min(0xFFFF, 0xFFFF1824 >> 4) above it, and passes the result as the column \
+input of requested-torque surface 0xE98E with row 0xFFFF1702. FUN 000730FC \
+arbitrates the forward coordinate with inverse coordinate 0xFFFF198A. No \
+service-0x22 DID publishes the word."""

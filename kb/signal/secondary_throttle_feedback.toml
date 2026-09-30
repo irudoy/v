@@ -1,0 +1,9 @@
+title = "Secondary throttle feedback"
+domain = "throttle"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code+homologous-diagnostic"
+observes = ["secondary_tps_b1/ram", "secondary_tps_b2/ram"]
+note = """
+Both secondary feedback channels are carried once per four scheduler \
+passes."""

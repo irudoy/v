@@ -209,6 +209,27 @@ class FilesTest(unittest.TestCase):
                          [("schema", "field.loose_raw", "an ecu_ram field without signal"),
                           ("unsplit", "field.loose_raw", "scale 'Q14 factor'")])
 
+    def test_a_signal_file_observes_the_7mfk_symbols_of_meanings_and_allocations(self):
+        self.write("ram", "probe", {"title": "Probe", "width": 16,
+                                    "symbol": [{"layout": "7mfk", "address": "ffff11f4"}]})
+        self.write("feature", "can_telemetry", {"title": "CAN telemetry", "target": [
+            {"layout": "7mfk", "status": "supported",
+             "allocations": {"tick16": {"address": "ffff5e08", "width": 2}}}]})
+        signal = {"title": "Probe", "domain": "engine", "priority": "core", "coverage": "fixed",
+                  "basis": "exact-code", "note": "Probe."}
+        self.write("signal", "probe", {**signal, "observes": ["probe/ram", "can_telemetry.tick16"]})
+        self.write("signal", "loose", {**signal, "observes": ["can_telemetry.probe"]})
+        self.write("signal", "bare", {**signal, "observes": "probe/ram"})
+        b, model = self.build()
+        probe = model.entities[("signal", "probe")]
+        self.assertEqual((probe.refs["observes"], probe.props["observes"]),
+                         ([SymbolKey("7mfk", "ram", 0xFFFF11F4), "can_telemetry.tick16"],
+                          ["can_telemetry.tick16"]))
+        self.assertEqual(sorted((issue.check, issue.subject, issue.message) for issue in b.issues),
+                         [("references", "loose/signal",
+                           "can_telemetry.probe is no allocation of a 7mfk target"),
+                          ("schema", "bare/signal", "observes is no array of references")])
+
 
 if __name__ == "__main__":
     unittest.main()

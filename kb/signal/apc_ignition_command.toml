@@ -1,0 +1,11 @@
+title = "APC ignition command"
+domain = "ignition"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["apc_output/ram"]
+note = """
+The diagnostic command normally equals 110 minus the final timing \
+coordinate, with mode-dependent offsets and clamps. J1979 PID 0x0E in FUN \
+00035856 reports ROM8[0x83D5] = 110 minus the byte as the timing advance in \
+every mode, so 110 - raw is the delivered command in degrees BTDC."""

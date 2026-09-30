@@ -1,0 +1,9 @@
+title = "Primary throttle feedback"
+domain = "throttle"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code+homologous-diagnostic"
+observes = ["tps_b1/ram", "tps_b2/ram", "absolute_throttle/ram"]
+note = """
+The two primary sensor words and the diagnostic absolute-throttle byte are \
+present; physical channel-to-bank identity remains partly homologous."""

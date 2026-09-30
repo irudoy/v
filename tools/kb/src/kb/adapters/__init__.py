@@ -18,7 +18,7 @@ from kb.adapters import (architecture, curated, definitions, dids, files, interp
 
 ORDER = (files, curated, ledgers, layouts, profiles, definitions, interp, native, dids,
          signals, telemetry, overrides, architecture)
-CONVERTED = (interp, native, definitions, profiles, telemetry)
+CONVERTED = (interp, native, definitions, profiles, telemetry, signals)
 ADAPTERS = tuple(adapter for adapter in ORDER if adapter not in CONVERTED)
 
 

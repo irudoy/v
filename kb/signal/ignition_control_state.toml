@@ -1,0 +1,14 @@
+title = "Ignition control state"
+domain = "ignition"
+priority = "high"
+coverage = "absent"
+basis = "exact-code"
+observes = ["refreshing-groundhog/ram", "cryptic-honeybee/ram"]
+note = """
+0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and \
+every recording reads 0, so it is not streamed. 0xFFFF564C is the \
+work-support ignition-timing adjustment TARGET IGN TIM ADJ of \
+JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN \
+0004DBE8 adds to the final timing coordinate inside its coolant, speed, and \
+load window. Only the service-0x3B adjustment changes it, and every \
+recording reads 0, so it is not streamed; DID 0x112D publishes it."""

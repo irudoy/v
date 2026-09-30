@@ -728,9 +728,10 @@ Signals:
   `fixed`, `rotating`, `latched`, `stock-can`, `external`, or `absent`;
   `basis` is `exact-code`, `exact-code+homologous-diagnostic`,
   `measurement-requirement`, `passive-can`, or `patch-design`.
-- `observes` is an array of meaning references and allocation references:
-  an observed address inside the RAM that a feature allocates is the
-  allocation of that feature at the address and width. The DIDs of a signal
+- `observes` is an array of meaning references and allocation references,
+  in the order in which the catalog lists the sources: an observed address
+  inside the RAM that a feature allocates is the allocation of that feature
+  at the address and width. The DIDs of a signal
   come from the `did` meanings whose `source` is an observed meaning, and its
   current fields from the fields whose `signal` names it; neither is stored.
 
@@ -781,8 +782,9 @@ Features:
 - The `runtime` feature holds the runtime allocation of each layout, its
   ROM and RAM relocation, and the build variants, with the prose of a bound
   in `notes`; its `7mfk` target holds the envelope that the other layouts
-  relocate. `can_telemetry` holds the wire constants, profiles, and
-  contexts; its targets hold the telemetry mailbox, its mask, and the
+  relocate. `can_telemetry` holds the wire constants, profiles, contexts,
+  and the catalog keys `telemetry_profile`, `full_rate_hz`, and
+  `rotating_divisor`; its targets hold the telemetry mailbox, its mask, and the
   payload offset of the feedback record, with the prose of each in `notes`,
   and its `7mfk` target the addresses of the capture table, the
   configuration record, and the state record. `can_telemetry` requires every
@@ -2741,6 +2743,20 @@ The service 0x22 table of `7mfk`:
   telemetry field its `signal`.
 - `telemetry_profile`, `rotating_divisor`, and `full_rate_hz` become keys of
   the `can_telemetry` feature.
+- The conversion writes the `width` of each observed symbol into the file of
+  its meaning, as the key of the meaning where the meaning has that width and
+  otherwise as the override of the entry of the symbol. An observed symbol
+  that no evidence grounds, as a byte that only the DID table resolves, takes
+  its identity item.
+- The catalog becomes the projection of the signals and of `can_telemetry`:
+  the signals by domain, by priority from `core` to `research`, and by id;
+  `sources` and `widths` from `observes` in its order, the address and the
+  width of the `7mfk` symbol of each observed meaning or of each allocation;
+  `current_fields` the fields whose `signal` names the signal, by observed
+  source in the order of `observes` with the fields of one source in the
+  order of the profile, and the other fields after them; and `dids` the DIDs
+  that return each observed meaning, in the order of `observes` and by
+  number. The projection equals the catalog before the conversion.
 
 `patches/can-telemetry-profile.toml`:
 

@@ -1,3 +1,4 @@
+width = 16
 unit = "Nm"
 scale = "x*0.1"
 scale_level = "candidate"

@@ -1,0 +1,12 @@
+title = "Intake CVTC solenoid duty command"
+domain = "cvtc"
+priority = "high"
+coverage = "rotating"
+basis = "exact-code"
+observes = [
+    "intake_cvtc_duty_command_b1/ram",
+    "intake_cvtc_duty_command_b2/ram",
+]
+note = """
+FUN 000bead0 converts both bytes into ATU-II channel-7 buffer registers, so \
+percent is raw * 39 / 100 against the programmed cycle."""

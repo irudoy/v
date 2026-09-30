@@ -1,0 +1,17 @@
+title = "Per-cylinder injection calculation"
+domain = "fuel"
+priority = "core"
+coverage = "fixed"
+basis = "exact-code"
+observes = [
+    "injection_0/ram",
+    "injection_1/ram",
+    "injection_2/ram",
+    "injection_3/ram",
+    "injection_4/ram",
+    "injection_5/ram",
+]
+note = """
+All six calculated words are streamed; service 0x22 publishes only the first \
+two words in the declared table. These are not verified electrical pulse \
+widths."""

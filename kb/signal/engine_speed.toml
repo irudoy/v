@@ -1,0 +1,14 @@
+title = "Engine speed"
+domain = "engine"
+priority = "core"
+coverage = "stock-can"
+basis = "exact-code"
+observes = ["authentic-wasp/ram"]
+note = """
+FUN 000384FE writes 0xFFFF11EE = 0xFFFF1196 >> 4 and the RPM/12.5 coordinate \
+0xFFFF11F4 = 0xFFFF1196 >> 6 in one pass, and FUN 000C577A serializes stock \
+CAN 0x180 bytes 0..1 as sat_u16(0xFFFF11EE * 25), so (word // 25) >> 2 of \
+the frame word is the coordinate while the product does not saturate, below \
+8193.75 RPM. The frame is sampled at another instant of the scheduler cycle \
+than a snapshot; registry entry can_telemetry.stock_speed_bracket_2026_09_22 \
+bounds the difference, and the custom stream does not carry the coordinate."""
