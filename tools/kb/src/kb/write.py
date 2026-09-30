@@ -445,11 +445,12 @@ class Change:
         self.rows_changed = False
         self.lines = []
         # {meaning key: new key} of the renames of the change, the symbols
-        # that `new` starts, and the checks of the compiled result that the
-        # operations expect, each a function of the result that returns a
-        # message when the result contradicts it.
+        # and the (kind, slug) of the designed entities that `new` starts, and
+        # the checks of the compiled result that the operations expect, each a
+        # function of the result that returns a message when the result
+        # contradicts it.
         self.renamed = {}
-        self.created = set()
+        self.created, self.started = set(), set()
         self.expected = []
         self._taken = self._domain = None
 
@@ -554,6 +555,7 @@ class Change:
         path = store.path_of(kind, slug)
         self._fresh(path)
         self.documents[path] = {}
+        self.started.add((kind, slug))
         self.lines.append(f"new {slug}/{kind}")
 
     def set(self, op):
@@ -587,11 +589,13 @@ class Change:
         """(table, {key: spec}, subject) of a reference of `set`: a designed
         entity, the target of a feature on `layout`, whose specs are None
         since it takes every key besides its layout, a meaning, or the entry
-        of the symbol that the reference or `layout` names."""
+        of the symbol that the reference or `layout` names. A designed entity
+        is one of the working tree or one that an earlier `new` of the change
+        starts, so that a batch starts an entity with its keys."""
         found = MEANING_REF.fullmatch(str(text).strip())
         if found and found.group("kind") in store.DESIGNED:
             kind, slug = found.group("kind"), found.group("name")
-            if (kind, slug) not in self.model.entities:
+            if (kind, slug) not in self.model.entities and (kind, slug) not in self.started:
                 raise KbError(f"no designed entity {slug}/{kind}", code=5)
             _, document = self.designed(kind, slug)
             if layout is None:

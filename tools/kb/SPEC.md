@@ -1339,7 +1339,10 @@ references.
   name by the rules of `kb rename`; otherwise the symbol keeps the generated
   name of its row of `kb/names.csv`, whose other names become `former`
   references, or draws one. `kb new <kind> <slug>` starts the empty file of a
-  designed entity of a kind that the store holds, from stage 3 a `feature`.
+  designed entity of a kind that the store holds, from stage 3 a `feature`
+  and from stage 4 a `signal` and a `field`. The empty file of a field fails
+  the `fields` and `widths` checks, so a batch starts a field with `new` and
+  a `set` of its keys.
 - `kb absent` requires evidence.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
@@ -1390,11 +1393,12 @@ an array of dotted keys for `set`, `evidence` as an array of tables, `from`,
 `level`, `method`, `target`, `count`, and `note`. `kb apply` applies all
 operations or none. Each operation resolves its references and searches on
 the working tree, not on the result of an earlier operation of the batch,
-and edits the files as the earlier operations leave them; an operation that
-names a file that an earlier one removes is refused, and so is an operation
-on a meaning that an earlier one renames, since a batch renames a meaning
-after its other operations. Subagents write only through batches, so the
-parent reviews one diff.
+and edits the files as the earlier operations leave them; `set` also names
+a designed entity that an earlier `new` of the batch starts. An operation
+that names a file that an earlier one removes is refused, and so is an
+operation on a meaning that an earlier one renames, since a batch renames a
+meaning after its other operations. Subagents write only through batches,
+so the parent reviews one diff.
 
 ### 12.4 Output
 

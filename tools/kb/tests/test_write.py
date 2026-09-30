@@ -279,6 +279,24 @@ class NewTest(unittest.TestCase):
         self.assertIn(("feature", "probe_feature"), result.entities)
         self.assertEqual(change.lines, ["new probe_feature/feature"])
 
+    def test_a_batch_starts_a_field_with_its_keys(self):
+        started = new("field", "probe_coolant_raw")
+        keys = {"signal": "temperatures/signal", "source": "coolant/ram", "origin": "ecu_ram",
+                "width": 1, "signed": False}
+        with self.assertRaises(KbError) as caught:
+            self.plan(started)
+        self.assertEqual(caught.exception.code, 3)
+        self.assertIn("width None is no positive number of bytes", str(caught.exception))
+        self.assertIn("op 1: no designed entity probe_coolant_raw/field", self.refused(
+            assign("probe_coolant_raw/field", keys), started, code=5))
+        change, texts, result = self.plan(started, assign("probe_coolant_raw/field", keys))
+        self.assertEqual(texts, {store.path_of("field", "probe_coolant_raw"):
+                                 store.render("field", keys)})
+        self.assertEqual(result.entities[("field", "probe_coolant_raw")].props["width"], 1)
+        self.assertEqual(change.lines, [
+            "new probe_coolant_raw/field",
+            "set probe_coolant_raw/field: origin, signal, signed, source, width"])
+
     def test_new_refuses_a_held_place_or_name_and_the_keys_of_the_other_form(self):
         symbol = new("ram", self.LOCATION, evidence=[SPEC])
         stage = next(kind for kind in vocab.DESIGNED_KINDS

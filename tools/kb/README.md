@@ -180,7 +180,9 @@ nothing is written; otherwise the files are written through temporary files
 and renames, and the graph loads the compiled result. `--dry-run` prints the
 diff instead of writing; the write draws the generated names of the diff
 anew. A batch renames a meaning after its other operations: an operation on a
-meaning that an earlier operation renames is refused.
+meaning that an earlier operation renames is refused. `set` also names a
+designed entity that an earlier `new` of the batch starts, so a batch starts
+a field with its keys, whose empty file fails the checks.
 
 - The file of a meaning without one starts with the entry of the home symbol,
   so that the file joins the meaning that the registries state. The row of
