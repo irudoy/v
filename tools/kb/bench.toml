@@ -1,13 +1,17 @@
 # Acceptance questions of the knowledge model (tools/kb/SPEC.md, section 18).
 #
-# `stage` is the current transition stage, and a question is active from its
-# `stage`. `kb bench` answers every active question with --full and requires
-# the answer to fit the question's budget and to stay below its baseline: the
-# output of the search and file reads that answer the question over the
-# registries. A baseline step runs `run` from the repository root and counts
-# its output, or with `read = true` counts the files whose paths it prints.
-# Tokens are UTF-8 bytes divided by three, rounded up.
+# `stage` is the highest transition stage that has started, and a question is
+# active from its `stage`. `converted` lists the registries of section 19 whose
+# conversion leaves no file that `kb` renders or that reads `kb`; the commit
+# that converts such a registry adds it, and the files decide the owner of
+# every other registry. `kb bench` answers every active question with --full
+# and requires the answer to fit the question's budget and to stay below its
+# baseline: the output of the search and file reads that answer the question
+# over the registries. A baseline step runs `run` from the repository root and
+# counts its output, or with `read = true` counts the files whose paths it
+# prints. Tokens are UTF-8 bytes divided by three, rounded up.
 stage = 3
+converted = ["Ghidra export directories"]
 
 [[question]]
 id = 1

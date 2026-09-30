@@ -1443,6 +1443,18 @@ def brief(graph, root=repo.ROOT):
     owner_lines.append(f"  registries that own their facts until conversion: {pending}")
     answer.section(f"stage {stage}: {stages.get(stage, '?')}; owners", FACTS, owner_lines)
     data["stage"] = {"number": stage, "name": stages.get(stage), **owners}
+    sources = {(row["layout"], row["kind"], row["address"]): row["src"] or () for row in graph.run(
+        "MATCH (s:Kb:Symbol) RETURN s.layout AS layout, s.kind AS kind, s.address AS address, "
+        "s.src AS src")}
+    legacy = project.legacy(sources, root)
+    leave = ", ".join(f"stage {number}: {count}" for number, count in
+                      sorted(legacy["leave"].items()))
+    stay = "; ".join(f"{holders}: {count}" for holders, count in sorted(legacy["stay"].items()))
+    answer.section(f"kb/names.csv: {legacy['rows']} rows", FACTS, [
+        f"  by the first stage that converts a registry stating their symbol: {leave or 'none'}",
+        f"  by the registries that state their symbol when none converts: {stay or 'none'}",
+        f"  reserving the name of a symbol that no registry states: {legacy['reserved']}"])
+    data["names"] = legacy
     gaps = graph.run("MATCH (m:Kb:Meaning)-[r:STATUS {state: 'unknown'}]->(l:Kb:Layout) "
                      "OPTIONAL MATCH (m)-[k]-(:Kb:Meaning) "
                      "RETURN m.key AS key, l.key AS layout, count(k) AS degree "

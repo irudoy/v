@@ -24,7 +24,7 @@ uv run kb where hcan1_init           # the symbol or status of a meaning on ever
 uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
 uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
 uv run kb find knock threshold       # meanings and designed entities ranked by name, former name, title, and summary
-uv run kb brief                      # graph state, layouts, stage, owners, gaps, and the questions
+uv run kb brief                      # graph state, layouts, stage, owners, legacy names, gaps, and the questions
 uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings without a symbol, by status
 uv run kb log <ref>                  # renames and generated names of an entity
 uv run kb raw <ref>                  # the registry rows that state an entity
@@ -516,11 +516,18 @@ compares each projection of `kb` with its rendering and the tracked files of
 a pattern with the files of its rendering, and requires every tracked file
 whose first lines declare it generated to be registered.
 
-The owner of a registry of the current stage changes with its conversion:
+The files decide the owner of a registry of a stage that has started:
 `kb brief` and `AGENTS.md#kb` name the owner after conversion once every
 tracked file that the registry's row of section 19 names is a projection of
 `kb` that applies or a Python module that imports `kb` and that no adapter
-reads, and the registry until then.
+reads, and the registry until then. A registry whose conversion leaves no
+such file converts when `converted` of `bench.toml` lists it. The
+`projections` check requires each row of section 19 to state one stage and
+each entry of `converted` to name a row whose stage has started and whose
+files do not convert it. `kb brief` counts the rows of `kb/names.csv` by the
+first stage that converts a registry stating their symbol, by the registries
+that state their symbol when none of them converts, and the rows that
+reserve the name of a symbol that no registry states.
 
 `hook.py` is the access guard of section 15. The tracked
 `.claude/settings.json` runs it before `Read`, `Edit`, `Write`, `MultiEdit`,
@@ -561,7 +568,7 @@ to list the guarded paths, and the hook to refuse a sample call on each.
 | `kb.write` | The write commands: changes of the entity files, the checks of their result, and batches |
 | `kb.mcp` | The read commands and `kb_apply` as MCP tools over JSON-RPC on standard input and output |
 | `kb.spec` | The stages, the ownership table, and the acceptance questions of the specification |
-| `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, and the `AGENTS.md#kb` section |
+| `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, the count of `kb/names.csv` by stage, and the `AGENTS.md#kb` section |
 | `kb.convert` | The conversions of legacy registries into entity files |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
 | `kb.l0` | L0 export, normal form, manifest, the fragment registries, the export review, and the `l0` check |
@@ -592,7 +599,9 @@ the JK08A ledgers that stage 1 of the specification states.
 ## Configuration
 
 `bench.toml` holds the acceptance questions with their commands, budgets,
-stages, and baselines, and the current stage.
+stages, and baselines, the highest stage that has started, and `converted`,
+the registries whose conversion leaves no file that `kb` renders or that
+reads `kb`.
 `config.toml` lists the L0 export scripts, the census plan of each layout, the
 instance limits and ports, the lock timeout, the output budgets of the
 commands, the address spaces of each MCU, the manual prefixes of legacy

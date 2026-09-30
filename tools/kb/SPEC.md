@@ -1191,7 +1191,7 @@ Options common to the read commands:
 
 | Command | Answers |
 |---|---|
-| `kb brief` | Graph state, layouts with symbol and status counts, the current transition stage and registry owners, open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
+| `kb brief` | Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands |
 | `kb show <ref>` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning |
 | `kb at <layout>:<address>` | The symbol at the address, or else the feature allocations, function, or table that contain it, and the L0 facts at that address |
 | `kb where <ref>` | The symbol or status of a meaning on every layout |
@@ -2059,11 +2059,25 @@ below its baseline.
 Every fact has one owner at every stage. A registry owns its facts until the
 commit of the stage that converts it. From that commit `kb/` owns them, and
 the registry is a projection until stage 11 keeps it generated or removes it.
-The stage of `tools/kb/bench.toml` is the stage in progress: `kb brief` and
-`AGENTS.md#kb` name the owner after conversion for a registry of an earlier
-stage, and for a registry of the current stage once every tracked file that
-its row names is a projection of `kb` that applies or a Python module that
-imports `kb` and that no adapter reads.
+The files decide the owner that `kb brief` and `AGENTS.md#kb` name: the owner
+after conversion owns the facts of a row once every tracked file that its
+first cell names is a projection of `kb` that applies or a Python module that
+imports `kb` and that no adapter reads. A row whose conversion leaves no such
+file, because its first cell names no tracked file or its files stay prose,
+converts when `converted` of `tools/kb/bench.toml` lists its registry, and
+the commit that converts it adds the entry; the `projections` check refuses
+an entry that names no row with a stage, a row of a stage that has not
+started, or a row that its files convert. A registry created in a stage owns
+its facts from that stage. Each row states one stage, so a registry whose
+files convert in different stages takes one row per stage. The stage of
+`tools/kb/bench.toml` is the highest stage that has started: it activates
+the questions and the projections of that stage and of the stages before it,
+and a row of a later stage keeps its registry as the owner.
+
+`kb brief` counts the rows of `kb/names.csv` by the first stage that converts
+a registry stating their symbol, by the registries that state their symbol
+when none of them converts, and the rows that reserve the name of a symbol
+that no registry states.
 
 | Registry | Facts | Converted in stage | Owner after conversion | The registry after conversion |
 |---|---|---|---|---|
@@ -2071,7 +2085,8 @@ imports `kb` and that no adapter reads.
 | `rom-images/homology.toml` | Families and relationships; layouts from stage 2 | not converted | itself | |
 | `defs/rom-identities.toml`, `defs/rom-inheritance.toml` | Image identities and definition inheritance | not converted | themselves | |
 | Ghidra export directories | Code structure | 1 | `l0/<layout>/` | Local cache of decompilations, listings, and research exports |
-| `tools/ghidra/symbols/<layout>.csv` | Curated function names of `1nd` and `7mfk` | 5 for `7mfk`, 9 for `1nd` | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
+| `tools/ghidra/symbols/7mfk.csv` | Curated function names of `7mfk` | 5 | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
+| `tools/ghidra/symbols/1nd.csv` | Curated function names of `1nd` | 9 | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
 | `kb/names.csv` | Generated names of symbols in legacy registries | created in 2 | itself, shrinking with each conversion | Removed in 11 |
 | `patches/rom-address-profiles.toml` | Target symbols, hooks, DIDs, telemetry sources and their unavailability, runtime allocations and variants, and their evidence | 3 | Meanings and statuses; targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` | Projection |
 | `patches/*-runtime-correspondence.csv` | Correspondence of source and target symbols by feature domain | 3 | Symbols and statuses | Projection |
@@ -2084,7 +2099,7 @@ imports `kb` and that no adapter reads.
 | `patches/can-telemetry-profile.toml` | Fields, contexts, and wire constants | 4 | `kb/field/`; `can_telemetry` | Projection |
 | `defs/JK08A.overrides.toml` | Editor presentation, logger parameters, checksums, and switches | 4 | `[editor]` and `[logparam]` tables; `definitions` | Projection |
 | Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata | Copies checked by `tools/single_source.py` | 4 | Generated from fields and meanings | Projection; the copy checks leave `single_source.py` |
-| `defs/JK08A.funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` | Code knowledge of `7mfk` | 5 | `kb/fn/`, `kb/ram/`, `kb/reg/`, `kb/tbl/`, `kb/axis/` | Projection |
+| `defs/JK08A.funcs.csv`, `defs/JK08A.vars.csv`, `defs/JK08A.findings.csv`, `defs/JK08A.axes.csv` | Code knowledge of `7mfk` | 5 | `kb/fn/`, `kb/ram/`, `kb/reg/`, `kb/tbl/`, `kb/axis/` | Projection |
 | `defs/JK08A.dtc.csv` | DTC descriptors of `7mfk` | 5 | `kb/dtc/` | Projection; the `dtc.csv` files of other images follow the `dtc` symbols of their layouts in stage 9 |
 | `defs/JK08A.diagnostic-bindings.csv` | Diagnostic bindings | 5 | `[[diagnostic]]` tables | Projection |
 | `defs/JK08A.architecture.toml` | Stages, blocks, endpoints, and chains | 6 | `kb/stage/`, `kb/block/`, `kb/endpoint/`, `kb/chain/` | Projection |
@@ -2844,6 +2859,9 @@ evidence column by its role, the kind of the row, and the kind of the target:
 - 3 and 8 -> 9.
 - 4 and 9 -> 10.
 - 11 is last.
+- `stage` of `tools/kb/bench.toml` names the highest stage that has started;
+  the files, not the stage number, decide the owners ([Ownership by
+  stage](#19-ownership-by-stage)).
 
 ### 21.3 Stages
 

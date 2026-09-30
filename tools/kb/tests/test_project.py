@@ -22,7 +22,8 @@ SPEC = """\
 | `kb/names.csv` | Generated names | created in 2 | itself, shrinking with each conversion | Removed in 11 |
 | `profiles.toml` | Targets | 3 | Meanings | Projection |
 | `defs/*.interp.csv` | Interpolation | 3 | `fn` meanings | Projection |
-| `symbols/<layout>.csv` | Names | 5 for `7mfk`, 9 for `1nd` | Names of `fn` meanings | Projection |
+| `symbols/7mfk.csv` | Names of 7mfk | 5 | Names of `fn` meanings | Projection |
+| `symbols/1nd.csv` | Names of 1nd | 9 | Names of `fn` meanings | Projection |
 | `maps.csv` | Map tracker | generated | `build_tracker.py` | Projection |
 
 ## 20. Migration map
@@ -40,6 +41,7 @@ SPEC = """\
 
 BENCH = """\
 stage = 2
+converted = ["l0 exports"]
 
 [[question]]
 id = 1
@@ -182,8 +184,8 @@ class WriteTest(RepoCase):
                       "conversion |", text)
         self.assertIn("| `profiles.toml` | Targets | the registry until stage 3 |", text)
         self.assertIn("| `maps.csv` | Map tracker | `build_tracker.py` |", text)
-        self.assertIn("| `symbols/<layout>.csv` | Names | the registry until stage 5 for "
-                      "`7mfk`, 9 for `1nd` |", text)
+        self.assertIn("| `symbols/7mfk.csv` | Names of 7mfk | the registry until stage 5 |", text)
+        self.assertIn("| `symbols/1nd.csv` | Names of 1nd | the registry until stage 9 |", text)
         self.assertTrue(text.startswith("\n\n## Knowledge access\n"))
         self.assertTrue(text.endswith("|\n\n"))
 
@@ -207,8 +209,7 @@ class PatternTest(RepoCase):
     def repo(self, name, files=None):
         return super().repo(name, {
             "tools/kb/projections.toml": PROJECTIONS + PATTERN,
-            "tools/kb/bench.toml": BENCH.replace("stage = 2\n\n[[question]]",
-                                                 "stage = 3\n\n[[question]]", 1),
+            "tools/kb/bench.toml": BENCH.replace("stage = 2\n", "stage = 3\n", 1),
             "defs/A.interp.csv": "a\n", "defs/B.interp.csv": "old\n", **(files or {})})
 
     def test_kb_writes_each_file_of_the_pattern(self):
@@ -242,7 +243,7 @@ class PatternTest(RepoCase):
         self.assertIn("| `profiles.toml` | Targets | the registry until stage 3 |", text)
         self.assertIn("| `l0` exports | Code structure | `l0/<layout>/` since stage 1 |", text)
         owners = project.owners(root)
-        self.assertEqual(owners["pending"], {3: 1, 5: 1})
+        self.assertEqual(owners["pending"], {3: 1, 5: 1, 9: 1})
         self.assertEqual([row["registry"] for row in owners["converted"]],
                          ["l0 exports", "kb/names.csv", "defs/*.interp.csv"])
 
@@ -254,7 +255,7 @@ class PatternTest(RepoCase):
     def test_a_module_that_reads_kb_changes_owner_once_no_adapter_reads_it(self):
         row = ("| Tables of `patches/runtime.py` | Hook keys | 3 | Feature targets | The module "
                "reads them through the `kb` API |\n")
-        spec = SPEC.replace("| `symbols/<layout>.csv`", row + "| `symbols/<layout>.csv`")
+        spec = SPEC.replace("| `symbols/7mfk.csv`", row + "| `symbols/7mfk.csv`")
 
         def owner(name, text, read):
             root = self.repo(name, {"tools/kb/SPEC.md": spec, "patches/runtime.py": text})
@@ -267,6 +268,15 @@ class PatternTest(RepoCase):
         self.assertIn(converted, owner("reader", "from kb import targets\n", []))
         self.assertIn(pending, owner("read", "import kb.targets\n", ["patches/runtime.py"]))
         self.assertIn(pending, owner("tables", "KEYS = {'a': 1}\n", []))
+
+    def test_the_list_names_no_registry_that_its_files_convert(self):
+        bench = BENCH.replace('stage = 2\nconverted = ["l0 exports"]',
+                              'stage = 3\nconverted = ["l0 exports", "defs/*.interp.csv"]')
+        root = self.repo("files", {"tools/kb/bench.toml": bench})
+        project.write(root)
+        self.assertEqual(project.check(root), [
+            "tools/kb/bench.toml: converted defs/*.interp.csv: its files convert it "
+            "(fix: edit tools/kb/bench.toml)"])
 
 
 class CheckTest(RepoCase):
@@ -328,6 +338,83 @@ read = "open"
         self.assertEqual(project.check(root), [
             "tools/kb/projections.toml: projection defs/JK08A.xml: defs/JK08A.xml is also a "
             "file of projection defs/*.xml (fix: edit tools/kb/projections.toml)"])
+
+
+NAMES = """\
+layout,kind,address,name,former
+7mfk,fn,00001000,alpha-one,
+1nd,fn,00002000,beta-two,
+7mfk,ram,ffff1000,gamma-three,
+7mfk,did,00001234,delta-four,
+7mfk,tbl,00005000,epsilon-five,
+7mfk,tbl,00006000,zeta-six,
+"""
+
+
+class OwnershipTest(RepoCase):
+    WHERE, FIX = "tools/kb/bench.toml: converted", "(fix: edit tools/kb/bench.toml)"
+
+    def test_the_files_decide_the_owner_once_the_stage_starts(self):
+        entry = """
+[[projection]]
+path = "symbols/7mfk.csv"
+generator = "kb.project:tracked"
+stage = 5
+inputs = []
+consumers = []
+read = "guarded"
+"""
+        root = self.repo("files", {
+            "tools/kb/projections.toml": PROJECTIONS + entry,
+            "tools/kb/bench.toml": BENCH.replace("stage = 2\n", "stage = 6\n", 1),
+            "symbols/7mfk.csv": "a\n", "symbols/1nd.csv": "b\n"})
+        text = project.agents(root)
+        self.assertIn("| `symbols/7mfk.csv` | Names of 7mfk | Names of `fn` meanings since "
+                      "stage 5 |", text)
+        self.assertIn("| `symbols/1nd.csv` | Names of 1nd | the registry until stage 9 |", text)
+        self.assertIn("| `profiles.toml` | Targets | the registry until stage 3 |", text)
+        self.assertEqual(project.owners(root)["pending"], {3: 2, 9: 1})
+
+    def test_the_list_names_registries_that_only_it_converts(self):
+        bench = BENCH.replace('converted = ["l0 exports"]', 'converted = ["l0 exports", "maps", '
+                              '"kb/names.csv", "profiles.toml"]')
+        root = self.repo("listed", {"tools/kb/bench.toml": bench})
+        self.assertEqual(project.ownership(root), [
+            f"{self.WHERE} maps: names no row of section 19 that converts in a stage {self.FIX}",
+            f"{self.WHERE} kb/names.csv: names no row of section 19 that converts in a stage "
+            f"{self.FIX}",
+            f"{self.WHERE} profiles.toml: its row converts in stage 3, which has not started "
+            f"{self.FIX}"])
+        root = self.repo("text", {"tools/kb/bench.toml": bench.replace(
+            'converted = ["l0 exports", "maps", "kb/names.csv", "profiles.toml"]',
+            'converted = "l0 exports"')})
+        self.assertEqual(project.ownership(root), [
+            f"{self.WHERE}: 'l0 exports' is no list of registries {self.FIX}"])
+
+    def test_a_row_states_one_stage(self):
+        row = "| `symbols/<layout>.csv` | Names | 5 for `7mfk`, 9 for `1nd` | Names | Projection |\n"
+        root = self.repo("stages", {"tools/kb/SPEC.md": SPEC.replace("| `maps.csv`",
+                                                                     row + "| `maps.csv`")})
+        self.assertEqual(project.ownership(root), [
+            "tools/kb/SPEC.md: section 19: symbols/<layout>.csv states stages 5, 9; a row states "
+            "one stage (fix: give each stage its row)"])
+
+    def test_the_names_count_by_the_first_stage_that_converts_their_registries(self):
+        row = "| `tools/diag/<name>.py` | Diagnostic names | not converted | itself | |\n"
+        root = self.repo("legacy", {"tools/kb/SPEC.md": SPEC.replace("| `maps.csv`",
+                                                                     row + "| `maps.csv`"),
+                                    "kb/names.csv": NAMES})
+        sources = {
+            ("7mfk", "fn", 0x1000): ["symbols/7mfk.csv", "defs/A.interp.csv"],
+            ("1nd", "fn", 0x2000): ["symbols/1nd.csv"],
+            ("7mfk", "ram", 0xffff1000): ["tools/diag/sid.py"],
+            ("7mfk", "did", 0x1234): ["tools/other.py", "tools/diag/sid.py"],
+            ("7mfk", "tbl", 0x5000): [],
+        }
+        self.assertEqual(project.legacy(sources, root), {
+            "rows": 6, "leave": {3: 1, 9: 1},
+            "stay": {"tools/diag/<name>.py": 1, "tools/diag/<name>.py, tools/other.py": 1},
+            "reserved": 2})
 
 
 if __name__ == "__main__":
