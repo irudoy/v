@@ -13,19 +13,6 @@ full_rate_hz = 97.65625
 rotating_divisor = 5
 
 [[signal]]
-id = "engine_speed"
-domain = "engine"
-label = "Engine speed"
-priority = "core"
-coverage = "stock-can"
-current_fields = []
-sources = [0xFFFF11F4]
-widths = [2]
-dids = [0x1201]
-evidence = "exact-code"
-note = "FUN 000384FE writes 0xFFFF11EE = 0xFFFF1196 >> 4 and the RPM/12.5 coordinate 0xFFFF11F4 = 0xFFFF1196 >> 6 in one pass, and FUN 000C577A serializes stock CAN 0x180 bytes 0..1 as sat_u16(0xFFFF11EE * 25), so (word // 25) >> 2 of the frame word is the coordinate while the product does not saturate, below 8193.75 RPM. The frame is sampled at another instant of the scheduler cycle than a snapshot; registry entry can_telemetry.stock_speed_bracket_2026_09_22 bounds the difference, and the custom stream does not carry the coordinate."
-
-[[signal]]
 id = "airflow_banks"
 domain = "air"
 label = "Bank MAF sensor words"
@@ -52,17 +39,17 @@ evidence = "exact-code"
 note = "The combined producer is exact; raw/100 g/s remains a hardware-validation conversion."
 
 [[signal]]
-id = "base_fuel_schedule"
-domain = "fuel"
-label = "Base fuel schedule"
+id = "calculated_load"
+domain = "air"
+label = "Calculated load"
 priority = "core"
 coverage = "fixed"
-current_fields = ["bfs_raw"]
-sources = [0xFFFF1026]
-widths = [2]
-dids = [0x1208]
+current_fields = ["calculated_load_raw"]
+sources = [0xFFFF413E]
+widths = [1]
+dids = [0x1117]
 evidence = "exact-code"
-note = "The internal base schedule is available at full rate. One count is 1/2048 ms in the time base of the injection-pulse words: the stage normalizers between the schedule and the 10 us pulse words multiply to exactly 100/2048."
+note = "This is the J1979-style calculated-load byte, not the normalized BFS map coordinate of signal normalized_load."
 
 [[signal]]
 id = "normalized_load"
@@ -78,186 +65,43 @@ evidence = "exact-code"
 note = "FUN 0003B75C stores min(255, floor(uint16[0xFFFF1026] * 128 / ROM16[0x9534])) at 0xFFFF1048, the Base Fuel Schedule as a ratio to the calibration reference 0x6A5A in 1/128 steps, and scheduler FUN 00020DFE copies it to 0xFFFF102C. The snapshot is the column coordinate of the ignition and intake-cam target maps and the normal Y input of exhaust-CVTC target accessor 0x000BFDC0. Raw 128 is 100 percent of the reference, and raw 255 is the saturation at 199.2 percent."
 
 [[signal]]
-id = "calculated_load"
+id = "pressure_context"
 domain = "air"
-label = "Calculated load"
-priority = "core"
-coverage = "fixed"
-current_fields = ["calculated_load_raw"]
-sources = [0xFFFF413E]
-widths = [1]
-dids = [0x1117]
-evidence = "exact-code"
-note = "This is the J1979-style calculated-load byte, not the normalized BFS map coordinate of signal normalized_load."
-
-[[signal]]
-id = "fuel_output_inhibit"
-domain = "fuel"
-label = "Fuel output inhibit mask"
-priority = "core"
-coverage = "fixed"
-current_fields = ["fuel_inhibit_mask"]
-sources = [0xFFFF22E0]
-widths = [1]
-dids = []
-evidence = "exact-code"
-note = "The byte exposes the final per-cylinder fuel-output inhibit arbitration. FUN 0004ED88 stores it masked to 0x3F, and bit k inhibits injector output k: FUN 0004EBA2 replaces channel word k with the opening time and FUN 0002C13C withholds channel k from the fire mask. Output k drives cylinder k + 1 by the diagnostic Power Balance order, which is not measured electrically."
-
-[[signal]]
-id = "injection_calculation"
-domain = "fuel"
-label = "Per-cylinder injection calculation"
-priority = "core"
-coverage = "fixed"
-current_fields = ["injection_0_raw", "injection_1_raw", "injection_2_raw", "injection_3_raw", "injection_4_raw", "injection_5_raw"]
-sources = [0xFFFF23C8, 0xFFFF23CA, 0xFFFF23CC, 0xFFFF23CE, 0xFFFF23D0, 0xFFFF23D2]
-widths = [2, 2, 2, 2, 2, 2]
-dids = [0x1206, 0x1207]
-evidence = "exact-code"
-note = "All six calculated words are streamed; service 0x22 publishes only the first two words in the declared table. These are not verified electrical pulse widths."
-
-[[signal]]
-id = "front_heated_oxygen_sensors"
-domain = "fuel"
-label = "Front heated oxygen sensor bytes"
-priority = "research"
-coverage = "absent"
-current_fields = []
-sources = [0xFFFF22C4, 0xFFFF22C5]
-widths = [1, 1]
-dids = [0x1118, 0x1119]
-evidence = "exact-code+homologous-diagnostic"
-note = "Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank 2 bytes. The engine has front A/F sensors, and no traced code writes the bytes: only the DID records reference them, a whole-program trace of 0xFFFF22C0..0xFFFF22C7 finds writes to the neighbouring bytes alone, ROM8[0x8936] = 0 declares no J1979 oxygen sensor, and every recording reads 0, so the bytes are not streamed. The live front-sensor signal is front_af_sensor_words."
-
-[[signal]]
-id = "commanded_mixture"
-domain = "fuel"
-label = "Commanded mixture"
-priority = "core"
-coverage = "rotating"
-current_fields = ["af_state_factor_raw"]
-sources = [0xFFFF22E8]
-widths = [2]
-dids = [0x1134]
-evidence = "exact-code"
-note = "Q14 fuel-multiplier command against the stoichiometric base schedule, streamed once per four scheduler passes: 0x4000 is the closed-loop stoichiometric target and target map 0xA9AA supplies 128..149 (1.00..1.16) through stage 0x5594A, the sole stock writer. DID 0x1134 publishes only the high byte. Commanded lambda = 16384/x; the gasoline AFR scale 1881.6/(x/128) of the public HR A2L remains a candidate."
-
-[[signal]]
-id = "fuel_trims"
-domain = "fuel"
-label = "Short- and long-term fuel trims"
-priority = "core"
-coverage = "rotating"
-current_fields = ["stft_b1_raw", "stft_b2_raw", "ltft_b1_raw", "ltft_b2_raw"]
-sources = [0xFFFF22DC, 0xFFFF22DE, 0xFFFF2302, 0xFFFF2304]
-widths = [2, 2, 2, 2]
-dids = [0x1123, 0x1124, 0x1125, 0x1126]
-evidence = "exact-code"
-note = "The stream carries complete Q8.8-percent words instead of the high-byte-only service-0x22 representation."
-
-[[signal]]
-id = "long_fuel_trim_terms"
-domain = "fuel"
-label = "Bank 1 long-term trim summands"
-priority = "high"
-coverage = "rotating"
-current_fields = ["ltft_learned_b1_raw", "ltft_adjustment_b1_raw"]
-sources = [0xFFFF2306, 0xFFFF5648]
-widths = [2, 2]
-dids = []
-evidence = "exact-code"
-note = "Diagnostic long-term trim is the selected learned cell plus the adjustment term minus neutral 0x6400, so the pair separates the learned grid value from the running adjustment."
-
-[[signal]]
-id = "final_ignition_coordinate"
-domain = "ignition"
-label = "Final ignition software coordinate"
-priority = "core"
-coverage = "fixed"
-current_fields = ["final_timing_raw"]
-sources = [0xFFFF11D4]
-widths = [1]
-dids = []
-evidence = "exact-code"
-note = "This byte is a final software timing coordinate, not a crank-referenced measurement of delivered spark angle."
-
-[[signal]]
-id = "apc_ignition_command"
-domain = "ignition"
-label = "APC ignition command"
-priority = "core"
-coverage = "fixed"
-current_fields = ["apc_command_raw"]
-sources = [0xFFFF2022]
-widths = [1]
-dids = [0x1107, 0x1108, 0x1109, 0x110A, 0x113C]
-evidence = "exact-code"
-note = "The diagnostic command normally equals 110 minus the final timing coordinate, with mode-dependent offsets and clamps. J1979 PID 0x0E in FUN 00035856 reports ROM8[0x83D5] = 110 minus the byte as the timing advance in every mode, so 110 - raw is the delivered command in degrees BTDC."
-
-[[signal]]
-id = "ignition_control_state"
-domain = "ignition"
-label = "Ignition control state"
+label = "Manifold and atmospheric pressure"
 priority = "high"
 coverage = "absent"
 current_fields = []
-sources = [0xFFFF2023, 0xFFFF564C]
-widths = [1, 1]
-dids = [0x1162, 0x112D]
-evidence = "exact-code"
-note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is the work-support ignition-timing adjustment TARGET IGN TIM ADJ of JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window. Only the service-0x3B adjustment changes it, and every recording reads 0, so it is not streamed; DID 0x112D publishes it."
-
-[[signal]]
-id = "knock_control_state"
-domain = "knock"
-label = "Knock control state"
-priority = "core"
-coverage = "fixed"
-current_fields = ["knock_timing_state_raw", "knock_surface_state"]
-sources = [0xFFFF121A, 0xFFFF2466]
-widths = [2, 1]
-dids = []
-evidence = "exact-code"
-note = "The state word and surface-selector byte expose intervention state and the active hot ignition surface."
-
-[[signal]]
-id = "knock_event_latches"
-domain = "knock"
-label = "Knock event latches"
-priority = "core"
-coverage = "latched"
-current_fields = ["knock_count_latched", "knock_channel_mask_latched"]
-sources = [0xFFFF5E0C, 0xFFFF5E0D]
-widths = [1, 1]
-dids = []
-evidence = "patch-design"
-note = "Firmware instrumentation accumulates transient evaluator events between transmitted snapshots."
-
-[[signal]]
-id = "accelerator_pedal_sensors"
-domain = "throttle"
-label = "Accelerator pedal sensor words"
-priority = "core"
-coverage = "fixed"
-current_fields = ["app1_raw", "app2_raw"]
-sources = [0xFFFF269E, 0xFFFF26A2]
-widths = [2, 2]
-dids = [0x120D, 0x120E]
+sources = [0xFFFF118A, 0xFFFF4544, 0xFFFF16D2]
+widths = [1, 1, 1]
+dids = [0x1116, 0x1129, 0x112A]
 evidence = "exact-code+homologous-diagnostic"
-note = "Both diagnostic words are streamed at full rate; raw/200 V agrees with near-adjacent vehicle observations."
+note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. The target has no manifold-pressure sensor and both MAP-labelled bytes hold zero. The barometric input is disabled by ROM8[0x893E] and ROM8[0x893F], so FUN 0003CBE8 stores the calibration default ROM16[0x9382] = 0xCF00 on every pass and the atmospheric byte reads 207 without carrying pressure. None of the three bytes carries a measurement, and none is streamed."
 
 [[signal]]
-id = "primary_throttle_feedback"
-domain = "throttle"
-label = "Primary throttle feedback"
+id = "common_cvtc_targets"
+domain = "cvtc"
+label = "Common intake and exhaust CVTC targets"
 priority = "core"
 coverage = "fixed"
-current_fields = ["tps_b1_raw", "tps_b2_raw", "absolute_throttle_raw"]
-sources = [0xFFFF2756, 0xFFFF285C, 0xFFFF1075]
-widths = [2, 2, 1]
-dids = [0x120F, 0x124B, 0x111E]
-evidence = "exact-code+homologous-diagnostic"
-note = "The two primary sensor words and the diagnostic absolute-throttle byte are present; physical channel-to-bank identity remains partly homologous."
+current_fields = ["intake_cvtc_target_raw", "exhaust_cvtc_target_raw"]
+sources = [0xFFFF2326, 0xFFFF2327]
+widths = [1, 1]
+dids = [0x113A, 0x1166]
+evidence = "exact-code"
+note = "Exact code identifies a common intake target at ffff2326 and a common exhaust target at ffff2327."
+
+[[signal]]
+id = "exhaust_cvtc_actual"
+domain = "cvtc"
+label = "Exhaust CVTC actual positions"
+priority = "core"
+coverage = "fixed"
+current_fields = ["exhaust_cvtc_actual_b1_raw", "exhaust_cvtc_actual_b2_raw"]
+sources = [0xFFFF2324, 0xFFFF2325]
+widths = [1, 1]
+dids = [0x1164, 0x1165]
+evidence = "exact-code"
+note = "Both exhaust actual-position bytes are carried every scheduler pass."
 
 [[signal]]
 id = "intake_cvtc_actual"
@@ -273,17 +117,17 @@ evidence = "exact-code"
 note = "Both intake actual-position bytes are carried every scheduler pass."
 
 [[signal]]
-id = "common_cvtc_targets"
+id = "high_resolution_cvtc_duty"
 domain = "cvtc"
-label = "Common intake and exhaust CVTC targets"
-priority = "core"
-coverage = "fixed"
-current_fields = ["intake_cvtc_target_raw", "exhaust_cvtc_target_raw"]
-sources = [0xFFFF2326, 0xFFFF2327]
-widths = [1, 1]
-dids = [0x113A, 0x1166]
+label = "High-resolution exhaust CVTC duty"
+priority = "high"
+coverage = "rotating"
+current_fields = ["exhaust_cvtc_duty_b1_word_raw", "exhaust_cvtc_duty_b2_word_raw"]
+sources = [0xFFFF1AB0, 0xFFFF1AB2, 0xFFFF1AAC, 0xFFFF1AAE]
+widths = [2, 2, 2, 2]
+dids = [0x122D, 0x122E, 0x122F, 0x1230]
 evidence = "exact-code"
-note = "Exact code identifies a common intake target at ffff2326 and a common exhaust target at ffff2327."
+note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
 
 [[signal]]
 id = "intake_cvtc_duty_bytes"
@@ -312,32 +156,6 @@ evidence = "exact-code"
 note = "FUN 000bead0 converts both bytes into ATU-II channel-7 buffer registers, so percent is raw * 39 / 100 against the programmed cycle."
 
 [[signal]]
-id = "temperatures"
-domain = "temperature"
-label = "Coolant, intake-air, fuel, and oil temperatures"
-priority = "core"
-coverage = "rotating"
-current_fields = ["coolant_raw", "iat_raw", "fuel_temperature_did_source_raw", "oil_temperature_did_source_raw"]
-sources = [0xFFFF1079, 0xFFFF2837, 0xFFFF1074, 0xFFFF2876]
-widths = [1, 1, 1, 1]
-dids = [0x1101, 0x1106, 0x1104, 0x1111, 0x111F]
-evidence = "exact-code+homologous-diagnostic"
-note = "All four source bytes are streamed once per four scheduler passes; coolant and intake-air raw-minus-50 conversions have the strongest support."
-
-[[signal]]
-id = "pressure_context"
-domain = "air"
-label = "Manifold and atmospheric pressure"
-priority = "high"
-coverage = "absent"
-current_fields = []
-sources = [0xFFFF118A, 0xFFFF4544, 0xFFFF16D2]
-widths = [1, 1, 1]
-dids = [0x1116, 0x1129, 0x112A]
-evidence = "exact-code+homologous-diagnostic"
-note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. The target has no manifold-pressure sensor and both MAP-labelled bytes hold zero. The barometric input is disabled by ROM8[0x893E] and ROM8[0x893F], so FUN 0003CBE8 stores the calibration default ROM16[0x9382] = 0xCF00 on every pass and the atmospheric byte reads 207 without carrying pressure. None of the three bytes carries a measurement, and none is streamed."
-
-[[signal]]
 id = "battery_voltage"
 domain = "electrical"
 label = "Battery voltage"
@@ -351,17 +169,82 @@ evidence = "exact-code+homologous-diagnostic"
 note = "The exact diagnostic source is available; raw*0.08 V remains a homologous conversion pending synchronized target validation."
 
 [[signal]]
-id = "front_af_sensor_words"
+id = "engine_speed"
+domain = "engine"
+label = "Engine speed"
+priority = "core"
+coverage = "stock-can"
+current_fields = []
+sources = [0xFFFF11F4]
+widths = [2]
+dids = [0x1201]
+evidence = "exact-code"
+note = "FUN 000384FE writes 0xFFFF11EE = 0xFFFF1196 >> 4 and the RPM/12.5 coordinate 0xFFFF11F4 = 0xFFFF1196 >> 6 in one pass, and FUN 000C577A serializes stock CAN 0x180 bytes 0..1 as sat_u16(0xFFFF11EE * 25), so (word // 25) >> 2 of the frame word is the coordinate while the product does not saturate, below 8193.75 RPM. The frame is sampled at another instant of the scheduler cycle than a snapshot; registry entry can_telemetry.stock_speed_bracket_2026_09_22 bounds the difference, and the custom stream does not carry the coordinate."
+
+[[signal]]
+id = "base_fuel_schedule"
 domain = "fuel"
-label = "Front A/F sensor words"
-priority = "high"
+label = "Base fuel schedule"
+priority = "core"
+coverage = "fixed"
+current_fields = ["bfs_raw"]
+sources = [0xFFFF1026]
+widths = [2]
+dids = [0x1208]
+evidence = "exact-code"
+note = "The internal base schedule is available at full rate. One count is 1/2048 ms in the time base of the injection-pulse words: the stage normalizers between the schedule and the 10 us pulse words multiply to exactly 100/2048."
+
+[[signal]]
+id = "commanded_mixture"
+domain = "fuel"
+label = "Commanded mixture"
+priority = "core"
 coverage = "rotating"
-current_fields = ["front_af_sensor_b1_word_raw", "front_af_sensor_b2_word_raw"]
-sources = [0xFFFF2780, 0xFFFF2782]
-widths = [2, 2]
-dids = [0x1225, 0x1226]
-evidence = "exact-code+homologous-diagnostic"
-note = "FUN 00059D9A and FUN 00059E7C store the A/F sensor 1 ADC count re-based so that the filtered sensor reference reads 440, so raw/200 V is the sensor voltage with the reference at 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm. Lower words are richer. Under sustained enrichment both words read lean of 440, which is unexplained, so the words do not validate full-load fuelling without an independent wideband."
+current_fields = ["af_state_factor_raw"]
+sources = [0xFFFF22E8]
+widths = [2]
+dids = [0x1134]
+evidence = "exact-code"
+note = "Q14 fuel-multiplier command against the stoichiometric base schedule, streamed once per four scheduler passes: 0x4000 is the closed-loop stoichiometric target and target map 0xA9AA supplies 128..149 (1.00..1.16) through stage 0x5594A, the sole stock writer. DID 0x1134 publishes only the high byte. Commanded lambda = 16384/x; the gasoline AFR scale 1881.6/(x/128) of the public HR A2L remains a candidate."
+
+[[signal]]
+id = "fuel_output_inhibit"
+domain = "fuel"
+label = "Fuel output inhibit mask"
+priority = "core"
+coverage = "fixed"
+current_fields = ["fuel_inhibit_mask"]
+sources = [0xFFFF22E0]
+widths = [1]
+dids = []
+evidence = "exact-code"
+note = "The byte exposes the final per-cylinder fuel-output inhibit arbitration. FUN 0004ED88 stores it masked to 0x3F, and bit k inhibits injector output k: FUN 0004EBA2 replaces channel word k with the opening time and FUN 0002C13C withholds channel k from the fire mask. Output k drives cylinder k + 1 by the diagnostic Power Balance order, which is not measured electrically."
+
+[[signal]]
+id = "fuel_trims"
+domain = "fuel"
+label = "Short- and long-term fuel trims"
+priority = "core"
+coverage = "rotating"
+current_fields = ["stft_b1_raw", "stft_b2_raw", "ltft_b1_raw", "ltft_b2_raw"]
+sources = [0xFFFF22DC, 0xFFFF22DE, 0xFFFF2302, 0xFFFF2304]
+widths = [2, 2, 2, 2]
+dids = [0x1123, 0x1124, 0x1125, 0x1126]
+evidence = "exact-code"
+note = "The stream carries complete Q8.8-percent words instead of the high-byte-only service-0x22 representation."
+
+[[signal]]
+id = "injection_calculation"
+domain = "fuel"
+label = "Per-cylinder injection calculation"
+priority = "core"
+coverage = "fixed"
+current_fields = ["injection_0_raw", "injection_1_raw", "injection_2_raw", "injection_3_raw", "injection_4_raw", "injection_5_raw"]
+sources = [0xFFFF23C8, 0xFFFF23CA, 0xFFFF23CC, 0xFFFF23CE, 0xFFFF23D0, 0xFFFF23D2]
+widths = [2, 2, 2, 2, 2, 2]
+dids = [0x1206, 0x1207]
+evidence = "exact-code"
+note = "All six calculated words are streamed; service 0x22 publishes only the first two words in the declared table. These are not verified electrical pulse widths."
 
 [[signal]]
 id = "af_adjustment_states"
@@ -377,82 +260,17 @@ evidence = "exact-code+homologous-diagnostic"
 note = "FUN 000A0EE8 integrates up steps from map 0x1462A and down steps from map 0x1463A into signed words bounded to -500..500, and every consumer reads them as signed; the profile slots are unsigned, so hosts read them as signed words. The candidate factor 0.002 per count maps the bounds to -1..1 and the factory running range -0.330..0.330 to 165 counts. Every recording reads 0."
 
 [[signal]]
-id = "secondary_throttle_feedback"
-domain = "throttle"
-label = "Secondary throttle feedback"
+id = "front_af_sensor_words"
+domain = "fuel"
+label = "Front A/F sensor words"
 priority = "high"
 coverage = "rotating"
-current_fields = ["secondary_tps_b1_raw", "secondary_tps_b2_raw"]
-sources = [0xFFFF275E, 0xFFFF2864]
+current_fields = ["front_af_sensor_b1_word_raw", "front_af_sensor_b2_word_raw"]
+sources = [0xFFFF2780, 0xFFFF2782]
 widths = [2, 2]
-dids = [0x1210, 0x124C]
+dids = [0x1225, 0x1226]
 evidence = "exact-code+homologous-diagnostic"
-note = "Both secondary feedback channels are carried once per four scheduler passes."
-
-[[signal]]
-id = "throttle_request_path"
-domain = "throttle"
-label = "Bounded throttle request and target path"
-priority = "core"
-coverage = "fixed"
-current_fields = ["throttle_request_bounded_raw", "throttle_target_shared_raw", "throttle_target_channel_0_raw", "throttle_target_channel_1_raw"]
-sources = [0xFFFF19C6, 0xFFFF19B2, 0xFFFF28BC, 0xFFFF28BE]
-widths = [2, 2, 2, 2]
-dids = []
-evidence = "exact-code"
-note = "The bounded shared request, shared target area, and two final channel targets close the command side of the electronic-throttle loop. The request is the output of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. The shared target is the opening area of both throttle bodies in the counts of table 0x13202, candidate 0.0008 cm2 per count. Each channel target is 4 * (TPS counts - learned closed position), so raw/800 V is the target sensor voltage above the learned closed position; the target is the coordinate of throttle opening table 0x155A0, whose J1979 PID 0x11 gradient makes one count 34285/1114112 percent of throttle opening, and recordings bind channel 0 to bank 1."
-
-[[signal]]
-id = "requested_torque_column"
-domain = "torque"
-label = "Requested-torque surface column coordinate"
-priority = "core"
-coverage = "fixed"
-current_fields = ["request_flow_raw"]
-sources = [0xFFFF1980]
-widths = [2]
-dids = []
-evidence = "exact-code"
-note = "FUN 00073948 interpolates curve 0x15690 over axis 0x15500 at area-over-speed coordinate 0xFFFF1824, 8192 * 0xFFFF12A0 / RPM, while that coordinate does not exceed ROM16[0x1553E] = 45187, and curve 0x156D0 over axis 0x15540 at min(0xFFFF, 0xFFFF1824 >> 4) above it, and passes the result as the column input of requested-torque surface 0xE98E with row 0xFFFF1702. FUN 000730FC arbitrates the forward coordinate with inverse coordinate 0xFFFF198A. No service-0x22 DID publishes the word."
-
-[[signal]]
-id = "engine_torque_state"
-domain = "torque"
-label = "Engine torque state"
-priority = "core"
-coverage = "fixed"
-current_fields = ["engine_torque_state_raw"]
-sources = [0xFFFF18CC]
-widths = [2]
-dids = []
-evidence = "exact-code"
-note = "The saturated signed state is code-traced through torque and throttle calibration families. The candidate x*0.1 Nm conversion remains unverified."
-
-[[signal]]
-id = "exhaust_cvtc_actual"
-domain = "cvtc"
-label = "Exhaust CVTC actual positions"
-priority = "core"
-coverage = "fixed"
-current_fields = ["exhaust_cvtc_actual_b1_raw", "exhaust_cvtc_actual_b2_raw"]
-sources = [0xFFFF2324, 0xFFFF2325]
-widths = [1, 1]
-dids = [0x1164, 0x1165]
-evidence = "exact-code"
-note = "Both exhaust actual-position bytes are carried every scheduler pass."
-
-[[signal]]
-id = "high_resolution_cvtc_duty"
-domain = "cvtc"
-label = "High-resolution exhaust CVTC duty"
-priority = "high"
-coverage = "rotating"
-current_fields = ["exhaust_cvtc_duty_b1_word_raw", "exhaust_cvtc_duty_b2_word_raw"]
-sources = [0xFFFF1AB0, 0xFFFF1AB2, 0xFFFF1AAC, 0xFFFF1AAE]
-widths = [2, 2, 2, 2]
-dids = [0x122D, 0x122E, 0x122F, 0x1230]
-evidence = "exact-code"
-note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
+note = "FUN 00059D9A and FUN 00059E7C store the A/F sensor 1 ADC count re-based so that the filtered sensor reference reads 440, so raw/200 V is the sensor voltage with the reference at 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm. Lower words are richer. Under sustained enrichment both words read lean of 440, which is unexplained, so the words do not validate full-load fuelling without an independent wideband."
 
 [[signal]]
 id = "fuel_compensation_column"
@@ -468,43 +286,17 @@ evidence = "exact-code"
 note = "FUN 0003B498 forms u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) + (0xFFFF120E * 0xFFFF114E >> 11)), about 3522 * (throttle opening area + inflow area / 4) / RPM, and writes the high byte of curve 0x15042 at 4 * u while u < 0x3C00 and of curve 0x15022 at u - 0x3C00 otherwise. FUN 0002C648 and FUN 0003BD74 pass the byte as the column input of Fuel Compensation Map 0xA29A. No service-0x22 DID publishes it."
 
 [[signal]]
-id = "injection_end_angle"
+id = "long_fuel_trim_terms"
 domain = "fuel"
-label = "End-of-injection angle"
-priority = "medium"
-coverage = "fixed"
-current_fields = ["injection_end_angle_raw"]
-sources = [0xFFFF192E]
-widths = [2]
+label = "Bank 1 long-term trim summands"
+priority = "high"
+coverage = "rotating"
+current_fields = ["ltft_learned_b1_raw", "ltft_adjustment_b1_raw"]
+sources = [0xFFFF2306, 0xFFFF5648]
+widths = [2, 2]
 dids = []
 evidence = "exact-code"
-note = "FUN 00056BD0 stores 2*min(y, 209) from tables 0x12302 and 0x1230A, and FUN 000521A8 reads raw*2 as the injection-end delay in crank degrees after the reference tooth of the scheduled cylinder. The end of injection lies raw*2 - 590 degrees after intake TDC of the injected cylinder. No service-0x22 DID publishes the word."
-
-[[signal]]
-id = "injection_timing_state"
-domain = "fuel"
-label = "Injection timing state"
-priority = "research"
-coverage = "absent"
-current_fields = []
-sources = [0xFFFF162E]
-widths = [2]
-dids = [0x1131, 0x1132, 0x1133, 0x113D]
-evidence = "exact-code"
-note = "Four declared DIDs publish the high byte of word 0xFFFF162E, which has no runtime producer: the startup initializer clears it and no other code accesses it, so the DIDs read constant zero and the word is not streamed. The live end-of-injection angle is signal injection_end_angle."
-
-[[signal]]
-id = "vehicle_context"
-domain = "vehicle"
-label = "Vehicle speed, selector, ASCD input, and dashboard state"
-priority = "core"
-coverage = "stock-can"
-current_fields = []
-sources = []
-widths = []
-dids = []
-evidence = "passive-can"
-note = "The dashboard and MLG recorder already decode these values from stock CAN frames 0x280, 0x421, 0x239, and 0x551 without consuming custom telemetry bytes."
+note = "Diagnostic long-term trim is the selected learned cell plus the adjustment term minus neutral 0x6400, so the pair separates the learned grid value from the running adjustment."
 
 [[signal]]
 id = "fuel_pressure"
@@ -520,17 +312,82 @@ evidence = "exact-code"
 note = "The ECM has no fuel-pressure input. The complete DTC descriptor tables at JK08A 0x19360 to 0x1A14C, JK78C 0x1B7AC to 0x1C5EC, and 1ND0A 0x1BE00 to 0x1CD84 declare 227, 217, and 237 distinct codes and none of P0087, P0088, P0190 to P0194, P0230 to P0232, or P0627 to P0629. Each table runs from P0183 straight to P0196. The service-0x22 pointer table declares manifold, atmospheric, and EVAP pressure DIDs but no fuel-pressure DID, and fuel-side sensing is limited to tank temperature through DID 0x1104 with codes P0181 to P0183. The factory VQ35HR manual treats fuel pressure as a gauge measurement during service rather than an ECM signal."
 
 [[signal]]
-id = "knock_margin"
-domain = "knock"
-label = "Minimum knock threshold margin per evaluator channel"
-priority = "high"
-coverage = "rotating"
-current_fields = ["knock_margin_min_ch1_raw", "knock_margin_min_ch2_raw", "knock_margin_min_ch3_raw", "knock_margin_min_ch4_raw", "knock_margin_min_ch5_raw", "knock_margin_min_ch6_raw"]
-sources = [0xFFFF5E10, 0xFFFF5E12, 0xFFFF5E14, 0xFFFF5E16, 0xFFFF5E18, 0xFFFF5E1A]
-widths = [2, 2, 2, 2, 2, 2]
+id = "injection_end_angle"
+domain = "fuel"
+label = "End-of-injection angle"
+priority = "medium"
+coverage = "fixed"
+current_fields = ["injection_end_angle_raw"]
+sources = [0xFFFF192E]
+widths = [2]
 dids = []
-evidence = "patch-design"
-note = "Slice evaluator 0x0004A238 leaves the offset-binary metric of the evaluated channel at int32[0xFFFF21D8 + 4 * (channel - 1)] and its threshold at uint16[0xFFFF2144 + 2 * (channel - 1)], but each evaluation overwrites the pair of its channel, so a sampled pointer misses the evaluations between two snapshots. The wrapper behind the only literal of the evaluator at 0x0004A9C0 repeats the stock comparison after every evaluation and keeps the per-channel minimum of threshold minus metric as a signed word; an exceedance yields a negative margin limited at -32768. Context tag 4 publishes the six minimums and rearms them with the idle value 32767, which also stands for a margin of 32767 or more. Every channel is evaluated once per engine cycle; stock threshold rows 3 and 5 hold 0xFFFF, so those channels publish 32767 unless the metric exceeds 32768. The fields are named by evaluator channel: the channel index is the cylinder number of the event that opens the window, and the combustion event a window observes is not measured."
+evidence = "exact-code"
+note = "FUN 00056BD0 stores 2*min(y, 209) from tables 0x12302 and 0x1230A, and FUN 000521A8 reads raw*2 as the injection-end delay in crank degrees after the reference tooth of the scheduled cylinder. The end of injection lies raw*2 - 590 degrees after intake TDC of the injected cylinder. No service-0x22 DID publishes the word."
+
+[[signal]]
+id = "front_heated_oxygen_sensors"
+domain = "fuel"
+label = "Front heated oxygen sensor bytes"
+priority = "research"
+coverage = "absent"
+current_fields = []
+sources = [0xFFFF22C4, 0xFFFF22C5]
+widths = [1, 1]
+dids = [0x1118, 0x1119]
+evidence = "exact-code+homologous-diagnostic"
+note = "Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank 2 bytes. The engine has front A/F sensors, and no traced code writes the bytes: only the DID records reference them, a whole-program trace of 0xFFFF22C0..0xFFFF22C7 finds writes to the neighbouring bytes alone, ROM8[0x8936] = 0 declares no J1979 oxygen sensor, and every recording reads 0, so the bytes are not streamed. The live front-sensor signal is front_af_sensor_words."
+
+[[signal]]
+id = "injection_timing_state"
+domain = "fuel"
+label = "Injection timing state"
+priority = "research"
+coverage = "absent"
+current_fields = []
+sources = [0xFFFF162E]
+widths = [2]
+dids = [0x1131, 0x1132, 0x1133, 0x113D]
+evidence = "exact-code"
+note = "Four declared DIDs publish the high byte of word 0xFFFF162E, which has no runtime producer: the startup initializer clears it and no other code accesses it, so the DIDs read constant zero and the word is not streamed. The live end-of-injection angle is signal injection_end_angle."
+
+[[signal]]
+id = "apc_ignition_command"
+domain = "ignition"
+label = "APC ignition command"
+priority = "core"
+coverage = "fixed"
+current_fields = ["apc_command_raw"]
+sources = [0xFFFF2022]
+widths = [1]
+dids = [0x1107, 0x1108, 0x1109, 0x110A, 0x113C]
+evidence = "exact-code"
+note = "The diagnostic command normally equals 110 minus the final timing coordinate, with mode-dependent offsets and clamps. J1979 PID 0x0E in FUN 00035856 reports ROM8[0x83D5] = 110 minus the byte as the timing advance in every mode, so 110 - raw is the delivered command in degrees BTDC."
+
+[[signal]]
+id = "final_ignition_coordinate"
+domain = "ignition"
+label = "Final ignition software coordinate"
+priority = "core"
+coverage = "fixed"
+current_fields = ["final_timing_raw"]
+sources = [0xFFFF11D4]
+widths = [1]
+dids = []
+evidence = "exact-code"
+note = "This byte is a final software timing coordinate, not a crank-referenced measurement of delivered spark angle."
+
+[[signal]]
+id = "ignition_control_state"
+domain = "ignition"
+label = "Ignition control state"
+priority = "high"
+coverage = "absent"
+current_fields = []
+sources = [0xFFFF2023, 0xFFFF564C]
+widths = [1, 1]
+dids = [0x1162, 0x112D]
+evidence = "exact-code"
+note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is the work-support ignition-timing adjustment TARGET IGN TIM ADJ of JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window. Only the service-0x3B adjustment changes it, and every recording reads 0, so it is not streamed; DID 0x112D publishes it."
 
 [[signal]]
 id = "physical_spark_angle"
@@ -544,3 +401,146 @@ widths = []
 dids = []
 evidence = "measurement-requirement"
 note = "Firmware exposes command coordinates but not independent physical feedback. Crank-referenced external measurement is required."
+
+[[signal]]
+id = "knock_control_state"
+domain = "knock"
+label = "Knock control state"
+priority = "core"
+coverage = "fixed"
+current_fields = ["knock_timing_state_raw", "knock_surface_state"]
+sources = [0xFFFF121A, 0xFFFF2466]
+widths = [2, 1]
+dids = []
+evidence = "exact-code"
+note = "The state word and surface-selector byte expose intervention state and the active hot ignition surface."
+
+[[signal]]
+id = "knock_event_latches"
+domain = "knock"
+label = "Knock event latches"
+priority = "core"
+coverage = "latched"
+current_fields = ["knock_count_latched", "knock_channel_mask_latched"]
+sources = [0xFFFF5E0C, 0xFFFF5E0D]
+widths = [1, 1]
+dids = []
+evidence = "patch-design"
+note = "Firmware instrumentation accumulates transient evaluator events between transmitted snapshots."
+
+[[signal]]
+id = "knock_margin"
+domain = "knock"
+label = "Minimum knock threshold margin per evaluator channel"
+priority = "high"
+coverage = "rotating"
+current_fields = ["knock_margin_min_ch1_raw", "knock_margin_min_ch2_raw", "knock_margin_min_ch3_raw", "knock_margin_min_ch4_raw", "knock_margin_min_ch5_raw", "knock_margin_min_ch6_raw"]
+sources = [0xFFFF5E10, 0xFFFF5E12, 0xFFFF5E14, 0xFFFF5E16, 0xFFFF5E18, 0xFFFF5E1A]
+widths = [2, 2, 2, 2, 2, 2]
+dids = []
+evidence = "patch-design"
+note = "Slice evaluator 0x0004A238 leaves the offset-binary metric of the evaluated channel at int32[0xFFFF21D8 + 4 * (channel - 1)] and its threshold at uint16[0xFFFF2144 + 2 * (channel - 1)], but each evaluation overwrites the pair of its channel, so a sampled pointer misses the evaluations between two snapshots. The wrapper behind the only literal of the evaluator at 0x0004A9C0 repeats the stock comparison after every evaluation and keeps the per-channel minimum of threshold minus metric as a signed word; an exceedance yields a negative margin limited at -32768. Context tag 4 publishes the six minimums and rearms them with the idle value 32767, which also stands for a margin of 32767 or more. Every channel is evaluated once per engine cycle; stock threshold rows 3 and 5 hold 0xFFFF, so those channels publish 32767 unless the metric exceeds 32768. The fields are named by evaluator channel: the channel index is the cylinder number of the event that opens the window, and the combustion event a window observes is not measured."
+
+[[signal]]
+id = "temperatures"
+domain = "temperature"
+label = "Coolant, intake-air, fuel, and oil temperatures"
+priority = "core"
+coverage = "rotating"
+current_fields = ["coolant_raw", "iat_raw", "fuel_temperature_did_source_raw", "oil_temperature_did_source_raw"]
+sources = [0xFFFF1079, 0xFFFF2837, 0xFFFF1074, 0xFFFF2876]
+widths = [1, 1, 1, 1]
+dids = [0x1101, 0x1106, 0x1104, 0x1111, 0x111F]
+evidence = "exact-code+homologous-diagnostic"
+note = "All four source bytes are streamed once per four scheduler passes; coolant and intake-air raw-minus-50 conversions have the strongest support."
+
+[[signal]]
+id = "accelerator_pedal_sensors"
+domain = "throttle"
+label = "Accelerator pedal sensor words"
+priority = "core"
+coverage = "fixed"
+current_fields = ["app1_raw", "app2_raw"]
+sources = [0xFFFF269E, 0xFFFF26A2]
+widths = [2, 2]
+dids = [0x120D, 0x120E]
+evidence = "exact-code+homologous-diagnostic"
+note = "Both diagnostic words are streamed at full rate; raw/200 V agrees with near-adjacent vehicle observations."
+
+[[signal]]
+id = "primary_throttle_feedback"
+domain = "throttle"
+label = "Primary throttle feedback"
+priority = "core"
+coverage = "fixed"
+current_fields = ["tps_b1_raw", "tps_b2_raw", "absolute_throttle_raw"]
+sources = [0xFFFF2756, 0xFFFF285C, 0xFFFF1075]
+widths = [2, 2, 1]
+dids = [0x120F, 0x124B, 0x111E]
+evidence = "exact-code+homologous-diagnostic"
+note = "The two primary sensor words and the diagnostic absolute-throttle byte are present; physical channel-to-bank identity remains partly homologous."
+
+[[signal]]
+id = "throttle_request_path"
+domain = "throttle"
+label = "Bounded throttle request and target path"
+priority = "core"
+coverage = "fixed"
+current_fields = ["throttle_request_bounded_raw", "throttle_target_shared_raw", "throttle_target_channel_0_raw", "throttle_target_channel_1_raw"]
+sources = [0xFFFF19C6, 0xFFFF19B2, 0xFFFF28BC, 0xFFFF28BE]
+widths = [2, 2, 2, 2]
+dids = []
+evidence = "exact-code"
+note = "The bounded shared request, shared target area, and two final channel targets close the command side of the electronic-throttle loop. The request is the output of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. The shared target is the opening area of both throttle bodies in the counts of table 0x13202, candidate 0.0008 cm2 per count. Each channel target is 4 * (TPS counts - learned closed position), so raw/800 V is the target sensor voltage above the learned closed position; the target is the coordinate of throttle opening table 0x155A0, whose J1979 PID 0x11 gradient makes one count 34285/1114112 percent of throttle opening, and recordings bind channel 0 to bank 1."
+
+[[signal]]
+id = "secondary_throttle_feedback"
+domain = "throttle"
+label = "Secondary throttle feedback"
+priority = "high"
+coverage = "rotating"
+current_fields = ["secondary_tps_b1_raw", "secondary_tps_b2_raw"]
+sources = [0xFFFF275E, 0xFFFF2864]
+widths = [2, 2]
+dids = [0x1210, 0x124C]
+evidence = "exact-code+homologous-diagnostic"
+note = "Both secondary feedback channels are carried once per four scheduler passes."
+
+[[signal]]
+id = "engine_torque_state"
+domain = "torque"
+label = "Engine torque state"
+priority = "core"
+coverage = "fixed"
+current_fields = ["engine_torque_state_raw"]
+sources = [0xFFFF18CC]
+widths = [2]
+dids = []
+evidence = "exact-code"
+note = "The saturated signed state is code-traced through torque and throttle calibration families. The candidate x*0.1 Nm conversion remains unverified."
+
+[[signal]]
+id = "requested_torque_column"
+domain = "torque"
+label = "Requested-torque surface column coordinate"
+priority = "core"
+coverage = "fixed"
+current_fields = ["request_flow_raw"]
+sources = [0xFFFF1980]
+widths = [2]
+dids = []
+evidence = "exact-code"
+note = "FUN 00073948 interpolates curve 0x15690 over axis 0x15500 at area-over-speed coordinate 0xFFFF1824, 8192 * 0xFFFF12A0 / RPM, while that coordinate does not exceed ROM16[0x1553E] = 45187, and curve 0x156D0 over axis 0x15540 at min(0xFFFF, 0xFFFF1824 >> 4) above it, and passes the result as the column input of requested-torque surface 0xE98E with row 0xFFFF1702. FUN 000730FC arbitrates the forward coordinate with inverse coordinate 0xFFFF198A. No service-0x22 DID publishes the word."
+
+[[signal]]
+id = "vehicle_context"
+domain = "vehicle"
+label = "Vehicle speed, selector, ASCD input, and dashboard state"
+priority = "core"
+coverage = "stock-can"
+current_fields = []
+sources = []
+widths = []
+dids = []
+evidence = "passive-can"
+note = "The dashboard and MLG recorder already decode these values from stock CAN frames 0x280, 0x421, 0x239, and 0x551 without consuming custom telemetry bytes."
