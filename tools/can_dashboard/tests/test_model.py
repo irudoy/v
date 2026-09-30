@@ -174,10 +174,15 @@ class DashboardModelTest(unittest.TestCase):
             field["name"]: field["scale"]
             for field in profiles["tuning"]["fields"]
         }
-        self.assertIn(
-            "bit k inhibits injector output k, cylinder k + 1",
-            scales["fuel_inhibit_mask"],
-        )
+        prefix = "bits: "
+        self.assertTrue(scales["fuel_inhibit_mask"].startswith(prefix))
+        for entry in scales["fuel_inhibit_mask"][len(prefix):].split(", "):
+            bit, name = entry.split(" ")
+            with self.subTest(bit=bit):
+                self.assertEqual(
+                    model.inhibited_cylinders(1 << int(bit)),
+                    "cyl " + name.removeprefix("CYLINDER_"),
+                )
         self.assertIn(
             "bit c - 1 is knock channel c",
             scales["knock_channel_mask_latched"],

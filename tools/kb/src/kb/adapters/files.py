@@ -21,12 +21,11 @@
   its targets are those of the feature (section 7.9).
 - A field file `field/<name>.toml` gives the field entity with its keys; its
   `signal` and the `source` of an `ecu_ram` field are references, and the
-  source names the `7mfk` symbol of its meaning. An `ecu_ram` field without
-  a signal fails the `schema` check, and one with a scale goes to the
-  `unsplit` section of the audit. The `can_telemetry` feature requires every
-  field, and `telemetry_units` of the stash holds the `7mfk` symbols of the
-  source meanings whose files state their unit, whose unit the ledgers leave
-  to the file.
+  source names the `7mfk` symbol of its meaning; the `fields` check verifies
+  the signal, the source, and the scale of each field. The `can_telemetry`
+  feature requires every field, and `telemetry_units` of the stash holds the
+  `7mfk` symbols of the source meanings whose files state their unit, whose
+  unit the ledgers leave to the file.
 - A signal file `signal/<slug>.toml` gives the signal entity with its keys;
   `observes` lists meaning references, which name the `7mfk` symbols of
   their meanings, and allocation references `<feature>.<allocation>`, which
@@ -252,24 +251,14 @@ def _former_name(text):
 def _field(b, name, document, src):
     """Declare a field file; returns the source reference of an `ecu_ram`
     field, or None."""
-    subject = f"field.{name}"
     props = {key: value for key, value in document.items() if key != "signal"}
     refs = {}
     if isinstance(document.get("signal"), str):
         refs["signal"] = [Ref(document["signal"], src)]
-    if document.get("origin") != "ecu_ram":
-        b.entity("field", name, src, props=props, refs=refs)
-        return None
-    source = props.pop("source", None)
-    if isinstance(source, str):
+    source = None
+    if document.get("origin") == "ecu_ram" and isinstance(props.get("source"), str):
+        source = props.pop("source")
         refs["source"] = [Ref(source, src, TELEMETRY_LAYOUT)]
-    else:
-        b.issue("schema", src, subject, "an ecu_ram field without source")
-        source = None
-    if "signal" not in refs:
-        b.issue("schema", src, subject, "an ecu_ram field without signal")
-    if "scale" in props:
-        b.issue("unsplit", src, subject, f"scale {props['scale']!r}")
     b.entity("field", name, src, props=props, refs=refs)
     return source
 

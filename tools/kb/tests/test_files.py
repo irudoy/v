@@ -205,9 +205,72 @@ class FilesTest(unittest.TestCase):
         self.assertEqual(sorted(model.entities[("feature", "can_telemetry")].refs["requires"]),
                          [("field", "loose_raw"), ("field", "probe_raw"), ("field", "tick16")])
         self.assertEqual(b.stash["telemetry_units"], {SymbolKey("7mfk", "ram", 0xFFFF11F4)})
-        self.assertEqual(sorted((issue.check, issue.subject, issue.message) for issue in b.issues),
-                         [("schema", "field.loose_raw", "an ecu_ram field without signal"),
-                          ("unsplit", "field.loose_raw", "scale 'Q14 factor'")])
+        # The `fields` check, not the reader, reports the missing signal and
+        # the scale of an `ecu_ram` field.
+        self.assertEqual(b.issues, [])
+
+    def test_the_fields_and_widths_checks_verify_what_each_field_reads(self):
+        status = {"layout": "jk00d", "state": "unresolved", "method": "masked-match",
+                  "target": "7mfk:0003bd1c", "count": 0, "l0": "0123456789abcdef"}
+        self.write("ram", "probe", {"title": "Probe", "width": 16, "unit": "V", "scale": "x/200",
+                                    "symbol": [{"layout": "7mfk", "address": "ffff11f4"}],
+                                    "status": [status]})
+        self.write("ram", "narrow", {"title": "Narrow", "width": 8, "signed": True,
+                                     "symbol": [{"layout": "7mfk", "address": "ffff11f8"}]})
+        self.write("ram", "inside", {"title": "Inside", "width": 8,
+                                     "symbol": [{"layout": "7mfk", "address": "ffff5e40"}],
+                                     "status": [status]})
+        self.write("ram", "cell", {"title": "Cell", "width": 16,
+                                   "symbol": [{"layout": "jk00d", "address": "ffff1200"}]})
+        self.write("feature", "can_telemetry", {"title": "CAN telemetry", "target": [
+            {"layout": "7mfk", "status": "supported", "allocations": {
+                "tick16": {"address": "ffff5e08", "width": 2},
+                "late": {"address": "ffff5f00", "width": 1}}},
+            {"layout": "jk00d", "status": "supported",
+             "roles": {"cell_raw": {"symbol": "cell/ram"}}}]})
+        read = {"signal": "probe/signal", "origin": "ecu_ram", "signed": False,
+                "profiles": ["tuning"], "page": 0}
+        self.write("field", "probe_raw", {**read, "source": "probe/ram", "width": 2, "offset": 1})
+        self.write("field", "loose_raw", {
+            "source": "probe/ram", "origin": "ecu_ram", "width": 2, "signed": False,
+            "scale": "Q14 factor", "profiles": ["tuning"], "page": 0, "offset": 3})
+        self.write("field", "narrow_raw", {**read, "source": "narrow/ram", "width": 2,
+                                           "offset": 5})
+        self.write("field", "cell_raw", {**read, "source": "narrow/ram", "width": 1,
+                                         "signed": True, "offset": 7})
+        self.write("field", "inside_raw", {**read, "source": "inside/ram", "width": 1,
+                                           "offset": 8})
+        allocated = {"origin": "telemetry_state", "width": 2, "signed": False,
+                     "profiles": ["tuning"], "page": 1}
+        self.write("field", "tick16", {**allocated, "source": "can_telemetry.tick16",
+                                       "scale": "raw ticks", "offset": 1})
+        self.write("field", "late", {**allocated, "source": "can_telemetry.late", "offset": 3})
+
+        def declare(b):
+            b.entity("signal", "probe", "probe.toml")
+            b.stash["feature_ram"] = [(0xFFFF5E00, 0xFFFF5F10, "can_telemetry")]
+            b.stash["origin_regions"] = {
+                "telemetry_state": [(0xFFFF5E00, 0xFFFF5E20, "can_telemetry")]}
+
+        _, model = self.build(declare)
+        self.assertEqual(sorted((issue.subject, issue.message) for issue in checks.fields(model)), [
+            ("inside_raw/field", "the source 7mfk-ffff5e40/ram lies in the RAM that a feature "
+             "allocates"),
+            ("late/field", "a telemetry_state field without scale"),
+            ("late/field", "allocation can_telemetry.late lies outside the telemetry_state "
+             "regions of can_telemetry"),
+            ("loose_raw/field", "an ecu_ram field that names no signal"),
+            ("loose_raw/field", "an ecu_ram field with scale 'Q14 factor'; the meaning of its "
+             "source holds the scale"),
+            ("narrow_raw/field", "on jk00d the source meaning has no symbol and no status, and "
+             "no symbol fills the role of the field"),
+            ("narrow_raw/field", "signed False disagrees with 7mfk-ffff11f8/ram, whose signed is "
+             "True")])
+        self.assertEqual(sorted((issue.subject, issue.message) for issue in checks.widths(model)), [
+            ("late/field", "the field of 2 bytes exceeds allocation can_telemetry.late, which "
+             "holds 1"),
+            ("narrow_raw/field", "the field of 2 bytes exceeds 7mfk-ffff11f8/ram, whose width is "
+             "8 bits")])
 
     def test_a_signal_file_observes_the_7mfk_symbols_of_meanings_and_allocations(self):
         self.write("ram", "probe", {"title": "Probe", "width": 16,

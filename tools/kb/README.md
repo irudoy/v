@@ -52,8 +52,9 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
 
 - `kb check` runs the active checks, which `make check` includes: `l0`;
   `sites` over the function ledgers ([L0](#l0)); the
-  model checks `schema`, `canonical`, `names`, `references`, `symbols`, and
-  `links` over the entity files and the compiled registries; the matcher
+  model checks `schema`, `canonical`, `names`, `references`, `symbols`,
+  `links`, `widths`, and `fields` over the entity files and the compiled
+  registries; the matcher
   checks `homology`, `image-bytes`, `statuses`, and `writers`
   ([Matchers](#matchers)); and `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
@@ -78,12 +79,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   query parameter, `--json` prints the records as JSON without a budget.
 - `kb instance up|down|status|prune` manages the graph instance of the working
   tree ([Graph](#graph)).
-- `kb audit` prints five sections: `disagreements`, where two registries
+- `kb audit` prints four sections: `disagreements`, where two registries
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
   that lack the keys of their evidence kind, under the registry that states
-  each; `unsplit`, the scales that the files of `ecu_ram` fields state
-  because the keys of their source meanings cannot give them; and `levels`,
+  each; and `levels`,
   the claims above their effective level with the dependency that bounds
   each and the end of its chain, the `candidate` claims without evidence,
   the `code` and `silicon` claims without grounding, the `hardware` keys
@@ -329,7 +329,7 @@ a projection of the files.
 | `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml` | 3 | `tbl`, `axis`, `fn`, `ram`, and `const` meanings with symbols on `jk78c`, `1nd`, and `1me3b`: the keys and `[editor]` of the native tables, the evidence of their symbols, their `reader` and `axis` links, and their `absent` statuses | `kb.adapters.native:tables`, `kb.adapters.native:fuel_cut` |
 | `defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv` | 3 | `tbl` and `axis` meanings with the row items of their symbols and the `absent` and `unresolved` statuses of the rows; the `definitions` targets of `kb/feature/definitions.toml` with `images`, `requires`, `variants`, and `omitted` | `kb.adapters.definitions:addresses`, `kb.adapters.definitions:projections` |
 | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, the symbol and hook-key tables of `patches/runtime_targets.py` | 3 | `hook`, `fn`, `ram`, `reg`, `tbl`, `const`, and `did` meanings with the row items of their symbols, the `target` links of the hook words, and the `absent` and `unresolved` statuses of the rows; the targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` in `kb/feature/` with their key tables, roles, `requires`, `variants`, `unsupported`, `notes`, and `basis` | `kb.adapters.profiles:address_profiles`, `kb.adapters.profiles:correspondences` |
-| `patches/can-telemetry-profile.toml` | 4 | `field` entities with their keys, `signal`, and `source`; the unit, scale, and scale level of the source meanings of the `ecu_ram` fields; the wire constants, `profiles`, and `contexts` of `kb/feature/can_telemetry.toml`, the addresses of its `7mfk` target, and the allocations of the `7mfk` targets of `can_telemetry`, `map_switching`, and `rolling_launch` | `kb.adapters.telemetry:profile` |
+| `patches/can-telemetry-profile.toml` | 4 | `field` entities with their keys, `signal`, and `source`; the unit, scale, scale level, values, and named bits of the source meanings of the `ecu_ram` fields; the wire constants, `profiles`, and `contexts` of `kb/feature/can_telemetry.toml`, the addresses of its `7mfk` target, and the allocations of the `7mfk` targets of `can_telemetry`, `map_switching`, and `rolling_launch` | `kb.adapters.telemetry:profile` |
 | `defs/JK08A.tuning-signals.toml` | 4 | `signal` entities with their keys and the meanings and allocations that they observe; the widths of the observed meanings and the identity item of an observed symbol that no evidence grounds; the catalog keys of `kb/feature/can_telemetry.toml` | `kb.adapters.signals:catalog` |
 | `defs/JK08A.overrides.toml` | 4 | `[editor]` of the `7mfk` tables and axes with their masked views and `[logparam]` of the `7mfk` RAM; `default_emit` and the switches of `kb/feature/definitions.toml` and the JK08A entry of its `7mfk` target | `kb.adapters.overrides:presentation` |
 
@@ -487,8 +487,12 @@ The rules of the telemetry profile:
   evidence where only the profile and the entity files state the symbol, and
   for another field its allocation as `<feature>.<allocation>`.
 - The file of a source meaning takes the unit, the scale, and the scale
-  level that the scale of its field gives, which must equal the keys of the
-  meaning. The remaining text of the scale becomes the summary of a meaning
+  level that the scale of its field gives, a bare `raw` as the scale `x`, or
+  the values of an enumeration or the named bits of `bits: <n> <NAME>, ...`,
+  which must equal the keys of the meaning; values and bits agree by number
+  and name. A scale that the conversion cannot split fails the `fields`
+  check, and the conversion refuses it. The remaining text of the scale
+  becomes the summary of a meaning
   whose summary in the model it is and whose file states no other, and
   otherwise a note of its file; the names that only the profile states
   become `former` names.
@@ -500,10 +504,11 @@ The rules of the telemetry profile:
 `can_telemetry`, the mailbox and the addresses of its `7mfk` target, its
 `profiles`, the stream fields by page and offset, and the fields of each
 context by position. The `source` of an `ecu_ram` field is the address of
-the `7mfk` symbol of its meaning, and its `scale` the scale that its file
-states or else the string that the unit, the scale, and the scale level of
-the meaning give, or its values as an enumeration; another field has the
-address of its allocation on a `7mfk` target and the scale of its file. The
+the `7mfk` symbol of its meaning, and its `scale` the string that the unit,
+the scale, and the scale level of the meaning give, or else its values as
+an enumeration or its named bits as `bits: <n> <NAME>, ...`, each by number;
+another field has the address of its allocation on a `7mfk` target and the
+scale of its file. The
 conversion lists each `ecu_ram` scale that the projection renders in
 another string and refuses any other change of the file.
 

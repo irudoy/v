@@ -19,6 +19,10 @@ which own the patch design of `7mfk`.
 - The `[[active_ram]]` entries of `patches/jk08a-runtime-reservations.toml`
   give the RAM that each feature allocates on `7mfk` (`feature_ram` of the
   stash), whose addresses name allocations and no meanings.
+- The state and configuration records of the telemetry layout and the active
+  RAM of `map_switching` and `rolling_launch` are the regions where the source
+  of a telemetry field of each origin other than `ecu_ram` lies
+  (`origin_regions` of the stash), which the `fields` check reads.
 
 The address profiles state the same facts of the other layouts with the
 helpers of this module.
@@ -41,6 +45,8 @@ CANONICAL = "7mfk"
 # earlier one, and the first feature's key names a word without canonical key.
 FEATURES = tuple(LAYOUTS)
 HOOK_WIDTH = 32
+# The features whose active RAM holds the sources of `runtime_state` fields.
+RUNTIME_OWNERS = ("map_switching", "rolling_launch")
 
 
 @dataclass
@@ -68,6 +74,22 @@ def documents(root):
     """{feature: document} of the canonical feature layouts."""
     return {feature: tomllib.loads((root / path).read_text(encoding="utf-8"))
             for feature, path in LAYOUTS.items()}
+
+
+def origin_regions(telemetry, active):
+    """{origin: [(start, end, feature)]}: the addresses where the source of a
+    telemetry field of each origin other than `ecu_ram` lies, and the feature
+    that owns them, from the telemetry layout document and the active RAM
+    [(start, end, owner)] of the reservation ledger."""
+    ram = telemetry["ram"]
+    configuration = telemetry["configuration_address"]
+    return {
+        "telemetry_state": [(ram["state_start"], ram["state_start"] + ram["state_size"],
+                             "can_telemetry")],
+        "rom_configuration": [(configuration, configuration + telemetry["configuration_size"],
+                               "can_telemetry")],
+        "runtime_state": [span for span in active if span[2] in RUNTIME_OWNERS],
+    }
 
 
 def canonical_hooks(found):
@@ -165,6 +187,7 @@ def declare(b, root):
     ledger = tomllib.loads((root / RESERVATIONS).read_text(encoding="utf-8"))
     b.stash["feature_ram"] = [(row["start"], row["end"], row["owner"])
                               for row in ledger.get("active_ram", ())]
+    b.stash["origin_regions"] = origin_regions(found["can_telemetry"], b.stash["feature_ram"])
     chains = words(canonical_hooks(found))
     b.stash[__name__] = chains
     targets = {}

@@ -272,10 +272,8 @@ class Conversion:
         else:
             adapter.relate(self.facts, root)
         # Legacy evidence without the keys of its kind is what a conversion
-        # types, and a scale that the parser cannot split stays the scale of
-        # its field.
-        issues = [issue for issue in self.facts.issues
-                  if issue.check not in ("untyped", "unsplit")]
+        # types.
+        issues = [issue for issue in self.facts.issues if issue.check != "untyped"]
         if issues:
             lines = [f"the registry has {len(issues)} issues; nothing is written"]
             lines += [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
@@ -952,6 +950,18 @@ class Conversion:
             for name, value in props.items():
                 if name == "summary":
                     self._rest(meaning, document, value)
+                    continue
+                if name in telemetry.NAMED:
+                    # The profile names the values or bits that the meaning
+                    # states with their summaries, levels, and evidence.
+                    held = [(item.get(name), item.get("name"))
+                            for item in meaning.props.get(name) or ()]
+                    stated = [(item[name], item["name"]) for item in value]
+                    if held and sorted(held) != sorted(stated):
+                        raise KbError(f"{meaning.key}: {name} {stated} of the profile disagrees "
+                                      f"with {held}", code=3)
+                    if not held:
+                        document[name] = value
                     continue
                 if meaning.props.get(name) != value:
                     raise KbError(f"{meaning.key}: {name} = {value!r} of the profile disagrees "

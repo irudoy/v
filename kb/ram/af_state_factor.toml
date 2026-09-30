@@ -1,4 +1,6 @@
 width = 16
+unit = "ratio"
+scale = "x/16384"
 
 [[symbol]]
 layout = "1me3b"

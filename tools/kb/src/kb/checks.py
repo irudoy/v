@@ -10,6 +10,7 @@ import re
 
 from kb import match, names, repo, store, vocab
 from kb.model import MEANING_REF, SYMBOL_REF, Issue, SymbolKey
+from kb.targets import CANONICAL
 
 ROM = ("fn", "tbl", "axis", "const", "hook", "did", "dtc")
 SPACE = {**{kind: "rom" for kind in ROM}, "ram": "ram", "reg": "io"}
@@ -536,6 +537,171 @@ def writers(model):
     return issues
 
 
+def _field_targets(model):
+    """{field key: [(layout, target)]}: the targets of the features that
+    require each field."""
+    by_feature = defaultdict(list)
+    for (feature, layout), target in sorted(model.targets.items()):
+        by_feature[feature].append((layout, target))
+    found = defaultdict(list)
+    for (kind, slug), entity in sorted(model.entities.items()):
+        if kind != "feature":
+            continue
+        for ref in entity.refs.get("requires", ()):
+            if isinstance(ref, tuple) and ref[0] == "field":
+                found[ref] += by_feature[slug]
+    return found
+
+
+def _source_symbol(model, entity):
+    """The `7mfk` `ram` or `reg` symbol that the source of an `ecu_ram` field
+    names, or None."""
+    keys = entity.refs.get("source", ())
+    if (len(keys) == 1 and isinstance(keys[0], SymbolKey) and keys[0].layout == CANONICAL
+            and keys[0].kind in ("ram", "reg")):
+        return model.symbols.get(keys[0])
+    return None
+
+
+def _reads(model, entity, targets):
+    """[(layout, symbol)] that an `ecu_ram` field reads: its source on `7mfk`,
+    and on each other layout that a feature requiring it targets the symbol
+    that fills the role of the field in the target, or else the symbol of the
+    source meaning, or None."""
+    source = _source_symbol(model, entity)
+    found = {CANONICAL: source}
+    for layout, target in targets:
+        if layout == CANONICAL:
+            continue
+        role = target.props.get("roles", {}).get(entity.slug)
+        symbol = model.symbols.get(role.get("symbol")) if isinstance(role, dict) else None
+        if symbol is None and source is not None and source.meaning is not None:
+            symbol = source.meaning.symbols.get(layout)
+        if found.get(layout) is None:
+            found[layout] = symbol
+    return sorted(found.items())
+
+
+def _allocation(model, entity):
+    """(feature, allocation name, allocation entry or None) that the source
+    `<feature>.<allocation>` of a field of an origin other than `ecu_ram`
+    names on the `7mfk` target of the feature."""
+    source = entity.props.get("source")
+    feature, _, name = source.partition(".") if isinstance(source, str) else ("", "", "")
+    target = model.targets.get((feature, CANONICAL))
+    entry = (target.props.get("allocations", {}) if target else {}).get(name)
+    return feature, name, entry if isinstance(entry, dict) else None
+
+
+def _span(entry):
+    """(start, end) of an allocation entry, or None."""
+    try:
+        start = int(entry["address"], 16)
+    except (KeyError, TypeError, ValueError):
+        return None
+    width = entry.get("width")
+    return (start, start + width) if isinstance(width, int) and width > 0 else None
+
+
+def fields(model):
+    """Every field names a source of its origin, and every `ecu_ram` field a
+    signal and no scale; the source of an `ecu_ram` field is a `7mfk` `ram` or
+    `reg` symbol outside the RAM that the features allocate, and the `signed`
+    of the field agrees with each symbol that it reads where the symbol
+    states it; on every layout that a feature requiring the field targets,
+    the source meaning has a symbol or a status, or a symbol fills the role of
+    the field in the target. The source of a field of another origin is the
+    allocation named after the field without `_raw`, inside a region of its
+    origin that the feature of the allocation owns (`origin_regions` of the
+    stash), and the field carries its scale (section 7.9)."""
+    issues = [issue for issue in model.issues if issue.check == "fields"]
+    feature_ram = model.stash.get("feature_ram", ())
+    regions = model.stash.get("origin_regions", {})
+    targets = _field_targets(model)
+    for (kind, slug), entity in sorted(model.entities.items()):
+        if kind != "field":
+            continue
+        props = entity.props
+        found = []
+        if props.get("origin") != "ecu_ram":
+            if not isinstance(props.get("scale"), str):
+                found.append(f"a {props.get('origin')} field without scale")
+            feature, name, entry = _allocation(model, entity)
+            span = _span(entry) if entry is not None else None
+            if name != slug.removesuffix("_raw") or entry is None:
+                found.append(f"source {props.get('source')!r} is no allocation of a "
+                             f"{CANONICAL} target named after the field")
+            elif span is None or not any(
+                    owner == feature and start <= span[0] and span[1] <= end
+                    for start, end, owner in regions.get(props.get("origin"), ())):
+                found.append(f"allocation {props['source']} lies outside the "
+                             f"{props.get('origin')} regions of {feature}")
+        else:
+            if not any(ref in model.entities for ref in entity.refs.get("signal", ())
+                       if isinstance(ref, tuple)):
+                found.append("an ecu_ram field that names no signal")
+            if "scale" in props:
+                found.append(f"an ecu_ram field with scale {props['scale']!r}; the meaning of "
+                             "its source holds the scale")
+            source = _source_symbol(model, entity)
+            if source is None:
+                found.append(f"the source names no {CANONICAL} ram or reg symbol")
+                issues += [Issue("fields", ";".join(sorted(entity.sources)), entity.key,
+                                 message) for message in found]
+                continue
+            if any(start <= source.address < end for start, end, _ in feature_ram):
+                found.append(f"the source {source.key.key} lies in the RAM that a feature "
+                             "allocates")
+            for layout, symbol in _reads(model, entity, targets[(kind, slug)]):
+                if symbol is None:
+                    if layout not in source.meaning.statuses:
+                        found.append(f"on {layout} the source meaning has no symbol and no "
+                                     "status, and no symbol fills the role of the field")
+                    continue
+                signed = symbol.value("signed")
+                if isinstance(signed, bool) and signed != bool(props.get("signed")):
+                    found.append(f"signed {bool(props.get('signed'))} disagrees with "
+                                 f"{symbol.key.key}, whose signed is {signed}")
+        issues += [Issue("fields", ";".join(sorted(entity.sources)), entity.key, message)
+                   for message in found]
+    return issues
+
+
+def widths(model):
+    """Every field width fits what the field reads: each symbol that an
+    `ecu_ram` field reads (`_reads`) states a width of at least the bits of
+    the field, and the allocation of a field of another origin holds at least
+    its bytes. The access widths of the symbols in L0 join the check at stage
+    8."""
+    issues = []
+    targets = _field_targets(model)
+    for (kind, slug), entity in sorted(model.entities.items()):
+        if kind != "field":
+            continue
+        path, width = ";".join(sorted(entity.sources)), entity.props.get("width")
+        found = []
+        if isinstance(width, bool) or not isinstance(width, int) or width <= 0:
+            found.append(f"width {width!r} is no positive number of bytes")
+        elif entity.props.get("origin") != "ecu_ram":
+            _, _, entry = _allocation(model, entity)
+            span = _span(entry) if entry is not None else None
+            if span is not None and width > span[1] - span[0]:
+                found.append(f"the field of {width} bytes exceeds allocation "
+                             f"{entity.props['source']}, which holds {span[1] - span[0]}")
+        else:
+            for layout, symbol in _reads(model, entity, targets[(kind, slug)]):
+                if symbol is None:
+                    continue
+                bits = symbol.value("width")
+                if isinstance(bits, bool) or not isinstance(bits, int):
+                    found.append(f"{symbol.key.key} states no width")
+                elif width * 8 > bits:
+                    found.append(f"the field of {width} bytes exceeds {symbol.key.key}, whose "
+                                 f"width is {bits} bits")
+        issues += [Issue("widths", path, entity.key, message) for message in found]
+    return issues
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -544,9 +710,11 @@ CHECKS = {
     "symbols": symbols,
     "homology": homology,
     "links": links,
+    "widths": widths,
     "image-bytes": image_bytes,
     "statuses": statuses,
     "writers": writers,
+    "fields": fields,
 }
 
 # Reports of a check that do not fail it.
@@ -555,18 +723,17 @@ NOTES = {
 }
 
 
-AUDIT_SECTIONS = ("disagreements", "names", "untyped", "unsplit", "levels")
+AUDIT_SECTIONS = ("disagreements", "names", "untyped", "levels")
 # The model issues that each section reports.
-AUDIT_ISSUES = {"audit": "disagreements", "untyped": "untyped", "unsplit": "unsplit"}
+AUDIT_ISSUES = {"audit": "disagreements", "untyped": "untyped"}
 
 
 def audit(model, sections=AUDIT_SECTIONS):
     """{section: issues} of the requested sections: disagreements of one fact
     between registries, other registry names of a named meaning, legacy
     evidence without the keys of its kind under the registry that states it,
-    which the conversion of its registry types, the scales of telemetry
-    fields that the conversion cannot split into their meanings, and the
-    levels of the claims (`kb.levels`)."""
+    which the conversion of its registry types, and the levels of the claims
+    (`kb.levels`)."""
     found = {section: set() for section in AUDIT_SECTIONS if section in sections}
     for issue in model.issues:
         section = AUDIT_ISSUES.get(issue.check)

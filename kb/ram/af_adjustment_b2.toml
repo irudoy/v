@@ -1,4 +1,8 @@
+note = "The -500..500 bounds limit the candidate factor to -1..1."
 width = 16
+unit = "ratio"
+scale = "x*0.002"
+scale_level = "candidate"
 
 [[symbol]]
 layout = "1me3b"
@@ -30,6 +34,14 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff45a2"
 former = ["portable-lemming/ram/7mfk-ffff45a2"]
+
+[[symbol.evidence]]
+kind = "diagnostic"
+supports = "scale"
+key = "ecudocs-p32m-997c5a9:data:cid-124ah-a-f-adj-b2-f1d5ae33"
+note = """
+The structured Nissan-family profile converts CID 0x124A, A/F ADJ-B2, as raw \
+* 2.0 / 1000.0"""
 
 [[symbol]]
 layout = "jk00c"

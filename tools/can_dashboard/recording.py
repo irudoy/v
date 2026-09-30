@@ -57,7 +57,7 @@ RAW_FIELD_DISPLAY = {
     "bfs_raw": ("Base fuel schedule", "ms", 3, "Fuel"),
     "rolling_launch_phase": ("Rolling Launch phase", "", 0, "Context"),
     "telemetry_status": ("Telemetry status", "raw", 0, "Transport"),
-    "knock_timing_state_raw": ("Knock timing state", "state", 3, "Knock"),
+    "knock_timing_state_raw": ("Knock timing state", "deg", 3, "Knock"),
     "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
     "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
     "knock_channel_mask_latched": ("Knock channel mask", "", 0, "Knock"),

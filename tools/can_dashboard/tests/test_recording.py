@@ -179,7 +179,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             }
         }
         self.assertEqual(knock_specs["Knock timing state"].scale, 1 / 256)
-        self.assertEqual(knock_specs["Knock timing state"].units, "state")
+        self.assertEqual(knock_specs["Knock timing state"].units, "deg")
         self.assertEqual(knock_specs["Knock timing state"].digits, 3)
         self.assertEqual(
             knock_specs["High-detonation surface selected"].display_style,

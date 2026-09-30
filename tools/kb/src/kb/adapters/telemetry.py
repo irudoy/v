@@ -8,21 +8,22 @@
   `signal`.
 - The source of an `ecu_ram` field is the `7mfk` symbol at its address, joined
   by the field as a telemetry source of the address profiles is. Its `scale`
-  parses into the source meaning: the arithmetic in `raw` becomes `scale` in
-  `x` with its `unit` from `[vocab] unit` of `tools/kb/config.toml`, a leading
-  `candidate` sets `scale_level`, an enumeration becomes `value` entries, and
-  the remaining text joins the summary. A string that the parser cannot split
-  stays the `scale` of the field and goes to the `unsplit` section of the
-  audit. `telemetry_units` of the stash lists the symbols whose unit the
-  profile states.
+  parses into the source meaning: the arithmetic in `raw`, a bare `raw`
+  included, becomes `scale` in `x` with its `unit` from `[vocab] unit` of
+  `tools/kb/config.toml`, a leading `candidate` sets `scale_level`, an
+  enumeration becomes `value` entries and a list of named bits `bit` entries,
+  and the remaining text joins the summary. A string that the parser cannot
+  split fails the `fields` check, which refuses the conversion.
+  `telemetry_units` of the stash lists the symbols whose unit the profile
+  states.
 - The source of a field of another origin is the allocation, named after
   the field without `_raw`, of the feature that owns its address: the state
   record and the configuration record of `can_telemetry` for
   `telemetry_state` and `rom_configuration`, and the active RAM of
   `map_switching` or `rolling_launch` in the reservation ledger for
-  `runtime_state`. The field keeps its `scale` and names the allocation as
-  `<feature>.<allocation>`. `feature_ram` of the stash holds the active RAM of
-  every feature.
+  `runtime_state` (`layouts.origin_regions`). The field keeps its `scale` and
+  names the allocation as `<feature>.<allocation>`. `feature_ram` of the
+  stash holds the active RAM of every feature.
 - The wire constants, `[[profile]]`, and the contexts become keys of the
   `can_telemetry` feature; the mailbox and the table, configuration, and
   state addresses become keys of its `7mfk` target. The feature `requires`
@@ -32,8 +33,8 @@
 From stage 4 the profile is a projection of the fields and of `can_telemetry`
 (`profile`): the stream fields by page and offset, the fields of each context
 by position, the source of an `ecu_ram` field at the address of its `7mfk`
-symbol with the scale of its meaning, and the source of another field at its
-allocation.
+symbol with the scale of its meaning, its values, or its named bits, and the
+source of another field at its allocation.
 """
 
 from pathlib import Path
@@ -41,6 +42,7 @@ import re
 import tomllib
 
 from kb import repo, store
+from kb.adapters import layouts
 from kb.model import SymbolKey
 from kb.repo import KbError
 from kb.values import hexed
@@ -51,7 +53,6 @@ RESERVATIONS = Path("patches/jk08a-runtime-reservations.toml")
 SCHEMA_VERSION = 2
 CANONICAL = "7mfk"
 FEATURE = "can_telemetry"
-RUNTIME_OWNERS = ("map_switching", "rolling_launch")
 WIRE_KEYS = ("protocol_version", "byte_order", "candidate_can_id", "candidate_tick_divisor",
              "base_tick_numerator", "pphi_hz", "fixed_page_count", "context_pages",
              "context_count", "header_sequence_bits")
@@ -66,13 +67,18 @@ KINDS = ("ecu_ram", "rom_configuration", "runtime_state", "telemetry_state")
 
 NUMBER = r"\d+(?:\.\d+)?"
 TERM = rf"(?:raw|{NUMBER})"
-SCALE = re.compile(rf"(?P<candidate>candidate\s+)?(?P<arithmetic>{TERM}(?:\s*[-+*/]\s*{TERM})+)"
+# The arithmetic of a scale, a bare `raw` included, and its unit.
+SCALE = re.compile(rf"(?P<candidate>candidate\s+)?(?P<arithmetic>{TERM}(?:\s*[-+*/]\s*{TERM})*)"
                    r"\s+(?P<unit>[^\s,;]+)[,;]?\s*(?P<rest>.*)", re.DOTALL)
 # Arithmetic in `raw` inside the remaining text states a second scale.
 SECOND = re.compile(r"\braw\s*[-+*/]|[-+*/]\s*raw\b")
 RAW = re.compile(r"\braw\b")
 ENUMERATION = "enumeration: "
-VALUE = re.compile(r"(\d+) ([A-Z][A-Z0-9_]*)")
+BITS = "bits: "
+# The prefix of the named entries of each key: the values of an enumeration
+# and the named bits of a bit field.
+NAMED = {"value": ENUMERATION, "bit": BITS}
+ENTRY = re.compile(r"(\d+) ([A-Z][A-Z0-9_]*)")
 
 
 def inputs(root):
@@ -93,11 +99,12 @@ def parse_scale(text, units):
         if rest:
             keys["summary"] = rest
         return keys
-    if text.startswith(ENUMERATION):
-        values = [VALUE.fullmatch(item) for item in text[len(ENUMERATION):].split(", ")]
-        if all(values):
-            return {"value": [{"value": int(item[1]), "name": item[2].lower()}
-                              for item in values]}
+    for key, prefix in NAMED.items():
+        if text.startswith(prefix):
+            entries = [ENTRY.fullmatch(item) for item in text[len(prefix):].split(", ")]
+            if all(entries):
+                return {key: [{key: int(item[1]), "name": item[2].lower()}
+                              for item in entries]}
     return None
 
 
@@ -107,17 +114,9 @@ def _regions(b, root):
     them."""
     layout = tomllib.loads((root / LAYOUT).read_text(encoding="utf-8"))
     ledger = tomllib.loads((root / RESERVATIONS).read_text(encoding="utf-8"))
-    ram = layout["ram"]
     active = [(row["start"], row["end"], row["owner"]) for row in ledger["active_ram"]]
     b.stash.setdefault("feature_ram", active)
-    configuration = layout["configuration_address"]
-    return {
-        "telemetry_state": [(ram["state_start"], ram["state_start"] + ram["state_size"],
-                             FEATURE)],
-        "rom_configuration": [(configuration, configuration + layout["configuration_size"],
-                               FEATURE)],
-        "runtime_state": [span for span in active if span[2] in RUNTIME_OWNERS],
-    }
+    return layouts.origin_regions(layout, active)
 
 
 def declare(b, root):
@@ -183,7 +182,7 @@ def declare_profile(b, document, regions, src):
         if signal is not None:
             refs["signal"] = [("signal", signal)]
         elif kind == "ecu_ram":
-            b.issue("schema", src, subject, "an ecu_ram field that no signal lists")
+            b.issue("fields", src, subject, "an ecu_ram field that no signal lists")
         if kind == "ecu_ram":
             key = _ecu_source(b, item, src, subject)
             if key is None:
@@ -191,8 +190,8 @@ def declare_profile(b, document, regions, src):
             refs["source"] = [key]
             parsed = parse_scale(item["scale"], units)
             if parsed is None:
-                props["scale"] = item["scale"]
-                b.issue("unsplit", src, subject, f"scale {item['scale']!r}")
+                b.issue("fields", src, subject, f"scale {item['scale']!r} gives the source "
+                        "meaning no keys")
             else:
                 b.props(key, parsed, src)
                 if "unit" in parsed:
@@ -221,7 +220,7 @@ def _ecu_source(b, item, src, subject):
     kind = b.data_kind(CANONICAL, address)
     inside = any(start <= address < end for start, end, _ in b.stash.get("feature_ram", ()))
     if kind is None or inside:
-        b.issue("schema", src, subject, f"ecu_ram source {address:08x} lies outside the "
+        b.issue("fields", src, subject, f"ecu_ram source {address:08x} lies outside the "
                 f"RAM and the peripherals of the stock program")
         return None
     name = item["name"]
@@ -238,7 +237,7 @@ def _allocation(b, item, spans, src, subject):
     owner = next((feature for start, end, feature in spans
                   if start <= address and address + width <= end), None)
     if owner is None:
-        b.issue("schema", src, subject, f"{item['kind']} source {address:08x} lies outside "
+        b.issue("fields", src, subject, f"{item['kind']} source {address:08x} lies outside "
                 f"{', '.join(f'{start:08x}-{end:08x}' for start, end, _ in spans)}")
         return None
     name = item["name"].removesuffix("_raw")
@@ -308,9 +307,10 @@ def fields(model):
 
 def scale_text(props):
     """The profile string of the scale of a meaning: its arithmetic in `raw`
-    with its unit, after `candidate` for a candidate scale, or its values as
-    an enumeration; None for a meaning without either or with arithmetic
-    that the string cannot state."""
+    with its unit, after `candidate` for a candidate scale, or else its values
+    as an enumeration or its named bits as `bits: <n> <NAME>, ...`; None for a
+    meaning without any of them or with arithmetic that the string cannot
+    state."""
     scale, unit = props.get("scale"), props.get("unit")
     if isinstance(scale, str) and isinstance(unit, str):
         tokens = TOKEN.findall(scale)
@@ -318,9 +318,10 @@ def scale_text(props):
             return None
         text = " ".join("raw" if token == "x" else token for token in tokens) + f" {unit}"
         return f"candidate {text}" if props.get("scale_level") == "candidate" else text
-    if props.get("value"):
-        return ENUMERATION + ", ".join(f"{item['value']} {item['name'].upper()}"
-                                       for item in props["value"])
+    for key, prefix in NAMED.items():
+        if props.get(key):
+            return prefix + ", ".join(f"{item[key]} {item['name'].upper()}"
+                                      for item in sorted(props[key], key=lambda item: item[key]))
     return None
 
 
@@ -359,8 +360,8 @@ def profile_document(model):
 
 def _source(model, entity, allocations):
     """{source, scale} of a field: the address of the `7mfk` symbol of an
-    `ecu_ram` field with its own scale or else the scale of its meaning, or
-    the address of the allocation of another field with its own scale."""
+    `ecu_ram` field with the scale of its meaning, or the address of the
+    allocation of another field with its own scale."""
     props = entity.props
     if props.get("origin") != "ecu_ram":
         entry = allocations.get(props.get("source"))
@@ -372,8 +373,8 @@ def _source(model, entity, allocations):
     if len(keys) != 1 or not isinstance(keys[0], SymbolKey) or keys[0].layout != CANONICAL:
         raise KbError(f"{entity.key}: the source names no {CANONICAL} symbol", code=3)
     meaning = model.meaning_of(keys[0])
-    scale = props.get("scale") or (scale_text(meaning.props) if meaning else None)
-    return {"source": keys[0].address, "scale": scale}
+    return {"source": keys[0].address,
+            "scale": scale_text(meaning.props) if meaning else None}
 
 
 def _toml(key, value):

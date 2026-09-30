@@ -567,6 +567,7 @@ class Builder:
             for node in components[root]:
                 by_node[node] = meaning
         model = Model(self.layouts, self.symbols, self.entities, self.targets, self.issues)
+        model.stash = self.stash
         model.meanings = list(meanings.values())
         model.files = {name: (by_node.get(group), src) for name, (group, src) in self.files.items()}
         model.file_names = self.file_names
@@ -874,6 +875,8 @@ class Model:
         self.file_evidence = set()
         # The texts that replace files of the working tree (`compile.build`).
         self.overlay = {}
+        # The facts that adapters pass to the checks (`Builder.stash`).
+        self.stash = {}
 
     def meaning_of(self, key):
         symbol = self.symbols.get(key)

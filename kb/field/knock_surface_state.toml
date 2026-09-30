@@ -3,7 +3,6 @@ source = "knock_surface_state/ram"
 origin = "ecu_ram"
 width = 1
 signed = false
-scale = "bitfield"
 profiles = ["tuning"]
 page = 4
 offset = 0x5

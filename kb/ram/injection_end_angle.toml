@@ -1,4 +1,13 @@
+note = """
+Sequencer 00054a44 places the reference tooth of the scheduled channel 130 \
+crank degrees after intake TDC of the injected cylinder, so the pulse ends \
+x*2 - 590 crank degrees after the following intake TDC. The channel order \
+rests on the Power Balance bit assignment of the Nissan-family diagnostic \
+profile, and the offset between the crank sensor and the signal plate \
+remains a hardware boundary."""
 width = 16
+unit = "degCA"
+scale = "x*2-590"
 
 [[symbol]]
 layout = "1me3b"

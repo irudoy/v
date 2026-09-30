@@ -864,11 +864,17 @@ class TelemetryAdapterTest(unittest.TestCase):
             "candidate raw * 0.1 Nm signed request": {
                 "scale": "x*0.1", "unit": "Nm", "scale_level": "candidate",
                 "summary": "signed request"},
+            "raw degBTDC": {"scale": "x", "unit": "degBTDC"},
+            "raw / 16384 ratio": {"scale": "x/16384", "unit": "ratio"},
             "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN": {"value": [
                 {"value": 0, "name": "idle"}, {"value": 1, "name": "active"},
                 {"value": 2, "name": "cooldown"}]},
+            "bits: 0 CYLINDER_1, 5 CYLINDER_6": {"bit": [
+                {"bit": 0, "name": "cylinder_1"}, {"bit": 5, "name": "cylinder_6"}]},
             "raw * 2 - 590 deg after intake TDC; raw * 2 degCA after the tooth": None,
             "candidate raw * 0.002 A/F ADJ factor": None,
+            "raw software coordinate": None,
+            "bits: 6 high_detonation": None,
             "raw * raw V": None,
             "Q14 factor": None,
         }
@@ -893,20 +899,26 @@ class TelemetryAdapterTest(unittest.TestCase):
 
     def test_the_unit_of_a_telemetry_scale_wins_over_the_ledger_units(self):
         m = model()
-        throttle = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1075))
-        self.assertEqual((throttle.props["scale"], throttle.props["unit"]),
-                         ("x*100/255", "percent"))
-        timing = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF11D4))
-        self.assertEqual((timing.props.get("scale"), timing.props["unit"]), (None, "degBTDC"))
+        # The ledger states `signed Q8 state` for the knock timing state and
+        # `bitfield` for the fuel inhibit mask, whose file states no unit.
+        cases = {0xFFFF1075: ("x*100/255", "percent"), 0xFFFF121A: ("x/256", "deg"),
+                 0xFFFF22E0: (None, "bitfield")}
+        for address, keys in cases.items():
+            with self.subTest(address=f"{address:08x}"):
+                props = m.meaning_of(SymbolKey("7mfk", "ram", address)).props
+                self.assertEqual((props.get("scale"), props["unit"]), keys)
 
-    def test_an_unsplit_scale_stays_on_its_field_and_goes_to_the_audit(self):
+    def test_a_scale_that_the_parser_cannot_split_fails_the_fields_check(self):
+        b = _declare_telemetry(_telemetry([_field(name="loose_raw", scale="Q14 factor")]),
+                               {"loose_raw": "probe"})
+        self.assertEqual([(issue.check, issue.subject, issue.message) for issue in b.issues],
+                         [("fields", "field.loose_raw",
+                           "scale 'Q14 factor' gives the source meaning no keys")])
+        self.assertNotIn("scale", b.entities[("field", "loose_raw")].props)
+
+    def test_the_fields_of_the_model_pass_the_fields_and_widths_checks(self):
         m = model()
-        field = m.entities[("field", "injection_end_angle_raw")]
-        self.assertTrue(field.props["scale"].startswith("raw * 2 - 590 deg"))
-        unsplit = {issue.subject for issue in checks.audit(m, ("unsplit",))["unsplit"]}
-        self.assertLessEqual({"field.injection_end_angle_raw", "field.af_adjustment_b1_raw",
-                              "field.final_timing_raw"}, unsplit)
-        self.assertNotIn("field.maf_b1_raw", unsplit)
+        self.assertEqual((checks.fields(m), checks.widths(m)), ([], []))
 
     def test_another_field_names_an_allocation_of_the_feature_that_owns_its_source(self):
         m = model()
@@ -945,7 +957,7 @@ class TelemetryAdapterTest(unittest.TestCase):
         self.assertEqual(sorted(slug for kind, slug in m.entities if kind == "field"),
                          sorted(fields))
 
-    def test_a_source_outside_its_region_and_an_unlisted_ecu_ram_field_fail_the_schema(self):
+    def test_a_source_outside_its_region_and_an_unlisted_ecu_ram_field_fail_the_fields(self):
         b = _declare_telemetry(_telemetry([
             _field(name="listed_raw"),
             _field(name="unlisted_raw", offset=3),
@@ -959,11 +971,10 @@ class TelemetryAdapterTest(unittest.TestCase):
             {"listed_raw": "probe", "rom_raw": "probe", "feature_raw": "probe",
              "absent_raw": "probe"})
         self.assertEqual(sorted((issue.check, issue.subject) for issue in b.issues), [
-            ("references", "signal.probe"),
-            ("schema", "field.feature_raw"), ("schema", "field.mode"),
-            ("schema", "field.other"), ("schema", "field.rom_raw"),
-            ("schema", "field.short"), ("schema", "field.state"),
-            ("schema", "field.unlisted_raw")])
+            ("fields", "field.feature_raw"), ("fields", "field.mode"),
+            ("fields", "field.rom_raw"), ("fields", "field.state"),
+            ("fields", "field.unlisted_raw"), ("references", "signal.probe"),
+            ("schema", "field.other"), ("schema", "field.short")])
         self.assertEqual(b.targets[("map_switching", "7mfk")].props["allocations"],
                          {"map": {"address": "ffff5d00", "width": 1}})
         self.assertEqual(sorted(slug for kind, slug in b.entities if kind == "field"),
@@ -988,8 +999,10 @@ class TelemetryAdapterTest(unittest.TestCase):
                  ({"scale": "110-x", "unit": "degBTDC"}, "110 - raw degBTDC"),
                  ({"scale": "x*0.1", "unit": "Nm", "scale_level": "candidate"},
                   "candidate raw * 0.1 Nm"),
+                 ({"scale": "x", "unit": "degBTDC"}, "raw degBTDC"),
                  ({"value": [{"value": 0, "name": "idle"}, {"value": 1, "name": "active"}]},
                   "enumeration: 0 IDLE, 1 ACTIVE"),
+                 ({"bit": [{"bit": 6, "name": "high_detonation"}]}, "bits: 6 HIGH_DETONATION"),
                  ({"scale": "x*(1/4)", "unit": "V"}, None),
                  ({"unit": "V"}, None)]
         units = frozenset(repo.config()["vocab"]["unit"])
@@ -998,6 +1011,10 @@ class TelemetryAdapterTest(unittest.TestCase):
                 self.assertEqual(telemetry.scale_text(props), text)
                 if text is not None:
                     self.assertEqual(telemetry.parse_scale(text, units), props)
+        # The named bits render by number with their names alone.
+        bits = {"bit": [{"bit": 5, "name": "cylinder_6", "level": "candidate"},
+                        {"bit": 0, "name": "cylinder_1", "summary": "Channel 0"}]}
+        self.assertEqual(telemetry.scale_text(bits), "bits: 0 CYLINDER_1, 5 CYLINDER_6")
 
     def test_the_projection_changes_only_the_scales_of_ecu_ram_fields(self):
         text = (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8")

@@ -98,7 +98,6 @@ def build(root=repo.ROOT, overlay=None, order=None):
     model.config = config
     model.functions = builder.functions
     model.spaces = builder.spaces
-    model.stash = builder.stash
     model.names = rows
     names.assign(model, rows)
     return model

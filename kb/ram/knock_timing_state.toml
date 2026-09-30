@@ -1,4 +1,10 @@
+note = """
+The direct branch shifts the difference of the cells of \
+[[high_octane_timing_state/tbl]] and [[high_detonation_timing_state/tbl]], \
+one degree per count, left by 8, so one count of the word is 1/256 degree."""
 width = 16
+unit = "deg"
+scale = "x/256"
 
 [[symbol]]
 layout = "1nd"

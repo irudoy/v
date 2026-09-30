@@ -1,5 +1,113 @@
 width = 8
 
+[[bit]]
+bit = 0
+name = "cylinder_1"
+summary = """
+Inhibits injector channel 0, the injector of cylinder 1: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 1 to cylinder 1"""
+
+[[bit]]
+bit = 1
+name = "cylinder_2"
+summary = """
+Inhibits injector channel 1, the injector of cylinder 2: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 2 to cylinder 2"""
+
+[[bit]]
+bit = 2
+name = "cylinder_3"
+summary = """
+Inhibits injector channel 2, the injector of cylinder 3: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 4 to cylinder 3"""
+
+[[bit]]
+bit = 3
+name = "cylinder_4"
+summary = """
+Inhibits injector channel 3, the injector of cylinder 4: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 8 to cylinder 4"""
+
+[[bit]]
+bit = 4
+name = "cylinder_5"
+summary = """
+Inhibits injector channel 4, the injector of cylinder 5: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 16 to cylinder 5"""
+
+[[bit]]
+bit = 5
+name = "cylinder_6"
+summary = """
+Inhibits injector channel 5, the injector of cylinder 6: for a set bit, \
+0002c13c loads the opening time ffff23aa, a pulse that delivers no fuel, in \
+place of the pulse duration of the channel"""
+level = "candidate"
+
+[[bit.evidence]]
+kind = "diagnostic"
+supports = "role"
+at = "7mfk:00050a34"
+key = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"
+note = """
+00050a34 returns the IOLID 0x0C Power Balance mask in place of the aggregate \
+mask, and the profile assigns its bit value 32 to cylinder 6"""
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe92b0"

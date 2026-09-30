@@ -3,7 +3,6 @@ source = "final_timing/ram"
 origin = "ecu_ram"
 width = 1
 signed = true
-scale = "raw software coordinate"
 profiles = ["tuning"]
 page = 0
 offset = 0x5

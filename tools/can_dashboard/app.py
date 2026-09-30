@@ -312,7 +312,7 @@ PANELS = (
         Metric("injection_4_ms", "Injection calc 4", "ms", 2),
         Metric("injection_5_ms", "Injection calc 5", "ms", 2),
         Metric("fuel_inhibit_cylinders", "Fuel inhibit"),
-        Metric("knock_timing_state", "Knock timing state", "state", 3),
+        Metric("knock_timing_state", "Knock timing state", "deg", 3),
         Metric("knock_surface_mode", "Active hot surface"),
         Metric("knock_count_latched", "Knock interval count", "", 0),
         Metric("knock_channels_latched", "Knock channels"),

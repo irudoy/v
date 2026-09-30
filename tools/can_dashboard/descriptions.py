@@ -243,9 +243,9 @@ DESCRIPTIONS = {
         "for a complete fuel cut, or the list of cut cylinders."
     ),
     "knock_timing_state": (
-        "Signed Q8 timing state of the knock and high-detonation "
-        "coordinator; its whole-number part enters the engine-event timing "
-        "correction. Its physical unit is not resolved."
+        "Signed timing state of the knock and high-detonation coordinator "
+        "in 1/256 degree; its whole-number part enters the engine-event "
+        "timing correction."
     ),
     "knock_surface_mode": (
         "Hot ignition surface in use: HIGH OCTANE or HIGH DETONATION. The "

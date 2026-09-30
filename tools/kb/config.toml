@@ -98,7 +98,7 @@ quantity = ["angle", "count", "load", "percent", "pressure", "raw", "rpm", "spee
             "temp", "time", "voltage"]
 # Engineering units that the scale of a telemetry field may state after its
 # arithmetic in `raw`.
-unit = ["cm2", "deg", "degBTDC", "degC", "degCA", "g/s", "ms", "Nm", "percent", "V"]
+unit = ["cm2", "deg", "degBTDC", "degC", "degCA", "g/s", "ms", "Nm", "percent", "ratio", "V"]
 
 [names]
 attempts = 1000

@@ -748,13 +748,16 @@ Fields:
   suffix, of the feature that owns its address: the configuration record of
   `can_telemetry` for `rom_configuration`, the state record of
   `can_telemetry` for `telemetry_state`, and the active RAM of
-  `map_switching` or `rolling_launch` for `runtime_state`. Fields whose
-  origin is not `ecu_ram` carry `scale`. An `ecu_ram` field carries `scale` only
-  when the conversion cannot split it ([Telemetry, signals, and
-  presentation](#205-telemetry-signals-and-presentation)), and the `fields`
-  check refuses such a field.
-- `width`, in bytes, and `signed` describe the field on the wire. The
-  `fields` check requires them to fit the source meaning.
+  `map_switching` or `rolling_launch` for `runtime_state`. A field of another
+  origin carries `scale`; an `ecu_ram` field carries none, and the profile
+  renders the scale, the values, or the named bits of its source meaning
+  ([Telemetry, signals, and
+  presentation](#205-telemetry-signals-and-presentation)).
+- `width`, in bytes, and `signed` describe the field on the wire. On every
+  layout that a feature requiring the field targets, the `widths` check
+  requires the width to fit the symbol that the field reads there, and the
+  `fields` check requires `signed` to agree with the `signed` that the
+  symbol states.
 - `profiles`, `page`, and `offset` place a stream field; `context` and
   `position` place a context field.
 
@@ -1242,7 +1245,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb log <ref> [<read options>]` | The history of the entity through renames and redirects | 2 |
 | `kb raw <ref> [<read options>]` | The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included | 2 |
 | `kb cypher <query> [--param <name>=<value>]... [<read options>]` | A read-only Cypher query over the working tree's instance after the fingerprint check | 2 |
-| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, legacy evidence without the keys of its kind under the registry that states it, and the telemetry scales that the conversion cannot split (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes | 2 |
+| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes | 2 |
 | `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
 | `kb check [--changed] [--only <check>]...` | The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass | 1 |
 
@@ -1460,13 +1463,13 @@ gates keep running until the stage that replaces them.
 | `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol | 3 |
 | `levels` | No declared level exceeds its effective level; `candidate` claims carry evidence, and `code` and `silicon` claims grounding; every `hardware` key names a record whose `hardware_status` is `pass`; every `arithmetic` equation holds ([Levels](#71-levels)) | Reported by `kb audit` from 3; a gate from 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
-| `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source | Fields from 4; symbols from 8 |
+| `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source: on every layout that a feature requiring an `ecu_ram` field targets, the symbol that the field reads states a width of at least the bits of the field, and the allocation of a field of another origin holds at least its bytes | Fields from 4; symbols from 8 |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
 | `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
 | `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
-| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target | 4 |
+| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns | 4 |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered | 2 |
 | `guard` | `.claude/settings.json` is tracked and runs `tools/kb/hook.py` before every guarded tool; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |
 
@@ -2764,10 +2767,10 @@ The service 0x22 table of `7mfk`:
 - `[[field]]`: `name` is the slug; `page`, `offset`, `width`, `signed`, and
   `profiles` keep their names; `kind` becomes `origin`; `signal` comes from
   the signal whose `current_fields` lists the field, and an `ecu_ram` field
-  that no signal lists fails the `schema` check.
+  that no signal lists fails the `fields` check.
 - The `source` of an `ecu_ram` field joins the `7mfk` symbol at that address
   as a telemetry source of the address profiles does; an address outside the
-  RAM and the peripherals of the stock program fails the `schema` check. The
+  RAM and the peripherals of the stock program fails the `fields` check. The
   source of a field of another origin becomes the allocation of its feature:
   the state record (`[ram]`) and the configuration record of
   `patches/can-telemetry-layout.toml` belong to `can_telemetry`, and the
@@ -2775,18 +2778,20 @@ The service 0x22 table of `7mfk`:
   `patches/jk08a-runtime-reservations.toml` to those features. The
   allocation takes the field name without the `_raw` suffix, the address,
   and the width; an address outside the records of its origin fails the
-  `schema` check.
+  `fields` check.
 - For an `ecu_ram` field the conversion parses `scale` into the source
   meaning: the arithmetic in `raw` becomes `scale` in `x` with its `unit`,
-  which `[vocab] unit` of `tools/kb/config.toml` lists; a leading `candidate`
-  sets `scale_level = "candidate"`; an enumeration `enumeration: <n> <NAME>,
-  ...` becomes `[[value]]` entries; and the remaining text becomes the
-  summary of a meaning that has none, or else a note of the meaning.
-  The arithmetic holds `raw` once, and remaining text that holds arithmetic
-  in `raw` states a second scale. A string with a second scale, a unit
-  outside the vocabulary, or no arithmetic stays the `scale` of the field,
-  and the `unsplit` section of `kb audit` lists it for review. A meaning that
-  already has a scale must agree.
+  which `[vocab] unit` of `tools/kb/config.toml` lists, and a bare `raw` is
+  the scale `x`; a leading `candidate` sets `scale_level = "candidate"`; an
+  enumeration `enumeration: <n> <NAME>, ...` becomes `[[value]]` entries and
+  a bit list `bits: <n> <NAME>, ...` `[[bit]]` entries, each name in lower
+  case; and the remaining text becomes the summary of a meaning that has
+  none, or else a note of the meaning. The arithmetic holds `raw` once, and
+  remaining text that holds arithmetic in `raw` states a second scale. A
+  string with a second scale, a unit outside the vocabulary, or no
+  arithmetic fails the `fields` check, and the conversion refuses it. A
+  meaning that already has a scale, values, or named bits must agree; values
+  and bits agree by number and name.
 - The field name without the `_raw` suffix names the source meaning where
   no name of higher precedence does, and becomes a `former` name of a
   meaning that another name names.
@@ -2795,9 +2800,11 @@ The service 0x22 table of `7mfk`:
 - The wire constants, `[[profile]]`, and the contexts become keys of
   `can_telemetry`; `mailbox` becomes `mailbox_index`, and the table,
   configuration, and state addresses become keys of its `7mfk` target.
-- The regenerated profile renders each `ecu_ram` scale from its meaning; the
-  conversion commit lists every string that changes, and the consumers pass
-  their tests on the regenerated file.
+- The regenerated profile renders each `ecu_ram` scale from its meaning:
+  the scale and unit, or else `enumeration: <n> <NAME>, ...` from its values
+  or `bits: <n> <NAME>, ...` from its named bits, each list by number; the conversion
+  commit lists every string that changes, and the consumers pass their tests
+  on the regenerated file.
 
 `defs/JK08A.overrides.toml`:
 

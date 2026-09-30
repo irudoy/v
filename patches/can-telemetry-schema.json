@@ -47,7 +47,7 @@
             },
             {
               "name": "af_state_factor_raw",
-              "scale": "Q14 factor",
+              "scale": "raw / 16384 ratio",
               "signed": false,
               "width": 2
             }
@@ -258,7 +258,7 @@
             },
             {
               "name": "af_adjustment_b1_raw",
-              "scale": "candidate raw * 0.002 A/F ADJ factor, bounded -1..1",
+              "scale": "candidate raw * 0.002 ratio",
               "signed": true,
               "width": 2
             }
@@ -283,7 +283,7 @@
             },
             {
               "name": "af_adjustment_b2_raw",
-              "scale": "candidate raw * 0.002 A/F ADJ factor, bounded -1..1",
+              "scale": "candidate raw * 0.002 ratio",
               "signed": true,
               "width": 2
             }
@@ -340,7 +340,7 @@
           "name": "final_timing_raw",
           "offset": 5,
           "page": 0,
-          "scale": "raw software coordinate",
+          "scale": "raw degBTDC",
           "signed": true,
           "width": 1
         },
@@ -356,7 +356,7 @@
           "name": "fuel_inhibit_mask",
           "offset": 7,
           "page": 0,
-          "scale": "bit mask; bit k inhibits injector output k, cylinder k + 1 by the diagnostic profile",
+          "scale": "bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, 5 CYLINDER_6",
           "signed": false,
           "width": 1
         },
@@ -468,7 +468,7 @@
           "name": "knock_timing_state_raw",
           "offset": 3,
           "page": 4,
-          "scale": "Q8 software state",
+          "scale": "raw / 256 deg",
           "signed": true,
           "width": 2
         },
@@ -476,7 +476,7 @@
           "name": "knock_surface_state",
           "offset": 5,
           "page": 4,
-          "scale": "bitfield",
+          "scale": "bits: 6 HIGH_DETONATION",
           "signed": false,
           "width": 1
         },
@@ -596,7 +596,7 @@
           "name": "injection_end_angle_raw",
           "offset": 5,
           "page": 7,
-          "scale": "raw * 2 - 590 deg after intake TDC of the injected cylinder; raw * 2 degCA after the reference tooth",
+          "scale": "raw * 2 - 590 degCA",
           "signed": false,
           "width": 2
         },

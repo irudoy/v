@@ -64,7 +64,7 @@ source = 0xFFFF11D4
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "raw software coordinate"
+scale = "raw degBTDC"
 
 [[field]]
 name = "apc_command_raw"
@@ -86,7 +86,7 @@ source = 0xFFFF22E0
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "bit mask; bit k inhibits injector output k, cylinder k + 1 by the diagnostic profile"
+scale = "bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, 5 CYLINDER_6"
 
 [[field]]
 name = "maf_b1_raw"
@@ -240,7 +240,7 @@ source = 0xFFFF121A
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "Q8 software state"
+scale = "raw / 256 deg"
 
 [[field]]
 name = "knock_surface_state"
@@ -251,7 +251,7 @@ source = 0xFFFF2466
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "bitfield"
+scale = "bits: 6 HIGH_DETONATION"
 
 [[field]]
 name = "knock_count_latched"
@@ -416,7 +416,7 @@ source = 0xFFFF192E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 2 - 590 deg after intake TDC of the injected cylinder; raw * 2 degCA after the reference tooth"
+scale = "raw * 2 - 590 degCA"
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"
@@ -516,7 +516,7 @@ width = 2
 source = 0xFFFF22E8
 kind = "ecu_ram"
 signed = false
-scale = "Q14 factor"
+scale = "raw / 16384 ratio"
 
 [[context]]
 page = 9
@@ -767,7 +767,7 @@ width = 2
 source = 0xFFFF45A0
 kind = "ecu_ram"
 signed = true
-scale = "candidate raw * 0.002 A/F ADJ factor, bounded -1..1"
+scale = "candidate raw * 0.002 ratio"
 
 [[context]]
 page = 10
@@ -796,7 +796,7 @@ width = 2
 source = 0xFFFF45A2
 kind = "ecu_ram"
 signed = true
-scale = "candidate raw * 0.002 A/F ADJ factor, bounded -1..1"
+scale = "candidate raw * 0.002 ratio"
 
 [[context]]
 page = 10

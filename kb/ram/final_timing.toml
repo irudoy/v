@@ -1,4 +1,6 @@
 width = 8
+unit = "degBTDC"
+scale = "x"
 
 [[symbol]]
 layout = "1me3b"
