@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "can-telemetry-identity.h"
+
 #define TEST_RAM_BASE 0x01000000U
 #define TELEMETRY_STATE 0xffff5e00U
 #define TELEMETRY_ACTIVE_SIZE 0x100U
@@ -75,10 +77,7 @@ extern void invoke_exception_probe(uint32_t *registers);
 static size_t case_count;
 static uint8_t margin_snapshot[12];
 
-static const uint8_t configuration[16] = {
-    0x43, 0x54, 0x02, 0x01, 0x07, 0x0b, 0x01, 0x00,
-    0x06, 0xf0, 0x64, 0x74, 0x54, 0x45, 0x4c, 0x32,
-};
+static const uint8_t configuration[16] = TELEMETRY_CONFIGURATION;
 
 static volatile uint8_t *ram_pointer(uint32_t original)
 {
@@ -388,7 +387,7 @@ static int run_wrapper_cases(void)
     count_case();
     reset_case();
     (void)invoke_r4(MAIN_WRAPPER, 0);
-    if (!verify_started("main-wrapper", 1, 11, BANK_B))
+    if (!verify_started("main-wrapper", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     return 1;
 }
@@ -431,13 +430,13 @@ static void mutate_configuration(enum config_mutation mutation)
         config[4] = 0;
         break;
     case CONFIG_PROFILE_PREVIOUS:
-        config[4] = 6;
+        config[4] = TELEMETRY_PROFILE_ID - 1;
         break;
     case CONFIG_PROFILE_HIGH:
-        config[4] = 8;
+        config[4] = TELEMETRY_PROFILE_ID + 1;
         break;
     case CONFIG_PAGE_COUNT:
-        config[5] = 10;
+        config[5] = TELEMETRY_PAGE_COUNT - 1;
         break;
     case CONFIG_DIVISOR:
         config[6] = 0;
@@ -495,7 +494,8 @@ static int run_control_cases(void)
     if (state[11] != 1 || state[10] != 0)
         return fail_value("control-start-disabled", "override", state[11], 1);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("control-start-disabled", 1, 11, BANK_B))
+    if (!verify_started(
+            "control-start-disabled", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     if (read_u16(state + 8) != 1)
         return fail_value(
@@ -529,7 +529,8 @@ static int run_control_cases(void)
     if (state[10] != 3)
         return fail_value("control-start-divider", "divider", state[10], 3);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("control-start-divider", 1, 11, BANK_B))
+    if (!verify_started(
+            "control-start-divider", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     if (read_u16(state + 8) != 1 || state[10] != 0)
         return fail_value(
@@ -590,7 +591,7 @@ static int run_control_cases(void)
 
     count_case();
     reset_case();
-    rom_pointer(CONFIG)[4] = 6;
+    rom_pointer(CONFIG)[4] = TELEMETRY_PROFILE_ID - 1;
     seed_control_command(start_command, 8);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
@@ -631,7 +632,7 @@ static int run_capture_cases(void)
     write_u16(rom_pointer(CONFIG) + 8, 1);
     write_u16(ram_pointer(TELEMETRY_STATE) + 8, 0x121f);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("low-id", 1, 11, BANK_B))
+    if (!verify_started("low-id", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     if (!verify_bank("low-id", BANK_B, 0))
         return 0;
@@ -640,7 +641,7 @@ static int run_capture_cases(void)
     reset_case();
     write_u16(rom_pointer(CONFIG) + 8, 0x07fe);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("high-id", 1, 11, BANK_B))
+    if (!verify_started("high-id", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     if (!verify_bank("high-id", BANK_B, 0))
         return 0;
@@ -656,7 +657,7 @@ static int run_capture_cases(void)
 
     count_case();
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("divider-due", 1, 11, BANK_B))
+    if (!verify_started("divider-due", 1, TELEMETRY_PAGE_COUNT, BANK_B))
         return 0;
     if (read_u16(state + 8) != 3 || state[10] != 0)
         return fail_value("divider-due", "tick", read_u16(state + 8), 3);
@@ -700,7 +701,7 @@ static int run_capture_cases(void)
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 1;
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("idle-bank-a", 0, 11, BANK_A))
+    if (!verify_started("idle-bank-a", 0, TELEMETRY_PAGE_COUNT, BANK_A))
         return 0;
 
     count_case();
@@ -742,7 +743,8 @@ static int run_knock_surface_cases(void)
         reset_case();
         ((volatile uint8_t *)(uintptr_t)source)[0] = cases[index].source;
         (void)invoke_r4(CAPTURE, 0);
-        if (!verify_started(cases[index].name, 1, 11, BANK_B))
+        if (!verify_started(
+                cases[index].name, 1, TELEMETRY_PAGE_COUNT, BANK_B))
             return 0;
         if (ram_pointer(BANK_B)[KNOCK_SURFACE_BYTE] != cases[index].wire)
             return fail_value(

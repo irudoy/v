@@ -22,6 +22,7 @@ from tools.logs import can_telemetry_schema
 DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
+DEFAULT_IDENTITY = Path(__file__).with_name("can-telemetry-identity.h")
 RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
 PROFILE_NAMES = ("tuning",)
 # Runtime state fields read the active RAM of these runtimes.
@@ -361,12 +362,20 @@ def load_manifest(path=DEFAULT_SOURCE):
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("tuning", 7, 11),)
+    page_count = raw["fixed_page_count"] + len(raw["context_pages"])
     profiles = []
-    for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
+    for index, item in enumerate(profile_raw):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")
-        if (item["name"], item["id"], item["page_count"]) != expected:
-            raise ValueError(f"profile[{index}]: identity differs")
+        # The configuration guards compare the sign-extended configuration
+        # byte with a signed 8-bit immediate, and the capture always builds
+        # every fixed and context page.
+        if type(item["id"]) is not int or not 1 <= item["id"] <= 0x7F:
+            raise ValueError(f"profile[{index}]: ID is not 1 through 0x7F")
+        if item["page_count"] != page_count:
+            raise ValueError(
+                f"profile[{index}]: page count is not {page_count}, the "
+                "fixed and context pages the capture builds"
+            )
         canonical = _canonical_profile(item, fields, contexts, raw["protocol_version"])
         encoded = json.dumps(
             canonical, sort_keys=True, separators=(",", ":")
@@ -518,11 +527,51 @@ def render_schema(manifest):
     return json.dumps(document, indent=2, sort_keys=True) + "\n"
 
 
-def generate(source=DEFAULT_SOURCE, tables=DEFAULT_TABLES, schema=DEFAULT_SCHEMA, *, check=False):
+def render_identity(manifest):
+    """Render the header of the wire identity that the configuration guards
+    of the capture and control units compare and the harness installs."""
+    from patches import can_telemetry
+
+    if len(manifest.profiles) != 1:
+        raise ValueError("the configuration guards admit exactly one profile")
+    (profile,) = manifest.profiles
+    record = can_telemetry.Configuration(
+        enabled=True,
+        can_id=manifest.candidate_can_id,
+        profile=profile.name,
+        tick_divisor=manifest.candidate_tick_divisor,
+    ).to_bytes(manifest)
+    lines = [
+        "// Generated from can-telemetry-profile.toml. Do not edit.",
+        f"// Wire identity of the {profile.name} profile. The configuration guards of",
+        "// can-telemetry-capture.s and can-telemetry-control.s compare the ROM",
+        "// configuration record with the integer symbols, and the executable",
+        "// harness installs TELEMETRY_CONFIGURATION, the enabled record of the",
+        "// candidate CAN ID and tick divisor.",
+        "",
+        f"#define TELEMETRY_PROFILE_ID 0x{profile.profile_id:02X}",
+        f"#define TELEMETRY_PAGE_COUNT 0x{profile.page_count:02X}",
+        f"#define TELEMETRY_PROFILE_CRC 0x{profile.crc16:04X}",
+        "#define TELEMETRY_CONFIGURATION { "
+        + ", ".join(f"0x{value:02X}" for value in record)
+        + " }",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def generate(
+    source=DEFAULT_SOURCE,
+    tables=DEFAULT_TABLES,
+    schema=DEFAULT_SCHEMA,
+    identity=DEFAULT_IDENTITY,
+    *,
+    check=False,
+):
     manifest = load_manifest(source)
     outputs = {
         Path(tables): render_tables(manifest),
         Path(schema): render_schema(manifest),
+        Path(identity): render_identity(manifest),
     }
     stale = []
     for path, content in outputs.items():
@@ -548,9 +597,12 @@ def main(argv=None):
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--tables", type=Path, default=DEFAULT_TABLES)
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
+    parser.add_argument("--identity", type=Path, default=DEFAULT_IDENTITY)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
-    manifest = generate(args.source, args.tables, args.schema, check=args.check)
+    manifest = generate(
+        args.source, args.tables, args.schema, args.identity, check=args.check
+    )
     print(
         "status=PASS"
         f" profiles={len(manifest.profiles)}"

@@ -105,7 +105,7 @@ def run_command(
 def preprocess_gnu_source(source):
     """Translate the small Ghidra source dialect to GNU assembler syntax."""
     result = []
-    for raw_line in source.splitlines():
+    for raw_line in assembly_model.expand_includes(source).splitlines():
         line = raw_line.split("//", 1)[0]
         match = re.match(r"^(\s*)\.align\s+(.+?)\s*$", line)
         if match:

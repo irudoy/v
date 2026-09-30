@@ -469,6 +469,7 @@ def _compile_and_run(
         base_verifier.GCC,
         "-m2e", "-mb", "-std=c11", "-O2",
         "-Wall", "-Wextra", "-Werror",
+        "-I", can_verifier.HARNESS_INCLUDE_DIR,
     ]
     command.extend(f"-D{define}=1" for define in defines)
     command.extend([

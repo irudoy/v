@@ -22,7 +22,6 @@ if str(ROOT) not in sys.path:
 import verify_map_switching as base_verifier
 import verify_rolling_launch as rolling_verifier
 
-from patches import can_telemetry
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
@@ -45,8 +44,12 @@ REQUIRED_DYNAMIC_MARKER = (
     "profiles=1 contexts=10 isr_rte=5"
 )
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
-HARNESS_CONFIGURATION = re.compile(
-    r"static const uint8_t configuration\[16\] = \{(?P<bytes>[^}]*)\};"
+HARNESS_INCLUDE_DIR = ROOT / "patches"
+# The harness takes its configuration fixture from the generated identity
+# header, whose freshness the profile generator checks.
+HARNESS_CONFIGURATION = (
+    f'#include "{can_telemetry_profile.DEFAULT_IDENTITY.name}"',
+    "static const uint8_t configuration[16] = TELEMETRY_CONFIGURATION;",
 )
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
@@ -280,6 +283,7 @@ def build_and_run_dynamic_harness(fixture, build_dir):
             base_verifier.GCC,
             "-m2e", "-mb", "-std=c11", "-O2",
             "-Wall", "-Wextra", "-Werror",
+            "-I", HARNESS_INCLUDE_DIR,
             f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o", harness_elf,
@@ -318,35 +322,17 @@ def marker_cases(output):
 
 
 def require_harness_configuration():
-    """Require the harness fixture to be the manifest configuration record."""
-    manifest = can_telemetry_profile.load_manifest()
-    if len(manifest.profiles) != 1:
-        raise VerificationError(
-            "the harness fixture stands for exactly one profile"
-        )
-    expected = can_telemetry.Configuration(
-        enabled=True,
-        can_id=manifest.candidate_can_id,
-        profile=manifest.profiles[0].name,
-        tick_divisor=manifest.candidate_tick_divisor,
-    ).to_bytes(manifest)
-    source = HARNESS_SOURCE.read_text(encoding="utf-8")
-    match = HARNESS_CONFIGURATION.search(source)
-    if match is None:
-        raise VerificationError(
-            f"{HARNESS_SOURCE.name} declares no 16-byte configuration fixture"
-        )
-    carried = bytes(
-        int(item, 0)
-        for item in match.group("bytes").replace("\n", " ").split(",")
-        if item.strip()
-    )
-    if carried != expected:
-        raise VerificationError(
-            f"{HARNESS_SOURCE.name} configuration fixture is "
-            f"{carried.hex()}, the manifest requires {expected.hex()}"
-        )
-    return expected
+    """Require the harness fixture to be the generated configuration record."""
+    lines = {
+        line.strip()
+        for line in HARNESS_SOURCE.read_text(encoding="utf-8").splitlines()
+    }
+    for statement in HARNESS_CONFIGURATION:
+        if statement not in lines:
+            raise VerificationError(
+                f"{HARNESS_SOURCE.name} lacks {statement!r}, the "
+                "configuration fixture of the generated identity header"
+            )
 
 
 def verify(verbose=False, check_toolchain=True):

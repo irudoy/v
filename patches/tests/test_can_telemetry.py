@@ -75,6 +75,37 @@ class CanTelemetryContractTest(unittest.TestCase):
             },
         )
 
+    def test_rom_configuration_guard_takes_the_generated_identity(self):
+        # A guard that spells a number of the identity instead of its symbol
+        # fails, although the number equals the generated one.
+        for unit_key, statement, spelled in (
+            ("capture", "cmp/eq TELEMETRY_PROFILE_ID,r0", "cmp/eq 0x7,r0"),
+            ("capture", "mov #TELEMETRY_PAGE_COUNT,r6", "mov #0xB,r6"),
+            ("control", "cmp/eq TELEMETRY_PAGE_COUNT,r0", "cmp/eq 0xB,r0"),
+            ("control", ".word TELEMETRY_PROFILE_CRC", ".word 0x6474"),
+        ):
+            with self.subTest(unit=unit_key, statement=statement):
+                unit = self.layout.assembly_unit_by_key[unit_key]
+                source = (
+                    can_telemetry_layout.DEFAULT_MANIFEST.parent / unit.source
+                ).read_text(encoding="utf-8")
+                self.assertEqual(source.count(statement + "\n"), 1)
+                drifted = replace(
+                    self.layout,
+                    source_texts=tuple(sorted({
+                        **{
+                            item.key: (
+                                can_telemetry_layout.DEFAULT_MANIFEST.parent
+                                / item.source
+                            ).read_text(encoding="utf-8")
+                            for item in self.layout.assembly_units
+                        },
+                        unit_key: source.replace(statement, spelled),
+                    }.items())),
+                )
+                with self.assertRaisesRegex(ValueError, "generated"):
+                    can_telemetry_assembly.validate_assembly_sources(drifted)
+
     def test_generated_profile_identity_and_complete_tables(self):
         self.assertEqual(
             tuple(
@@ -122,6 +153,10 @@ class CanTelemetryContractTest(unittest.TestCase):
         self.assertEqual(
             can_telemetry_profile.render_schema(self.manifest),
             can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8"),
+        )
+        self.assertEqual(
+            can_telemetry_profile.render_identity(self.manifest),
+            can_telemetry_profile.DEFAULT_IDENTITY.read_text(encoding="utf-8"),
         )
         host_schema = json.loads(
             can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8")

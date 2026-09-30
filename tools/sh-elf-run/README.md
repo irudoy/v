@@ -29,7 +29,12 @@ The gate performs these checks:
 1. Assemble every current Map Switching, Rolling Launch, and CAN telemetry
    source unit with GNU `sh-elf-as --isa=sh2e`. This covers the canonical JK08A
    units and every rendered JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B
-   target unit.
+   target unit. A unit that includes a generated header of `patches/`, as the
+   telemetry capture and control units include the profile identity
+   `can-telemetry-identity.h`, reaches the assembler with the integer symbols
+   of the header written as numbers; the telemetry harness compiles with
+   `patches/` on its include path and installs the configuration record
+   `TELEMETRY_CONFIGURATION` of the same header.
    Targets without a declared capability have no synthetic stage or payload.
 2. Reconstruct each fill-aware ROM envelope and require byte identity with the
    corresponding SHA-locked payload in the tracked manifest.

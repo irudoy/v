@@ -6,6 +6,8 @@
 // the derived control ID, and changes MBC to receive only after every other
 // mailbox field is complete.
 
+.include "can-telemetry-identity.h"
+
 .org 0x000D4E10
 telemetry_hcan1_init_wrapper:
 sts.l pr,@-r15
@@ -171,10 +173,10 @@ mov #0x1,r1
 cmp/hi r1,r0
 bt telemetry_control_config_invalid
 mov.b @(0x4,r4),r0
-cmp/eq 0x7,r0
+cmp/eq TELEMETRY_PROFILE_ID,r0
 bf telemetry_control_config_invalid
 mov.b @(0x5,r4),r0
-cmp/eq 0xB,r0
+cmp/eq TELEMETRY_PAGE_COUNT,r0
 bf telemetry_control_config_invalid
 mov.b @(0x6,r4),r0
 tst r0,r0
@@ -234,4 +236,4 @@ telemetry_control_config_magic:
 telemetry_control_data_can_id_max:
 .word 0x07FE
 telemetry_control_profile_crc:
-.word 0x6474
+.word TELEMETRY_PROFILE_CRC

@@ -206,13 +206,19 @@ The only profile name is `tuning`. The default disabled bytes are
 `43 54 02 00 07 0B 01 00 06 F0 64 74 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
-touching the queue, or accepting a control command. The protocol version,
-profile ID, page count, and profile CRC the capture and control guards compare
-against are checked instruction by instruction and literal by literal against
-`can-telemetry-profile.toml`, and the executable gate requires the harness
-configuration fixture to equal the configuration record the same manifest
-produces. A wire layout change that moves the CRC therefore fails the gate
-until both the firmware guards and the fixture carry the new identity. The
+touching the queue, or accepting a control command. `can_telemetry_profile.py`
+writes the profile ID, page count, and profile CRC into the generated header
+`can-telemetry-identity.h`, together with `TELEMETRY_CONFIGURATION`, the
+enabled record of the candidate CAN ID and tick divisor. The capture and
+control guards include the header and compare against its symbols, which the
+source dialect writes as numbers before the static audit and GNU assembly;
+the audit requires the symbols and checks the protocol version, profile ID,
+page count, and profile CRC of the guards instruction by instruction and
+literal by literal against `can-telemetry-profile.toml`. The executable
+harness includes the same header and installs `TELEMETRY_CONFIGURATION`. A
+wire layout change that moves the CRC therefore reaches the guards and the
+fixture through the generator, and the SHA-256 locks of the assembled units
+and of the composition hold the gate until they state the new bytes. The
 builder independently
 requires mailbox 26 to be a type-4 DLC-8 transmitter for the configured CAN ID.
 This mailbox configuration is present even when startup streaming is disabled,
@@ -525,8 +531,9 @@ CAN, ECU, sensor, or actuator validation.
 | Artifact | Responsibility |
 | --- | --- |
 | `can-telemetry-profile.toml` | authoritative wire fields and exact JK08A producer bindings |
-| `can_telemetry_profile.py` | producer validator, pointer-table generator, and neutral host-schema generator |
+| `can_telemetry_profile.py` | producer validator and generator of the pointer table, the neutral host schema, and the identity header |
 | `can-telemetry-schema.json` | generated ROM-neutral strict host contract |
+| `can-telemetry-identity.h` | generated profile ID, page count, CRC, and harness configuration record |
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
 | `can-telemetry-*.s` | wrappers, capture, control receiver, queue, ISR, and generated tables |
 | `can-telemetry-payloads.toml` | SHA-locked independently assembled bytes |

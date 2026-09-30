@@ -364,18 +364,22 @@ consumers = ["tools/memgraph/load_vendor.py", "tools/memgraph/load_a2l.py"]
 read = "open"
 
 [[projection]]
-path = "patches/can-telemetry-{tables.s,schema.json}"
+path = "patches/can-telemetry-{tables.s,schema.json,identity.h}"
 generator = "uv run python patches/can_telemetry_profile.py"
 inputs = [
     "patches/can-telemetry-profile.toml",
     "patches/jk08a-runtime-reservations.toml",
     "patches/can_telemetry_profile.py",
+    "patches/can_telemetry.py",
     "tools/logs/can_telemetry_schema.py",
 ]
 consumers = [
     "patches/can_telemetry_assembly.py",
+    "patches/can-telemetry-capture.s",
+    "patches/can-telemetry-control.s",
     "patches/runtime_targets.py",
     "tools/sh-elf-run/verify_can_telemetry.py",
+    "tools/sh-elf-run/can_telemetry_harness.c",
     "tools/logs/can_telemetry.py",
     "tools/logs/trc_to_mlg.py",
     "tools/can_dashboard/",

@@ -29,6 +29,14 @@ from patches.map_switching_layout import (
 
 
 LABEL_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*):$")
+# `.include "<name>"` names a generated header of this directory. Its
+# `#define NAME value` lines whose value is one number define symbols that
+# later statements write in place of the number; a define of another value
+# serves C alone.
+INCLUDE_RE = re.compile(r'^\.include\s+"(?P<name>[A-Za-z0-9_.-]+\.h)"$')
+DEFINE_RE = re.compile(r"^#define\s+(?P<name>[A-Z][A-Z0-9_]*)\s+(?P<value>.+)$")
+SYMBOL_RE = re.compile(r"(?<![A-Za-z0-9_])[A-Z][A-Z0-9_]*(?![A-Za-z0-9_])")
+INCLUDE_DIR = Path(__file__).resolve().parent
 REGISTER_RE = re.compile(r"\b(?:r(?:1[0-5]|[0-9])|pr|gbr|sr|mach|macl)\b")
 CONTROL_RE = re.compile(r"^(bra|bsr|bt|bf|jmp|jsr|rts)\b", re.IGNORECASE)
 PC_RELATIVE_RE = re.compile(
@@ -438,6 +446,62 @@ def _number(text):
     return int(value, 10)
 
 
+def _header_symbols(name, path, line_number):
+    """Return the integer symbols of one included header."""
+    try:
+        header = (INCLUDE_DIR / name).read_text(encoding="utf-8")
+    except OSError as error:
+        raise ValueError(
+            f"{path}:{line_number}: cannot read the included {name}"
+        ) from error
+    symbols = {}
+    for header_line, raw_line in enumerate(header.splitlines(), 1):
+        line = _strip_comment(raw_line).strip()
+        if not line:
+            continue
+        match = DEFINE_RE.fullmatch(line)
+        if match is None:
+            raise ValueError(
+                f"{name}:{header_line}: an included header holds only "
+                "comments and #define lines"
+            )
+        try:
+            symbols[match["name"]] = _number(match["value"])
+        except ValueError:
+            continue
+    return symbols
+
+
+def expand_includes(source, path="<source>"):
+    """Return `source` with each `.include` line blanked and the integer
+    symbols of its header written as hexadecimal numbers after it.
+
+    The statements, the GNU input, and the assembled bytes are those of the
+    numbers themselves, and every line keeps its number.
+    """
+    symbols = {}
+    lines = []
+    for line_number, raw_line in enumerate(source.splitlines(), 1):
+        match = INCLUDE_RE.fullmatch(_strip_comment(raw_line).strip())
+        if match:
+            symbols.update(
+                _header_symbols(match["name"], path, line_number)
+            )
+            lines.append("")
+            continue
+        if symbols:
+            raw_line = SYMBOL_RE.sub(
+                lambda item: (
+                    f"0x{symbols[item[0]]:X}"
+                    if item[0] in symbols
+                    else item[0]
+                ),
+                raw_line,
+            )
+        lines.append(raw_line)
+    return "\n".join(lines) + "\n"
+
+
 def _values(text, path, line_number):
     values = [value.strip() for value in text.split(",")]
     if not values or any(not value for value in values):
@@ -452,7 +516,7 @@ def parse_source_text(source, path, start, end):
     statements = []
     cursor = start
     for line_number, raw_line in enumerate(
-        source.splitlines(), 1
+        expand_includes(source, path).splitlines(), 1
     ):
         line = _strip_comment(raw_line).strip()
         if not line:

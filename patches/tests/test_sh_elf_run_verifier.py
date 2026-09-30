@@ -60,6 +60,33 @@ STOCK_SPEC.loader.exec_module(STOCK_VERIFIER)
 
 
 class ShElfRunVerifierTest(unittest.TestCase):
+    def test_preprocessor_writes_the_symbols_of_the_included_header(self):
+        header = "#define ANSWER 0x2A\n#define RECORD { 0x01, 0x02 }\n"
+        source = (
+            '.include "answer.h"\ncmp/eq ANSWER,r0\n'
+            "mov #ANSWER,r1\n.word ANSWER\n"
+        )
+        original = assembly_model.INCLUDE_DIR
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "answer.h").write_text(
+                header, encoding="utf-8"
+            )
+            assembly_model.INCLUDE_DIR = Path(directory)
+            try:
+                self.assertEqual(
+                    VERIFIER.preprocess_gnu_source(source),
+                    "\ncmp/eq #0x2A,r0\nmov #0x2A,r1\n.word 0x2A\n",
+                )
+                parsed = assembly_model.parse_source_text(
+                    source, "answer.s", 0, 0x10
+                )
+            finally:
+                assembly_model.INCLUDE_DIR = original
+        self.assertEqual(
+            [(item.line_number, item.text) for item in parsed.statements],
+            [(2, "cmp/eq 0x2A,r0"), (3, "mov #0x2A,r1"), (4, "0x2A")],
+        )
+
     def test_preprocessor_translates_only_dialect_differences(self):
         source = """// comment
 .align 4
@@ -340,15 +367,18 @@ mov #0x5,r1
         )
 
         for case, value in (
-            ("CONFIG_PROFILE_ZERO", 0),
-            ("CONFIG_PROFILE_PREVIOUS", previous),
-            ("CONFIG_PROFILE_HIGH", high),
+            ("CONFIG_PROFILE_ZERO", "0"),
+            ("CONFIG_PROFILE_PREVIOUS", "TELEMETRY_PROFILE_ID - 1"),
+            ("CONFIG_PROFILE_HIGH", "TELEMETRY_PROFILE_ID \\+ 1"),
+            ("CONFIG_PAGE_COUNT", "TELEMETRY_PAGE_COUNT - 1"),
         ):
             with self.subTest(case=case):
                 self.assertRegex(
-                    harness, rf"case {case}:\s+config\[4\] = {value};"
+                    harness, rf"case {case}:\s+config\[[45]\] = {value};"
                 )
-        self.assertRegex(harness, rf"rom_pointer\(CONFIG\)\[4\] = {previous};")
+        self.assertIn(
+            "rom_pointer(CONFIG)[4] = TELEMETRY_PROFILE_ID - 1;", harness
+        )
         self.assertIn(
             f"rejection of profile IDs 0, {previous}, and {high} by the capture "
             f"entry and of profile ID {previous} by the control receiver",
@@ -685,7 +715,7 @@ mov #0x5,r1
         self.assertIn("verify_stock_code.verify", source)
         self.assertIn("stock_code_cases", source)
 
-    def test_harness_configuration_fixture_is_the_manifest_record(self):
+    def test_harness_configuration_fixture_is_the_generated_record(self):
         manifest = can_telemetry_profile.load_manifest()
         expected = can_telemetry.Configuration(
             enabled=True,
@@ -693,38 +723,44 @@ mov #0x5,r1
             profile=manifest.profiles[0].name,
             tick_divisor=manifest.candidate_tick_divisor,
         ).to_bytes(manifest)
-        self.assertEqual(
-            TELEMETRY_VERIFIER.require_harness_configuration(), expected
+        header = can_telemetry_profile.DEFAULT_IDENTITY.read_text(
+            encoding="utf-8"
+        )
+        record = re.search(
+            r"^#define TELEMETRY_CONFIGURATION \{ (?P<bytes>[^}]*) \}$",
+            header,
+            re.MULTILINE,
         )
 
-    def test_drifted_harness_configuration_fails_the_gate(self):
+        self.assertIsNotNone(record)
+        self.assertEqual(
+            bytes(int(item, 16) for item in record["bytes"].split(", ")),
+            expected,
+        )
+        self.assertIsNone(TELEMETRY_VERIFIER.require_harness_configuration())
+
+    def test_harness_with_its_own_configuration_fails_the_gate(self):
         source = TELEMETRY_VERIFIER.HARNESS_SOURCE.read_text(
             encoding="utf-8"
         )
-        fixture = TELEMETRY_VERIFIER.require_harness_configuration()
-
-        def row(values):
-            return ", ".join(f"0x{value:02x}" for value in values)
-
-        def drift(start, stop):
-            # The last byte of each span is the field under test.
-            changed = bytearray(fixture[start:stop])
-            changed[-1] ^= 1
-            return row(fixture[start:stop]), row(changed)
-
+        include, fixture = TELEMETRY_VERIFIER.HARNESS_CONFIGURATION
+        spelled = (
+            "static const uint8_t configuration[16] = { 0x43, 0x54, 0x02, "
+            "0x01, 0x07, 0x0B, 0x01, 0x00, 0x06, 0xF0, 0x64, 0x74, 0x54, "
+            "0x45, 0x4C, 0x32 };"
+        )
         drifts = (
-            ("profile CRC", *drift(10, 12)),
-            ("page count", *drift(4, 6)),
-            ("profile ID", *drift(2, 5)),
+            ("configuration", fixture, spelled),
+            ("include", include, ""),
         )
         original = TELEMETRY_VERIFIER.HARNESS_SOURCE
         with tempfile.TemporaryDirectory() as directory:
             drifted = Path(directory) / "can_telemetry_harness.c"
-            for field, carried, replacement in drifts:
-                with self.subTest(field=field):
-                    self.assertIn(carried, source)
+            for name, carried, replacement in drifts:
+                with self.subTest(drift=name):
+                    self.assertEqual(source.count(carried), 1)
                     drifted.write_text(
-                        source.replace(carried, replacement, 1),
+                        source.replace(carried, replacement),
                         encoding="utf-8",
                     )
                     TELEMETRY_VERIFIER.HARNESS_SOURCE = drifted

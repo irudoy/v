@@ -34,6 +34,21 @@ SOURCE_LABELS = {
     "control_poll": "telemetry_control_poll",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr", "not", "rte"}
+IDENTITY_HEADER = can_telemetry_profile.DEFAULT_IDENTITY.name
+# The configuration guards compare the configuration record with the symbols
+# of the generated identity header, not with numbers of their own.
+IDENTITY_STATEMENTS = {
+    "capture": (
+        "cmp/eq TELEMETRY_PROFILE_ID,r0",
+        "mov #TELEMETRY_PAGE_COUNT,r6",
+        ".word TELEMETRY_PROFILE_CRC",
+    ),
+    "control": (
+        "cmp/eq TELEMETRY_PROFILE_ID,r0",
+        "cmp/eq TELEMETRY_PAGE_COUNT,r0",
+        ".word TELEMETRY_PROFILE_CRC",
+    ),
+}
 
 
 def render_payloads(layout, blobs):
@@ -231,6 +246,21 @@ def _validate_identity_immediates(parsed, unit_key, identity, page_form):
             )
 
 
+def _validate_identity_symbols(source, unit_key):
+    """Require the guard to take the identity from the generated header."""
+    lines = {
+        common._strip_comment(line).strip() for line in source.splitlines()
+    }
+    for statement in (
+        f'.include "{IDENTITY_HEADER}"', *IDENTITY_STATEMENTS[unit_key]
+    ):
+        if statement not in lines:
+            raise ValueError(
+                f"{unit_key}: configuration guard lacks {statement}, the "
+                f"identity of the generated {IDENTITY_HEADER}"
+            )
+
+
 def _validate_wrappers(parsed):
     texts = _texts(parsed)
     if texts[:13] != [
@@ -412,15 +442,12 @@ def validate_assembly_sources(layout=None):
     source_texts = layout.source_text_by_unit
     for unit in layout.assembly_units:
         source_path = source_dir / unit.source
-        if unit.key in source_texts:
-            parsed = common.parse_source_text(
-                source_texts[unit.key], source_path,
-                unit.span.start, unit.span.end,
-            )
-        else:
-            parsed = common.parse_source(
-                source_path, unit.span.start, unit.span.end
-            )
+        source = source_texts.get(unit.key)
+        if source is None:
+            source = source_path.read_text(encoding="utf-8")
+        parsed = common.parse_source_text(
+            source, source_path, unit.span.start, unit.span.end
+        )
         parsed_by_unit[unit.key] = parsed
         _validate_instruction_forms(parsed)
         common._validate_delay_slots(
@@ -458,6 +485,7 @@ def validate_assembly_sources(layout=None):
             _validate_wrappers(parsed)
         elif unit.key == "capture":
             _validate_capture(parsed)
+            _validate_identity_symbols(source, unit.key)
             _validate_identity_immediates(
                 parsed, unit.key, identity, "mov #{pages},r6"
             )
@@ -465,6 +493,7 @@ def validate_assembly_sources(layout=None):
             _validate_completion(parsed, layout.variant)
         elif unit.key == "control":
             _validate_control(parsed)
+            _validate_identity_symbols(source, unit.key)
             _validate_identity_immediates(
                 parsed, unit.key, identity, "cmp/eq {pages},r0"
             )
@@ -472,10 +501,7 @@ def validate_assembly_sources(layout=None):
             expected = can_telemetry_profile.render_tables(
                 can_telemetry_profile.load_manifest()
             )
-            actual = source_texts.get(unit.key)
-            if actual is None:
-                actual = source_path.read_text(encoding="utf-8")
-            if not source_texts and actual != expected:
+            if not source_texts and source != expected:
                 raise ValueError("generated table source differs")
         else:
             raise ValueError(f"{unit.key}: no source validator is registered")

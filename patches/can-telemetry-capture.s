@@ -5,6 +5,8 @@
 // configured divider, builds the inactive frame bank, and atomically publishes
 // either an active or replaceable pending snapshot.
 
+.include "can-telemetry-identity.h"
+
 .org 0x000D4340
 telemetry_capture:
 sts.l pr,@-r15
@@ -23,9 +25,9 @@ cmp/hi r1,r0
 bt telemetry_capture_return
 mov.b @(0x4,r4),r0
 extu.b r0,r5
-cmp/eq 0x7,r0
+cmp/eq TELEMETRY_PROFILE_ID,r0
 bf telemetry_capture_return
-mov #0xB,r6
+mov #TELEMETRY_PAGE_COUNT,r6
 telemetry_capture_check_pages:
 mov.b @(0x5,r4),r0
 extu.b r0,r0
@@ -172,7 +174,7 @@ telemetry_config_magic:
 telemetry_config_can_id_max:
 .word 0x07FE
 telemetry_config_crc:
-.word 0x6474
+.word TELEMETRY_PROFILE_CRC
 
 .org 0x000D4500
 // Always construct nine fixed pages and both rotating context pages.
