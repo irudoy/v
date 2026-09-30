@@ -1414,8 +1414,21 @@ parent reviews one diff.
   DTCs it writes. The functions that read the reference or a datum of the
   closure, the functions that depend on a function reference, and the claims
   that cite the reference follow without expansion, because a function that
-  reads a datum need not compute each of its outputs from it. Chains, fields,
-  and features join the closure in their stages.
+  reads a datum need not compute each of its outputs from it. The fields that
+  carry the reference or a datum of the closure follow, and the features that
+  require any of them, the reference, or such a feature, with the targets that
+  state a requirement of one target; chains join at stage 6. The insertion
+  points of a meaning state every layout: the accesses or calls of its symbol,
+  or else its status. A field reaches the features that require it and the
+  signal it serves; its insertion points are its source on every layout that
+  such a feature targets: the symbol that fills its role in a target, the
+  symbol of its source meaning, the status of that meaning, or for another
+  origin than `ecu_ram` the allocation that the owning feature states there
+  or its `7mfk` address moved by the `ram_delta` or `rom_delta` of the
+  `runtime` target, marked `[derived]`. A feature reaches the features that
+  require it; its insertion points are its target on every layout, with the
+  status, the injected ROM and RAM of a runtime, and each hook site with its
+  replacement.
 - `kb path` searches the dependencies between data and those through the
   functions that read, write, and call: from the first reference to the
   second, then from the second to the first, then in any direction. Of paths

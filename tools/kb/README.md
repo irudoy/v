@@ -24,6 +24,7 @@ uv run kb at jk00d:ffff1034          # the symbol at an address, or the allocati
 uv run kb show 7mfk:0000a4aa         # identity, keys, block and chain steps, feature roles, layouts, links, L0 accessors, notes, evidence
 uv run kb where hcan1_init           # the symbol or status of a meaning on every layout
 uv run kb impact 7mfk:0000a4aa       # what a change reaches, with the insertion points
+uv run kb impact normalized_load_raw/field   # the features that require a field and its source on every layout
 uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two entities
 uv run kb find knock threshold       # meanings and designed entities ranked by name, former name, title, and summary
 uv run kb brief                      # graph state, layouts, stage, owners, legacy names, gaps, and the questions
@@ -135,7 +136,12 @@ name resolves with a note that names the current reference.
   that shows the rest. `--budget` and `--full` change the budget.
 - `kb impact` closes transitively over the links between data and lists the
   functions that read the reference or a datum of the closure without
-  expanding them; a function reference starts at the data it writes.
+  expanding them; a function reference starts at the data it writes. The
+  fields that carry a datum of the closure and the features that require
+  them follow. The insertion points of a meaning state every layout, with
+  its status where it has no symbol; those of a field are its source on
+  every layout that a requiring feature targets, and those of a feature are
+  its target status, runtime spans, and hook sites on every layout.
   `kb path` searches dataflow through data and through the functions that
   read, write, and call, then the reverse direction, then any direction.
   Both leave nodes above the 99th degree percentile of their kind unexpanded

@@ -149,6 +149,180 @@ class ImpactTest(unittest.TestCase):
         self.assertIn(store.ref("leaf0"), {item["ref"] for item in found["data"]})
 
 
+SNAPSHOT_HOOKS = {"snapshot": {"hook": "snapshot_call/hook", "replacement": "000d4280"}}
+
+
+class FeatureStore:
+    """Telemetry fields of a load and of the index computed from it, a field
+    of the Rolling Launch phase, the definitions that require the index on
+    two targets, and a bundle that requires can_telemetry. The load has
+    symbols on 7mfk and jk00c and a status on 1nd, and a proxy fills its
+    field on jk78c; the phase has a stated allocation on 7mfk and jk00c."""
+
+    LAYOUTS = ("1nd", "7mfk", "jk00c", "jk78c")
+    ENTITIES = {
+        "load_raw/field": {"key": "load_raw/field", "kind": "field", "slug": "load_raw",
+                           "origin": "ecu_ram"},
+        "phase/field": {"key": "phase/field", "kind": "field", "slug": "phase",
+                        "origin": "rolling_launch", "source": "rolling_launch.phase"},
+        "can_telemetry/feature": {"key": "can_telemetry/feature", "kind": "feature",
+                                  "slug": "can_telemetry"},
+        "rolling_launch/feature": {"key": "rolling_launch/feature", "kind": "feature",
+                                   "slug": "rolling_launch"},
+        "runtime/feature": {"key": "runtime/feature", "kind": "feature", "slug": "runtime"},
+    }
+    SYMBOLS = {
+        "load/ram": [sym("load", "ram", 0xFFFF102C), sym("load", "ram", 0xFFFF1034, "jk00c")],
+        "load_proxy/ram": [sym("load_proxy", "ram", 0xFFFF22F8, "jk78c")],
+        "snapshot_call/hook": [sym("snapshot_call", "hook", 0x28090),
+                               sym("snapshot_call", "hook", 0x28CF8, "jk00c")],
+    }
+    STATUSES = {"load/ram": {"1nd": {"state": "unresolved", "method": "masked-match",
+                                     "target": "7mfk:ffff102c", "count": 0}}}
+    CARRIES = [("index_raw/field", "load_index/ram"), ("load_raw/field", "load/ram")]
+    REQUIRES = [("bundle/feature", "can_telemetry/feature", None),
+                ("can_telemetry/feature", "index_raw/field", None),
+                ("can_telemetry/feature", "load_raw/field", None),
+                ("can_telemetry/feature", "phase/field", None),
+                ("definitions/feature", "load_index/ram", ["jk00c", "jk78c"])]
+    TARGETS = {
+        "can_telemetry/feature": {
+            layout: {"status": "supported", "hooks": SNAPSHOT_HOOKS,
+                     "roles": {"load_raw": {"symbol": "load_proxy/ram"}}
+                     if layout == "jk78c" else None}
+            for layout in LAYOUTS},
+        "rolling_launch/feature": {
+            "7mfk": {"status": "supported", "allocations": {
+                "phase": {"address": "ffff5d40", "width": 1}}},
+            "jk00c": {"status": "supported", "allocations": {
+                "phase": {"address": "ffff6040", "width": 1}}}},
+        "runtime/feature": {
+            "1nd": {"status": "supported", "ram_delta": -0x5100, "rom_delta": 0x60000},
+            "7mfk": {"status": "supported", "injected_rom_start": "000d2108",
+                     "injected_rom_end": "000d6000", "injected_ram_start": "ffff5d00",
+                     "injected_ram_end": "ffff6000"},
+            "jk00c": {"status": "supported", "ram_delta": 0x300, "rom_delta": 0xC700},
+            "jk78c": {"status": "supported", "ram_delta": -0x5100}},
+    }
+
+    def run(self, query, **params):
+        if "MATCH (m:Kb:Meaning) RETURN" in query:
+            return [{"key": key, "kind": "ram", "name": key.partition("/")[0]}
+                    for key in ("load/ram", "load_index/ram", "load_proxy/ram")]
+        if "(a:Kb:Meaning)-[r]->(b:Kb:Meaning)" in query:
+            return [{"a": "load_index/ram", "type": "INPUT", "b": "load/ram", "role": None,
+                     "verified": None}]
+        if "[:CARRIES]" in query:
+            if "keys" in params:
+                return [{"field": field, "meaning": meaning} for field, meaning in self.CARRIES
+                        if meaning in params["keys"]]
+            return [{"key": meaning} for field, meaning in self.CARRIES
+                    if field == params["key"]]
+        if "[r:REQUIRES]" in query:
+            return [{"feature": feature, "required": key, "layouts": layouts}
+                    for feature, key, layouts in self.REQUIRES if key in params["keys"]]
+        if "[:SERVES]" in query:
+            return [{"signal": "load/signal"}] if params["key"] == "load_raw/field" else []
+        if "t.roles AS roles" in query:
+            return [{"feature": feature.partition("/")[0], "layout": layout,
+                     "roles": target.get("roles")}
+                    for feature in params["features"]
+                    for layout, target in self.TARGETS.get(feature, {}).items()]
+        if "t.allocations AS allocations" in query:
+            return [{"layout": layout, "allocations": target.get("allocations")}
+                    for layout, target in self.TARGETS.get(params["key"], {}).items()]
+        if "properties(t) AS target" in query:
+            key = params.get("key", "runtime/feature")
+            return [{"layout": layout, "target": target}
+                    for layout, target in self.TARGETS.get(key, {}).items()]
+        if "[r:STATUS]" in query:
+            return [{"layout": layout, "status": status, "current": None}
+                    for layout, status in self.STATUSES.get(params["key"], {}).items()]
+        if "RETURN m.key AS meaning, s" in query:
+            return [{"meaning": key, "s": node} for key in params["keys"]
+                    for node in self.SYMBOLS.get(key, ())]
+        if "[:HAS]->(s:Kb:Symbol) RETURN s" in query:
+            return [{"s": node} for node in self.SYMBOLS.get(params["key"], ())]
+        return []
+
+    def resolve(self, graph, text, layout=None, root=None, many=False):
+        if text in self.ENTITIES:
+            return Ref("entity", self.ENTITIES[text])
+        return Ref("meaning", {"key": text, "kind": "ram", "name": text.partition("/")[0]})
+
+
+class FeatureImpactTest(unittest.TestCase):
+    def impact(self, text, layout=None):
+        store = FeatureStore()
+        with mock.patch.object(refs, "resolve", store.resolve), \
+                mock.patch.object(read.repo, "layouts", lambda *args: store.LAYOUTS):
+            return read.impact(store, text, layout)
+
+    def test_the_fields_of_the_closure_and_the_features_that_require_them_follow(self):
+        answer = self.impact("load/ram")
+        lines = answer.text().splitlines()
+        self.assertEqual(lines[0], "impact of load/ram: 1 data, 0 reading functions, "
+                                   "2 fields, 3 features")
+        self.assertEqual(lines[lines.index("fields") + 1:lines.index("features")], [
+            "  index_raw/field carries load_index/ram", "  load_raw/field carries load/ram"])
+        self.assertEqual(lines[lines.index("features") + 1:lines.index("insertion points")], [
+            "  bundle/feature requires can_telemetry/feature",
+            "  can_telemetry/feature requires index_raw/field",
+            "  can_telemetry/feature requires load_raw/field",
+            "  definitions/feature requires load_index/ram on jk00c, jk78c"])
+
+    def test_the_insertion_points_of_a_meaning_state_every_layout(self):
+        self.assertEqual(self.impact("load/ram").data["insertion_points"], [
+            "  1nd    unresolved  masked-match  7mfk:ffff102c  count 0",
+            "  7mfk   no L0 access of ffff102c",
+            "  jk00c  no L0 access of ffff1034",
+            "  jk78c  no symbol and no status"])
+
+    def test_over_one_layout_the_requirements_of_other_targets_drop(self):
+        store = FeatureStore()
+        _, required = read.dependents(store, {"load_index/ram"}, "7mfk")
+        self.assertEqual(required, [("bundle/feature", "can_telemetry/feature", None),
+                                    ("can_telemetry/feature", "index_raw/field", None)])
+        _, required = read.dependents(store, {"load_index/ram"}, "jk00c")
+        self.assertIn(("definitions/feature", "load_index/ram", ["jk00c", "jk78c"]), required)
+
+    def test_a_field_reads_its_role_its_symbol_or_the_status_of_its_source(self):
+        answer = self.impact("load_raw/field")
+        self.assertEqual(answer.text().splitlines()[0],
+                         "impact of load_raw/field: 2 features, 1 signal")
+        self.assertEqual(answer.data["signals"], ["load/signal"])
+        self.assertEqual(answer.data["insertion_points"], [
+            "  1nd    unavailable: load/ram unresolved  masked-match  7mfk:ffff102c  count 0",
+            "  7mfk   load/ram/7mfk-ffff102c",
+            "  jk00c  load/ram/jk00c-ffff1034",
+            "  jk78c  load_proxy/ram/jk78c-ffff22f8 fills can_telemetry.load_raw"])
+
+    def test_an_allocation_moves_by_the_runtime_where_no_target_states_it(self):
+        self.assertEqual(self.impact("phase/field").data["insertion_points"], [
+            "  1nd    rolling_launch.phase at ffff0c40, 1 byte  [derived] ram_delta -0x5100",
+            "  7mfk   rolling_launch.phase at ffff5d40, 1 byte",
+            "  jk00c  rolling_launch.phase at ffff6040, 1 byte",
+            "  jk78c  rolling_launch.phase at ffff0c40, 1 byte  [derived] ram_delta -0x5100"])
+        self.assertEqual(self.impact("phase/field", "jk78c").data["insertion_points"], [
+            "  jk78c  rolling_launch.phase at ffff0c40, 1 byte  [derived] ram_delta -0x5100"])
+
+    def test_a_feature_states_its_target_and_hook_sites_on_every_layout(self):
+        answer = self.impact("can_telemetry/feature")
+        self.assertEqual(answer.data["features"], [
+            {"feature": "bundle/feature", "requires": "can_telemetry/feature", "layouts": None}])
+        self.assertEqual(answer.data["insertion_points"][:4], [
+            "  1nd    supported",
+            "  1nd    snapshot at snapshot_call/hook, which has no symbol  replacement 000d4280",
+            "  7mfk   supported",
+            "  7mfk   snapshot at snapshot_call/hook/7mfk-00028090  replacement 000d4280"])
+        self.assertEqual(self.impact("rolling_launch/feature").data["insertion_points"], [
+            "  1nd    no target", "  7mfk   supported; no hook", "  jk00c  supported; no hook",
+            "  jk78c  no target"])
+        self.assertEqual(self.impact("runtime/feature").data["insertion_points"][1],
+                         "  7mfk   supported; ROM 000d2108..000d6000; RAM ffff5d00..ffff6000; "
+                         "no hook")
+
+
 class PathTest(unittest.TestCase):
     def path(self, store, first, second, expand=()):
         with mock.patch.object(refs, "resolve", store.resolve):

@@ -12,7 +12,7 @@ import math
 import re
 import tomllib
 
-from kb import names, project, refs, repo, spec, store
+from kb import names, project, refs, repo, spec, store, targets
 from kb.answer import DETAIL, EVIDENCE, FACTS, IDENTITY, LINKS, Answer
 from kb.refs import location_ref, symbol_ref
 from kb.repo import KbError
@@ -950,6 +950,8 @@ def _start(graph, ref, root):
         if ref.layout:
             raise KbError(f"{ref.node['key']} has no symbol on {ref.layout}", code=5)
         return None, ref.node["key"]
+    if ref.kind == "entity":
+        raise KbError(f"{ref.text} holds no symbol; kb show {ref.text} lists its links", code=5)
     raise KbError(f"{ref.text} holds no symbol; kb at {ref.text} shows its L0 facts", code=5)
 
 
@@ -966,9 +968,13 @@ def _expanded(graph, texts, layout, root):
 def impact(graph, text, layout=None, expand=(), root=repo.ROOT):
     """What a change to a reference reaches: the data computed from it through
     value links, transitively; the functions that read the reference or any of
-    those data; the functions that consume a function reference; and the
-    claims whose evidence cites it."""
+    those data; the functions that consume a function reference; the claims
+    whose evidence cites it; and the fields that carry the reference or one of
+    those data and the features that require any of them. A field or a
+    feature reaches the features that require it (`_entity_impact`)."""
     ref = refs.resolve(graph, text, layout, root)
+    if ref.kind == "entity" and ref.node.get("kind") in ("field", "feature"):
+        return _entity_impact(graph, ref, layout, root)
     scope, start = _start(graph, ref, root)
     links = LinkGraph(graph, scope)
     opened = _expanded(graph, expand, scope, root)
@@ -993,15 +999,25 @@ def impact(graph, text, layout=None, expand=(), root=repo.ROOT):
             readers.setdefault(child, (key, fact, verified))
     consumers = list(links.step(start, ("call",)))
     cites = list(links.step(start, ("cite",)))
+    carried, required = dependents(
+        graph, _meaning_keys(graph, scope, [start, *(child for _, child, _, _ in values)]),
+        scope)
     answer = Answer(f"kb impact {ref.text} --budget <tokens>")
     head = [f"impact of {ref.text}: {len(values)} data, {len(readers)} reading functions"
             + (f", {len(consumers)} consuming functions" if consumers else "")
             + (f", {len(cites)} citing claims" if cites else "")
+            + (f", {_counted(len(carried), 'field')}" if carried else "")
+            + (f", {_counted(len({row[0] for row in required}), 'feature')}"
+               if required else "")
             + (f"; {len(hubs)} hubs not expanded" if hubs else "")]
     if ref.note:
         head.insert(0, f"note: {ref.note}")
     answer.section(None, IDENTITY, head)
-    points = _insertion_points(graph, ref)
+    # The fields and features precede the insertion points, which a budget
+    # cuts first among sections of one priority.
+    answer.section("fields", FACTS, [f"  {field} carries {meaning}" for field, meaning in carried])
+    answer.section("features", FACTS, _requirement_lines(required, scope))
+    points = _insertion_points(graph, ref, root)
     answer.section("insertion points", FACTS, points)
     levels = defaultdict(list)
     for level, child, fact, verified in values:
@@ -1017,6 +1033,8 @@ def impact(graph, text, layout=None, expand=(), root=repo.ROOT):
     answer.section("citing claims", EVIDENCE, [f"  {fact}" for _, _, fact, _ in cites])
     answer.data = {
         "ref": ref.text, "insertion_points": points,
+        "fields": [{"field": field, "meaning": meaning} for field, meaning in carried],
+        "features": _requirement_data(required),
         "data": [{"depth": level, "ref": links.ref(child), "fact": fact}
                  for level, child, fact, _ in values],
         "readers": {links.ref(child): fact for child, (_, fact, _) in readers.items()},
@@ -1026,18 +1044,85 @@ def impact(graph, text, layout=None, expand=(), root=repo.ROOT):
     return answer
 
 
-def _insertion_points(graph, ref):
+def _counted(count, noun):
+    return f"{count} {noun}" + ("" if count == 1 else "s")
+
+
+def _meaning_keys(graph, scope, keys):
+    """The meaning keys of the start and the closure: the keys themselves over
+    meanings, the meanings of the symbols over one layout."""
+    if scope is None:
+        return set(keys)
+    return {row["key"] for row in graph.run(
+        "MATCH (m:Kb:Meaning)-[:HAS]->(s:Kb:Symbol) WHERE s.key IN $keys "
+        "RETURN DISTINCT m.key AS key", keys=sorted(keys))}
+
+
+def dependents(graph, keys, layout=None):
+    """The fields and features that depend on the meanings or entities of
+    `keys` (section 12.4): [(field, meaning)] of the fields that carry a
+    meaning of `keys`, and [(feature, required, layouts)] of the features
+    that require a key, one of those fields, or a feature that they reach,
+    transitively. `layouts` is None where the feature requires it on every
+    target, and otherwise lists the targets that require it; over one layout
+    the requirements of the other targets drop."""
+    carried = [(row["field"], row["meaning"]) for row in graph.run(
+        "MATCH (f:Kb:Entity {kind: 'field'})-[:CARRIES]->(m:Kb:Meaning) WHERE m.key IN $keys "
+        "RETURN f.key AS field, m.key AS meaning ORDER BY field, meaning", keys=sorted(keys))]
+    reached = set(keys) | {field for field, _ in carried}
+    frontier, required = set(reached), {}
+    while frontier:
+        rows = graph.run(
+            "MATCH (e:Kb:Entity {kind: 'feature'})-[r:REQUIRES]->(x) WHERE x.key IN $keys "
+            "RETURN e.key AS feature, x.key AS required, r.layouts AS layouts",
+            keys=sorted(frontier))
+        frontier = set()
+        for row in rows:
+            if layout is not None and row["layouts"] and layout not in row["layouts"]:
+                continue
+            pair = (row["feature"], row["required"])
+            # A requirement of the feature itself holds on every target.
+            if row["layouts"] is None or required.get(pair, ()) is None:
+                required[pair] = None
+            else:
+                required[pair] = sorted({*required.get(pair, ()), *row["layouts"]})
+            if row["feature"] not in reached:
+                reached.add(row["feature"])
+                frontier.add(row["feature"])
+    return carried, [(feature, key, layouts)
+                     for (feature, key), layouts in sorted(required.items())]
+
+
+def _requirement_lines(required, scope=None):
+    return [f"  {feature} requires {key}"
+            + (f" on {', '.join(layouts)}" if layouts and scope is None else "")
+            for feature, key, layouts in required]
+
+
+def _requirement_data(required):
+    return [{"feature": feature, "requires": key, "layouts": layouts}
+            for feature, key, layouts in required]
+
+
+def _insertion_points(graph, ref, root=repo.ROOT):
     """Per layout, the instructions that access the reference's symbol: the
-    accesses of its location, or the calls of its function."""
+    accesses of its location, or the calls of its function. A meaning states
+    every layout: its status, or the absence of one, where it has no
+    symbol."""
     if ref.kind == "symbol":
-        members = [ref.node]
+        members, statuses = {ref.node["layout"]: ref.node}, {}
+        layouts = [ref.node["layout"]]
     else:
-        members = [row["s"] for row in graph.run(
-            "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s ORDER BY s.layout",
-            key=ref.node["key"])]
+        members = _members(graph, ref.node["key"])
+        statuses = _statuses(graph, ref.node["key"])
+        layouts = list(repo.layouts(root))
     lines = []
-    for symbol in members:
-        layout, address = symbol["layout"], symbol["address"]
+    for layout in layouts:
+        symbol = members.get(layout)
+        if symbol is None:
+            lines.append(f"  {layout:<6} {_absence(statuses.get(layout))}")
+            continue
+        address = symbol["address"]
         if symbol["kind"] == "fn":
             rows = callers(graph, layout, address)
             lines.extend(f"  {layout:<6} [l0] call {hexes(row['sites'] or [])} in "
@@ -1049,6 +1134,183 @@ def _insertion_points(graph, ref):
         lines.extend(f"  {layout:<6}{access_line(entry)[1:]}" for entry in entries)
         if not entries:
             lines.append(f"  {layout:<6} no L0 access of {address:08x}")
+    return lines
+
+
+def _members(graph, key):
+    """{layout: symbol} of a meaning."""
+    return {row["s"]["layout"]: row["s"] for row in graph.run(
+        "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s", key=key)}
+
+
+def _statuses(graph, key):
+    """{layout: {status, current}} of a meaning, as `gap_detail` reads them."""
+    return {row["layout"]: row for row in graph.run(
+        "MATCH (:Kb:Meaning {key: $key})-[r:STATUS]->(l:Kb:Layout) "
+        "RETURN l.key AS layout, properties(r) AS status, substring(l.l0, 0, 16) AS current",
+        key=key)}
+
+
+def _absence(row):
+    """The status of a meaning on a layout where it has no symbol."""
+    if row is None:
+        return "no symbol and no status"
+    status = row["status"]
+    return "  ".join(filter(None, (
+        status.get("state", "unknown"), gap_detail(row),
+        "[derived]" if status.get("producer") == "derived" else None)))
+
+
+def _entity_impact(graph, ref, layout, root):
+    """What a change to a field or a feature reaches: the features that
+    require it, transitively, and the signal that a field serves. The
+    insertion points of a field are its source on every layout that such a
+    feature targets (`_field_points`), and those of a feature its target on
+    every layout with the hook sites (`_feature_points`)."""
+    node, kind = ref.node, ref.node["kind"]
+    _, required = dependents(graph, {node["key"]}, layout)
+    features = sorted({feature for feature, _, _ in required})
+    layouts = [item for item in repo.layouts(root) if layout in (None, item)]
+    signals = []
+    if kind == "field":
+        signals = [row["signal"] for row in graph.run(
+            "MATCH (:Kb:Entity {key: $key})-[:SERVES]->(s:Kb:Entity) RETURN s.key AS signal "
+            "ORDER BY signal", key=node["key"])]
+        points = _field_points(graph, node, features, layouts)
+    else:
+        points = _feature_points(graph, node, layouts)
+    answer = Answer(f"kb impact {ref.text} --budget <tokens>")
+    answer.section(None, IDENTITY, [
+        f"impact of {ref.text}: {_counted(len(features), 'feature')}"
+        + (f", {_counted(len(signals), 'signal')}" if signals else "")])
+    answer.section("features", FACTS, _requirement_lines(required, layout))
+    answer.section("signals", FACTS, [f"  {ref.text} serves {signal}" for signal in signals])
+    answer.section("insertion points", FACTS, points)
+    answer.data = {"ref": ref.text, "insertion_points": points, "fields": [],
+                   "features": _requirement_data(required), "signals": signals, "data": [],
+                   "readers": {}, "consumers": [], "cites": [], "hubs": {}}
+    return answer
+
+
+def _field_points(graph, node, features, layouts):
+    """Per layout that a feature of `features` targets, the source that the
+    field reads there. An `ecu_ram` field reads the symbol that fills its role
+    in a target, or else the symbol of its source meaning; where the meaning
+    has only a status, the field is unavailable. A field of another origin
+    reads its allocation (`_allocation_points`)."""
+    targeted = defaultdict(list)
+    for row in graph.run(
+            "MATCH (f:Kb:Entity {kind: 'feature'})-[t:TARGETS]->(l:Kb:Layout) "
+            "WHERE f.key IN $features RETURN f.slug AS feature, l.key AS layout, "
+            "t.roles AS roles ORDER BY feature", features=features):
+        targeted[row["layout"]].append(row)
+    layouts = [layout for layout in layouts if layout in targeted]
+    if node.get("origin") != "ecu_ram":
+        return _allocation_points(graph, node, layouts)
+    sources = [row["key"] for row in graph.run(
+        "MATCH (:Kb:Entity {key: $key})-[:CARRIES]->(m:Kb:Meaning) RETURN m.key AS key "
+        "ORDER BY key", key=node["key"])]
+    if not sources:
+        return [f"  {layout:<6} the field carries no meaning" for layout in layouts]
+    source = sources[0]
+    roles = {(layout, row["feature"]): row["roles"][node["slug"]]
+             for layout, rows in targeted.items() for row in rows
+             if (row["roles"] or {}).get(node["slug"])}
+    filled = {role["symbol"] for role in roles.values()}
+    members = {key: _members(graph, key) for key in {source, *filled}}
+    statuses = _statuses(graph, source)
+    lines = []
+    for layout in layouts:
+        found = [(feature, role) for (at, feature), role in sorted(roles.items())
+                 if at == layout]
+        for feature, role in found:
+            symbol = members[role["symbol"]].get(layout)
+            lines.append(f"  {layout:<6} "
+                         + (symbol_ref(symbol) if symbol else
+                            f"{role['symbol']}, which has no symbol,")
+                         + f" fills {feature}.{node['slug']}")
+        if found:
+            continue
+        symbol = members[source].get(layout)
+        if symbol is not None:
+            lines.append(f"  {layout:<6} {symbol_ref(symbol)}")
+        elif layout in statuses:
+            lines.append(f"  {layout:<6} unavailable: {source} {_absence(statuses[layout])}")
+        else:
+            lines.append(f"  {layout:<6} {source} has no symbol and no status")
+    return lines
+
+
+def _allocation_points(graph, node, layouts):
+    """Per layout, the allocation `<feature>.<name>` that a field of another
+    origin than `ecu_ram` reads: the address that the target of the feature
+    states there, or else its `7mfk` address moved by the `ram_delta` or the
+    `rom_delta` of the `runtime` target of the layout, whichever span of the
+    `7mfk` runtime holds it."""
+    owner, _, name = str(node.get("source") or "").partition(".")
+    stated = {row["layout"]: (row["allocations"] or {}).get(name) for row in graph.run(
+        "MATCH (:Kb:Entity {key: $key})-[t:TARGETS]->(l:Kb:Layout) "
+        "RETURN l.key AS layout, t.allocations AS allocations", key=f"{owner}/feature")}
+    runtime = {row["layout"]: row["target"] for row in graph.run(
+        "MATCH (:Kb:Entity {key: 'runtime/feature'})-[t:TARGETS]->(l:Kb:Layout) "
+        "RETURN l.key AS layout, properties(t) AS target")}
+    base = stated.get(targets.CANONICAL)
+    if base is None:
+        return [f"  {layout:<6} {node.get('source')} is no allocation of a "
+                f"{targets.CANONICAL} target" for layout in layouts]
+    address, width = int(base["address"], 16), base["width"]
+    canonical = runtime.get(targets.CANONICAL) or {}
+    delta = None
+    for space in ("ram", "rom"):
+        start = canonical.get(f"injected_{space}_start")
+        end = canonical.get(f"injected_{space}_end")
+        if start and end and int(start, 16) <= address < int(end, 16):
+            delta = f"{space}_delta"
+    lines = []
+    for layout in layouts:
+        entry = stated.get(layout)
+        if entry is not None:
+            lines.append(f"  {layout:<6} {node['source']} at {entry['address']}, "
+                         f"{_counted(entry['width'], 'byte')}")
+        elif delta and isinstance((runtime.get(layout) or {}).get(delta), int):
+            moved = runtime[layout][delta]
+            lines.append(f"  {layout:<6} {node['source']} at {address + moved:08x}, "
+                         f"{_counted(width, 'byte')}  [derived] {delta} {moved:+#x}")
+        else:
+            lines.append(f"  {layout:<6} {node['source']} has no address on the layout")
+    return lines
+
+
+def _feature_points(graph, node, layouts):
+    """Per layout, the target of a feature: its status, the spans of an
+    injected runtime, and the hook sites with their replacements."""
+    found = {row["layout"]: row["target"] for row in graph.run(
+        "MATCH (:Kb:Entity {key: $key})-[t:TARGETS]->(l:Kb:Layout) "
+        "RETURN l.key AS layout, properties(t) AS target", key=node["key"])}
+    hooks = sorted({entry["hook"] for target in found.values()
+                    for entry in (target.get("hooks") or {}).values()})
+    sites = {(row["meaning"], row["s"]["layout"]): row["s"] for row in graph.run(
+        "MATCH (m:Kb:Meaning)-[:HAS]->(s:Kb:Symbol) WHERE m.key IN $keys "
+        "RETURN m.key AS meaning, s", keys=hooks)}
+    lines = []
+    for layout in layouts:
+        target = found.get(layout)
+        if target is None:
+            lines.append(f"  {layout:<6} no target")
+            continue
+        spans = [f"{label} {target[f'injected_{space}_start']}..{target[f'injected_{space}_end']}"
+                 for space, label in (("rom", "ROM"), ("ram", "RAM"))
+                 if target.get(f"injected_{space}_start") and target.get(f"injected_{space}_end")]
+        entries = sorted((target.get("hooks") or {}).items())
+        lines.append(f"  {layout:<6} " + "; ".join([str(target.get("status")), *spans]
+                                                   + ([] if entries else ["no hook"])))
+        for key, entry in entries:
+            symbol = sites.get((entry["hook"], layout))
+            lines.append(f"  {layout:<6} {key} at "
+                         + (symbol_ref(symbol) if symbol else
+                            f"{entry['hook']}, which has no symbol")
+                         + (f"  replacement {entry['replacement']}"
+                            if entry.get("replacement") else ""))
     return lines
 
 
