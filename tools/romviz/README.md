@@ -93,8 +93,11 @@ uv run python tools/romviz/architecture.py suggest 0003de4c
 uv run python tools/romviz/architecture.py json --output tmp/architecture.json
 ```
 
-`check` reports the gate result and the inventory of the model. `blocks` and
-`block` list the functional structure. `node` prints one node with its ledger
+`check` reports the gate result and the inventory of the model, with the maps
+that have no functional role: those whose block belongs to the `unattributed`
+stage, and those without a block, which the gate admits only below code
+confidence or in the `dead` role. `blocks` and `block` list the functional
+structure. `node` prints one node with its ledger
 relations. `impact` states the sign an increase of a table or signal has on the
 output of every chain that names it, followed by the unsigned derived reach to
 the nearest actuator registers. `path` prints the shortest derived data or
@@ -187,8 +190,8 @@ make check
 ```
 
 `make check` runs the architecture gate and rebuilds `ROMVIZ_OUTPUT` from the
-tracked sources, so a stale atlas or an unplaced reviewed function fails the
-check rather than the reader.
+tracked sources, so a stale atlas, an unplaced reviewed function, or a
+code-confidence map without a block fails the check rather than the reader.
 
 Generated atlas files belong under ignored `tmp/` or another explicit output
 location and are not repository evidence.

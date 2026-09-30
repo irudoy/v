@@ -1,5 +1,7 @@
 """Contract of the firmware architecture model, its gate, and its atlas binding."""
 
+import csv
+import io
 import json
 import re
 
@@ -11,6 +13,9 @@ from tools.romviz import model
 
 
 SOURCE = architecture.DEFAULT_SOURCE
+FINDINGS = architecture.ROOT / "defs" / "JK08A.findings.csv"
+# An address that no ledger names.
+FREE_MAP = "0001fff0"
 
 # One durable direction per chain family: the sign that an increase of the
 # table has on the published output of the chain.
@@ -59,6 +64,28 @@ def _rewritten(tmp_path, text):
     target = tmp_path / SOURCE.name
     target.write_text(text, encoding="utf-8")
     return architecture.Architecture(target)
+
+
+def _with_map(tmp_path, confidence, role, text=None):
+    """Load the source over a findings ledger with a map that no code reads."""
+    ledger = FINDINGS.read_text(encoding="utf-8")
+    fields = next(csv.reader(io.StringIO(ledger)))
+    row = io.StringIO()
+    csv.DictWriter(row, fieldnames=fields, lineterminator="\n").writerow({
+        **dict.fromkeys(fields, ""),
+        "addr": FREE_MAP,
+        "confidence": confidence,
+        "role": role,
+        "semantics": "Calibration without a reader.",
+    })
+    findings = tmp_path / FINDINGS.name
+    findings.write_text(ledger + row.getvalue(), encoding="utf-8")
+    text = text or _source_text()
+    source = text.replace(
+        'findings = "defs/JK08A.findings.csv"', f'findings = "{findings}"', 1
+    )
+    assert source != text
+    return _rewritten(tmp_path, source)
 
 
 def _singly_named_function(tracked, text):
@@ -113,6 +140,41 @@ def test_an_address_outside_the_ledgers_fails_the_gate(tmp_path, tracked):
     addr = _singly_named_function(tracked, text)
     broken = _rewritten(tmp_path, text.replace(f'"{addr}"', '"0000dead"', 1))
     assert any("0000dead is not a reviewed" in item for item in broken.errors)
+
+
+@pytest.mark.parametrize(
+    ("confidence", "role", "fails"),
+    (
+        ("code", "table", True),
+        ("code", "threshold", True),
+        ("code", "dead", False),
+        ("candidate", "table", False),
+    ),
+)
+def test_a_code_confidence_map_without_a_block_fails_the_gate(
+    tmp_path, tracked, confidence, role, fails
+):
+    assert tracked.lookup(FREE_MAP) == []
+    extended = _with_map(tmp_path, confidence, role)
+    assert extended.nodes[f"map:{FREE_MAP}"].block is None
+    unattributed = [
+        item for item in extended.errors if f"map {FREE_MAP} has no block" in item
+    ]
+    assert len(unattributed) == int(fails)
+    assert any("pin the map" in item for item in extended.errors) is fails
+    assert len(extended.errors) == 2 * int(fails)
+
+
+def test_a_pinned_map_passes_the_gate(tmp_path, tracked):
+    assert not tracked.block("crank-cam").maps
+    text = _source_text()
+    pinned = text.replace(
+        'id = "crank-cam"\n', f'id = "crank-cam"\nmaps = ["{FREE_MAP}"]\n', 1
+    )
+    assert pinned != text
+    extended = _with_map(tmp_path, "code", "table", pinned)
+    assert extended.errors == []
+    assert extended.nodes[f"map:{FREE_MAP}"].block == "crank-cam"
 
 
 def test_specification_support_is_load_bearing(tmp_path, tracked):
@@ -237,12 +299,27 @@ def test_a_relocated_rom_cannot_claim_exact_mode(tmp_path):
         model.build_rom_model(broken)
 
 
-def test_command_line_reports_the_model(capsys):
+def test_command_line_reports_the_model(capsys, tracked):
     assert architecture.main(["check"]) == 0
     printed = capsys.readouterr().out
     assert "architecture JK08A" in printed
     assert "functions placed" in printed
     assert "chain steps" in printed
+    pending = {
+        block.id
+        for block in tracked.blocks
+        if block.stage == architecture.UNATTRIBUTED_STAGE
+    }
+    open_maps = [
+        node
+        for node in tracked.nodes.values()
+        if node.kind == "map" and node.block in pending
+    ]
+    assert open_maps
+    assert (
+        f"maps without a functional role: {len(open_maps)} in stage unattributed"
+        in printed
+    )
 
 
 def test_command_line_states_the_effect_of_a_table(capsys):

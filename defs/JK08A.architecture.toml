@@ -2,9 +2,12 @@
 #
 # Every reviewed function of defs/JK08A.funcs.csv belongs to exactly one block.
 # Maps, axes, and signals join blocks through their ledger relations; the
-# explicit maps and signals arrays pin exceptions. Endpoints bind blocks to
-# peripheral registers, and chains state calculation steps with an effect and
-# a sign. tools/romviz/architecture.py validates this file against the ledgers.
+# explicit maps and signals arrays pin exceptions, and every code-confidence
+# map outside the dead role reaches a block. The blocks of the unattributed
+# stage hold reviewed components whose functional role is not established.
+# Endpoints bind blocks to peripheral registers, and chains state calculation
+# steps with an effect and a sign. tools/romviz/architecture.py validates this
+# file against the ledgers.
 
 schema_version = 1
 rom = "JK08A"

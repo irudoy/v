@@ -279,9 +279,12 @@ has on the published quantity. Nodes are addresses of `JK08A.findings.csv`,
 `JK08A.axes.csv`, `JK08A.funcs.csv`, and `JK08A.vars.csv`, and every chain step
 is bound either to a relation those ledgers record or to a specification named
 in the step. `tools/romviz/architecture.py check`, which `make check` runs,
-requires every reviewed function to sit in exactly one block and rejects an
+requires every reviewed function to sit in exactly one block and every
+code-confidence map outside the `dead` role to reach a block, through a
+function that reads it or a pin in the `maps` array of a block. It rejects an
 address, a relation, or a step that the ledgers and the named specifications do
-not carry. The ROM atlas renders the model as the interactive architecture
+not carry, and counts the maps whose block belongs to the `unattributed` stage,
+whose functional role the ledgers do not establish yet. The ROM atlas renders the model as the interactive architecture
 view, and the same command answers block, node, impact, path, and chain
 questions on the command line.
 

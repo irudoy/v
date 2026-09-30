@@ -104,6 +104,9 @@ LABEL_KINDS = {
     "Map": ("map",),
     "Axis": ("axis",),
 }
+# The blocks of this stage hold reviewed components whose functional role the
+# ledgers do not establish yet; a map they read has a block but no role.
+UNATTRIBUTED_STAGE = "unattributed"
 
 
 class ArchitectureError(ValueError):
@@ -357,6 +360,7 @@ class Architecture:
         self.chains = self._load_chains()
         self._check_coverage()
         self._derive_blocks()
+        self._check_map_attribution()
         self.flows = self._derive_flows()
         for chain in self.chains:
             chain.impact = self._chain_impact(chain)
@@ -1061,6 +1065,27 @@ class Architecture:
                     generic,
                 )
 
+    def _check_map_attribution(self):
+        """Every code-confidence map outside the dead role reaches a block."""
+        orphans = sorted(
+            (
+                node
+                for node in self.nodes.values()
+                if node.kind == "map"
+                and node.block is None
+                and node.confidence == "code"
+                and node.role != "dead"
+            ),
+            key=lambda node: node.addr,
+        )
+        for node in orphans:
+            self._error(f"code-confidence map {node.addr} has no block: {node.label}")
+        if orphans:
+            self._error(
+                "place a function that reads each such map in a block, "
+                "or pin the map in the maps array of a block"
+            )
+
     def _derive_flows(self):
         generic = {block.id for block in self.blocks if block.generic}
         flows = {}
@@ -1420,6 +1445,18 @@ def _print_check(architecture):
         f"  functions placed: {owned['function']}/{kinds['function']}; "
         f"maps attributed: {owned['map']}/{kinds['map']}; "
         f"signals attributed: {owned['signal']}/{kinds['signal']}"
+    )
+    pending = {
+        block.id for block in architecture.blocks if block.stage == UNATTRIBUTED_STAGE
+    }
+    maps = [node for node in architecture.nodes.values() if node.kind == "map"]
+    open_maps = [node for node in maps if node.block in pending]
+    unowned = [node for node in maps if node.block is None]
+    print(
+        f"  maps without a functional role: {len(open_maps)} in stage "
+        f"{UNATTRIBUTED_STAGE} ({sum(node.confidence == 'code' for node in open_maps)} "
+        f"at code confidence), {len(unowned)} without a block "
+        f"({sum(node.role == 'dead' for node in unowned)} dead)"
     )
     print(
         f"  chain steps: {len(steps)} ({support['ledger']} ledger-bound, "
