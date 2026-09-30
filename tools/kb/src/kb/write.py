@@ -571,33 +571,39 @@ class Change:
         if both:
             raise KbError(f"set writes and unsets {', '.join(both)}", code=2)
         table, specs, subject = self._settable(op["ref"], op.get("layout"))
+        whole = isinstance(specs, str)
         for name in [path.split(".", 1)[0] for path in unset] + list(keys):
-            refused = name == "layout" if specs is None else name not in specs
+            refused = name == specs if whole else name not in specs
             if refused:
-                allowed = "every key besides layout" if specs is None else ", ".join(specs)
+                allowed = f"every key besides {specs}" if whole else ", ".join(specs)
                 raise KbError(f"set writes no {name} of {subject}; it writes {allowed}", code=2)
         for path in unset:
             _unset(table, path, subject)
         for name, value in keys.items():
-            spec = specs.get(name) if specs is not None else None
+            spec = None if whole else specs.get(name)
             table[name] = _merged(table.get(name), checked(spec, name, value))
         parts = [", ".join(sorted(written))] if written else []
         parts += [f"unset {', '.join(sorted(unset))}"] if unset else []
         self.lines.append(f"set {subject}: {'; '.join(parts)}")
 
     def _settable(self, text, layout):
-        """(table, {key: spec}, subject) of a reference of `set`: a designed
-        entity, the target of a feature on `layout`, whose specs are None
-        since it takes every key besides its layout, a meaning, or the entry
-        of the symbol that the reference or `layout` names. A designed entity
-        is one of the working tree or one that an earlier `new` of the change
-        starts, so that a batch starts an entity with its keys."""
+        """(table, specs, subject) of a reference of `set`: a designed entity,
+        the target of a feature on `layout`, a meaning, or the entry of the
+        symbol that the reference or `layout` names. The specs are {key: spec}
+        of the keys that the table takes, or else the one key that it refuses
+        where it takes every other: `target` of a feature, whose file states
+        the facts of the feature under keys of its own, and `layout` of a
+        target. A designed entity is one of the working tree or one that an
+        earlier `new` of the change starts, so that a batch starts an entity
+        with its keys."""
         found = MEANING_REF.fullmatch(str(text).strip())
         if found and found.group("kind") in store.DESIGNED:
             kind, slug = found.group("kind"), found.group("name")
             if (kind, slug) not in self.model.entities and (kind, slug) not in self.started:
                 raise KbError(f"no designed entity {slug}/{kind}", code=5)
             _, document = self.designed(kind, slug)
+            if layout is None and kind == "feature":
+                return document, "target", f"{slug}/{kind}"
             if layout is None:
                 return document, {name: spec for name, spec in store.DESIGNED[kind].keys
                                   if not isinstance(spec, store.Array)}, f"{slug}/{kind}"
@@ -609,7 +615,7 @@ class Change:
                        if entry.get("layout") == layout]
             if not targets:
                 raise KbError(f"{slug}/feature has no target on {layout}", code=5)
-            return targets[0], None, f"{slug}/feature on {layout}"
+            return targets[0], "layout", f"{slug}/feature on {layout}"
         meaning, named = self.resolve(text)
         if layout is not None:
             layout = self._layout(layout)

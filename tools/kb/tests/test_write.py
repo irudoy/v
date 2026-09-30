@@ -525,6 +525,16 @@ class SetTest(unittest.TestCase):
                                    layout="jk00c")).texts()
         self.assertNotIn("basis", self.target(texts))
 
+    def test_a_feature_takes_every_key_besides_its_targets(self):
+        profiles = [{"name": "probe", "id": 6, "page_count": 11}]
+        change = self.change(assign(self.PROBE, {"profiles": profiles, "pphi_hz": 20000000}))
+        document = tomllib.loads(change.texts()[self.PROBE_FILE])
+        self.assertEqual((document["profiles"], document["pphi_hz"], len(document["target"])),
+                         (profiles, 20000000, 1))
+        self.assertEqual(change.lines, [f"set {self.PROBE}: pphi_hz, profiles"])
+        self.assertIn(f"set writes no target of {self.PROBE}; it writes every key besides "
+                      "target", self.refused(assign(self.PROBE, {"target": []}), code=2))
+
     def test_set_refuses_keys_and_values_outside_its_schema(self):
         cases = [
             (assign(INHIBIT, {"symbol": []}), 2, f"set writes no symbol of {INHIBIT}"),

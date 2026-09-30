@@ -1329,9 +1329,13 @@ references.
   array of tables such as `[[bit]]` replaces the held one. A meaning takes
   the keys of its schema besides `former` and its symbols, statuses, links,
   and analogs; a symbol entry takes the keys of a symbol besides `layout`,
-  `address`, `name`, and `former`; a feature target takes every key besides
-  its layout. A key outside those, a value against its schema, and an unset
-  key that the table lacks are refused.
+  `address`, `name`, and `former`; a feature takes every key besides
+  `target`, since its file states the facts of the feature under keys of its
+  own, as the wire constants, `profiles`, and `contexts` of `can_telemetry`;
+  a feature target takes every key besides its layout; another designed
+  entity takes the keys of its schema besides its arrays of tables. A key
+  outside those, a value against its schema, and an unset key that the table
+  lacks are refused.
 - `kb new <kind> <layout>:<address>` starts the file of a meaning with the
   symbol at a location that holds no symbol of a meaning. The `--evidence`
   items state the identity of the symbol on its layout, which makes it an

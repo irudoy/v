@@ -203,7 +203,9 @@ a field with its keys, whose empty file fails the checks.
   as `[[bit]]` replaces it. A batch states the keys as `[op.keys]` and the
   removed ones as `unset`. The keys that other commands own, such as the
   symbols, statuses, links, analogs, and former names of a meaning and the
-  layout, address, and names of a symbol entry, are refused.
+  layout, address, and names of a symbol entry, are refused. A feature takes
+  every key besides its targets, as the wire constants and `profiles` of
+  `can_telemetry`.
 - `kb bind <meaning> <layout>:<address>` records the evidence of the
   candidate that `match.search` finds at the address, from the symbol on the
   layout of `--from`, the symbol that the reference names, or the home
