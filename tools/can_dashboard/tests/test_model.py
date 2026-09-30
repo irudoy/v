@@ -54,6 +54,44 @@ class DashboardModelTest(unittest.TestCase):
         self.assertTrue(dashboard.schema_verified)
         self.assertEqual(dashboard.decoder.profile["name"], "portable")
 
+    def test_demo_defaults_a_field_without_a_curve_of_its_own(self):
+        document = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        profile = document["profiles"][0]
+        renamed = {
+            "coolant_raw": "spare_coolant_raw",
+            "knock_count_latched": "spare_count",
+        }
+        for field in can_telemetry.profile_fields(profile):
+            field["name"] = renamed.get(field["name"], field["name"])
+        crc = can_telemetry_schema.profile_crc16(
+            profile, document["protocol_version"]
+        )
+        profile["crc16_ccitt_false"] = f"0x{crc:04X}"
+        coolant = []
+        with tempfile.TemporaryDirectory() as directory:
+            schema_path = Path(directory) / "spare-schema.json"
+            schema_path.write_text(json.dumps(document), encoding="utf-8")
+            generator = model.DemoGenerator(schema_path=schema_path)
+            dashboard = model.DashboardModel(
+                "tuning", 0x6F0, 1, schema_path
+            )
+            for tick in range(1, 200):
+                elapsed = tick * 0.05
+                feed_group(
+                    dashboard, generator.group(tick, elapsed), elapsed
+                )
+                if "spare_coolant" in dashboard.engineering:
+                    coolant.append(dashboard.value("spare_coolant"))
+
+        # The coolant feed channel spans -40 to 140 degC; the count has no
+        # feed channel and reads zero.
+        self.assertTrue(dashboard.schema_verified)
+        self.assertGreater(len(set(coolant)), 1)
+        self.assertTrue(all(-40 <= value <= 140 for value in coolant))
+        self.assertEqual(dashboard.raw["spare_count"], 0)
+
     def test_demo_groups_verify_schema_and_retain_contexts(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)

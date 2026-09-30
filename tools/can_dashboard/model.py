@@ -671,7 +671,11 @@ class DashboardModel:
 
 
 class DemoGenerator:
-    """Generate wire-valid tuning groups with realistic changing values."""
+    """Generate wire-valid tuning groups with realistic changing values.
+
+    A field without a curve of its own takes the default value of its schema,
+    so that a new telemetry field needs no demo value.
+    """
 
     def __init__(
         self,
@@ -692,6 +696,22 @@ class DemoGenerator:
         self.context_count = 1 + max(
             tag for _page, tag in self.context_by_page_and_tag
         )
+        self.fields = can_telemetry.profile_fields(self.profile)
+
+    @staticmethod
+    def _default(field, wave):
+        """Return the demo raw value of a field without a curve of its own.
+
+        A field with a feed channel sweeps the range of the channel on the
+        shared wave, converted back to raw by the schema; any other field
+        reads zero.
+        """
+        feed = field.get("dashboard", {}).get("feed")
+        if feed is None:
+            return 0
+        conversion = field["conversion"]
+        value = feed["minimum"] + (feed["maximum"] - feed["minimum"]) * wave
+        return (value - conversion["offset"]) / conversion["factor"]
 
     @staticmethod
     def _encode(payload, offset, field, value):
@@ -714,7 +734,7 @@ class DemoGenerator:
         timing = round(8 + 12 * (1 - wave))
         bfs_ms = 2.0 + 4.0 * wave
         launch = wave > 0.97
-        return {
+        values = {
             "stock_rpm": rpm,
             # Both flow coordinates rise with the opening area at a given
             # engine speed, so the demo drives them from the same load wave.
@@ -722,7 +742,6 @@ class DemoGenerator:
             "alpha_n_flow_raw": 16 + 2.39 * load,
             "final_timing_raw": timing,
             "apc_command_raw": 110 - timing,
-            "fuel_inhibit_mask": 0,
             "maf_b1_raw": (1.05 + 2.2 * wave) * 200,
             "maf_b2_raw": (1.08 + 2.15 * wave) * 200,
             "maf_total_raw": maf_total * 100,
@@ -734,9 +753,7 @@ class DemoGenerator:
                 f"injection_{index}_raw": (injection + index * 0.02) * 100
                 for index in range(6)
             },
-            "telemetry_status": 0,
             "knock_timing_state_raw": 0x1020,
-            "knock_surface_state": 0,
             "knock_count_latched": 1 if wave > 0.94 else 0,
             "knock_channel_mask_latched": 0x04 if wave > 0.94 else 0,
             "app1_raw": 250 + 700 * wave,
@@ -772,12 +789,9 @@ class DemoGenerator:
             "intake_cvtc_duty_b2_raw": (19 + 54 * wave) * 256 / 100,
             "ltft_b1_raw": 102.1 * 256,
             "ltft_b2_raw": 101.6 * 256,
-            "active_map_index": 0,
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
-            "snapshot_overrun_count": 0,
-            "tx_abort_count": 0,
             "intake_cvtc_duty_command_b1_raw": (18 + 55 * wave) * 100 / 39,
             "intake_cvtc_duty_command_b2_raw": (19 + 54 * wave) * 100 / 39,
             "ltft_learned_b1_raw": 101.8 * 256,
@@ -804,6 +818,10 @@ class DemoGenerator:
                 for index, name in enumerate(KNOCK_MARGIN_FIELDS)
             },
         }
+        for field in self.fields:
+            if field["name"] not in values:
+                values[field["name"]] = self._default(field, wave)
+        return values
 
     def group(self, tick, elapsed=None):
         elapsed = tick * BASE_TICK_SECONDS if elapsed is None else elapsed
