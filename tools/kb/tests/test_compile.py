@@ -260,14 +260,32 @@ class RamStructureEvidenceTest(unittest.TestCase):
         unchanged = snapshot()
         before = set(levels.check(m))
         state = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF1AA8)]
-        [next_barrier] = [issue for issue in before if issue.subject == state.meaning.key]
-        self.assertIn("the structure of 7mfk-ffff1b1a/ram,", next_barrier.message)
-        self.assertIn("(input link)", next_barrier.message)
+        word = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF1B1A)]
+        word_base = {"kind": "indirect", "supports": "identity", "mode": "base",
+                     "at": "7mfk:000c1dfa", "value": 0x88E}
+        self.assertIn(word_base, word.evidence)
+        self.assertTrue(levels.held(m, word))
+        self.assertFalse([issue for issue in before if issue.subject == state.meaning.key])
+        self.assertFalse([issue for issue in before
+                          if "the structure of 7mfk-ffff1b1a/ram," in issue.message])
         blocked = {issue for issue in before
                    if "the structure of 7mfk-ffff196c/ram," in issue.message}
         self.assertTrue(blocked)
-        # Removing this placement item restores the earlier input boundary;
-        # the next boundary of its own claim and the blocked chain remain.
+        # Removing the input word's base item restores its own structural
+        # boundary through the unchanged input link of the state longword.
+        word_position = word.evidence.index(word_base)
+        word_removed = word.evidence.pop(word_position)
+        without_word_base = set(levels.check(m))
+        [next_barrier] = [issue for issue in without_word_base - before
+                          if issue.subject == state.meaning.key]
+        self.assertIn("the structure of 7mfk-ffff1b1a/ram,", next_barrier.message)
+        self.assertIn("(input link)", next_barrier.message)
+        self.assertFalse(levels.held(m, word))
+        self.assertTrue(blocked <= without_word_base)
+        word.evidence.insert(word_position, word_removed)
+        self.assertEqual(set(levels.check(m)), before)
+        # Removing the state placement restores the earlier input boundary
+        # while the input word stays grounded and the blocked chain remains.
         base = self.expected_items(0xFFFF1AA8)[0]
         position = state.evidence.index(base)
         removed = state.evidence.pop(position)
@@ -275,7 +293,7 @@ class RamStructureEvidenceTest(unittest.TestCase):
         [first_barrier] = [issue for issue in without_state_base - before
                            if "the structure of 7mfk-ffff1aa8/ram," in issue.message]
         self.assertIn("(input link)", first_barrier.message)
-        self.assertIn(next_barrier, without_state_base)
+        self.assertNotIn(next_barrier, without_state_base)
         self.assertTrue(blocked <= without_state_base)
         state.evidence.insert(position, removed)
         pointed = levels.entries(m)
