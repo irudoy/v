@@ -2,6 +2,8 @@ import csv
 import unittest
 from pathlib import Path
 
+from tools.mapkit import dtc_projection
+
 
 ROOT = Path(__file__).resolve().parents[3]
 MANIFEST = ROOT / "defs" / "JK08A.dtc.csv"
@@ -28,8 +30,7 @@ class DtcManifestTest(unittest.TestCase):
                 attribute = int(row["attribute_addr"], 16)
                 self.assertEqual(record, 0x19360 + index * 12)
                 self.assertEqual(
-                    int.from_bytes(self.rom[record + 6 : record + 8], "big"),
-                    int(row["dtc"][1:], 16),
+                    dtc_projection.dtc_code(self.rom[record:record + 12]), row["dtc"],
                 )
                 pointer_offset = 0x1A14C + index * 4
                 self.assertEqual(

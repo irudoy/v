@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from kb import checks, compile, derive, match, names, repo, store, vocab
 from kb.adapters import files
@@ -402,6 +403,39 @@ class ImageBytesTest(unittest.TestCase):
         self.assertEqual([issue.message for issue in issues],
                          ["did-table evidence at 7mfk:000229e8: JK00A holds ffff3346 00011e45 "
                           "at 000229e8, not ffff3347 00011e45"])
+
+    def test_dtc_descriptor_pointer_and_attribute_are_checked_on_every_image(self):
+        symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "dtc", 0x1942C)]
+        m = model_of(lambda b: b.symbol("7mfk", "dtc", symbol.address, "test",
+                                       evidence=symbol.evidence))
+        images = match.images(m, "7mfk")
+        self.assertEqual({rom for rom, _ in images}, {"JK00A", "JK03A", "JK03B", "JK08A"})
+        self.assertEqual(checks.image_bytes(m), [])
+        self.assertEqual(len(symbol.evidence), 3)
+        for item, offset in zip(symbol.evidence, (8, 3, 1)):
+            address = match.location(item["at"])[1]
+            for changed_rom, data in images:
+                with self.subTest(span=item["at"], image=changed_rom):
+                    changed = bytearray(data)
+                    changed[address + offset] ^= 1
+                    replaced = [(rom, bytes(changed) if rom == changed_rom else raw)
+                                for rom, raw in images]
+                    with patch.object(match, "images", return_value=replaced):
+                        [issue] = checks.image_bytes(m)
+                    self.assertEqual(issue.check, "image-bytes")
+                    self.assertIn(f"{changed_rom} holds", issue.message)
+                    self.assertIn(f"at {address:08x}", issue.message)
+
+    def test_a_changed_dtc_expectation_is_not_replaced_with_live_descriptor_bytes(self):
+        symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "dtc", 0x1942C)]
+        items = [dict(item) for item in symbol.evidence]
+        changed = bytearray.fromhex(items[0]["value"])
+        changed[8] ^= 1
+        items[0]["value"] = changed.hex()
+        m = model_of(lambda b: b.symbol("7mfk", "dtc", symbol.address, "test", evidence=items))
+        [issue] = checks.image_bytes(m)
+        self.assertIn("at 0001942c", issue.message)
+        self.assertIn(f"not {changed.hex()}", issue.message)
 
 
 class FileChecksTest(unittest.TestCase):

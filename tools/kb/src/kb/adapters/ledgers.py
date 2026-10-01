@@ -13,10 +13,14 @@ the unit of the symbol's meaning, which the scale of its field does
 """
 
 import csv
+import importlib.util
 from pathlib import Path
+import sys
 
-from kb import tokens, vocab
+from kb import derive, tokens, vocab
 from kb.adapters import native
+
+DTC_DECODER = Path("tools/mapkit/dtc_projection.py")
 
 LAYOUT = "7mfk"
 PATHS = {
@@ -28,8 +32,22 @@ LEGACY_KINDS = {"Func": ("fn",), "Reg": ("ram", "reg"), "Map": ("tbl",), "Axis":
 UNITS = f"{__name__}.units"
 
 
+def _dtc_decoder(root):
+    name = "kb_dtc_projection"
+    spec = importlib.util.spec_from_file_location(name, root / DTC_DECODER)
+    module = importlib.util.module_from_spec(spec)
+    # Dataclasses resolve their annotations through sys.modules.
+    sys.modules[name] = module
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.modules.pop(name, None)
+    return module
+
+
 def inputs(root):
-    return [path.as_posix() for path in PATHS.values()]
+    return [path.as_posix()
+            for path in (*PATHS.values(), DTC_DECODER, _dtc_decoder(root).LAYOUTS)]
 
 
 def rows(root, name):
@@ -53,7 +71,7 @@ def declare(b, root):
     pending = b.stash.setdefault(__name__, [])
     manual = b.config.get("tokens", {}).get("manual", ())
 
-    def record(key, row, columns, src):
+    def record(key, row, columns, src, *, typed=False):
         for column in columns:
             try:
                 parsed = tokens.parse(row.get(column) or "")
@@ -68,8 +86,9 @@ def declare(b, root):
                     continue
                 item = tokens.evidence(token, key.layout, manual)
                 if item is not None:
-                    item = {"kind": item.pop("kind"), "supports": supports, **item,
-                            "legacy": token.text}
+                    item = {"kind": item.pop("kind"), "supports": supports, **item}
+                    if not typed:
+                        item["legacy"] = token.text
                     b.symbol(key.layout, key.kind, key.address, src, evidence=[item])
 
     src = PATHS["funcs"].as_posix()
@@ -140,9 +159,22 @@ def declare(b, root):
         record(key, row, ("scale_evidence",), src)
 
     src = PATHS["dtc"].as_posix()
+    dtc_projection = _dtc_decoder(root)
+    tables = dtc_projection.canonical_tables(root)
+    image_size = len(derive.image_bytes(b.layouts[LAYOUT], root))
+    seen = set()
     for row in rows(root, "dtc"):
+        try:
+            dtc_projection.canonical_evidence(row, tables, image_size)
+            index = _integer(row["index"])
+            if index in seen:
+                raise dtc_projection.DtcProjectionError(f"duplicate index {index}")
+            seen.add(index)
+        except dtc_projection.DtcProjectionError as error:
+            b.issue("schema", src, f"index {row.get('index', '')}", str(error))
+            continue
         key = b.symbol(LAYOUT, "dtc", _address(row["record_addr"]), src, props={
-            "index": _integer(row["index"]),
+            "index": index,
             "attribute": row["attribute_addr"],
         })
         b.props(key, {
@@ -152,6 +184,7 @@ def declare(b, root):
             "level": _level(row["confidence"]),
             "title": row["note"],
         }, src)
+        record(key, row, ("evidence",), src, typed=True)
 
     src = PATHS["diagnostic-bindings"].as_posix()
     for row in rows(root, "diagnostic-bindings"):

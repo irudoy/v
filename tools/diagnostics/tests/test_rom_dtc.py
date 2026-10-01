@@ -62,12 +62,22 @@ class RomDtcCatalogTest(unittest.TestCase):
         with path.open(newline="", encoding="utf-8") as source:
             curated = list(csv.DictReader(source))
         self.assertEqual(48, len(curated))
+        dataset, layouts = extract_rom_dtc.load_layouts(extract_rom_dtc.DEFAULT_LAYOUTS)
+        layout = next(item for item in layouts if item["rom"] == "JK08A")
+        self.assertTrue(dataset)
         for row in curated:
             descriptor = by_index[int(row["index"])]
             self.assertEqual(row["dtc"], descriptor["code"])
             self.assertEqual(row["record_addr"], descriptor["record_addr"])
             self.assertEqual(row["attribute_addr"], descriptor["attribute_addr"])
             self.assertEqual(row["stock_attribute"], descriptor["attribute_hex"])
+            pointer_slot = int(layout["pointer_start"]) + int(row["index"]) * int(layout["pointer_size"])
+            expected = ";".join((
+                f"rom_const:{descriptor['record_addr']}={descriptor['record_hex']}",
+                f"rom_const:{pointer_slot:08x}={descriptor['attribute_addr']}",
+                f"rom_const:{descriptor['attribute_addr']}={descriptor['attribute_hex']}",
+            ))
+            self.assertEqual(row["evidence"], expected)
 
 
 if __name__ == "__main__":

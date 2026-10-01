@@ -19,8 +19,10 @@ import argparse
 import csv
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import struct
 import sys
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,6 +37,9 @@ PROJECTED_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 INHERITED_ROMS = ("JK00A", "JK03A", "JK03B")
 FIELDS = ("index", "dtc", "record_addr", "attribute_addr", "stock_attribute",
           "disabled_attribute", "group", "confidence", "note")
+SOURCE_FIELDS = FIELDS + ("evidence",)
+LAYOUTS = Path("refs/diagnostics/rom-dtc/layouts.toml")
+ROM_BYTES = re.compile(r"rom_const:([0-9a-f]{8})=((?:0x)?[0-9a-f]+)")
 RECORD_SIZE = 12
 POINTER_SIZE = 4
 SEARCH_START = 0x18000
@@ -62,9 +67,84 @@ class DescriptorTables:
     def record_address(self, index):
         return self.start + RECORD_SIZE * index
 
+    def attribute_pointer_address(self, index):
+        return self.pointer_base + POINTER_SIZE * index
+
     def attribute_address(self, data, index):
-        offset = self.pointer_base + POINTER_SIZE * index
+        offset = self.attribute_pointer_address(index)
         return struct.unpack(">I", data[offset:offset + POINTER_SIZE])[0]
+
+
+def canonical_tables(root=ROOT):
+    """The canonical geometry of the SHA-locked diagnostic catalog decoder."""
+    with (root / LAYOUTS).open("rb") as source:
+        layouts = tomllib.load(source)["layout"]
+    [layout] = [item for item in layouts if item["rom"] == SOURCE_ROM]
+    if (layout["record_size"], layout["code_offset"],
+            layout["pointer_size"], layout["attribute_size"]) != (RECORD_SIZE, 6, POINTER_SIZE, 2):
+        raise DtcProjectionError(f"{SOURCE_ROM}: unsupported descriptor geometry")
+    tables = DescriptorTables(layout["descriptor_start"], layout["count"], layout["pointer_start"])
+    if (tables.start < 0 or tables.count <= 0
+            or tables.pointer_base != tables.record_address(tables.count)):
+        raise DtcProjectionError(f"{SOURCE_ROM}: invalid descriptor table bounds")
+    return tables
+
+
+def canonical_evidence(row, tables, image_size):
+    """Three expected byte spans, bound to the row rather than drawn from an image."""
+    try:
+        index = int(row["index"], 10)
+        record = int(row["record_addr"], 16)
+        attribute = int(row["attribute_addr"], 16)
+        stock = bytes.fromhex(row["stock_attribute"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise DtcProjectionError("invalid index, address, or stock_attribute") from error
+    if not 0 <= index < tables.count:
+        raise DtcProjectionError(f"index {index} outside 0 to {tables.count - 1}")
+    if record != tables.record_address(index):
+        raise DtcProjectionError(f"record_addr {record:08x} does not name index {index}")
+    if (tables.attribute_pointer_address(tables.count) > image_size
+            or attribute % 2 or not 0 < attribute < image_size - 1):
+        raise DtcProjectionError("descriptor tables or attribute address outside image bounds")
+    if len(stock) != 2:
+        raise DtcProjectionError("stock_attribute is not two bytes")
+    parts = [ROM_BYTES.fullmatch(token.strip())
+             for token in (row.get("evidence") or "").split(";")]
+    if len(parts) != 3 or not all(parts):
+        raise DtcProjectionError("evidence requires three rom_const:<address>=<hex-bytes> items")
+    try:
+        spans = [(int(part[1], 16), bytes.fromhex(part[2].removeprefix("0x"))) for part in parts]
+    except ValueError as error:
+        raise DtcProjectionError("evidence values are not whole hexadecimal bytes") from error
+    expected = ((record, RECORD_SIZE), (tables.attribute_pointer_address(index), POINTER_SIZE),
+                (attribute, 2))
+    if [(address, len(data)) for address, data in spans] != list(expected):
+        raise DtcProjectionError("evidence must cover the complete descriptor, pointer slot, and attribute")
+    if dtc_code(spans[0][1]) != row["dtc"]:
+        raise DtcProjectionError(f"dtc {row['dtc']} differs from descriptor evidence")
+    if int.from_bytes(spans[1][1], "big") != attribute:
+        raise DtcProjectionError("attribute_addr differs from pointer-slot evidence")
+    if spans[2][1] != stock:
+        raise DtcProjectionError("stock_attribute differs from attribute evidence")
+    return spans
+
+
+def validate_canonical(rows, data, root=ROOT):
+    """Reject inconsistent rows and bytes before projecting a canonical record."""
+    tables = canonical_tables(root)
+    seen = set()
+    for row in rows:
+        spans = canonical_evidence(row, tables, len(data))
+        index = int(row["index"], 10)
+        if index in seen:
+            raise DtcProjectionError(f"{SOURCE_ROM}: duplicate index {index}")
+        seen.add(index)
+        for address, expected in spans:
+            if data[address:address + len(expected)] != expected:
+                raise DtcProjectionError(
+                    f"{SOURCE_ROM} index {index}: bytes at {address:08x} differ from evidence"
+                )
+    return tables
 
 
 def _is_record(chunk):
@@ -124,17 +204,18 @@ def read_registry(rom):
     path = DEFS / f"{rom}.dtc.csv"
     with path.open(newline="", encoding="utf-8") as source:
         reader = csv.DictReader(source)
-        if tuple(reader.fieldnames or ()) != FIELDS:
+        header = tuple(reader.fieldnames or ())
+        if header != FIELDS and not (rom == SOURCE_ROM and header == SOURCE_FIELDS):
             raise DtcProjectionError(f"{path.name}: unexpected header")
         return list(reader)
 
 
 def project(target_rom, source_rows=None, source=None, target=None):
     """Return target registry rows carried from the canonical registry."""
-    source_rows = source_rows or read_registry(SOURCE_ROM)
+    source_rows = read_registry(SOURCE_ROM) if source_rows is None else source_rows
     source = source if source is not None else romkit.load(SOURCE_ROM).data
     target = target if target is not None else romkit.load(target_rom).data
-    source_tables = locate_tables(source)
+    source_tables = validate_canonical(source_rows, source)
     target_tables = locate_tables(target)
     target_records = {}
     for index in range(target_tables.count):
@@ -146,11 +227,6 @@ def project(target_rom, source_rows=None, source=None, target=None):
     for source_row in source_rows:
         source_index = int(source_row["index"], 10)
         record = bytes(source_tables.record(source, source_index))
-        if dtc_code(record) != source_row["dtc"]:
-            raise DtcProjectionError(
-                f"{SOURCE_ROM} index {source_index} holds "
-                f"{dtc_code(record)}, not {source_row['dtc']}"
-            )
         matches = target_records.get(record, [])
         if len(matches) != 1:
             dropped.append((source_row["dtc"], source_index, len(matches)))

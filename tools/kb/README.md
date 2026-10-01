@@ -328,6 +328,14 @@ dependency token becomes a link stored at the end its type names or `trace`
 evidence, and a token target without a registry row becomes an implicit
 symbol of the kind its role and address admit.
 
+The canonical DTC ledger states three complete expected `rom_const` spans per
+row: its descriptor, attribute pointer slot, and stock attribute. The adapter
+checks the index and geometry against `refs/diagnostics/rom-dtc/layouts.toml`
+and binds the row's code, addresses, and stock attribute to those spans before
+emitting typed `rom-bytes` identity evidence without `legacy`. `image-bytes`
+verifies them on every applicable image; the compiler does not refresh the
+expected bytes. Other ledger token evidence retains its legacy treatment.
+
 The entity files own the facts of a registry from the commit that converts
 it, and the compiler leaves out the adapters of the converted registries
 (`adapters.CONVERTED`); the module of such an adapter renders the registry as

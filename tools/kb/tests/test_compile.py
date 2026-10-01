@@ -2,16 +2,19 @@ from collections import defaultdict
 import copy
 import csv
 import re
+import subprocess
 import textwrap
 import tomllib
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
-from kb import adapters, checks, compile, match, names, repo, vocab
+from kb import adapters, checks, compile, derive, match, names, repo, vocab
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Builder, Ref, SymbolKey
 from kb.repo import KbError
+from tools.mapkit import dtc_projection
 
 
 def model():
@@ -72,6 +75,99 @@ class LedgerAdapterTest(unittest.TestCase):
         self.assertIn(("periodic_snapshot_dispatch", "curated", "tools/ghidra/symbols/7mfk.csv"),
                       meaning.other_names)
         self.assertEqual(model().meaning_of(SymbolKey("1nd", "fn", 0x11363C)).name, "hcan1_init")
+
+
+class DtcLedgerAdapterTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = dtc_projection.read_registry(dtc_projection.SOURCE_ROM)
+        cls.tables = dtc_projection.canonical_tables()
+        cls.image = derive.image_bytes(repo.layout("7mfk"))
+
+    def declare(self, rows, root=repo.ROOT):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+        with patch.object(ledgers, "rows", side_effect=lambda _, name: rows if name == "dtc" else ()):
+            ledgers.declare(b, root)
+        m = b.finish()
+        m.root, m.config = repo.ROOT, repo.config()
+        return m
+
+    def test_every_dtc_has_three_complete_typed_byte_items(self):
+        m = model()
+        dtcs = [symbol for symbol in m.symbols.values() if symbol.kind == "dtc"]
+        self.assertEqual(len(dtcs), len(self.rows))
+        grounded = match.grounded(m, [symbol.key for symbol in dtcs])
+        for row in self.rows:
+            key = SymbolKey("7mfk", "dtc", int(row["record_addr"], 16))
+            symbol = m.symbols[key]
+            spans = dtc_projection.canonical_evidence(row, self.tables, len(self.image))
+            with self.subTest(index=row["index"]):
+                self.assertEqual(symbol.evidence, [
+                    {"kind": "rom-bytes", "supports": "identity", "at": f"7mfk:{address:08x}",
+                     "value": raw.hex()} for address, raw in spans])
+                self.assertNotIn("images", symbol.props)
+                self.assertGreaterEqual(grounded[key][0], vocab.LEVEL_RANK["code"])
+                self.assertTrue(all(match.verify(m, symbol, item) is None
+                                    for item in symbol.evidence))
+        # Other ledgers retain their token evidence unchanged.
+        table = m.symbols[SymbolKey("7mfk", "tbl", 0xA4AA)]
+        self.assertTrue(any("legacy" in item for item in table.evidence))
+
+    def test_row_mismatches_fail_the_schema_instead_of_creating_a_symbol(self):
+        row = next(row for row in self.rows if row["index"] == "17")
+        changes = {
+            "negative index": {"index": "-1"},
+            "upper index": {"index": str(self.tables.count)},
+            "code": {"dtc": "P0430"},
+            "packed prefix": {"dtc": "C0420"},
+            "record": {"record_addr": "00019438"},
+            "pointer": {"attribute_addr": "0001603c"},
+            "stock attribute": {"stock_attribute": "00b0"},
+            "short attribute": {"stock_attribute": "a0"},
+            "missing evidence": {"evidence": ""},
+            "untyped evidence": {"evidence": "rom_const:0001942c"},
+            "short descriptor": {"evidence": row["evidence"].replace(
+                "06060c000000042010000000", "0420")},
+            "wrong pointer value": {"evidence": row["evidence"].replace(
+                "rom_const:0001a190=0001603a", "rom_const:0001a190=0001603c")},
+            "wrong attribute value": {"evidence": row["evidence"].replace(
+                "rom_const:0001603a=00a0", "rom_const:0001603a=00b0")},
+        }
+        for name, changed in changes.items():
+            with self.subTest(change=name):
+                m = self.declare([{**row, **changed}])
+                self.assertEqual(len(m.issues), 1)
+                self.assertEqual(m.issues[0].check, "schema")
+                self.assertEqual(m.issues[0].path, ledgers.PATHS["dtc"].as_posix())
+                self.assertFalse(m.symbols)
+
+    def test_duplicate_indices_fail_and_duplicate_codes_keep_separate_symbols(self):
+        row = next(row for row in self.rows if row["index"] == "17")
+        m = self.declare([row, row])
+        self.assertEqual([issue.message for issue in m.issues], ["duplicate index 17"])
+        m = self.declare([row for row in self.rows if row["index"] in ("132", "133", "134", "135", "40")])
+        self.assertEqual(m.issues, [])
+        self.assertEqual(len(m.meanings), 5)
+        for code, indices in (("P1078", [132, 134]), ("P1084", [133, 135])):
+            self.assertEqual(sorted(meaning.symbols["7mfk"].props["index"]
+                                    for meaning in m.meanings if meaning.props["code"] == code), indices)
+        nats = m.symbols[SymbolKey("7mfk", "dtc", 0x19540)]
+        self.assertEqual(nats.evidence[2]["value"], "0000")
+
+    def test_image_bytes_are_read_with_the_compiler_root(self):
+        root = repo.ROOT / "tmp/issue63/root-probe"
+        with patch.object(ledgers, "_dtc_decoder", return_value=dtc_projection), \
+                patch.object(dtc_projection, "canonical_tables", return_value=self.tables) as tables, \
+                patch.object(derive, "image_bytes", return_value=self.image) as image:
+            self.assertEqual(self.declare(self.rows, root).issues, [])
+            self.assertIn(dtc_projection.LAYOUTS.as_posix(), ledgers.inputs(root))
+        tables.assert_called_once_with(root)
+        image.assert_called_once_with(repo.layout("7mfk"), root)
+
+    def test_console_entrypoint_compiles_without_a_pythonpath_override(self):
+        completed = subprocess.run(["uv", "run", "kb", "project", "--check"],
+                                   cwd=repo.ROOT, capture_output=True, text=True, timeout=120)
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
 
 class ProfileAdapterTest(unittest.TestCase):

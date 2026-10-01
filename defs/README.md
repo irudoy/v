@@ -403,6 +403,21 @@ flashing.
 ## DTC controls
 
 `JK08A.dtc.csv` identifies exact descriptor and associated attribute storage.
+Its `evidence` column holds three expected `rom_const:<address>=<hex-bytes>`
+items, in order: the complete twelve-byte descriptor, its four-byte attribute
+pointer slot, and the two-byte stock attribute, including a zero attribute.
+The canonical geometry comes from `../refs/diagnostics/rom-dtc/layouts.toml`.
+The `kb` ledger adapter rejects a duplicate or out-of-range index and requires
+`record_addr`, the full packed P/C/B/U code, `attribute_addr`, and
+`stock_attribute` to agree with those expected spans. It emits typed
+`rom-bytes` identity evidence without a legacy exemption; `kb check --only
+image-bytes` verifies each span on every applicable image of `7mfk`. The
+expected values are reviewed stock snapshots, not values refreshed by the
+compiler. These bytes ground descriptor identity and its storage bindings,
+not the complete physical meaning of a monitor or complete disabling.
+Relocated registries retain their nine-column format and carry no canonical
+byte evidence.
+
 The generator validates stock bytes before creating controls. RomRaider uses
 coordinated native switches for descriptor and attribute ranges. TunerPro uses
 atomic individual and declared group patches. Duplicate public codes remain
