@@ -60,8 +60,13 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 - Commit locally on `master` as soon as the gates covering a step pass, without
   waiting for a separate instruction. Leave unrelated worktree content and
   other sessions' changes unstaged.
-- Commit messages state the change itself in the present tense and carry no
-  agent, tool, model, or session attribution.
+- Commit messages follow Conventional Commits: `type(scope): description`,
+  with an optional scope. Use `feat`, `fix`, `docs`, `refactor`, `perf`,
+  `test`, `build`, `ci`, `chore`, `revert`, or `style` for the change type.
+- Keep the English description concise and in the present tense. Put details
+  in the body, separated from the header by a blank line.
+- Do not use breaking-change markers (`!` or `BREAKING CHANGE`) or agent,
+  tool, model, or session attribution.
 
 ## Issues
 
