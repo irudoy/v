@@ -9,6 +9,16 @@ to = "7mfk:ffffdc48"
 key = "SH7058S-HW-17.3.3"
 note = "HCAN1 mailbox 26 data address is unchanged"
 
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The joint SH7059/SH7058S hardware manual REJ09B0177-0500, sections 17.2.4 \
+and 17.3.1 to 17.3.3, places the eight data bytes of HCAN1 mailbox 26 at \
+0xffffd800 + 0x108 + 26*0x20 = 0xffffdc48. Its SH7059 scope applies to this \
+layout."""
+
 [[symbol]]
 layout = "1nd"
 address = "ffffdc48"
@@ -19,6 +29,16 @@ supports = "homology"
 to = "7mfk:ffffdc48"
 key = "SH7058S-HW-17.3.3"
 note = "HCAN1 mailbox 26 data address is unchanged"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The joint SH7059/SH7058S hardware manual REJ09B0177-0500, sections 17.2.4 \
+and 17.3.1 to 17.3.3, places the eight data bytes of HCAN1 mailbox 26 at \
+0xffffd800 + 0x108 + 26*0x20 = 0xffffdc48. Its SH7059 scope applies to this \
+layout."""
 
 [[symbol]]
 layout = "7mfk"
@@ -35,6 +55,15 @@ supports = "homology"
 to = "7mfk:ffffdc48"
 key = "SH7058S-HW-17.3.3"
 
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The joint SH7059/SH7058S hardware manual REJ09B0177-0500, sections 17.2.4 \
+and 17.3.1 to 17.3.3, places the eight data bytes of HCAN1 mailbox 26 at \
+0xffffd800 + 0x108 + 26*0x20 = 0xffffdc48."""
+
 [[symbol]]
 layout = "jk00d"
 address = "ffffdc48"
@@ -44,6 +73,15 @@ kind = "manual"
 supports = "homology"
 to = "7mfk:ffffdc48"
 key = "SH7058S-HW-17.3.3"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The joint SH7059/SH7058S hardware manual REJ09B0177-0500, sections 17.2.4 \
+and 17.3.1 to 17.3.3, places the eight data bytes of HCAN1 mailbox 26 at \
+0xffffd800 + 0x108 + 26*0x20 = 0xffffdc48."""
 
 [[symbol]]
 layout = "jk78c"
@@ -55,3 +93,13 @@ supports = "homology"
 to = "7mfk:ffffdc48"
 key = "SH7058S-HW-17.3.3"
 note = "HCAN1 mailbox 26 data address is unchanged"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The joint SH7059/SH7058S hardware manual REJ09B0177-0500, sections 17.2.4 \
+and 17.3.1 to 17.3.3, places the eight data bytes of HCAN1 mailbox 26 at \
+0xffffd800 + 0x108 + 26*0x20 = 0xffffdc48. The source establishes register \
+geometry, not a board's physical MCU marking."""

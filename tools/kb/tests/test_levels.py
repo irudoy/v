@@ -1,6 +1,6 @@
 import unittest
 
-from kb import checks, compile, levels, repo, vocab
+from kb import checks, compile, levels, match, repo, vocab
 from kb.model import Builder, SymbolKey
 
 CANDIDATE, CODE, SILICON = (vocab.LEVEL_RANK[level] for level in ("candidate", "code", "silicon"))
@@ -229,6 +229,95 @@ class DependencyTest(unittest.TestCase):
             "7mfk-ffff1000/ram": "the identity level code exceeds its effective level candidate: "
                                  "it rests on the level of 7mfk-ffff1002/ram (input link of "
                                  "7mfk-ffff1002/ram), declared candidate"})
+
+
+class InterpolationIdentityTest(unittest.TestCase):
+    ENTRIES = (0x26740, 0x26984, 0x26A60, 0x26AF8, 0x26B84, 0x26C1C)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.model = compile.cached()
+        cls.homes = [cls.model.symbols[SymbolKey("7mfk", "fn", address)]
+                     for address in cls.ENTRIES]
+        cls.symbols = [symbol for home in cls.homes
+                       for symbol in home.meaning.symbols.values()]
+
+    def test_each_home_entry_supports_identity_not_only_the_contract(self):
+        for symbol in self.homes:
+            with self.subTest(address=symbol.address):
+                self.assertIn(symbol.address, self.model.functions["7mfk"])
+                self.assertTrue(any(item.get("kind") == "l0"
+                                    and item.get("supports") == "identity"
+                                    and item.get("at") == f"7mfk:{symbol.address:08x}"
+                                    for item in symbol.evidence))
+
+    def test_the_home_identity_grounds_every_homologous_symbol(self):
+        keys = [symbol.key for symbol in self.symbols]
+        ranks = match.grounded(self.model, keys)
+        for key in keys:
+            with self.subTest(symbol=key.key):
+                self.assertGreaterEqual(ranks[key][0], CODE)
+
+    def test_contract_evidence_alone_does_not_ground_the_identity(self):
+        broken = compile.build()
+        for home in self.homes:
+            symbol = broken.symbols[home.key]
+            symbol.evidence[:] = [item for item in symbol.evidence
+                                  if not (item.get("kind") == "l0"
+                                          and item.get("supports") == "identity"
+                                          and item.get("at") == f"7mfk:{home.address:08x}")]
+        subjects = {f"{home.meaning.name}/fn" for home in self.homes}
+        subjects.update(symbol.key.key for symbol in self.symbols
+                        if symbol.layout != "7mfk")
+        missing = {issue.subject for issue in levels.check(broken)
+                   if "identity level code lacks grounding" in issue.message}
+        self.assertTrue(subjects <= missing)
+
+
+class MailboxIdentityTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.model = compile.cached()
+        cls.address = 0xFFFFD800 + 0x108 + 26 * 0x20
+        cls.symbols = cls.model.symbols[SymbolKey("7mfk", "reg", cls.address)].meaning.symbols
+
+    def test_each_layout_cites_the_joint_manual_for_register_identity(self):
+        self.assertEqual(set(self.symbols), set(self.model.layouts))
+        for layout, symbol in self.symbols.items():
+            with self.subTest(layout=layout):
+                self.assertEqual(symbol.address, self.address)
+                items = [item for item in symbol.evidence
+                         if item.get("kind") == "manual"
+                         and item.get("supports") == "identity"]
+                self.assertTrue(items)
+                for item in items:
+                    self.assertEqual(item["key"], "SH7058S-HW-17.3.3")
+                    self.assertNotIn("to", item)
+                    self.assertEqual(match.rank(item, symbol, self.model), CODE)
+
+    def test_manual_homology_stays_distinct_from_direct_identity(self):
+        for layout, symbol in self.symbols.items():
+            if layout == "7mfk":
+                continue
+            with self.subTest(layout=layout):
+                items = [item for item in symbol.evidence
+                         if item.get("supports") == "homology"]
+                self.assertTrue(items)
+                for item in items:
+                    self.assertEqual(item["kind"], "manual")
+                    self.assertEqual(item["to"], f"7mfk:{self.address:08x}")
+                    self.assertEqual(match.rank(item, symbol, self.model), CANDIDATE)
+
+    def test_manual_homology_alone_does_not_ground_code_identity(self):
+        broken = compile.build()
+        keys = [symbol.key for layout, symbol in self.symbols.items() if layout != "7mfk"]
+        for key in keys:
+            symbol = broken.symbols[key]
+            symbol.evidence[:] = [item for item in symbol.evidence
+                                  if item.get("supports") != "identity"]
+        missing = {issue.subject for issue in levels.check(broken)
+                   if "identity level code lacks grounding" in issue.message}
+        self.assertTrue({key.key for key in keys} <= missing)
 
 
 class AuditTest(unittest.TestCase):
