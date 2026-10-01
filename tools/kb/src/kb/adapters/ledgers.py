@@ -87,7 +87,7 @@ def declare(b, root):
                 item = tokens.evidence(token, key.layout, manual)
                 if item is not None:
                     item = {"kind": item.pop("kind"), "supports": supports, **item}
-                    if not typed:
+                    if not typed and token.role not in tokens.TYPED_TERMINAL:
                         item["legacy"] = token.text
                     b.symbol(key.layout, key.kind, key.address, src, evidence=[item])
 
@@ -222,7 +222,9 @@ def declare(b, root):
                 continue
             item = tokens.evidence(token, LAYOUT, manual)
             if item is not None:
-                binding["evidence"].append({**item, "legacy": token.text})
+                if token.role not in tokens.TYPED_TERMINAL:
+                    item["legacy"] = token.text
+                binding["evidence"].append(item)
         b.table(key, "diagnostic", binding, src)
 
 

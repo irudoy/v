@@ -328,33 +328,40 @@ def _bits(model):
     return issues
 
 
+def _explicit_terminal(item):
+    """The typed base and test items that also apply to ledger-owned symbols."""
+    return item.get("kind") == "test" or (
+        item.get("kind") == "indirect" and item.get("mode") == "base")
+
+
 def homology(model):
-    """Every symbol that the files own is an anchor or reaches one through
-    verified homology evidence, and each of its typed identity and homology
-    evidence items that L0 or the images decide holds (section 7.3); each
-    typed evidence item of a named bit that L0 decides holds for the symbol
-    of its layout."""
+    """File-owned symbols reach an anchor through verified identity or homology
+    evidence (section 7.3). Every typed base and test item of a symbol holds,
+    including ledger-owned symbols; other ledger items retain their scope.
+    Typed evidence of a named bit holds for the symbol of its layout."""
     issues = _bits(model)
     keys = sorted(key for key, symbol in model.symbols.items() if _owned(model, symbol))
-    if not keys:
-        return issues
-    ranks = match.grounded(model, keys)
-    for key in keys:
-        symbol = model.symbols[key]
-        path = _files(symbol.sources)
+    owned = set(keys)
+    ranks = match.grounded(model, keys) if keys else {}
+    for key, symbol in sorted(model.symbols.items()):
+        path = _files(symbol.sources) if key in owned else ";".join(sorted(symbol.sources))
         for item in symbol.evidence:
             supports = item.get("supports", "identity")
-            if (supports not in ("identity", "homology") or item.get("kind") == "rom-bytes"
-                    or "legacy" in item):
+            if item.get("kind") == "rom-bytes" or "legacy" in item:
                 continue
-            if supports == "homology" and item.get("kind") not in match.HOMOLOGY_KINDS:
+            explicit = _explicit_terminal(item)
+            if not explicit and (key not in owned or supports not in ("identity", "homology")):
+                continue
+            if (key in owned and supports == "homology"
+                    and item.get("kind") not in match.HOMOLOGY_KINDS):
                 issues.append(Issue("homology", path, key.key,
                                     f"{_item(item)} supports no homology"))
-                continue
+                if not explicit:
+                    continue
             failure = match.verify(model, symbol, item)
             if failure:
                 issues.append(Issue("homology", path, key.key, f"{_item(item)}: {failure}"))
-        if ranks[key][0] < match.CANDIDATE:
+        if key in owned and ranks[key][0] < match.CANDIDATE:
             issues.append(Issue("homology", path, key.key,
                                 "neither an anchor nor homologous to one: no identity evidence "
                                 "of its layout grounds it, and no verified homology evidence "

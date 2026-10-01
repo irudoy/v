@@ -622,10 +622,10 @@ A link is stored at one end and read in both directions.
 | `byte-identical` | Identical bytes over a range: the exact hash of two functions, or the storage of two data symbols on every image | `at`, `to`, `sha256` | `code` |
 | `rom-bytes` | Bytes of every image of the layout at `at` | `at`, `value` | `code` |
 | `trace` | The claim follows through the contract or behavior of a function | `to`, `relies` | `code` |
-| `indirect` | An access that L0 does not attribute directly; with mode `base`, the instruction or pool literal at `at` references the base, the address of the symbol minus `value` | `at`, `mode` | `code` |
+| `indirect` | An access that L0 does not attribute directly; mode `base` verifies only that the instruction or pool literal at `at` references the symbol's address minus `value`, not the complete indexing or copy path | `at`, `mode` | `code` |
 | `spec` | A narrow specification of the repository, a decoding rule, or a published standard | `path` or `key` | `code` |
 | `arithmetic` | An equation that `kb check` evaluates | `value` | `code` |
-| `test` | An executable test of the repository: the Python file `path` defines the test function `key` | `path`, `key` | `code` |
+| `test` | The Python file `path` of the repository defines the test function `key`; verification checks its AST definition and does not execute the test | `path`, `key` | `code` |
 | `manual` | A vehicle or MCU manual of the source packs; a key with a prefix of `[manual] mcu` of `tools/kb/config.toml` cites the MCU hardware manual | `key` | `candidate`; `code` for the identity of a `reg` meaning from the MCU hardware manual |
 | `diagnostic` | A record of the diagnostic corpora | `key` | `candidate` |
 | `registry` | A legacy or vendor definition entry | `value` or `path` | `candidate` |
@@ -1514,7 +1514,12 @@ that the result adds to those of the working tree ([Write
 commands](#123-write-commands)).
 
 The `homology` check covers the symbols that the entity files of `kb/` own:
-those that only files state and those whose file entry states evidence. A
+those that only files state and those whose file entry states evidence. It
+also verifies every non-legacy `indirect` item with mode `base` and every
+non-legacy `test` item of a symbol, regardless of its owner or `supports`.
+A failed base item remains a check failure even when the `levels` report
+holds the symbol's structure. The additional checks do not change ownership,
+other indirect modes, or the treatment of other legacy tokens. A
 file entry that only names a symbol of a registry joins the file with the
 meaning, and the registry keeps the symbol's evidence. The `statuses` check
 covers the statuses that the files state. The conversion of each registry
@@ -2967,6 +2972,8 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | `trace:<a>` | any | `fn` | `trace` evidence |
 | `rom_const:<a>=<value>` | any | ROM | `rom-bytes` evidence |
 | `site:<a>` | any | code | `l0` evidence, removed once L0 reproduces the relation it supports |
+| `indirect_base:<site>+<offset>` | any | code | Typed `indirect` evidence with `mode = "base"`, `at` on the row's layout, and integer `value` equal to the offset |
+| `test:<path>#<function>` | any | | Typed `test` evidence with `path` and `key` |
 | `spec:<equation>` | any | | `arithmetic` evidence |
 | `spec:<id>` whose id starts with a prefix of `[tokens] manual` in `tools/kb/config.toml`: `esm-`, `sh7058-hw-`, `sh7058-hardware-manual`, and `SH7058S-HW-` | any | | `manual` evidence with the id as `key` |
 | `spec:hardware-results:<key>` | any | | `hardware` evidence with the record key |
@@ -2974,6 +2981,20 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | `registry:<text>` | any | | `registry` evidence, with a path in `path` and other text in `value` |
 | `wave:<n>`, `arg:<text>` | any | | Removed: review process history, which git keeps |
 
+- `indirect_base` and `test` are terminal tokens without an `@property`.
+  Their adapter items have no `legacy` key; neighboring legacy tokens retain
+  it, and the DTC adapter's typed byte evidence keeps its own contract.
+  `indirect_base` requires a site of eight lowercase hexadecimal digits and
+  a nonnegative offset written in ASCII decimal or lowercase `0x` hexadecimal.
+  The existing dependency `base:<a>[+<offset>]@structural` remains a link.
+- A `test` path is repository-relative, ends in `.py`, and has nonempty
+  segments containing only ASCII letters, digits, `_`, `.`, and `-`, separated by `/`;
+  neither `.` nor `..` is a segment. Its function is an ASCII Python identifier
+  `[A-Za-z_][A-Za-z0-9_]*` other than a keyword. The named function's existence
+  does not attest to execution or a passing result. A complete address-path
+  claim requires separate tests of fixed stock bytes, address arithmetic,
+  indexing, copy boundaries, and relevant branch and delay-slot behavior;
+  the base item verifies placement only.
 - The target of a dependency token resolves, in the order of its role, to
   the first kind of which a registry places a symbol at the address:
 

@@ -7,11 +7,13 @@ process role records review history and maps to nothing.
 """
 
 from dataclasses import dataclass
+import keyword
 import re
 
 DEPENDENCY = ("consumer", "writes", "indexed_by", "selector", "threshold", "from_map",
               "homolog", "trace", "base", "match")
-TERMINAL = ("rom_const", "spec", "registry", "site")
+TYPED_TERMINAL = ("indirect_base", "test")
+TERMINAL = ("rom_const", "spec", "registry", "site") + TYPED_TERMINAL
 PROCESS = ("wave", "arg")
 ROLES = DEPENDENCY + TERMINAL + PROCESS
 
@@ -46,6 +48,8 @@ TARGET_KINDS = {
 
 REFERENCE = re.compile(r"([0-9a-f]{8})(?:\+(0x[0-9a-f]+|\d+))?")
 ADDRESS = re.compile(r"[0-9a-f]{8}")
+INDIRECT_BASE = re.compile(r"([0-9a-f]{8})\+(0x[0-9a-f]+|[0-9]+)")
+TEST = re.compile(r"((?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.py)#([A-Za-z_][A-Za-z0-9_]*)")
 SCALAR = r"(?:-?\d+|0x[0-9a-f]+|[0-9a-f]+)"
 ROM_BINDING = re.compile(
     rf"([0-9a-f]{{8}})=({SCALAR}|\d+(?:\*\d+)+|\[{SCALAR}(?:,{SCALAR})*\])"
@@ -68,6 +72,20 @@ class Token:
     offset: int | None = None
     relies: str | None = None
     text: str = ""
+
+
+def _typed_value(role, value, text):
+    """Validate the explicit terminal grammar without dependency addressing."""
+    if role == "indirect_base":
+        found = INDIRECT_BASE.fullmatch(value)
+        if found is None:
+            raise TokenError(f"token {text!r}: expected indirect_base:<address>+<offset>")
+        return found.group(1), int(found.group(2), 16 if found.group(2).startswith("0x") else 10)
+    found = TEST.fullmatch(value)
+    if (found is None or any(part in (".", "..") for part in found.group(1).split("/"))
+            or keyword.iskeyword(found.group(2))):
+        raise TokenError(f"token {text!r}: expected test:<safe-relative-python-path>#<function>")
+    return found.group(1), found.group(2)
 
 
 def parse(text):
@@ -100,6 +118,8 @@ def parse(text):
         else:
             if "@" in value:
                 raise TokenError(f"token {raw!r}: a {role} token has no target property")
+            if role in TYPED_TERMINAL:
+                _typed_value(role, value, raw)
             token = Token(role, value, text=f"{role}:{value}")
         if token in seen:
             raise TokenError(f"token {raw!r}: duplicate")
@@ -117,6 +137,12 @@ def evidence(token, layout, manual_prefixes):
     role, value = token.role, token.value
     if role in PROCESS:
         return None
+    if role == "indirect_base":
+        site, offset = _typed_value(role, value, token.text)
+        return {"kind": "indirect", "at": f"{layout}:{site}", "mode": "base", "value": offset}
+    if role == "test":
+        path, key = _typed_value(role, value, token.text)
+        return {"kind": "test", "path": path, "key": key}
     if role == "site":
         if not ADDRESS.fullmatch(value):
             raise TokenError(f"token {token.text!r}: a site is an address")

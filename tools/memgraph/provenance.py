@@ -7,6 +7,7 @@ Memgraph is not imported here: the loader and unit tests use the same model.
 """
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
+import keyword
 import re
 
 LEVELS = ("pattern", "candidate", "code", "silicon")
@@ -36,12 +37,14 @@ EDGE_ROLES = {
     "match": ("Map", "Axis"),
 }
 CATALOG_ROLES = frozenset({"from_map", "match"})
-TERMINAL = frozenset({"rom_const", "spec", "registry", "site"})
+TERMINAL = frozenset({"rom_const", "spec", "registry", "site", "indirect_base", "test"})
 PROCESS = frozenset({"wave", "arg"})
 VOCAB = frozenset(EDGE_ROLES) | TERMINAL | PROCESS
 
 ADDR_RE = re.compile(r"^[0-9a-f]{8}$")
 EDGE_REF_RE = re.compile(r"^([0-9a-f]{8})(?:\+(?:0x[0-9a-f]+|\d+))?$")
+INDIRECT_BASE_RE = re.compile(r"([0-9a-f]{8})\+(0x[0-9a-f]+|[0-9]+)")
+TEST_RE = re.compile(r"((?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.py)#([A-Za-z_][A-Za-z0-9_]*)")
 ROM_CONST_SCALAR = r"(?:-?\d+|0x[0-9a-f]+|[0-9a-f]+)"
 ROM_CONST_BINDING_RE = re.compile(
     rf"^([0-9a-f]{{8}})=(?:{ROM_CONST_SCALAR}|\d+(?:\*\d+)+|"
@@ -258,6 +261,17 @@ def parse_evidence(text, source_prop, context="evidence"):
                 raise ProvenanceError(
                     f"{context}: terminal/metadata tokens do not accept @target_prop: {raw!r}"
                 )
+            if role == "indirect_base" and not INDIRECT_BASE_RE.fullmatch(value):
+                raise ProvenanceError(
+                    f"{context}: expected indirect_base:<address>+<offset>: {raw!r}"
+                )
+            if role == "test":
+                found = TEST_RE.fullmatch(value)
+                if (found is None or any(part in (".", "..") for part in found.group(1).split("/"))
+                        or keyword.iskeyword(found.group(2))):
+                    raise ProvenanceError(
+                        f"{context}: expected test:<safe-relative-python-path>#<function>: {raw!r}"
+                    )
             token = EvidenceToken(source_prop, role, value)
         if token in seen:
             raise ProvenanceError(f"{context}: duplicate evidence token {raw!r}")
@@ -287,6 +301,10 @@ def evidence_machine_anchor(token):
         return token.target_addr
     if token.role == "site" and ADDR_RE.fullmatch(token.value):
         return token.value
+    if token.role == "indirect_base":
+        match = INDIRECT_BASE_RE.fullmatch(token.value)
+        if match:
+            return match.group(1)
     if token.role == "rom_const":
         match = ROM_CONST_BINDING_RE.fullmatch(token.value)
         if match:

@@ -6,6 +6,31 @@ from kb import repo, tokens
 from kb.adapters import ledgers
 
 MANUAL = repo.config()["tokens"]["manual"]
+EXPLICIT = (
+    "indirect_base:0004ec9e+2",
+    "indirect_base:0004ec9e+0x2",
+    "indirect_base:0004ec9e+002",
+    "indirect_base:0004ec9e+0",
+    "test:tools/kb/tests/test_tokens.py#test_a_dependency_names_address_offset_and_property",
+    "test:.checks/test_contract.py#_fixture_2",
+)
+INVALID_EXPLICIT = (
+    "indirect_base:0004ec9e", "indirect_base:0004ec9e+-2", "indirect_base:0004ec9e+0x-2",
+    "indirect_base:0004ec9e+", "indirect_base:004ec9e+2", "indirect_base:0004EC9E+2",
+    "indirect_base:0004ec9e+0X2", "indirect_base:0004ec9e+2@structural",
+    "indirect_base:0004ec9e+2+4", "indirect_base:7mfk:0004ec9e+2",
+    "indirect_base:0004ec9e+2.0", "indirect_base:0004ec9e+٢",
+    "test:/tmp/test_gate.py#test_path", "test:../test_gate.py#test_path",
+    "test:tools/../test_gate.py#test_path", "test:./test_gate.py#test_path",
+    "test:tools/./test_gate.py#test_path", "test:tools//test_gate.py#test_path",
+    "test:C:/test_gate.py#test_path", "test:tools\\\\test_gate.py#test_path",
+    "test:~/test_gate.py#test_path", "test:tools/test gate.py#test_path",
+    "test:tools/test_gate.py#", "test:tools/test_gate.py#test_path()",
+    "test:tools/test_gate.py#Suite.test_path", "test:tools/test_gate.py#1test_path",
+    "test:tools/test_gate.py#class", "test:tools/test_gate.py#test_path#other",
+    "test:tools/test_gate.py#test_path@structural", "test:tools/test_gate.txt#test_path",
+    "test:tools/%2e%2e/test_gate.py#test_path", "test:tools/test_gate.py\x00#test_path",
+)
 
 
 def legacy_provenance():
@@ -32,6 +57,30 @@ class GrammarTest(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(tokens.TokenError):
                 tokens.parse(text)
 
+    def test_explicit_terminals_have_no_dependency_and_map_to_complete_items(self):
+        for text in EXPLICIT:
+            with self.subTest(text=text):
+                [token] = tokens.parse(text)
+                self.assertIsNone(token.address)
+                self.assertIsNone(token.offset)
+                self.assertIsNone(token.relies)
+                item = tokens.evidence(token, "7mfk", MANUAL)
+                if token.role == "indirect_base":
+                    self.assertEqual(item, {
+                        "kind": "indirect", "at": "7mfk:0004ec9e", "mode": "base",
+                        "value": 0 if text.endswith("+0") else 2})
+                else:
+                    path, key = token.value.split("#")
+                    self.assertEqual(item, {"kind": "test", "path": path, "key": key})
+
+    def test_explicit_terminal_grammar_rejects_unsafe_or_incomplete_values(self):
+        for text in INVALID_EXPLICIT:
+            with self.subTest(text=text), self.assertRaises(tokens.TokenError):
+                tokens.parse(text)
+        for text in EXPLICIT:
+            with self.subTest(duplicate=text), self.assertRaisesRegex(tokens.TokenError, "duplicate"):
+                tokens.parse(f"{text}; {text}")
+
     def test_terminal_tokens_map_to_evidence_kinds(self):
         def mapped(text):
             [token] = tokens.parse(text)
@@ -55,6 +104,24 @@ class GrammarTest(unittest.TestCase):
 
 
 class LegacyAgreementTest(unittest.TestCase):
+    def test_explicit_terminals_round_trip_with_the_legacy_parser(self):
+        provenance = legacy_provenance()
+        for text in EXPLICIT:
+            with self.subTest(text=text):
+                [ours] = tokens.parse(text)
+                [theirs] = provenance.parse_evidence(f" {text} ", "confidence")
+                self.assertEqual((ours.role, ours.value, ours.address, ours.relies),
+                                 (theirs.role, theirs.value, theirs.target_addr, theirs.target_prop))
+                self.assertTrue(theirs.is_terminal)
+                self.assertFalse(theirs.is_dependency)
+                self.assertEqual(provenance.format_evidence_token(theirs), ours.text)
+                self.assertEqual(provenance.canonical_evidence_tokens(text, "confidence"), [text])
+                self.assertEqual(provenance.evidence_machine_anchor(theirs),
+                                 "0004ec9e" if ours.role == "indirect_base" else None)
+        for text in INVALID_EXPLICIT:
+            with self.subTest(text=text), self.assertRaises(provenance.ProvenanceError):
+                provenance.parse_evidence(text, "confidence")
+
     def test_every_ledger_cell_parses_as_the_legacy_parser_reads_it(self):
         provenance = legacy_provenance()
         props = {v: k for k, v in tokens.RELIES.items()}

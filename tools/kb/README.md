@@ -334,7 +334,19 @@ checks the index and geometry against `refs/diagnostics/rom-dtc/layouts.toml`
 and binds the row's code, addresses, and stock attribute to those spans before
 emitting typed `rom-bytes` identity evidence without `legacy`. `image-bytes`
 verifies them on every applicable image; the compiler does not refresh the
-expected bytes. Other ledger token evidence retains its legacy treatment.
+expected bytes. Outside the DTC contract, only the explicit terminal tokens
+`indirect_base:<8hex-site>+<offset>` and `test:<path>#<function>` emit typed
+items without `legacy`; neighboring tokens retain their legacy treatment.
+
+`indirect_base` uses eight lowercase hexadecimal site digits and a nonnegative
+ASCII decimal or lowercase `0x` offset. It maps to `indirect` evidence on the
+row's layout with `mode = "base"` and the integer offset as `value`. The
+existing dependency `base:<address>[+<offset>]@structural` remains a link.
+A `test` path is relative to the repository and ends in `.py`; its nonempty
+`/`-separated segments contain only ASCII letters, digits, `_`, `.`, and `-`,
+and no segment is `.` or `..`. Its function key is an ASCII Python identifier
+other than a keyword. It maps to `test` evidence with that `path` and `key`.
+The registry retains ownership of its facts until conversion.
 
 The entity files own the facts of a registry from the commit that converts
 it, and the compiler leaves out the adapters of the converted registries
@@ -586,10 +598,20 @@ of a census call.
 
 | Check | Scope |
 |---|---|
-| `homology` | The symbols that the entity files of `kb/` own, which only files state or whose file entry states evidence: each identity and homology evidence item that L0 or the images decide holds, and a chain of verified evidence reaches an anchor |
+| `homology` | File-owned symbols: each identity and homology item holds, and a verified chain reaches an anchor. Every non-legacy `indirect`/`base` and `test` item of a symbol is also verified, regardless of ownership or `supports` |
 | `image-bytes` | Hook `target` words, the sources of DID entries, and each typed `rom-bytes` and `did-table` item, on every image the symbol applies to |
 | `statuses` | The statuses of the entity files: `absent` carries evidence, and `unresolved` states its search; a search older than the L0 of its layout prints a note |
 | `writers` | Every `ram` and `reg` meaning: a store of one symbol that aligns on the layout of another symbol aligns with a store of that symbol |
+
+A base item verifies that L0 references `symbol.address - value` at `at` on
+the symbol's layout. This is base placement, not verification of the complete
+address path: indexing, copy lengths and boundaries, branches, and delay slots
+require separate fixed-byte/address-math tests. The `homology` check fails a
+bad base item even if `levels` holds the structure. Other indirect modes keep
+their existing verification boundary. A `test` item verifies only that the
+Python AST defines its key; neither `homology` nor `kb audit` executes the
+function or establishes a passing test result. The model checks include the
+named Python files in their inputs; the repository test runner executes them.
 
 `[writers] review` of `config.toml` lists the contradictions of the writer
 gate that await review, each as the symbol and the store site on its layout.

@@ -89,6 +89,33 @@ class EvidenceTest(unittest.TestCase):
             canonical_evidence_tokens("spec: SH7058-HW", "confidence"),
             ["spec:SH7058-HW"],
         )
+
+    def test_explicit_base_and_test_are_terminal_round_trip_tokens(self):
+        text = ("base:ffff1000+0x12@structural; indirect_base:00020000+0x12; "
+                "test:tools/memgraph/tests/test_provenance.py#test_offset_is_preserved_and_target_is_base")
+        tokens = parse_evidence(text, "confidence", "row")
+        self.assertEqual([token.is_dependency for token in tokens], [True, False, False])
+        self.assertEqual([token.is_terminal for token in tokens], [False, True, True])
+        self.assertEqual([token.target_addr for token in tokens], ["ffff1000", None, None])
+        self.assertEqual([evidence_machine_anchor(token) for token in tokens],
+                         ["ffff1000", "00020000", None])
+        canonical = "; ".join(format_evidence_token(token) for token in tokens)
+        self.assertEqual(canonical, text)
+        self.assertEqual(parse_evidence(canonical, "confidence"), tokens)
+
+    def test_explicit_terminals_require_nonnegative_offset_and_safe_test_reference(self):
+        for text in ("indirect_base:00020000", "indirect_base:00020000+-1",
+                     "indirect_base:00020000+0x-1", "indirect_base:0002000+2",
+                     "indirect_base:00020000+2@structural", "test:../test.py#test_path",
+                     "test:/test.py#test_path", "test:tools/../test.py#test_path",
+                     "test:tools/test.py#test_path()", "test:tools/test.py#class"):
+            with self.subTest(text=text), self.assertRaises(ProvenanceError):
+                parse_evidence(text, "confidence", "row")
+        for text in ("indirect_base:00020000+0", "indirect_base:00020000+0012"):
+            self.assertEqual(canonical_evidence_tokens(text, "confidence"), [text])
+        with self.assertRaisesRegex(ProvenanceError, "duplicate"):
+            parse_evidence("indirect_base:00020000+2; indirect_base:00020000+2", "confidence")
+
     def test_empty_or_invalid_bound_rom_const_is_not_a_machine_anchor(self):
         for value in (
             "rom_const:00020000=",

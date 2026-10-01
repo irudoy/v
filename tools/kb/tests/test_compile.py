@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 import copy
 import csv
 import re
@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from kb import adapters, checks, compile, derive, match, names, repo, vocab
+from kb import adapters, checks, compile, derive, levels, match, names, repo, tokens, vocab
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Builder, Ref, SymbolKey
@@ -75,6 +75,227 @@ class LedgerAdapterTest(unittest.TestCase):
         self.assertIn(("periodic_snapshot_dispatch", "curated", "tools/ghidra/symbols/7mfk.csv"),
                       meaning.other_names)
         self.assertEqual(model().meaning_of(SymbolKey("1nd", "fn", 0x11363C)).name, "hcan1_init")
+
+
+class ExplicitLedgerTokenTest(unittest.TestCase):
+    TEXT = ("site:0004ec9e; rom_const:00009000=2; spec:sh2-decode; registry:probe; "
+            "wave:3; arg:review; indirect_base:0004ec9e+2; "
+            "test:tools/kb/tests/test_tokens.py#test_a_dependency_names_address_offset_and_property")
+    ROWS = {
+        "funcs": {"addr": "0004ec9e", "role": "accessor", "semantics": "Probe.",
+                  "contract": "Probe.", "contract_conf": "code", "confidence": "code", "note": ""},
+        "vars": {"addr": "ffff23ca", "semantics": "Probe.", "confidence": "code",
+                 "units": "raw", "note": ""},
+        "findings": {"addr": "00009000", "family": "explicit", "width": "1", "height": "1",
+                     "storagetype": "uint8", "role": "table", "confidence": "code",
+                     "semantics": "Probe.", "units": "raw", "scale_expr": "x", "to_byte": "x",
+                     "scale_conf": "code", "note": "", "accessor": ""},
+        "axes": {"addr": "00009000", "kind": "rpm", "units": "rpm", "scale_expr": "x",
+                 "to_byte": "x", "scale_conf": "code", "note": ""},
+        "diagnostic-bindings": {
+            "id": "probe", "firmware_addr": "ffff23ca", "firmware_label": "Reg",
+            "kind": "live-data", "diagnostic_label": "Probe", "diagnostic_key": "probe",
+            "source_claim_label": "Reg", "source_claim_id": "ffff23ca", "applicability": "",
+            "rom_scope": "JK08A", "priority": "1", "confidence": "code", "note": ""},
+    }
+
+    def declare(self, ledger, column, text):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+        row = {**self.ROWS[ledger], column: text}
+        with patch.object(ledgers, "rows", side_effect=lambda _, name: [row] if name == ledger else ()), \
+                patch.object(native, "census_call", return_value=None):
+            ledgers.declare(b, repo.ROOT)
+        m = b.finish()
+        m.root, m.config = repo.ROOT, repo.config()
+        return m
+
+    def test_only_explicit_new_tokens_are_typed_in_each_ledger_column(self):
+        columns = {"funcs": ("evidence", "contract_evidence"), "vars": ("evidence",),
+                   "findings": ("evidence", "scale_evidence"), "axes": ("scale_evidence",),
+                   "diagnostic-bindings": ("evidence",)}
+        parsed = tokens.parse(self.TEXT)
+        for ledger, names_ in columns.items():
+            for column in names_:
+                with self.subTest(ledger=ledger, column=column):
+                    m = self.declare(ledger, column, self.TEXT)
+                    self.assertEqual(m.issues, [])
+                    [symbol] = m.symbols.values()
+                    if ledger == "diagnostic-bindings":
+                        [binding] = symbol.meaning.tables["diagnostic"]
+                        items = binding["evidence"]
+                        expected = [tokens.evidence(token, "7mfk", ()) for token in parsed]
+                    else:
+                        items = symbol.evidence
+                        expected = [{"supports": tokens.SUPPORTS[column], **item} if item else None
+                                    for token in parsed
+                                    for item in [tokens.evidence(token, "7mfk", ())]]
+                    expected = [{**item, **({} if token.role in tokens.TYPED_TERMINAL
+                                           else {"legacy": token.text})}
+                                for token, item in zip(parsed, expected) if item is not None]
+                    self.assertEqual(items, expected)
+                    self.assertEqual(sum("legacy" not in item for item in items), 2)
+                    self.assertFalse(checks._owned(m, symbol))
+
+    def test_malformed_explicit_tokens_report_schema_without_typed_items(self):
+        for text in ("indirect_base:0004ec9e+-2", "test:../test_probe.py#test_probe"):
+            with self.subTest(text=text):
+                m = self.declare("vars", "evidence", text)
+                [issue] = m.issues
+                self.assertEqual((issue.check, issue.path), ("schema", "defs/JK08A.vars.csv"))
+                [symbol] = m.symbols.values()
+                self.assertEqual(symbol.evidence, [])
+
+    def test_the_dependency_base_token_keeps_its_link_and_no_terminal_item(self):
+        m = self.declare("vars", "evidence", "base:ffff128c+0x10@structural")
+        [symbol] = m.symbols.values()
+        self.assertEqual(symbol.evidence, [])
+        # The dependency is deferred, not an indirect identity item.
+        [pending] = m.stash[ledgers.__name__]
+        self.assertEqual((pending[1].role, pending[1].offset, pending[1].relies),
+                         ("base", 0x10, "structure"))
+
+
+class RamStructureEvidenceTest(unittest.TestCase):
+    PATH = "tools/kb/tests/test_ram_structure.py"
+    # Fixed expectations bind the ledger items, not values inferred from ROM.
+    EXPECTED = {
+        0xFFFF5A93: ("7mfk:00097ec2", 0x37B, "test_maf_extension_record_path"),
+        0xFFFF1A40: ("7mfk:0003c46e", 2, "test_indexed_word_copy_path"),
+        0xFFFF1098: ("7mfk:00020f48", 4, "test_snapshot_destination_path"),
+        0xFFFF111E: ("7mfk:00020f50", 10, "test_snapshot_source_and_decoder_path"),
+        0xFFFF1DF2: ("7mfk:0003a9ae", 6, "test_maf_indexed_state_path"),
+        0xFFFF18C2: ("7mfk:0004ea52", 0x636, "test_injection_precursor_path"),
+        0xFFFF1B1D: ("7mfk:000c1dfa", 0x891, "test_indexed_mode_byte_paths"),
+        0xFFFF1AA8: ("7mfk:000c1dfa", 0x81C, "test_indexed_state_longword_path"),
+    }
+    STRUCTURE_COUNTS = {0xFFFF5A93: 6, 0xFFFF1A40: 1, 0xFFFF1098: 3,
+                        0xFFFF111E: 1, 0xFFFF1DF2: 3, 0xFFFF18C2: 2,
+                        0xFFFF1B1D: 1, 0xFFFF1AA8: 1}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = {int(row["addr"], 16): row for row in ledgers.rows(repo.ROOT, "vars")
+                    if int(row["addr"], 16) in cls.EXPECTED}
+
+    def expected_items(self, address):
+        at, value, key = self.EXPECTED[address]
+        return [{"kind": "indirect", "supports": "identity", "at": at,
+                 "mode": "base", "value": value},
+                {"kind": "test", "supports": "identity", "path": self.PATH, "key": key}]
+
+    def assert_pair(self, address, items):
+        self.assertEqual([item for item in items if "legacy" not in item],
+                         self.expected_items(address))
+
+    def declare(self, row):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
+        with patch.object(ledgers, "rows", side_effect=lambda _, name: [row] if name == "vars" else ()):
+            ledgers.declare(b, repo.ROOT)
+        m = b.finish()
+        m.root, m.config = repo.ROOT, repo.config()
+        self.assertEqual(m.issues, [])
+        return m.symbols[SymbolKey("7mfk", "ram", int(row["addr"], 16))]
+
+    def test_eight_real_ledger_symbols_have_the_exact_typed_pair_and_legacy_neighbors(self):
+        m = model()
+        self.assertEqual(set(self.rows), set(self.EXPECTED))
+        for address, row in self.rows.items():
+            with self.subTest(address=f"{address:08x}"):
+                symbol = m.symbols[SymbolKey("7mfk", "ram", address)]
+                self.assert_pair(address, symbol.evidence)
+                self.assertFalse(checks._owned(m, symbol))
+                self.assertIn("defs/JK08A.vars.csv", symbol.sources)
+                old = [token for token in tokens.parse(row["evidence"])
+                       if token.role in tokens.TERMINAL and token.role not in tokens.TYPED_TERMINAL]
+                manual = m.config.get("tokens", {}).get("manual", ())
+                expected = [{"supports": "identity", **item, "legacy": token.text}
+                            for token in old
+                            for item in [tokens.evidence(token, "7mfk", manual)]
+                            if item is not None]
+                self.assertEqual([item for item in symbol.evidence if "legacy" in item], expected)
+                for item in self.expected_items(address):
+                    self.assertIsNone(match.verify(m, symbol, item))
+
+    def test_an_omitted_base_or_test_token_cannot_satisfy_the_compiled_pair(self):
+        for address, row in self.rows.items():
+            parsed = tokens.parse(row["evidence"])
+            for role in tokens.TYPED_TERMINAL:
+                with self.subTest(address=f"{address:08x}", omitted=role):
+                    changed = {**row, "evidence": ";".join(token.text for token in parsed
+                                                          if token.role != role)}
+                    symbol = self.declare(changed)
+                    with self.assertRaises(AssertionError):
+                        self.assert_pair(address, symbol.evidence)
+                    expected = self.expected_items(address)[1 if role == "indirect_base" else 0]
+                    self.assertEqual([item for item in symbol.evidence if "legacy" not in item],
+                                     [expected])
+
+    def test_eight_wrong_offsets_fail_homology_even_while_structure_is_held(self):
+        m = compile.build()
+        failures = {}
+        for address in self.EXPECTED:
+            key = SymbolKey("7mfk", "ram", address)
+            symbol = m.symbols[key]
+            self.assert_pair(address, symbol.evidence)
+            base = self.expected_items(address)[0]
+            wrong = {**base, "value": base["value"] + 1}
+            symbol.evidence[symbol.evidence.index(base)] = wrong
+            failure = match.verify(m, symbol, wrong)
+            self.assertIsNotNone(failure)
+            self.assertTrue(levels.held(m, symbol))
+            failures[key.key] = failure
+        issues = [issue for issue in checks.CHECKS["homology"](m)
+                  if issue.subject in failures]
+        self.assertEqual(Counter(issue.subject for issue in issues),
+                         Counter({subject: 1 for subject in failures}))
+        for issue in issues:
+            self.assertIn(failures[issue.subject], issue.message)
+
+    def test_removing_eight_base_items_restores_their_structure_findings_without_changing_claims(self):
+        m = compile.build()
+        keys = {SymbolKey("7mfk", "ram", address) for address in self.EXPECTED}
+        snapshot = lambda: {key: (m.symbols[key].meaning.home,
+                                 copy.deepcopy(m.symbols[key].meaning.props),
+                                 copy.deepcopy(m.symbols[key].props)) for key in keys}
+        unchanged = snapshot()
+        before = set(levels.check(m))
+        state = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF1AA8)]
+        [next_barrier] = [issue for issue in before if issue.subject == state.meaning.key]
+        self.assertIn("the structure of 7mfk-ffff1b1a/ram,", next_barrier.message)
+        self.assertIn("(input link)", next_barrier.message)
+        blocked = {issue for issue in before
+                   if "the structure of 7mfk-ffff196c/ram," in issue.message}
+        self.assertTrue(blocked)
+        # Removing this placement item restores the earlier input boundary;
+        # the next boundary of its own claim and the blocked chain remain.
+        base = self.expected_items(0xFFFF1AA8)[0]
+        position = state.evidence.index(base)
+        removed = state.evidence.pop(position)
+        without_state_base = set(levels.check(m))
+        [first_barrier] = [issue for issue in without_state_base - before
+                           if "the structure of 7mfk-ffff1aa8/ram," in issue.message]
+        self.assertIn("(input link)", first_barrier.message)
+        self.assertIn(next_barrier, without_state_base)
+        self.assertTrue(blocked <= without_state_base)
+        state.evidence.insert(position, removed)
+        pointed = levels.entries(m)
+        for key in keys:
+            symbol = m.symbols[key]
+            self.assert_pair(key.address, symbol.evidence)
+            symbol.evidence.remove(self.expected_items(key.address)[0])
+            self.assertFalse(levels.held(m, symbol, pointed))
+        after = set(levels.check(m))
+        counts = Counter()
+        for issue in after - before:
+            found = re.search(r"the structure of 7mfk-([0-9a-f]{8})/ram,", issue.message)
+            if found and int(found.group(1), 16) in self.EXPECTED:
+                counts[int(found.group(1), 16)] += 1
+        self.assertEqual(dict(counts), self.STRUCTURE_COUNTS)
+        self.assertTrue(blocked <= after)
+        self.assertEqual(snapshot(), unchanged)
+        # The cached model remains intact; a test cannot remove its evidence.
+        for key in keys:
+            self.assert_pair(key.address, model().symbols[key].evidence)
 
 
 class DtcLedgerAdapterTest(unittest.TestCase):

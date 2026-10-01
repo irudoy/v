@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from kb import checks, compile, derive, match, names, repo, store, vocab
+from kb import checks, compile, derive, levels, match, names, repo, store, tokens, vocab
 from kb.adapters import files
 from kb.model import Builder, SymbolKey
 
@@ -314,6 +314,97 @@ class IndirectBaseTest(unittest.TestCase):
                                                    "at": "7mfk:00000000", "mode": "gbr"}))
 
 
+class ExplicitTerminalChecksTest(unittest.TestCase):
+    """Typed base and test items are checked without converting ledger ownership."""
+
+    SOURCES = ("kb/ram/injection_probe.toml", "defs/JK08A.vars.csv")
+    BASE = {"kind": "indirect", "supports": "identity", "at": "7mfk:0004ec9e",
+            "mode": "base", "value": 2}
+    TEST = {"kind": "test", "supports": "identity", "path": "tools/kb/tests/test_tokens.py",
+            "key": "test_a_dependency_names_address_offset_and_property"}
+
+    def model(self, source, *items):
+        return model_of(lambda b: b.symbol("7mfk", "ram", INJECTION, source,
+                                            evidence=list(items)))
+
+    def test_real_base_reference_and_existing_test_key_hold_for_either_owner(self):
+        for source in self.SOURCES:
+            with self.subTest(source=source):
+                m = self.model(source, self.BASE, self.TEST)
+                symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+                self.assertEqual(checks._owned(m, symbol), source.startswith("kb/"))
+                self.assertIsNone(match.verify(m, symbol, self.BASE))
+                self.assertEqual(checks.CHECKS["homology"](m), [])
+                self.assertEqual(checks.schema(m), [])
+
+    def test_invalid_base_items_fail_even_while_levels_holds_the_structure(self):
+        changes = {
+            "malformed at": {"at": "not-a-location"},
+            "foreign layout": {"at": "jk00d:0004ec9e"},
+            "unknown layout": {"at": "missing:0004ec9e"},
+            "unreferencing instruction": {"at": "7mfk:00002688"},
+            "noninstruction": {"at": "7mfk:0004ec9f"},
+            "wrong offset": {"value": 6},
+            "invalid offset": {"value": "not-an-offset"},
+            "missing offset": {"value": None},
+            "missing at": {"at": None},
+        }
+        for source in self.SOURCES:
+            for name, changed in changes.items():
+                with self.subTest(source=source, change=name):
+                    item = {**self.BASE, **changed}
+                    m = self.model(source, item, self.TEST)
+                    symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+                    failure = match.verify(m, symbol, item)
+                    self.assertIsNotNone(failure)
+                    self.assertTrue(levels.held(m, symbol))
+                    [issue] = checks.CHECKS["homology"](m)
+                    self.assertEqual((issue.check, issue.path, issue.subject),
+                                     ("homology", source, symbol.key.key))
+                    self.assertEqual(issue.message, f"{checks._item(item)}: {failure}")
+
+    def test_explicit_items_are_checked_for_contract_and_scale_as_well(self):
+        for source in self.SOURCES:
+            for supports in ("contract", "scale"):
+                with self.subTest(source=source, supports=supports):
+                    item = {**self.BASE, "supports": supports, "value": 6}
+                    m = self.model(source, item, self.TEST)
+                    [issue] = checks.homology(m)
+                    self.assertIn("no reference to the base", issue.message)
+
+    def test_missing_test_key_or_file_fails_for_either_owner(self):
+        for source in self.SOURCES:
+            for changed, expected in (({"key": "test_missing"}, "defines no function test_missing"),
+                                      ({"path": "tools/kb/tests/missing.py"}, "is no Python file")):
+                with self.subTest(source=source, changed=changed):
+                    item = {**self.TEST, **changed}
+                    m = self.model(source, self.BASE, item)
+                    [issue] = checks.homology(m)
+                    self.assertEqual(issue.path, source)
+                    self.assertIn(expected, issue.message)
+                    self.assertIn(item["path"], match.READ)
+
+    def test_legacy_items_and_nonbase_modes_keep_their_existing_scope(self):
+        for source in self.SOURCES:
+            with self.subTest(source=source):
+                items = [{**self.BASE, "value": 6, "legacy": "indirect_base:0004ec9e+6"},
+                         {**self.TEST, "key": "test_missing", "legacy": "spec:test_missing"},
+                         {"kind": "l0", "at": "7mfk:00000000", "legacy": "site:00000000"},
+                         {"kind": "indirect", "at": "7mfk:00000000", "mode": "gbr"}]
+                self.assertEqual(checks.homology(self.model(source, *items, self.TEST)), [])
+        # Ownership alone does not make other ledger items typed or checked.
+        m = self.model(self.SOURCES[1], {"kind": "l0", "at": "7mfk:00000000"})
+        self.assertEqual(checks.homology(m), [])
+
+    def test_tokens_reach_the_check_with_explicit_not_live_derived_values(self):
+        parsed = tokens.parse("indirect_base:0004ec9e+6; "
+                              "test:tools/kb/tests/test_tokens.py#test_a_dependency_names_address_offset_and_property")
+        items = [{"supports": "identity", **tokens.evidence(token, "7mfk", ())}
+                 for token in parsed]
+        [issue] = checks.homology(self.model(self.SOURCES[1], *items))
+        self.assertIn("base ffff23c4", issue.message)
+
+
 class ManualTest(unittest.TestCase):
     """`manual` evidence: the MCU places the data register of HCAN1 mailbox
     26 at ffffdc48 on every layout."""
@@ -359,6 +450,16 @@ class ManualTest(unittest.TestCase):
 
 
 class TestEvidenceTest(unittest.TestCase):
+    def test_verification_checks_the_definition_without_executing_it(self):
+        m = model_of(lambda b: b.symbol("7mfk", "ram", INJECTION, "test"))
+        symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+        with tempfile.TemporaryDirectory() as directory:
+            m.root = Path(directory)
+            (m.root / "test_probe.py").write_text(
+                "def test_probe():\n    raise RuntimeError('must not execute')\n", encoding="utf-8")
+            item = {"kind": "test", "path": "test_probe.py", "key": "test_probe"}
+            self.assertIsNone(match.verify(m, symbol, item))
+
     def test_a_test_item_names_a_test_function_of_the_repository(self):
         m = model_of(lambda b: b.symbol("1me3b", "const", ROUTINE, "test",
                                         group=("const", "routine")))
