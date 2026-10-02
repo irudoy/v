@@ -1,8 +1,8 @@
 summary = """
-Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
-command-word domain (values). The task reads it in both directions: angle to \
-command for the bound words that form 0xFFFF44AA, and command to angle with \
-the roles of axis and values exchanged."""
+Unsigned-word conversion between the paired shaft-coordinate array (axis) \
+and the command-word domain (values). The task first uses command words as \
+the axis and paired coordinates as values for the bound word at 0xFFFF44AA, \
+then exchanges those roles for the returned word at 0xFFFF35BA."""
 level = "code"
 home = "jk78c"
 cols = 16
@@ -56,6 +56,12 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00066bd8"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+key = "test_vvel_command_shaft_angle_scale"
+
 [[symbol]]
 layout = "1nd"
 address = "00015c22"
@@ -91,6 +97,12 @@ kind = "l0"
 supports = "identity"
 at = "1nd:0005f588"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+key = "test_vvel_command_shaft_angle_scale"
+
 [[symbol]]
 layout = "jk78c"
 address = "000156fc"
@@ -118,6 +130,12 @@ at = "jk78c:00055858"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000569f4"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+key = "test_vvel_command_shaft_angle_scale"
 
 [[link]]
 type = "axis"

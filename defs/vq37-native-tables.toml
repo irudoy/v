@@ -241,7 +241,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x"
 to_byte = "x"
-semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values). The task reads it in both directions: angle to command for the bound words that form 0xFFFF44AA, and command to angle with the roles of axis and values exchanged."
+semantics = "Unsigned-word conversion between the paired shaft-coordinate array (axis) and the command-word domain (values). The task first uses command words as the axis and paired coordinates as values for the bound word at 0xFFFF44AA, then exchanges those roles for the returned word at 0xFFFF35BA."
 note = "Read by the task FUN_00054FD0 at callsites 0x556E2 and 0x55776, by FUN_0005693A at 0x56952 for the filtered actual duration 0xFFFFA180, and by FUN_0004D3CE at 0x4D3F0 and 0x4D40C through the 16-point uint16 wrapper 0x28320. FUN_0004D3CE reaches it as GBR + 0x20 from the literal 0x000156DC at 0x4D58C. The command-word unit is stored raw; DID 0x125C publishes the latched command 0xFFFF443E."
 
 [[target.JK78C.table]]

@@ -40,9 +40,16 @@ shaft angles ffff2670/ffff2672, temperatures ffff1066/ffff1069
         --> FUN 000557b2 selects the pair indexed by ffffa22f
         |
         v
-target shaft angle (1/512 deg) --> curve 0x156DC/0x156FC --> bound words --> command ffff44aa
+target word --> lookup(values 0x156DC, axis 0x156FC) --> bounds --> command ffff44aa
         --> latch ffff443e --> frame 0x22B bytes 0..1, DID 0x125C
 ```
+
+At `0x000556E2`, the task passes `0x000156DC` as values and `0x000156FC`
+as the axis before the bounds and the store to `0xFFFF44AA`. At
+`0x00055776`, it passes `0x000156FC` as values and `0x000156DC` as the axis;
+the returned low word is stored at `0xFFFF35BA`. These raw pointer roles do
+not establish physical units. The local count and task-binding gate is
+`VQ37.command-count-scales.md`; it is separate from the latch and DID chain.
 
 `FUN_00054FD0` is entry 98 of the periodic list and owns the machine, the
 resolver call, and the command word. `FUN_00054E16` copies the machine inputs
