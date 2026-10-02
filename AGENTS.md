@@ -11,7 +11,7 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
   human-readable text in English.
 - Planning and human project knowledge live in the Russian-language Obsidian
   vault at
-  `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/🎛️ Electronics/VQ HR ECU Tuning`.
+  `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/Electronics/VQ HR ECU Tuning`.
 - The vault entry point is `VQ HR ECU Tuning`.
 - Do not mention the private vault or its path in public repository content;
   this file is the only repository location for that path.
