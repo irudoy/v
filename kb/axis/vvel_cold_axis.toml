@@ -18,25 +18,71 @@ coarse = 5
 layout = "1me3b"
 address = "00017176"
 note = """
-Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold \
-CVTC curves; stock bytes are identical to JK78C 0x00016AC4."""
+Eight-point nominal encoded-temperature axis for coolant in the cold \
+duration and cold CVTC curves; stock points 20..90 display as -30..40 degC \
+using x-50. The independently executed stock PID05 relation is \
+A=max(T-10,0); the retained community decoder is A-40. Equality with a \
+decoded PID05 value requires T>=10, x=T and corresponding samples. \
+Hysteresis, independent refresh, override and fail-safe do not establish \
+that equality. x+50 is the inverse of the nominal coordinate grid, not the \
+sensor or publication chain; it is not a sensor inverse. Measured \
+temperature and physical accuracy are unverified; no hardware proof is \
+established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an \
+unsigned byte, not the uint16 storage domain. See \
+defs/VQ37.cold-axis-scale.md.\n"""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "1me3b:00063430"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+key = "test_vvel_cold_axis_pid05_code_domain"
+note = """
+Conditional nominal encoded-temperature grid on the exact 1ME3B stock image; \
+full-image and reviewed byte bindings, actual \
+conversion/publication/copy/caller/PID windows, clipping, hysteresis and \
+independent-refresh counterexamples. Physical accuracy and omitted complete \
+runtime paths are outside the proof."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.cold-axis-scale.md"
+
 [[symbol]]
 layout = "1nd"
 address = "000170d2"
 note = [
     """
-1ND0A: Eight-point coolant axis 20..90 = -30..40 degC of the cold duration \
-and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4.""",
+1ND0A: Eight-point nominal encoded-temperature axis for coolant in the cold \
+duration and cold CVTC curves; stock points 20..90 display as -30..40 degC \
+using x-50. The independently executed stock PID05 relation is \
+A=max(T-10,0); the retained community decoder is A-40. Equality with a \
+decoded PID05 value requires T>=10, x=T and corresponding samples. \
+Hysteresis, independent refresh, override and fail-safe do not establish \
+that equality. x+50 is the inverse of the nominal coordinate grid, not the \
+sensor or publication chain; it is not a sensor inverse. Measured \
+temperature and physical accuracy are unverified; no hardware proof is \
+established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an \
+unsigned byte, not the uint16 storage domain. See \
+defs/VQ37.cold-axis-scale.md.""",
     """
-1ND3B: Eight-point coolant axis 20..90 = -30..40 degC of the cold duration \
-and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4. 1ND3B \
-shares the 1ND0A code layout and its stock bytes at this address.""",
+1ND3B: Eight-point nominal encoded-temperature axis for coolant in the cold \
+duration and cold CVTC curves; stock points 20..90 display as -30..40 degC \
+using x-50. Its exact registered image has separate byte bindings and \
+executable conversion/publication/copy/caller/PID paths. It shares the \
+reviewed 1ND0A address layout and stock axis bytes. The PID05 relation \
+A=max(T-10,0) and retained community decoder A-40 imply coordinate equality \
+only for T>=10, x=T and corresponding samples. Hysteresis, independent \
+refresh, override and fail-safe do not establish that equality. x+50 is the \
+inverse of the nominal coordinate grid, not the sensor or publication chain; \
+it is not a sensor inverse. Measured temperature and physical accuracy are \
+unverified; no hardware proof is established. Runtime input is an unsigned \
+byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.""",
 ]
 
 [[symbol.evidence]]
@@ -44,13 +90,39 @@ kind = "l0"
 supports = "identity"
 at = "1nd:0005f7b0"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+key = "test_vvel_cold_axis_pid05_code_domain"
+note = """
+Conditional nominal encoded-temperature grid with separate exact 1ND0A and \
+1ND3B image/byte bindings and executable \
+conversion/publication/copy/caller/PID windows. Clipping, hysteresis and \
+independent-refresh counterexamples reject universal live-PID equality; \
+physical accuracy and omitted complete runtime paths are outside the proof."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.cold-axis-scale.md"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016ac4"
 note = """
-Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold \
-CVTC curves, reached as the base literal 0x00016A54 + 0x70; the coordinate \
-is 0xFFFF1069."""
+Eight-point nominal encoded-temperature axis for coolant in the cold \
+duration and cold CVTC curves; stock points 20..90 display as -30..40 degC \
+using x-50. The independently executed stock PID05 relation is \
+A=max(T-10,0); the retained community decoder is A-40. Equality with a \
+decoded PID05 value requires T>=10, x=T and corresponding samples. \
+Hysteresis, independent refresh, override and fail-safe do not establish \
+that equality. x+50 is the inverse of the nominal coordinate grid, not the \
+sensor or publication chain; it is not a sensor inverse. Measured \
+temperature and physical accuracy are unverified; no hardware proof is \
+established. The axis is reached as base literal 0x00016A54 + 0x70; \
+coordinate 0xFFFF1069 is an unsigned byte, not the uint16 storage domain. \
+See defs/VQ37.cold-axis-scale.md.\n"""
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -58,6 +130,23 @@ supports = "identity"
 at = "jk78c:00056c88"
 value = 112
 mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+key = "test_vvel_cold_axis_pid05_code_domain"
+note = """
+Conditional nominal encoded-temperature grid on the exact JK78C stock image; \
+full-image and reviewed byte bindings, actual \
+conversion/publication/copy/caller/PID windows, clipping, hysteresis and \
+independent-refresh counterexamples. Physical accuracy and omitted complete \
+runtime paths are outside the proof."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.cold-axis-scale.md"
 
 [[link]]
 type = "reader"

@@ -701,7 +701,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves, reached as the base literal 0x00016A54 + 0x70; the coordinate is 0xFFFF1069."
+note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. The axis is reached as base literal 0x00016A54 + 0x70; coordinate 0xFFFF1069 is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.\n"
 
 [[target.JK78C.axis]]
 id = "vvel_duration_throttled_axis"
@@ -1732,7 +1732,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4."
+note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_throttled_axis"
@@ -2725,7 +2725,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. Its exact registered image has separate byte bindings and executable conversion/publication/copy/caller/PID paths. It shares the reviewed 1ND0A address layout and stock axis bytes. The PID05 relation A=max(T-10,0) and retained community decoder A-40 imply coordinate equality only for T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_throttled_axis"
@@ -3872,7 +3872,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4."
+note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.\n"
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_startup_blend_axis"
