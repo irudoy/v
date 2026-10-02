@@ -36,6 +36,12 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000637bc"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_ramp_delay_scale.py"
+key = "test_ramp_delay_local_count_scale"
+
 [[status]]
 layout = "1nd"
 state = "absent"
