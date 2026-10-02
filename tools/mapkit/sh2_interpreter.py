@@ -342,7 +342,7 @@ class Sh2:
             self.pr = pc + 4
             return True, (pc + 4 + sext(w & 0xFFF, 12) * 2) & MASK
         elif top == 0xC:
-            if n in (0x0, 0x2):
+            if n in (0x0, 0x1, 0x2):
                 size = 1 << n
                 self._write(self.gbr + imm * size, size, r[0], pc)
             elif n in (0x4, 0x6):
