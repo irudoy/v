@@ -251,21 +251,24 @@ fix three bindings:
   the VVEL TIM pair `0xFFFF276E` and `0xFFFF2770` written by `FUN_000EDF62`.
 
 `0xFFFF44AA` is the VVEL command word. `FUN_00054FD0`, entry 98 of the periodic
-list, writes it at `0x0005576C` and clears `0xFFFF44AC`. The value is the target
-control-shaft angle in 1/512 degree units passed through the angle-to-command
-curve (axis `0x000156DC`, values `0x000156FC`, lookup `FUN_00028320`) and
-limited by four bound words computed earlier in the task; the reverse lookup of
-the stored command lands in `0xFFFF35BA`. The target angle comes from
-`FUN_000564A4`, which reads the maps `0x0000E1CE` and `0x0000E24E` (8x8 uint16,
-axes `0x000160CA` and `0x000160DA`), `0x000108CE` (16x16 uint16, axes
-`0x00016DE4` and `0x00016E04`) and the curves `0x0001600A`, `0x0001601A`,
+list, writes it at `0x0005576C` and clears `0xFFFF44AC`. At `0x000556E2`, it
+passes `0x000156DC` as values and `0x000156FC` as the axis to `FUN_00028320`.
+Bounds are applied before the store at `0x0005576C` to `0xFFFF44AA`. At
+`0x00055776`, it passes `0x000156FC` as values and `0x000156DC` as the axis;
+the returned low word is stored at `0x00055782` to `0xFFFF35BA`. These raw
+pointer roles do not establish physical units. The local gate is
+`VQ37.command-count-scales.md`, separate from the latch and DID chain.
+
+The upstream model `FUN_000564A4` reads the maps `0x0000E1CE` and `0x0000E24E`
+(8x8 uint16, axes `0x000160CA` and `0x000160DA`), `0x000108CE` (16x16 uint16,
+axes `0x00016DE4` and `0x00016E04`) and the curves `0x0001600A`, `0x0001601A`,
 `0x00016BB4`, `0x00016D14`, `0x00016DC4`. The task itself reads the curves
 `0x0001609A`, `0x000160AA`, `0x000160BA`, `0x00016A74`, and its inputs include
-the latched VVEL TIM pair at `0xFFFF25D8 + 0x98` and `+ 0x9A`. The same curve
-pair serves both directions: `FUN_0004D3CE` converts the received angle into
-model units for `FUN_0004C2B2`, and `FUN_00054FD0` converts the target angle
-into the command. The mode machine that selects the target, its sensor
-bindings, and the stored scales are in `JK78C.vvel.md`.
+the latched VVEL TIM pair at `0xFFFF25D8 + 0x98` and `+ 0x9A`.
+`FUN_0004D3CE` also uses the curve pair for the model `FUN_0004C2B2`.
+The mode machine, sensor bindings, and stored scales are in `JK78C.vvel.md`.
+The local word and task-binding proof does not execute the input producers,
+complete floating-point model, latch chain, or physical transmission.
 
 `0xFFFF5E8E` is a signed 16-bit integrator of the bank difference.
 `FUN_00080ED6(bank)` forms `0xFFFF194C` and `0xFFFF194E` from

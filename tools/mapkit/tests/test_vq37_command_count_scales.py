@@ -718,3 +718,46 @@ def test_inverse_specification_and_home_task_declaration() -> None:
             "and `0x000156DC` as the axis; the returned low word is stored at `0xFFFF35BA`.") in home
     assert "These raw pointer roles do not establish physical units." in home
     assert "`VQ37.command-count-scales.md`; it is separate from the latch and DID chain." in home
+    can = " ".join((ROOT / "defs/JK78C.can.md").read_text().split())
+    _, stop, first, second, bound_pc, bound_cell, result_cell = JK78C.task
+    pair = JK78C.pairs[0]
+    assert (f"At `0x{first:08X}`, it passes `0x{pair.axis:08X}` as values and `0x{pair.values:08X}` "
+            f"as the axis to `FUN_{pair.lookup:08X}`. Bounds are applied before the store at "
+            f"`0x{bound_pc:08X}` to `0x{bound_cell:08X}`. At `0x{second:08X}`, it passes "
+            f"`0x{pair.values:08X}` as values and `0x{pair.axis:08X}` as the axis; the returned low "
+            f"word is stored at `0x{stop - 2:08X}` to `0x{result_cell:08X}`.") in can
+    assert "These raw pointer roles do not establish physical units." in can
+    assert "`VQ37.command-count-scales.md`, separate from the latch and DID chain." in can
+
+
+@pytest.mark.parametrize("mutation", ("first-roles", "second-roles", "bound-store", "result-store", "physical-boundary"))
+def test_home_can_task_declaration_rejects_mutants(monkeypatch, mutation: str) -> None:
+    path = ROOT / "defs/JK78C.can.md"
+    text = " ".join(path.read_text().split())
+    _, stop, first, second, bound_pc, bound_cell, result_cell = JK78C.task
+    pair = JK78C.pairs[0]
+    first_roles = (f"At `0x{first:08X}`, it passes `0x{pair.axis:08X}` as values and "
+                   f"`0x{pair.values:08X}` as the axis")
+    second_roles = (f"At `0x{second:08X}`, it passes `0x{pair.values:08X}` as values and "
+                    f"`0x{pair.axis:08X}` as the axis")
+    bound_store = f"the store at `0x{bound_pc:08X}` to `0x{bound_cell:08X}`"
+    result_store = f"word is stored at `0x{stop - 2:08X}` to `0x{result_cell:08X}`"
+    boundary = "These raw pointer roles do not establish physical units."
+    mutations = {
+        "first-roles": (first_roles, second_roles.replace(f"{second:08X}", f"{first:08X}")),
+        "second-roles": (second_roles, first_roles.replace(f"{first:08X}", f"{second:08X}")),
+        "bound-store": (bound_store, bound_store.replace(f"{bound_cell:08X}", f"{result_cell:08X}")),
+        "result-store": (result_store, result_store.replace(f"{result_cell:08X}", f"{bound_cell:08X}")),
+        "physical-boundary": (boundary, boundary.replace("do not establish", "establish")),
+    }
+    before, after = mutations[mutation]
+    assert text.count(before) == 1
+    mutant = text.replace(before, after, 1)
+    read_text = Path.read_text
+
+    def mutated_text(file, *args, **kwargs):
+        return mutant if file == path else read_text(file, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", mutated_text)
+    with pytest.raises(AssertionError):
+        test_inverse_specification_and_home_task_declaration()
