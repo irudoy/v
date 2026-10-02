@@ -105,13 +105,14 @@ def _single(path, pattern):
 
 
 def _tracked(*suffixes):
+    """Scan tracked and new non-ignored files before they enter a commit."""
     listed = subprocess.run(
-        ["git", "ls-files", "-z"],
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
         cwd=ROOT,
         capture_output=True,
         check=True,
     ).stdout.decode("utf-8")
-    for path in sorted(filter(None, listed.split("\0"))):
+    for path in sorted(set(filter(None, listed.split("\0")))):
         if (
             path.startswith(UNSCANNED)
             or path in DRIFT_FIXTURES

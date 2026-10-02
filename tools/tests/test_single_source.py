@@ -1,8 +1,35 @@
 """Repeated constants and published counts are gated projections of one owner."""
 
+import subprocess
+
 import pytest
 
 from tools import single_source
+
+
+def test_new_non_ignored_sources_are_checked_before_staging(tmp_path, monkeypatch):
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True, capture_output=True)
+    (tmp_path / "tracked.md").write_text("Image identities belong to the registry.\n")
+    (tmp_path / ".gitignore").write_text("ignored.md\n")
+    digest = "a" * 64
+    (tmp_path / "new.md").write_text(f"Stock SHA-256: {digest}\n")
+    (tmp_path / "ignored.md").write_text(f"Stock SHA-256: {digest}\n")
+    subprocess.run(["git", "-C", str(tmp_path), "add", "tracked.md", ".gitignore"],
+                   check=True, capture_output=True)
+    monkeypatch.setattr(single_source, "ROOT", tmp_path)
+    monkeypatch.setattr(single_source, "_image_rows", lambda: [
+        {"sha256": digest, "path": "fixture.bin"},
+    ])
+    assert list(single_source._tracked(".md")) == ["new.md", "tracked.md"]
+    with pytest.raises(single_source.SourceError, match="new.md repeats the SHA-256"):
+        single_source.check_stock_hashes()
+    subprocess.run(["git", "-C", str(tmp_path), "add", "new.md"],
+                   check=True, capture_output=True)
+    assert list(single_source._tracked(".md")) == ["new.md", "tracked.md"]
+    with pytest.raises(single_source.SourceError, match="new.md repeats the SHA-256"):
+        single_source.check_stock_hashes()
+    (tmp_path / "new.md").write_text("See rom-images/roms.csv for image identity.\n")
+    single_source.check_stock_hashes()
 
 
 @pytest.fixture(scope="module")

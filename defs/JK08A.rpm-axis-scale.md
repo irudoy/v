@@ -13,12 +13,16 @@ The exact expected instruction, literal, and axis-byte spans are bound and
 executed separately for every image by
 `tools/mapkit/tests/test_rpm_axis_scale.py`.
 
-| Image | SHA-256 |
+The independent SHA-256 lock of each image is declared by the corresponding
+`IMAGE_FIXTURES` entry in `tools/mapkit/tests/test_rpm_axis_scale.py`.
+`rom-images/roms.csv` owns image identity and provenance.
+
+| Image | Independent lock |
 | --- | --- |
-| JK00A | `ed0941de8435d9c61ac093a293757b93ad81bd413270a348c44a8fb6b78b6118` |
-| JK03A | `f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4` |
-| JK03B | `a9aa7a337375b7c9419b0970c32674e98f12ea4215c079898190c5c771a96f1a` |
-| JK08A | `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23` |
+| `JK00A` | `IMAGE_FIXTURES["JK00A"]` |
+| `JK03A` | `IMAGE_FIXTURES["JK03A"]` |
+| `JK03B` | `IMAGE_FIXTURES["JK03B"]` |
+| `JK08A` | `IMAGE_FIXTURES["JK08A"]` |
 
 The physical association remains candidate. CONSULT-III Plus or bench data
 must check the hardware correspondence. This proof does not establish the

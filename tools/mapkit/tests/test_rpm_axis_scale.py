@@ -499,11 +499,33 @@ def test_editor_inverse_is_a_grid_inverse_not_a_physical_reconstruction():
     assert Fraction(25 * 5, 2) == Fraction(125, 2)
     assert Fraction(125, 2) / 50 != 1  # W=5, B=1: discarded sub-byte RPM.
     text = (ROOT / SPEC).read_text()
-    for name, (digest, _, _) in IMAGE_FIXTURES.items():
-        assert f"| {name} | `{digest}` |" in text
+    for name in IMAGE_FIXTURES:
+        assert f'| `{name}` | `IMAGE_FIXTURES["{name}"]` |' in text
+    assert "rom-images/roms.csv" in text
+    assert "tools/mapkit/tests/test_rpm_axis_scale.py" in text
     for axis in AXES.values():
         assert f"`{axis['address']:08x}`" in text
         assert f"`{axis['literal']:08x}`" in text
     for required in (REVISION, FRAGMENT, "1310", "1311", "1023", "37.5",
                      "candidate", "not an exact inverse", "community"):
         assert required in text
+
+
+def test_current_rpm_word_note_preserves_quantization_and_sample_age(image):
+    from kb import compile, repo
+    from kb.model import SymbolKey
+
+    symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "ram", 0xFFFF11F4)]
+    assert "defs/JK08A.vars.csv" in symbol.sources
+    [note] = symbol.value("note")
+    for required in ("W = 4*B + ((U >> 6) & 3)", "nominal", "raw-value equality",
+                     "different producer sample", "saturated byte ffff11b3"):
+        assert required in note
+    assert "four times the RPM/50 value" not in note
+    assert "twice the RPM/25 value" not in note
+    machine = _producer(image, 64)
+    word = machine.peek(0xFFFF11F4, 2)
+    byte = machine.peek(0xFFFF11E6)
+    assert (word, byte) == (1, 0)
+    assert word == 4 * byte + ((64 >> 6) & 3)
+    assert word != 4 * _snapshot(machine)
