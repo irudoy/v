@@ -130,6 +130,16 @@ The gate performs these checks:
    both divider outcomes, output guards, and read-only axis data. The byte
    kernel multiplies each stored point by four; the word kernel compares
    the stored unsigned word directly. Both return through stock instructions.
+   A separate direct-byte fixture searches both main CVTC axes without a
+   point multiplier, including the forced maximum load coordinate. The
+   implicit eight-point fixture uses the stock injection and cold-timing
+   curves and checks byte argument truncation, flat and fractional results,
+   and the sign-extended last-cell return that callers convert to unsigned.
+   Synthetic ascending and descending byte and word arrays exercise both
+   cell-width branches and both linear interpolation directions. The direct
+   shared-body calls remain below the wrapper's last-cell boundary. These
+   fixtures preserve all tested instructions, original pools, and stock
+   returns, with no RAM-literal relocations or stock-function stubs.
    The JK08A crank-capture fixture reconstructs
    the word read of OSBR1, capture-history update, initialization branches,
    and both period stores. The earlier MMIO-base load and its signed pool

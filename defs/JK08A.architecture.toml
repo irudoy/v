@@ -1817,9 +1817,7 @@ to = "0000b43a"
 effect = "indexes"
 sign = "none"
 via = ["000bda64"]
-note = """
-000bda64 interpolates Intake CVTC Target - Main 0xB43A by RPM/50 byte \
-ffff11ae and normalized-BFS snapshot ffff102c."""
+note = "x = uint8(ffff11ae)"
 
 [[chain.step]]
 from = "ffff11b3"
@@ -1827,9 +1825,7 @@ to = "00012302"
 effect = "indexes"
 sign = "none"
 via = ["00056bd0"]
-note = """
-00056bd0 forms end-of-injection delay ffff192e = 2*min(lookup(0x12302 at \
-ffff11b3) + ffff340c, 209) in 2-degree counts."""
+note = "x = uint8(ffff11b3)"
 
 [[chain.step]]
 from = "ffff11b2"
@@ -1837,9 +1833,7 @@ to = "00012196"
 effect = "indexes"
 sign = "none"
 via = ["0004afdc"]
-note = """
-0004afdc interpolates Timing-State Addend - Default/Post-Transition 0x12196 \
-over the saturated RPM/12.5 byte ffff11b2."""
+note = "x = uint8(ffff11b2)"
 
 [[chain]]
 id = "airflow-load"

@@ -112,3 +112,34 @@ _stock_invoke_axis:
     rts
     nop
     .size _stock_invoke_axis,.-_stock_invoke_axis
+
+! stock_invoke_curve(entry, table, coordinate): call the stock implicit entry.
+    .global _stock_invoke_curve
+    .type _stock_invoke_curve,@function
+_stock_invoke_curve:
+    sts.l pr,@-r15
+    mov r4,r2
+    mov r5,r4
+    jsr @r2
+    mov r6,r5
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_curve,.-_stock_invoke_curve
+
+! Direct shared-body entry selects byte or word cells through R0.
+! It receives only coordinates below the wrapper's last-cell boundary.
+    .global _stock_invoke_format_curve
+    .type _stock_invoke_format_curve,@function
+_stock_invoke_format_curve:
+    sts.l pr,@-r15
+    mov r4,r2
+    mov r5,r0
+    mov r6,r4
+    mov r7,r5
+    jsr @r2
+    mov #0,r3
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_format_curve,.-_stock_invoke_format_curve

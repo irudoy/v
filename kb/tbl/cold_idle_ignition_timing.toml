@@ -462,9 +462,26 @@ note = "homologous fallback branch preserves the default table role"
 [[link]]
 type = "index"
 to = "succinct-pudu/ram"
+via = ["signed_timing_state_accumulator/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On the selected default/post-transition table path, 0004afdc passes \
+uint8(ffff11b2) in R5 to eight-point byte entry 00026370 at 0004b0b8 for \
+table 00012196. It uses implicit points spaced by 32 raw counts and clamps \
+at coordinate 224. The caller retains the byte result in ffff1511 after the \
+exact x-128 transform; the existing table selectors retain selection and \
+bypass alternatives."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004b0b4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"

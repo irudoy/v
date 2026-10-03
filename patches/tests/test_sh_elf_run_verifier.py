@@ -631,6 +631,20 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-direct-byte-axis": {
+                "REGION_ENTRY": 0x00026944,
+                "LAST_OFFSET": 15,
+                "AXIS_BYTES": 16,
+                "DIVIDER_ENTRY": 0x00026C78,
+                "CVTC_RPM_AXIS": 0x00012F3E,
+                "CVTC_LOAD_AXIS": 0x00012F1E,
+            },
+            "jk08a-implicit-byte-curve": {
+                "REGION_ENTRY": 0x00026370,
+                "BODY_ENTRY": 0x00026A80,
+                "INJECTION_TABLE": 0x00012302,
+                "COLD_TIMING_TABLE": 0x00012196,
+            },
             "jk08a-byte-axis": {
                 "REGION_ENTRY": 0x000269C4,
                 "LAST_OFFSET": 15,

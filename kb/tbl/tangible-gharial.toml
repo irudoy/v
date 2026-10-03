@@ -371,9 +371,27 @@ at = "jk78c:000733a2"
 [[link]]
 type = "index"
 to = "daffodil-gibbon/ram"
+via = ["enthusiastic-salmon/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The normal table path in 00056bd0 passes uint8(ffff11b3) in R5 to \
+eight-point byte entry 00026370 at 00056e36. It uses implicit points spaced \
+by 32 raw counts and clamps at coordinate 224. After the caller converts the \
+result to unsigned byte, \
+uint16(ffff192e)=2*min(lookup(00012302,uint8(ffff11b3))+uint8(ffff340c),209); \
+the output scale remains two crank degrees per count. Earlier mode \
+alternatives bypass this table call."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00056e32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"

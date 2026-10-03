@@ -1,10 +1,11 @@
 summary = """
 Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 \
-byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally \
-applies conditional correction 0000ab5a around raw center 128, and writes \
-ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold \
-target 0000b53a between raw coolant 106 and 131 before the result enters the \
-intake CVTC target path."""
+byte ffff11ae and a load coordinate selected as uint8(ffff102c) with \
+ffff2468.bit3 clear or 255 with that bit set (the stock 00008615 bit 0 is \
+set), optionally applies conditional correction 0000ab5a around raw center \
+128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and \
+blends it with cold target 0000b53a between raw coolant 106 and 131 before \
+the result enters the intake CVTC target path."""
 note = [
     """
 The intake-cam target identity is code-proven by its placement in \
@@ -504,16 +505,45 @@ role = "indexed_by"
 [[link]]
 type = "index"
 to = "normalized_load/ram"
+via = ["victorious-catfish/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Function 000bda64 passes uint8(ffff102c) as the fifth byte argument to \
+000261b8 for main table 0000b43a when ffff2468.bit3 is clear. Its typed \
+selector forces this argument to 255 when that bit is set in the stock \
+image. The load axis at 00012f1e is searched as direct unsigned bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000bdace"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "index"
 to = "tough-earwig/ram"
+via = ["victorious-catfish/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Function 000bda64 passes uint8(ffff11ae) in R7 to byte wrapper 000261b8 for \
+main table 0000b43a. The row axis at 00012f3e contains unsigned byte points \
+compared directly by 00026944, without the factor four of 000269c4."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000bdb02"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"
@@ -546,3 +576,26 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+slot = "bit3"
+via = ["victorious-catfish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For the main-table call in 000bda64, bit 3 set selects load coordinate 255 \
+and clear selects uint8(ffff102c). The stock ROM byte 00008615 is 0xab, so \
+its required bit 0 is set. The RPM byte argument is unchanged on both \
+paths."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000bda7a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
