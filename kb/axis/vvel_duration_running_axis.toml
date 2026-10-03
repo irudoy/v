@@ -18,9 +18,12 @@ coarse = 12.5
 layout = "1me3b"
 address = "00017366"
 note = """
-Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; \
-stock bytes are identical to JK78C 0x00016CA4. The same bytes repeat at \
-0x00017546, the axis of the running CVTC curve."""
+1ME3B: Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The \
+retained stock producer, real snapshot, selected PID0C byte writer, and \
+bounded running-axis argument path bind the count unit. The residual of 0, \
+3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves \
+quantization. Independent snapshot age has no established bound. This is not \
+a measuring-producer proof, not a sensor inverse, and no hardware proof."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,17 +35,39 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00063edc"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+key = "test_vvel_duration_running_nominal_rpm_scale"
+note = """
+Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \
+quantization, sample and hardware exclusions."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.running-rpm-axis-scale.md"
+note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
+
 [[symbol]]
 layout = "1nd"
 address = "000172b2"
 note = [
     """
-1ND0A: Sixteen-point engine-speed axis 400..7200 RPM of the running duration \
-curve; stock bytes are identical to JK78C 0x00016CA4.""",
+1ND0A: Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The \
+retained stock producer, real snapshot, selected PID0C byte writer, and \
+bounded running-axis argument path bind the count unit. The residual of 0, \
+3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves \
+quantization. Independent snapshot age has no established bound. This is not \
+a measuring-producer proof, not a sensor inverse, and no hardware proof.""",
     """
-1ND3B: Sixteen-point engine-speed axis 400..7200 RPM of the running duration \
-curve; stock bytes are identical to JK78C 0x00016CA4. 1ND3B shares the 1ND0A \
-code layout and its stock bytes at this address.""",
+1ND3B: Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The \
+retained stock producer, real snapshot, selected PID0C byte writer, and \
+bounded running-axis argument path bind the count unit. The residual of 0, \
+3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves \
+quantization. Independent snapshot age has no established bound. This is not \
+a measuring-producer proof, not a sensor inverse, and no hardware proof.""",
 ]
 
 [[symbol.evidence]]
@@ -55,12 +80,31 @@ kind = "l0"
 supports = "identity"
 at = "1nd:0005fe58"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+key = "test_vvel_duration_running_nominal_rpm_scale"
+note = """
+Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \
+quantization, sample and hardware exclusions."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.running-rpm-axis-scale.md"
+note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
+
 [[symbol]]
 layout = "jk78c"
 address = "00016ca4"
 note = """
-Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; \
-the coordinate is 0xFFFF11A6 at 3.125 RPM per count."""
+JK78C: Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The \
+retained stock producer, real snapshot, selected PID0C byte writer, and \
+bounded running-axis argument path bind the count unit. The residual of 0, \
+3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves \
+quantization. Independent snapshot age has no established bound. This is not \
+a measuring-producer proof, not a sensor inverse, and no hardware proof."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -71,6 +115,21 @@ at = "jk78c:00056684"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056f7c"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+key = "test_vvel_duration_running_nominal_rpm_scale"
+note = """
+Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \
+quantization, sample and hardware exclusions."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.running-rpm-axis-scale.md"
+note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
 
 [[link]]
 type = "reader"

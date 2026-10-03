@@ -739,7 +739,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; the coordinate is 0xFFFF11A6 at 3.125 RPM per count."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_model_hot_intake_idle_axis_y"
@@ -891,7 +891,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; the coordinate is 0xFFFF11A6."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_startup_axis"
@@ -1770,7 +1770,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; stock bytes are identical to JK78C 0x00016CA4."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ND0A.axis]]
 id = "vvel_shaft_angle_monitor_floor_b_axis"
@@ -1884,7 +1884,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; stock bytes are identical to JK78C 0x00016E74."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_startup_axis"
@@ -2763,7 +2763,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; stock bytes are identical to JK78C 0x00016CA4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ND3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_b_axis"
@@ -2877,7 +2877,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; stock bytes are identical to JK78C 0x00016E74. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_startup_axis"
@@ -3929,7 +3929,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; stock bytes are identical to JK78C 0x00016CA4. The same bytes repeat at 0x00017546, the axis of the running CVTC curve."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_model_hot_intake_idle_axis_y"
@@ -4081,7 +4081,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
-note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; stock bytes are identical to JK78C 0x00016E74."
+note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_startup_axis"
