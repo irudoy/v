@@ -7,7 +7,7 @@ import sys
 import tempfile
 import unittest
 
-from kb import guard, project
+from kb import guard, project, repo
 
 CONFIG = """\
 [guard]
@@ -54,6 +54,9 @@ More hand-written text.
 SETTINGS = {"hooks": {"PreToolUse": [{
     "matcher": "|".join(guard.TOOLS),
     "hooks": [{"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
+CODEX_SETTINGS = {"hooks": {"PreToolUse": [{
+    "matcher": "|".join(guard.CODEX_TOOLS),
+    "hooks": [{"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
 
 
 def make_repo(root, files=None):
@@ -75,6 +78,7 @@ def make_repo(root, files=None):
         "open.txt": "open\n",
         ".ignore": "/kb/\n/l0/\n/defs/*.xml\n",
         ".claude/settings.json": json.dumps(SETTINGS),
+        ".codex/hooks.json": json.dumps(CODEX_SETTINGS),
     }
     defaults.update(files or {})
     for name, text in defaults.items():
@@ -158,6 +162,78 @@ class EditTest(GuardCase):
         self.assertIsNotNone(self.denied("Write", file_path=guide, content="# Guide\n"))
 
 
+class PatchTest(GuardCase):
+    def patch(self, text):
+        return self.denied("apply_patch", command="*** Begin Patch\n" + text +
+                           "*** End Patch\n")
+
+    def test_all_file_operations_inspect_every_protected_path(self):
+        for path in ("kb/ram/x.toml", "l0/7mfk/funcs.csv", "defs/JK08A.xml"):
+            for body in (f"*** Add File: {path}\n+x\n",
+                         f"*** Update File: {path}\n@@\n-old\n+new\n",
+                         f"*** Delete File: {path}\n",
+                         f"*** Update File: open.txt\n*** Move to: {path}\n@@\n-open\n+x\n",
+                         f"*** Update File: {path}\n*** Move to: open.txt\n@@\n-old\n+x\n"):
+                with self.subTest(body=body):
+                    self.assertIsNotNone(self.patch(body))
+        self.assertIsNotNone(self.patch("*** Update File: open.txt\n@@\n-open\n+x\n"
+                                      "*** Delete File: kb/names.csv\n"))
+
+    def test_open_files_and_future_projections_stay_open(self):
+        for body in ("*** Add File: new.txt\n+new\n",
+                     "*** Delete File: open.txt\n",
+                     "*** Update File: open.txt\n*** Move to: moved.txt\n@@\n-open\n+new\n",
+                     "*** Update File: defs/later.csv\n@@\n-a,b\n+c,d\n"):
+            with self.subTest(body=body):
+                self.assertIsNone(self.patch(body))
+
+    def test_marked_sections_preserve_the_unmodified_context(self):
+        self.assertIsNone(self.patch("*** Update File: GUIDE.md\n@@\n"
+                                     "-Hand-written text.\n+Other text.\n\n"
+                                     " <!-- kb:begin -->\n Generated text.\n"))
+        self.assertIsNone(self.patch("*** Update File: GUIDE.md\n@@\n"
+                                     " Generated text.\n <!-- kb:end -->\n\n"
+                                     "-More hand-written text.\n+Other text.\n"
+                                     "*** End of File\n"))
+        for body in ("@@\n-Generated text.\n+Edited text.\n",
+                     "@@\n-<!-- kb:end -->\n",
+                     "@@\n <!-- kb:begin -->\n+Inserted text.\n Generated text.\n",
+                     "@@ Generated text.\n+Inserted text.\n <!-- kb:end -->\n"):
+            with self.subTest(body=body):
+                self.assertIsNotNone(self.patch("*** Update File: GUIDE.md\n" + body))
+
+    def test_whole_file_operations_cannot_remove_a_marked_projection(self):
+        for body in ("*** Delete File: GUIDE.md\n",
+                     "*** Add File: GUIDE.md\n+# Replaced\n",
+                     "*** Update File: GUIDE.md\n*** Move to: moved.md\n@@\n"
+                     "-Hand-written text.\n+Other text.\n"):
+            with self.subTest(body=body):
+                self.assertIsNotNone(self.patch(body))
+
+    def test_absolute_and_symbolic_link_targets_keep_the_same_boundary(self):
+        os.symlink("kb/names.csv", self.root / "link.csv")
+        for path in (self.path("kb/names.csv"), "link.csv"):
+            with self.subTest(path=path):
+                self.assertIsNotNone(self.patch(f"*** Delete File: {path}\n"))
+
+    def test_context_matching_and_multiple_hunks_preserve_the_section(self):
+        self.assertIsNone(self.patch("*** Update File: GUIDE.md\n@@ # Guide\n\n"
+                                     "- Hand-written text.  \n+Other text.\n"
+                                     "@@ <!-- kb:end -->\n\n"
+                                     "-More hand-written text.\n+Final text.\n"))
+        self.assertIsNotNone(self.patch("*** Update File: GUIDE.md\n@@\n"
+                                      "-Hand-written text.\n+Other text.\n@@\n"
+                                      "-Generated text.\n+Edited text.\n"))
+        self.assertEqual((self.root / "GUIDE.md").read_text(), GUIDE)
+
+    def test_uninspectable_patches_are_denied(self):
+        self.assertIn("cannot inspect apply_patch", self.denied("apply_patch", command=None))
+        self.assertIn("cannot inspect apply_patch", self.denied(
+            "apply_patch", command="*** Delete File: kb/names.csv\n"))
+        self.assertIn("cannot inspect apply_patch", self.patch(
+            "*** Update File: GUIDE.md\n@@\n-missing context\n+new\n"))
+
+
 class SearchTest(GuardCase):
     def test_a_search_in_a_guarded_path_goes_to_kb_find(self):
         self.assertIn("kb find", self.denied("Grep", pattern="x", path=self.path("l0")))
@@ -227,6 +303,18 @@ class BashTest(GuardCase):
         self.assertIn("names l0/", inside.decide("Bash", {"command": "cat funcs.csv"}))
         self.assertIsNone(inside.decide("Bash", {"command": f"cd {self.root} && ls"}))
 
+    def test_codex_shell_uses_the_tool_working_directory(self):
+        for directory in ("l0/7mfk", self.path("l0/7mfk")):
+            with self.subTest(workdir=directory):
+                self.assertIsNotNone(self.denied("Bash", command="cat funcs.csv",
+                                                 workdir=directory))
+                self.assertIsNone(self.denied("Bash", command="uv run kb code 7mfk:0",
+                                              workdir=directory))
+        self.assertIsNotNone(self.denied("Bash", command="cat ../../kb/names.csv",
+                                         workdir="tools/kb"))
+        self.assertIsNone(self.denied("Bash", command="python3 hook.py kb/names.csv",
+                                      workdir="tools/kb"))
+
     def test_here_documents_join_the_command_that_reads_them(self):
         commands = project.hook.commands("git commit -F - <<'EOF'\nsee (kb/x)\nEOF\nls -la")
         self.assertEqual(commands, [(["git", "commit", "-F", "-", "<<", "EOF"], ["see", "kb/x"]),
@@ -270,6 +358,38 @@ class HookProcessTest(unittest.TestCase):
         self.assertEqual((code, out), (1, ""))
         self.assertIn("kb guard: TOMLDecodeError", err)
 
+    def test_codex_events_return_a_supported_pre_tool_use_denial(self):
+        for tool, arguments in (
+                ("Bash", {"command": "cat names.csv", "workdir": str(self.root / "kb")}),
+                ("apply_patch", {"command": "*** Begin Patch\n"
+                                 "*** Delete File: kb/names.csv\n*** End Patch\n"})):
+            with self.subTest(tool=tool):
+                code, out, err = self.run_hook({"hook_event_name": "PreToolUse",
+                    "session_id": "fixture", "turn_id": "fixture", "cwd": str(self.root),
+                    "tool_name": tool, "tool_input": arguments})
+                self.assertEqual((code, err), (0, ""))
+                self.assertEqual(set(json.loads(out)), {"hookSpecificOutput"})
+                decision = json.loads(out)["hookSpecificOutput"]
+                self.assertEqual(decision["permissionDecision"], "deny")
+                self.assertEqual(set(decision), {"hookEventName", "permissionDecision",
+                                                 "permissionDecisionReason"})
+
+    def test_codex_launcher_finds_the_worktree_from_a_subdirectory_with_spaces(self):
+        root = make_repo(self.root / "worktree with spaces")
+        python = root / ".venv/bin/python"
+        python.parent.mkdir(parents=True)
+        python.symlink_to(sys.executable)
+        settings = json.loads((repo.ROOT / guard.CODEX_SETTINGS).read_text(encoding="utf-8"))
+        command = settings["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+        call = {"cwd": str(root / "tools/kb"), "tool_name": "Bash",
+                "tool_input": {"command": "cat ../../kb/names.csv"}}
+        result = subprocess.run(command, shell=True, cwd=root / "tools/kb",
+            input=json.dumps(call), capture_output=True, text=True,
+            env={**os.environ, "KB_GUARD": ""})
+        self.assertEqual((result.returncode, result.stderr), (0, ""))
+        self.assertEqual(json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"],
+                         "deny")
+
 
 class CheckTest(unittest.TestCase):
     def setUp(self):
@@ -304,6 +424,26 @@ class CheckTest(unittest.TestCase):
         self.assertEqual(guard.check(root)[0],
                          ".claude/settings.json: not tracked (fix: git add -f "
                          ".claude/settings.json)")
+
+    def test_codex_settings_cover_the_canonical_patch_tool(self):
+        settings = {"hooks": {"PreToolUse": [{"matcher": "|".join(guard.TOOLS), "hooks": [
+            {"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
+        failures = self.check("codex-matcher", {".codex/hooks.json": json.dumps(settings)})
+        self.assertEqual(len(failures), 1)
+        self.assertIn(".codex/hooks.json: PreToolUse", failures[0])
+        self.assertIn("before apply_patch", failures[0])
+
+    def test_codex_settings_must_be_tracked_and_synchronous(self):
+        root = make_repo(self.base / "codex-untracked")
+        subprocess.run(["git", "rm", "-q", "--cached", ".codex/hooks.json"], cwd=root,
+                       check=True)
+        self.assertEqual(guard.check(root)[0], ".codex/hooks.json: not tracked "
+                         "(fix: git add -f .codex/hooks.json)")
+        settings = json.loads(json.dumps(CODEX_SETTINGS))
+        settings["hooks"]["PreToolUse"][0]["hooks"][0]["async"] = True
+        failures = self.check("codex-async", {".codex/hooks.json": json.dumps(settings)})
+        self.assertEqual(len(failures), 1)
+        self.assertIn("before Read, Edit", failures[0])
 
 
 if __name__ == "__main__":

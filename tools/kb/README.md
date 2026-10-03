@@ -180,6 +180,11 @@ name resolves with a note that names the current reference.
   `tools/single_source.py` compares the questions, budgets, and stages of
   `bench.toml` with the table of section 18 of the specification.
 
+For an ECU source meaning with no engineering scale, enumeration, or named
+bits, the telemetry projection emits `raw count` as a host storage view.
+It leaves the meaning's unit, conversion, level, and evidence unasserted.
+Partial or unrenderable engineering conversions still refuse projection.
+
 ## Write commands
 
 `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`,
@@ -723,16 +728,32 @@ that state their symbol when none of them converts, and the rows that
 reserve the name of a symbol that no registry states.
 
 `hook.py` is the access guard of section 15. The tracked
-`.claude/settings.json` runs it before `Read`, `Edit`, `Write`, `MultiEdit`,
-`NotebookEdit`, `Grep`, `Glob`, and `Bash` with the Python of `.venv`, or
-`python3` without it. It refuses reads, searches, and edits of `kb/` and
+`.claude/settings.json` and `.codex/hooks.json` run it before `Read`, `Edit`,
+`Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, and `Bash`; Codex also
+registers the canonical `apply_patch` name. Both use the Python of `.venv`,
+or `python3` without it. The Codex command resolves the hook from the git
+root, including when a session starts in a subdirectory. It refuses reads,
+searches, and edits of `kb/` and
 `l0/`, edits of the projections that apply, and reads of the guarded ones,
 and names the command that answers instead. A shell command passes when it
 changes the directory or runs `kb`, a git subcommand of the allow list,
 `make`, or a script under `tools/` or `patches/`. `KB_GUARD=off` in the
-environment of the session disables the guard for maintenance. The `guard`
-check requires the settings to be tracked and to cover every tool, `.ignore`
-to list the guarded paths, and the hook to refuse a sample call on each.
+environment of the session disables the guard for maintenance. Codex patch
+checks include every added, updated, deleted, and moved file. An update of a
+file with a generated section passes only when that section stays intact;
+the check reconstructs its content without applying the patch. Shell checks
+use the tool's `workdir` when supplied. The `guard` check requires both
+settings to be tracked, synchronous, and to cover every tool, `.ignore` to
+list the guarded paths, and the hook to refuse sample calls on each.
+
+Codex loads project hooks from its trusted project configuration layer.
+Use `/hooks` to review and trust the exact hook definition before it runs;
+changed definitions require another review. Hook errors do not block a tool
+call, and the `python3` fallback must satisfy the Python requirement in
+`pyproject.toml` for `tomllib`.
+Run `uv sync --frozen` to provide the working tree's supported interpreter.
+These hooks guide knowledge access; the source checks validate the resulting
+files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
 
 ## Modules
 

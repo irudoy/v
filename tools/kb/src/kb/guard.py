@@ -1,7 +1,7 @@
 """The `guard` check (tools/kb/SPEC.md, sections 13 and 15).
 
-The tracked `.claude/settings.json` runs `tools/kb/hook.py` before every
-guarded tool, `.ignore` keeps ripgrep out of the guarded trees and the guarded
+The tracked Claude Code and Codex hook settings run `tools/kb/hook.py` before
+every guarded tool, `.ignore` keeps ripgrep out of the guarded trees and
 projections, and the hook denies what `tools/kb/config.toml` and
 `tools/kb/projections.toml` guard: a read and an edit in every tree, an edit of
 a file of every projection, and a read of every guarded projection.
@@ -13,17 +13,20 @@ from pathlib import Path
 from kb import project, repo
 
 SETTINGS = Path(".claude/settings.json")
+CODEX_SETTINGS = Path(".codex/hooks.json")
 IGNORE = Path(".ignore")
 HOOK = project.HOOK
 TOOLS = ("Read", "Edit", "Write", "MultiEdit", "NotebookEdit", "Grep", "Glob", "Bash")
+CODEX_TOOLS = (*TOOLS, "apply_patch")
 
 
-def _registered(root):
+def _registered(root, settings_path=SETTINGS):
     """The tools whose PreToolUse hooks run the guard."""
-    settings = json.loads((root / SETTINGS).read_text(encoding="utf-8"))
+    settings = json.loads((root / settings_path).read_text(encoding="utf-8"))
     covered = set()
     for group in settings.get("hooks", {}).get("PreToolUse", []):
-        if any(HOOK.as_posix() in item.get("command", "") for item in group.get("hooks", [])):
+        if any(item.get("type") == "command" and not item.get("async") and
+               HOOK.as_posix() in item.get("command", "") for item in group.get("hooks", [])):
             covered.update(group.get("matcher", "").split("|"))
     return covered
 
@@ -32,17 +35,19 @@ def check(root=repo.ROOT):
     """Failure lines of the `guard` check."""
     failures = []
     files = project.tracked(root)
-    if SETTINGS.as_posix() not in files:
-        failures.append(f"{SETTINGS.as_posix()}: not tracked (fix: git add -f "
-                        f"{SETTINGS.as_posix()})")
-    try:
-        missing = [tool for tool in TOOLS if tool not in _registered(root)]
-    except (OSError, ValueError) as error:
-        missing = list(TOOLS)
-        failures.append(f"{SETTINGS.as_posix()}: {error}")
-    if missing:
-        failures.append(f"{SETTINGS.as_posix()}: PreToolUse does not run {HOOK.as_posix()} "
-                        f"before {', '.join(missing)} (fix: add them to the matcher)")
+    for settings, tools in ((SETTINGS, TOOLS), (CODEX_SETTINGS, CODEX_TOOLS)):
+        if settings.as_posix() not in files:
+            failures.append(f"{settings.as_posix()}: not tracked (fix: git add -f "
+                            f"{settings.as_posix()})")
+        try:
+            registered = _registered(root, settings)
+            missing = [tool for tool in tools if tool not in registered]
+        except (OSError, ValueError) as error:
+            missing = list(tools)
+            failures.append(f"{settings.as_posix()}: {error}")
+        if missing:
+            failures.append(f"{settings.as_posix()}: PreToolUse does not run {HOOK.as_posix()} "
+                            f"before {', '.join(missing)} (fix: add them to the matcher)")
     guard = project.hook.Guard(root)
     ignored = {line.strip() for line in (root / IGNORE).read_text(encoding="utf-8").splitlines()
                if line.strip() and not line.startswith("#")}
@@ -56,7 +61,9 @@ def check(root=repo.ROOT):
     for tree in guard.trees:
         sample = next((name for name in files if name.startswith(tree + "/")), f"{tree}/x")
         for tool, arguments in (("Read", {"file_path": str(root / sample)}),
-                                ("Edit", {"file_path": str(root / sample)})):
+                                ("Edit", {"file_path": str(root / sample)}),
+                                ("apply_patch", {"command": "*** Begin Patch\n"
+                                 f"*** Delete File: {sample}\n*** End Patch\n"})):
             if guard.decide(tool, arguments) is None:
                 failures.append(f"{HOOK.as_posix()}: {tool} of {sample} passes the guard of "
                                 f"{tree}/ (fix: [guard] trees of tools/kb/config.toml)")
@@ -73,6 +80,10 @@ def check(root=repo.ROOT):
         if guard.decide("Edit", edit) is None:
             failures.append(f"{HOOK.as_posix()}: an edit of {entry['path']} passes the guard "
                             f"(fix: {project.PATH.as_posix()})")
+        patch = "*** Begin Patch\n" + f"*** Delete File: {sample}\n*** End Patch\n"
+        if guard.decide("apply_patch", {"command": patch}) is None:
+            failures.append(f"{HOOK.as_posix()}: apply_patch of {entry['path']} passes the "
+                            f"guard (fix: {project.PATH.as_posix()})")
         if entry in guarded and guard.decide("Read", {"file_path": str(root / sample)}) is None:
             failures.append(f"{HOOK.as_posix()}: a read of guarded {entry['path']} passes the "
                             f"guard (fix: {project.PATH.as_posix()})")

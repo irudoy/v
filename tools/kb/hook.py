@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """The access guard of the knowledge model (tools/kb/SPEC.md, section 15).
 
-Claude Code runs this hook before Read, Edit, Write, MultiEdit, NotebookEdit,
-Grep, Glob, and Bash. It reads the tool call as JSON on standard input and
+Claude Code and Codex run this hook before the registered file and shell
+tools. Codex reports shell commands as Bash and file patches as apply_patch.
+It reads the tool call as JSON on standard input and
 denies a call that reads knowledge whose owner lies under a guarded tree or in
 a guarded projection, edits a guarded tree or a projection, searches a guarded
 path, or names one in a shell command, with a reason that names the command to
@@ -166,7 +167,46 @@ class Guard:
         if tool in ("Grep", "Glob"):
             return self.search(tool, arguments)
         if tool == "Bash":
-            return self.bash(arguments.get("command", ""))
+            workdir = arguments.get("workdir")
+            cwd = self.cwd / workdir if workdir else self.cwd
+            return self.bash(arguments.get("command", ""), cwd)
+        if tool == "apply_patch":
+            return self.patch(arguments.get("command", ""))
+        return None
+
+    def patch(self, command):
+        """Inspect every source and destination of a Codex file patch.
+
+        Reconstruct only marked projections, without writing any file, so an
+        edit outside their generated section stays open as it does for Edit.
+        An uninspectable patch is denied rather than skipping its paths.
+        """
+        try:
+            changes = patch_files(command)
+        except (TypeError, ValueError) as error:
+            return f"cannot inspect apply_patch: {error}; use a complete file patch."
+        for change in changes:
+            path, move = change["path"], change.get("move")
+            whole = change["kind"] != "Update" or move is not None
+            reason = self.edit({"file_path": path, **({"content": ""} if whole else {})})
+            if reason:
+                return reason
+            if move:
+                reason = self.edit({"file_path": move, "content": ""})
+                if reason:
+                    return reason
+            relative = self.relative(path)
+            entry = self.projection(relative)
+            if change["kind"] == "Update" and entry and "#" in entry["path"]:
+                try:
+                    original = (self.root / relative).read_text(encoding="utf-8")
+                    content = patched_text(original, change["body"])
+                except (OSError, ValueError) as error:
+                    return (f"cannot inspect apply_patch of {entry['path']}: {error}; "
+                            f"regenerate it with `{entry['generator']}`.")
+                reason = self.edit({"file_path": path, "content": content})
+                if reason:
+                    return reason
         return None
 
     def edit(self, arguments):
@@ -252,8 +292,8 @@ class Guard:
                         "with `uv run kb find <words>`.")
         return None
 
-    def bash(self, command):
-        cwd = self.cwd
+    def bash(self, command, cwd=None):
+        cwd = cwd or self.cwd
         for words, body in commands(command):
             named = []
             inside = self.tree(self.relative(str(cwd)))
@@ -299,6 +339,10 @@ class Guard:
                 return False
         elif program == "kb":
             return True
+        elif "/" not in words[0]:
+            # A PATH command such as cat is not a repository script merely
+            # because its working directory lies under tools/ or patches/.
+            return False
         runner = self.relative(words[0], cwd) or ""
         return runner.startswith(RUNNERS)
 
@@ -452,6 +496,87 @@ def candidates(word):
     path in a quoted program."""
     found = [word] + [part for part in PATHLIKE.findall(word) if part != word]
     return [item for item in found if item and not item.startswith("-")]
+
+
+def patch_files(command):
+    """File operations of the apply_patch grammar, including rename targets."""
+    if not isinstance(command, str):
+        raise ValueError("patch command is not a string")
+    lines = command.strip().splitlines()
+    if len(lines) < 2 or lines[0] != "*** Begin Patch" or lines[-1] != "*** End Patch":
+        raise ValueError("missing patch delimiters")
+    changes, current = [], None
+    for line in lines[1:-1]:
+        match = re.fullmatch(r"\*\*\* (Add|Update|Delete) File: (.+)", line)
+        if match:
+            current = {"kind": match[1], "path": match[2], "body": []}
+            changes.append(current)
+        elif line.startswith("*** Move to: "):
+            if current is None or current["kind"] != "Update" or "move" in current:
+                raise ValueError("unexpected move target")
+            current["move"] = line[len("*** Move to: "):]
+            if not current["move"]:
+                raise ValueError("empty move target")
+        elif current is None or current["kind"] == "Delete":
+            raise ValueError("unexpected patch body")
+        elif current["kind"] == "Add" and not line.startswith("+"):
+            raise ValueError("unexpected added-file line")
+        elif current["kind"] == "Update" and not (
+                not line or line[0] in " +-" or line == "@@" or line.startswith("@@ ") or
+                line == "*** End of File"):
+            raise ValueError("unexpected update line")
+        else:
+            current["body"].append(line)
+    return changes
+
+
+def _patch_index(lines, expected, start, eof=False):
+    """Locate patch context, with the whitespace matching of apply_patch."""
+    if not expected:
+        return len(lines) if eof else start
+    positions = range(start, len(lines) - len(expected) + 1)
+    if eof:
+        positions = [len(lines) - len(expected)]
+    for normalize in (lambda line: line, str.rstrip, str.strip):
+        wanted = [normalize(line) for line in expected]
+        for index in positions:
+            if index >= start and [normalize(line) for line in lines[
+                    index:index + len(expected)]] == wanted:
+                return index
+    if eof:
+        return _patch_index(lines, expected, start)
+    raise ValueError("patch context does not match")
+
+
+def patched_text(text, body):
+    """Reconstruct an update for the marked-section check; never apply it."""
+    lines, chunks, cursor, index = text.splitlines(), [], 0, 0
+    while index < len(body):
+        header = body[index]
+        if header == "@@" or header.startswith("@@ "):
+            index += 1
+            if header.startswith("@@ "):
+                cursor = _patch_index(lines, [header[3:]], cursor) + 1
+        before, after, eof = [], [], False
+        while index < len(body):
+            line = body[index]
+            if line == "@@" or line.startswith("@@ "):
+                break
+            index += 1
+            if line == "*** End of File":
+                eof = True
+                break
+            prefix, value = (line[0], line[1:]) if line else (" ", "")
+            if prefix in " -":
+                before.append(value)
+            if prefix in " +":
+                after.append(value)
+        position = _patch_index(lines, before, cursor, eof)
+        chunks.append((position, len(before), after))
+        cursor = position + len(before)
+    for position, count, after in reversed(chunks):
+        lines[position:position + count] = after
+    return "\n".join(lines) + "\n"
 
 
 def main():

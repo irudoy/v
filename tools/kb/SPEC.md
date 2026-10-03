@@ -1524,7 +1524,7 @@ gates keep running until the stage that replaces them.
 | `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
 | `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns | 4 |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered | 2 |
-| `guard` | `.claude/settings.json` is tracked and runs `tools/kb/hook.py` before every guarded tool; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |
+| `guard` | `.claude/settings.json` and `.codex/hooks.json` are tracked and run `tools/kb/hook.py` synchronously before every guarded tool, including the Codex `apply_patch`; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |
 
 A write command runs the model checks on its result and refuses the issues
 that the result adds to those of the working tree ([Write
@@ -1614,6 +1614,13 @@ security boundary: the gates validate every file whatever wrote it.
 
 - The tracked `.claude/settings.json` registers a PreToolUse hook for `Read`,
   `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, and `Bash`.
+  The tracked `.codex/hooks.json` registers the same tools and `apply_patch`;
+  Codex sends shell calls as `Bash` and patches as `apply_patch`, with the
+  command in `tool_input.command`. Its launcher resolves the git root so
+  that starting a session in a subdirectory preserves the hook location.
+  Project hooks require a trusted Codex project layer and review of their
+  exact definition through `/hooks`, as specified by the
+  [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
   The hook runs `tools/kb/hook.py` with the Python of the working tree's
   `.venv`, or `python3` without it. The hook uses only the Python standard
   library and reads its path lists from `[guard]` of `tools/kb/config.toml`
@@ -1626,6 +1633,7 @@ security boundary: the gates validate every file whatever wrote it.
 | Tool call | Decision | Reason names |
 |---|---|---|
 | `Edit`, `Write`, `MultiEdit`, `NotebookEdit` under `kb/`, `l0/`, or on a projection that applies | Deny | The write command, or the generator of the projection |
+| `apply_patch` that adds, updates, deletes, or moves a file under `kb/`, `l0/`, or on a projection that applies | Deny | The write command, or the generator of the projection |
 | `Read` under `kb/` | Deny | `kb show` and `kb raw` with the reference the path maps to |
 | `Read` under `l0/` | Deny | `kb at`, `kb code`, and `kb cypher` |
 | `Read` of a guarded projection | Deny | `kb show`, `kb where`, or `kb find` |
@@ -1643,6 +1651,11 @@ security boundary: the gates validate every file whatever wrote it.
   runs inside a guarded tree names that tree.
 - An edit of a file with a marked section is an edit of the projection when
   it changes the section or its markers.
+- A Codex patch checks every source and move destination. For an update of
+  a marked projection it reconstructs the file without writing it and
+  compares the generated section. A patch whose operations or required
+  context cannot be inspected is denied. A Codex shell call uses its
+  `workdir` when supplied, otherwise the session working directory.
 - A projection whose `stage` the transition has not reached belongs to its
   registry, and the guard refuses neither its reads nor its edits.
 - A directory above the guarded trees and projections stays open to reads
