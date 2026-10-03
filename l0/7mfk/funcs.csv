@@ -302,7 +302,7 @@ addr,size,is_thunk,is_external
 00028d80,60,false,false
 00028dc8,180,false,false
 00028e7c,34,false,false
-00029588,3014,false,false
+00028ea2,4546,false,false
 0002a2be,154,false,false
 0002a36a,256,false,false
 0002a4b2,82,false,false

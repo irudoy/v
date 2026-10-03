@@ -79,12 +79,26 @@ tools/ghidra/decompile.sh -r JK00C -o /tmp/inspect 000bfe88
 tools/ghidra/decompile.sh -r 1ND3B -p <program-name> 0007d3e8
 ```
 
+A configured layout prepares reviewed entries and fragments in every on-demand
+session before code output. The installed `kb.ghidra_preparation` module
+supplies the same exact-image plan as the L0 export. The repository
+`preparation.py` entry exposes that API without a second implementation.
+The installed console requires no repository-specific Python import path.
+The program remains read-only. Output digests, the primary
+code scripts, and the preparation inputs bind the cache key. A changed key
+requires verified replacement outputs before the previous cache is removed.
+A failed script, missing requested output, rejected preparation, or promotion
+error retains accepted code and its key. The primary process log is retained
+when output acceptance fails. Cache replacement has exception rollback; it is
+not a filesystem-wide or graph transaction.
+
 A program keeps the file name it was imported under. `program_name.py` reads
 the project index `<project>.rep/idata/~index.dat` and takes the program named
 after the registered stock image, or else the only root-folder program whose
 name contains the ROM key; `-p` names the program directly. Every headless run
-starts with `ProgramSha256.java`, which reports the executable SHA-256 that
-Ghidra recorded at import. The wrapper stages the output and moves it into the
+includes `ProgramSha256.java`, which reports the executable SHA-256 that
+Ghidra recorded at import. Configured preparation performs its preflight before
+that output script. The wrapper stages the output and moves it into the
 export directory only when that value equals the SHA-256 of the registered
 stock image, so a program cannot stand in for a different dump.
 
@@ -93,13 +107,16 @@ stock image, so a program cannot stand in for a different dump.
 name follow `GHIDRA_PROJECT_DIR` and `GHIDRA_PROJECT_NAME` when set.
 
 The cached outputs are valid for one program state. `.decompile-key` in the
-export directory holds the key they were made under: the pinned Ghidra
-release, the program name, and the image digest, and, for the L0 image of a
-layout, the digests of the layout's L0 manifest and of `symbols/<layout>.csv`
-(`program_name.py --cache-key`). A request under another key first removes
-every `decomp_*.c` and `funclisting_*.txt` of the directory, so a reanalysis,
-a join of fragments, or a rename that reaches the L0 export or the name
-registry never serves an output of the previous state.
+export directory binds the pinned Ghidra release, the program name, the image
+digest, and the primary code scripts. For a layout's L0 image, it also binds
+the L0 manifest, `symbols/<layout>.csv`, and configured preparation inputs.
+`program_name.py --cache-key` reports that key. `.decompile-files.json` binds
+each cached output to its digest. A changed key prevents reuse of the previous
+state but preserves the accepted directory until replacement passes verification.
+Stale code files are removed only from the staged replacement. Verified output
+files, their digests, and their key replace the accepted cache together.
+A failed preparation, output script, requested file, or promotion preserves
+the accepted cache and key. Unrelated local files remain in the directory.
 
 ## Canonical structure exports
 
@@ -127,16 +144,39 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 ```
 
 `RecoverFuncs.java`, `AnalyzeFuncs.java`, `MergeFuncs.java`, and
-`RenameFuncs.java` intentionally mutate the local Ghidra project and must run
-without `-readOnly`. A seed that
-`RecoverFuncs.java` disassembles itself carries no operand references until
-`AnalyzeFuncs.java` runs the program analyzers over the created bodies; without
-that pass `xrefs.csv` lists no RAM or peripheral access for the recovered
-functions. `symbols/<layout>.csv` is the tracked function-name registry of one
-layout: `RenameFuncs.java` applies it to a program of that layout, and the
-Memgraph loaders and the ROM atlas read it through `tools/rom_sources.py`,
-which requires every row to name a function entry of the layout's L0. Export
-after those mutations persist successfully.
+`RenameFuncs.java` change the in-memory program. A standalone maintenance run
+without `-readOnly` persists those changes. Configured exact-image preparation
+applies recovery, analysis, and joins under `-readOnly` in every export and
+on-demand session instead of depending on a saved project mutation.
+
+`RecoverFuncs.java --seeds-only` accepts only listed, aligned reviewed entries
+and does not run the outside-function sweep. It refuses an unapproved split,
+invalid seed, failed creation, or cancellation. Existing exact entries are
+idempotent successes. The separately invoked broad mode retains its
+outside-function recovery contract.
+
+A seed that `RecoverFuncs.java` disassembles carries no operand references
+until `AnalyzeFuncs.java` runs the program analyzers over the created bodies.
+`PrepareProgram.java` invokes these existing primary scripts, applies the
+reviewed joins, and verifies instruction owners, exact body bytes, addressed
+references, and unchanged other functions. A registered borrowed fragment
+keeps every instruction and non-stack reference. Abstract stack-space annotations
+may be recomputed for its joined frame; every removed or added annotation is
+recorded in its receipt. Other functions retain their full reference snapshots.
+This exception does not apply to ROM, RAM, peripheral, flow, or register references.
+Its image preflight checks both the imported executable digest and the current
+ROM memory before mutations. Exact
+entry-pointer, prologue, branch, literal, and restoration pins come from
+`seeds/<layout>.toml`. The per-layout registry also specifies the prepared
+body, reviewed fragment, cited sites, direct references, and forbidden
+incidental entries. Structural preparation does not establish complete
+interrupt execution or hardware behavior.
+
+`symbols/<layout>.csv` is the tracked function-name registry of one layout.
+`RenameFuncs.java` applies it to a program, and the Memgraph loaders and ROM
+atlas read it through `tools/rom_sources.py`. Every row must name a function
+entry of the layout's L0. A generated knowledge name is not a curated function
+name.
 
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
@@ -179,6 +219,26 @@ tools/ghidra/export-l0.sh jk00d --check --jobs 4
 
 The census runs one `ResolveAccessors.java` session per kernel, so a function
 that the resolver recovers in memory stays out of the census of other kernels.
+Every configured core and census session independently applies the same
+reviewed preparation plan. It binds the actual core, census, and code output
+scripts, the configuration, and the selected layout's census registry as well
+as the preparation scripts and builders. A session-specific wire and sealed
+receipt bind its exact inputs, current image, verified preservation, and fresh output
+digests. A script failure aborts following scripts, and a process exit of zero
+without a matching complete receipt is not accepted. Receipts remain in the
+raw stage, not in L0. `--from-stage` verifies every receipt and output digest
+against the current inputs; it does not relabel an old stage with current
+preparation hashes.
+
+The manifest records configured preparation inputs in a per-layout table,
+separate from the shared export-script table. The L0 check reconstructs the
+prepared instruction-byte digest from the registered image at the exported
+sites, verifies the reviewed body and joins, and rejects incidental outside
+entries. Layouts without seed registries have no preparation requirement.
+Verified replacement directories retain the accepted directory until
+promotion succeeds. A promotion exception restores it; a failed restoration
+retains the backup and reports its path. This is exception rollback, not a
+cross-system or crash transaction.
 `[l0.census.<layout>]` in `tools/kb/config.toml` names the interpolation
 registry and the byte-copy helpers of each layout. `--jobs N` runs N headless
 sessions at once, each on its own copy of the project, because a Ghidra project

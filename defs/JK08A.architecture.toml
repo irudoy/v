@@ -82,7 +82,7 @@ stage = "acquisition"
 summary = "ATU-II input-capture handlers for crank teeth and the four cam sensors, event-interval snapshots, cam edge-count monitors, and the crank and cam fault predicates."
 specs = ["defs/JK08A.ignition-output.md", "defs/JK08A.cvtc.md"]
 functions = [
-  "00025e4e", "00028af8", "00028b5c", "00029588", "0002a36a", "0002a5cc",
+  "00025e4e", "00028af8", "00028b5c", "00028ea2", "0002a36a", "0002a5cc",
   "0002b768", "0003cf24", "00099a48", "000c22dc", "000c2c58", "000c2d76",
   "000c2de0",
 ]
@@ -627,9 +627,9 @@ name = "Crank position sensor"
 direction = "input"
 block = "crank-cam"
 peripheral = "ATU-II channel 0A input capture ICR0A"
-summary = "Crank tooth edges latch ICR0A; handler 00029588 dispatches each tooth and samples the tooth-9 interval."
+summary = "Crank tooth edges latch ICR0A; handler 00028ea2 dispatches each tooth and samples the tooth-9 interval."
 registers = ["fffff434"]
-functions = ["00029588"]
+functions = ["00028ea2"]
 specs = ["defs/JK08A.ignition-output.md"]
 
 [[endpoint]]
@@ -807,6 +807,22 @@ functions = ["00066bd0", "0006727c"]
 # Calculation chains.
 
 [[chain]]
+id = "ici0a-ratio-cell"
+name = "ICI0A bounded ratio-cell action"
+summary = "The input-capture handler conditionally writes a saturated ratio byte from independent unsigned interval operands and compares its unsigned value against the stock threshold. This bounded action does not establish the interval producer or hardware behavior."
+quantity = "Unsigned ratio byte, previous/current * 64"
+output = "ffff196c"
+specs = ["defs/JK08A.ici0a-ratio.md"]
+
+[[chain.step]]
+from = "00028ea2"
+to = "ffff196c"
+effect = "stores"
+sign = "none"
+via = ["00021bbc"]
+note = "With ffff8505.bit7 set, write 255 for zero current or min(255, floor(64 * previous / current)); otherwise retain the byte. MOV.B writer 000290cc and reader 0002927c use ffff128c + 06e0."
+
+[[chain]]
 id = "engine-speed"
 name = "Engine speed"
 summary = "The ICI0A crank handler forms the 10-degree tooth time ffff22bc on every tooth and, on the tooth-7 engine event, the 120-degree interval ffff11fc; ffff1196 = 32000000/ffff11fc is engine speed, and its shifted words and scheduler snapshots index the maps."
@@ -819,7 +835,7 @@ from = "fffff434"
 to = "ffff158a"
 effect = "stores"
 sign = "none"
-via = ["00029588"]
+via = ["00028ea2"]
 note = "On every crank tooth the ICI0A prologue 00028ea2 stores OSBR1 at 00028f22 as crank reference capture ffff158a, in 3.2 us counts."
 
 [[chain.step]]
@@ -827,7 +843,7 @@ from = "ffff158a"
 to = "ffff22ba"
 effect = "subtracts"
 sign = "none"
-via = ["00029588"]
+via = ["00028ea2"]
 note = "Timestamp difference: ffff22ba = current minus previous ffff158a, 0xffff on the first capture; it spans 10 crank degrees, 30 on tooth 8."
 
 [[chain.step]]
@@ -835,7 +851,7 @@ from = "ffff22ba"
 to = "ffff22bc"
 effect = "copies"
 sign = "positive"
-via = ["00029588"]
+via = ["00028ea2"]
 note = "The prologue copies ffff22ba to 10-degree time ffff22bc; with sync, tooth 8 stores one third. P0335 fallback 0002b768 writes floor(ffff11fc/12)."
 
 [[chain.step]]
@@ -867,7 +883,7 @@ from = "fffff434"
 to = "ffff11fc"
 effect = "schedules"
 sign = "none"
-via = ["00029588", "000208f8", "00028af8"]
+via = ["00028ea2", "000208f8", "00028af8"]
 note = "Tooth 7 with sync calls feeder 000208f8; 00028af8 writes ffff11fc = wrap-corrected (ffff185c - ffff84cc) >> 5, the 120-degree event interval."
 
 [[chain.step]]
@@ -3549,7 +3565,7 @@ from = "fffff434"
 to = "ffff1dac"
 effect = "subtracts"
 sign = "none"
-via = ["00029588"]
+via = ["00028ea2"]
 note = "Tooth 9: ffff1dac = abs(ICR0A - ffff84d4), the capture interval over 120 crank degrees, spanning 50..170 degrees after TDC of index c - 2."
 
 [[chain.step]]
@@ -3645,7 +3661,7 @@ from = "ffff11de"
 to = "ffff4038"
 effect = "looks-up"
 sign = "none"
-via = ["00029588"]
+via = ["00028ea2"]
 note = "ffff4038 = ROM8[0x2265C + ffff11de] = c + 3 mod 6 on tooth 9: the cylinder whose expansion stroke fills tested interval T[n-7]."
 
 [[chain.step]]

@@ -25,7 +25,10 @@
 // Use seeds only after the target bytes and addresses have been verified against their
 // evidence source.
 //
-// Headless invocation: -postScript RecoverFuncs.java [<addr>...]
+// Headless invocation: -postScript RecoverFuncs.java [--seeds-only] [<addr>...]
+// --seeds-only requires reviewed eight-digit entries, refuses a split, and never
+// runs the outside-function sweep. Invalid, cancelled, or failed seeds throw.
+// A pre-existing exact entry is an idempotent success in either mode.
 // With -readOnly the pass calculates and reports results but does not save definitions to the
 // project (dry run). Without -readOnly, headless analysis saves them for the next ExportGraph.
 //@category VQ
@@ -36,7 +39,10 @@ import ghidra.program.model.listing.FunctionManager;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RecoverFuncs extends GhidraScript {
 
@@ -56,9 +62,27 @@ public class RecoverFuncs extends GhidraScript {
         println("VQ_RF input: " + funcBefore + " functions, " + insBefore
                 + " instructions outside functions in " + regBefore + " regions");
 
-        int seeded = recoverSeeds(getScriptArgs());
+        String[] args = getScriptArgs();
+        boolean strict = args.length > 0 && args[0].equals("--seeds-only");
+        if (strict) args = Arrays.copyOfRange(args, 1, args.length);
+        if (strict) {
+            if (args.length == 0) throw new IllegalArgumentException("no reviewed seeds");
+            Set<String> seen = new HashSet<>();
+            for (String arg : args) {
+                if (!arg.matches("[0-9a-f]{8}") || !seen.add(arg)) {
+                    throw new IllegalArgumentException("invalid or duplicate seed " + arg);
+                }
+                Address seed = toAddr(Long.parseLong(arg, 16));
+                Function holder = fm.getFunctionContaining(seed);
+                if (holder != null && !holder.getEntryPoint().equals(seed)) {
+                    throw new IllegalStateException("seed " + arg + " would split "
+                            + holder.getEntryPoint());
+                }
+            }
+        }
+        int seeded = recoverSeeds(args, strict);
         int made = 0, failed = 0;
-        for (int pass = 1; pass <= MAX_PASS; pass++) {
+        for (int pass = 1; !strict && pass <= MAX_PASS; pass++) {
             if (monitor.isCancelled()) break;
             List<Address> starts = regionStarts();
             if (starts.isEmpty()) break;
@@ -99,15 +123,17 @@ public class RecoverFuncs extends GhidraScript {
         if (left.size() > 20) println("  ... " + (left.size() - 20) + " more regions");
     }
 
-    int recoverSeeds(String[] args) {
+    int recoverSeeds(String[] args, boolean strict) throws Exception {
         int made = 0, split = 0, skipped = 0, failed = 0;
         for (String arg : args) {
-            if (monitor.isCancelled()) break;
+            if (strict) monitor.checkCancelled();
+            else if (monitor.isCancelled()) break;
             Address st;
             try {
                 st = currentProgram.getAddressFactory().getDefaultAddressSpace()
                         .getAddress(Long.parseLong(arg, 16));
             } catch (Exception e) {
+                if (strict) throw new IllegalArgumentException("bad seed " + arg, e);
                 println("VQ_RF bad seed " + arg);
                 failed++;
                 continue;
@@ -122,6 +148,9 @@ public class RecoverFuncs extends GhidraScript {
 
             Function containing = fm.getFunctionContaining(st);
             Address displaced = containing == null ? null : containing.getEntryPoint();
+            if (strict && displaced != null) {
+                throw new IllegalStateException("seed " + st + " would split " + displaced);
+            }
             int tx = currentProgram.startTransaction("recover-func-seed");
             boolean ok = false;
             try {
@@ -151,6 +180,12 @@ public class RecoverFuncs extends GhidraScript {
                 ok = false;
             } finally {
                 currentProgram.endTransaction(tx, ok);
+            }
+            if (strict) {
+                monitor.checkCancelled();
+                if (!ok || fm.getFunctionAt(st) == null) {
+                    throw new IllegalStateException("reviewed seed " + st + " failed");
+                }
             }
             if (ok) {
                 if (displaced == null) {

@@ -1331,7 +1331,7 @@ settle delay of the learner.
 
 ### Driver status and edge-count monitor
 
-`FUN 000C22DC`, called from engine-event driver `FUN 00029588`, maintains
+`FUN 000C22DC`, called from engine-event driver `FUN 00028EA2`, maintains
 driver status `0xFFFF850C` and indicator byte `0xFFFF850D` from the per-bank
 edge counters of the capture handlers: `FUN 000C2DE0` increments `0xFFFF4072`
 with saturation at `0xC2E8E` on every bank-1 edge while `0xFFFF4120` bit 0 or

@@ -701,7 +701,7 @@ against `0xFFFF2388`, conditionally subtracts `0xFFFF238A` from `0xFFFF2386`,
 and floors the result at `0xFFFF238C`, `0xFFFF238E`, or `0xFFFF2392` for
 `param_1` 1, 2, and 4.
 
-The three functions that pass `0xFFFF224E` to `FUN_0002C13C` (`FUN_00029588`,
+The three functions that pass `0xFFFF224E` to `FUN_0002C13C` (`FUN_00028EA2`,
 `FUN_0002BE40`, `FUN_00054A44`) each refill it through `FUN_00054D3E` first.
 The fourth caller, `FUN_00051F1E`, passes `0xFFFF1568` with mask `0xFFFF1220`.
 That array is the mask-gated per-channel path: `FUN_00051A98` writes
@@ -877,7 +877,7 @@ FUN_0002B64A(0x34 if 0xFFFF4251.bit0 else 4 * 0xFFFF2333)
 ```
 
 The body after the slot calculation runs only while bits 7..5 of `0xFFFF8513`
-are all set. Engine-event driver `FUN_00029588` sets bit 6 after the first
+are all set. Engine-event driver `FUN_00028EA2` sets bit 6 after the first
 grouped pulse, whose masks come from `ROM8[0x226A2 + n]` (`00 18 30 21 03 06
 0C`), and bit 5 once start-event count `0xFFFF2298` reaches 4. While P0335
 fallback snapshot `0xFFFF24C9.bit5` is set and `0xFFFF8513.bit4` is clear, the
@@ -903,7 +903,7 @@ and fires mask `0xFFFF2228` on the compare match.
 The reference engine event is tooth 7 of the crank signal plate. The plate
 carries ten teeth at 10-degree pitch per 120 crank degrees with two missing
 teeth between tooth 7 and tooth 8. The ICI0A input-capture handler (vector 84,
-prologue `0x28EA2`, body `FUN_00029588`) runs on every tooth:
+entry `FUN_00028EA2`) runs on every tooth:
 
 ```text
 0xFFFF158A = OSBR1                                 tooth capture, 3.2 us counts
@@ -959,7 +959,7 @@ table `0x1230A` while `0xFFFF2484` bits 4 and 5 and warm latch
 `uint8[0xFFFF340C]` to the table value.
 
 While bits 7..6 of `0xFFFF8513` are set and bit 5 is clear, the lead is 3 and
-the tooth-9 path of `FUN_00029588` programs the delayed start with angle
+the tooth-9 path of `FUN_00028EA2` programs the delayed start with angle
 `ROM8[0x8D5F] = 0`, or `ROM8[0x8D60] = 92` while `0xFFFF24CA.bit1` is set. The
 pulse then starts 190 or 98 degrees before intake TDC of the injected cylinder.
 The first grouped pulse on tooth 4 opens channel bits `j + 2` and `j + 3` of

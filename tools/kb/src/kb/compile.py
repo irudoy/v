@@ -22,7 +22,7 @@ PACKAGE = "tools/kb/src/kb"
 # inputs.
 NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "convert.py", "guard.py",
                           "instance.py", "lock.py", "mcp.py", "passes.py", "project.py",
-                          "read.py", "refs.py", "spec.py", "write.py",
+                          "read.py", "refs.py", "spec.py", "write.py", "legacy_reservation.py",
                           *(f"adapters/{adapter.__name__.rsplit('.', 1)[1]}.py"
                             for adapter in adapters.CONVERTED)})
 

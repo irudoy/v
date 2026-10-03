@@ -91,10 +91,10 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         # OSBR1 to window offset 0x2fe, 0xFFFF158A.
         self.assertEqual(self.rom[0x28F1C:0x28F24], bytes.fromhex("85bb640390750845"))
         self.assertEqual(self.rom[0x2900E:0x29010], bytes.fromhex("02fe"))
-        driver = self.funcs["00029588"]
+        driver = self.funcs["00028ea2"]
         self.assertIn("rom_const:00020154=00028ea2", driver["evidence"])
         self.assertIn("prologue 00028ea2", driver["semantics"])
-        self.assertIn("writes:00029588@structural", self.vars["ffff158a"]["evidence"])
+        self.assertIn("writes:00028ea2@structural", self.vars["ffff158a"]["evidence"])
 
     def test_tooth_counter_and_gap_detection_constants(self):
         self.assertEqual(u32be(self.rom, 0x29224), 0x00008C81)
@@ -118,7 +118,7 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         self.assertLess(64 // 3, self.rom[0x8C89])
         counter = self.vars["ffff13b2"]
         self.assertEqual(counter["units"], "crank tooth 0..9")
-        self.assertIn("writes:00029588@structural", counter["evidence"])
+        self.assertIn("writes:00028ea2@structural", counter["evidence"])
         self.assertEqual(self.vars["ffff196c"]["units"], "ratio*64")
         self.assertIn("latches 9", self.vars["ffff13b4"]["note"])
 

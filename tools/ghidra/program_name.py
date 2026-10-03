@@ -69,8 +69,9 @@ def cache_key(rom_key, program, image_sha256, root=ROOT):
     """The key of the decompilations and listings of a program: the pinned
     Ghidra release, the program and its image, and, when the image is the L0
     image of a layout, the digests of the layout's L0 manifest and of its
-    curated function names. A reanalysis, a join of fragments, or a rename
-    reaches the key through the re-export of L0 or the name registry."""
+    curated function names. Configured preparation inputs bind directly to the
+    key before a re-export. The primary code scripts and entry points also
+    invalidate cached outputs when their acceptance contract changes."""
     from kb import repo
 
     parts = [f"ghidra={repo.ghidra_version(root)}", f"program={program}",
@@ -84,6 +85,15 @@ def cache_key(rom_key, program, image_sha256, root=ROOT):
         names = root / "tools" / "ghidra" / "symbols" / f"{layout.id}.csv"
         if names.is_file():
             parts.append(f"names={repo.sha256_file(names)[:16]}")
+        from kb import ghidra_preparation as preparation
+        prepared = preparation.plan(layout.id, root)
+        if prepared is not None:
+            parts.append(f"preparation={prepared.digest}")
+    for name in ("decompile.py", "decompile.sh", "program_name.py",
+                 "ProgramSha256.java", "DecompileFuncs.java", "DumpFuncListing.java"):
+        path = root / "tools/ghidra" / name
+        if path.is_file():
+            parts.append(f"code.{name}={repo.sha256_file(path)[:16]}")
     return " ".join(parts)
 
 

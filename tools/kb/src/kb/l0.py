@@ -24,6 +24,7 @@ import tomllib
 
 from kb import repo
 from kb.repo import KbError
+from kb import ghidra_preparation as preparation
 
 # Column types: `a` address, `i` decimal integer, `b` boolean, `h` hexadecimal
 # bytes, `s` text; `?` allows an empty cell.
@@ -216,6 +217,10 @@ def render_manifest(manifest):
         f"{_toml_string(script)} = {_toml_string(digest)}\n"
         for script, digest in sorted(manifest["scripts"].items())
     ]
+    if "preparation" in manifest:
+        lines += ["\n[preparation]\n", "schema_version = 1\n", "\n[preparation.inputs]\n"]
+        lines += [f"{_toml_string(path)} = {_toml_string(digest)}\n"
+                  for path, digest in sorted(manifest["preparation"]["inputs"].items())]
     for name, entry in sorted(manifest["files"].items()):
         lines.append(f"\n[files.{_toml_string(name)}]\n")
         lines.append(f"sha256 = {_toml_string(entry['sha256'])}\n")
@@ -259,8 +264,14 @@ def _project_name():
     return os.environ.get("GHIDRA_PROJECT_NAME", "vq-hr")
 
 
-def sessions(plan, stage):
-    """Headless script arguments of every session of a layout's export."""
+def output_groups(plan):
+    """Files sealed by the core session and every independent census session."""
+    return [("program.sha256", *sorted(CORE)),
+            *((Census.file(kernel),) for kernel in plan.kernels)]
+
+
+def sessions(plan, stage, prepared=None, root=repo.ROOT):
+    """Headless script arguments of every independently prepared session."""
     stage = str(stage)
     runs = [[
         "-postScript", "ProgramSha256.java", f"{stage}/program.sha256",
@@ -277,6 +288,12 @@ def sessions(plan, stage):
             arguments.append("fused")
         arguments += [f"{int(helper, 16):x}" for helper in plan.copy_helpers]
         runs.append(["-postScript", "ResolveAccessors.java", stage, *arguments])
+    if prepared is not None:
+        for number, (arguments, outputs) in enumerate(zip(runs, output_groups(plan)), 1):
+            wire = Path(stage) / f"preparation-{number}.tsv"
+            receipt = Path(stage) / f"preparation-{number}.json"
+            preparation.write_plan(prepared, wire, root)
+            runs[number - 1] = preparation.session(prepared, wire, receipt, arguments, outputs)
     return runs
 
 
@@ -337,9 +354,10 @@ def stage_jobs(layout, plan, stage, root=repo.ROOT):
     stage = Path(stage)
     stage.mkdir(parents=True, exist_ok=True)
     (stage / "program.txt").write_text(program + "\n")
+    prepared = preparation.plan(layout.id, root)
     return [
         (program, arguments, stage / f"session-{number}.log")
-        for number, arguments in enumerate(sessions(plan, stage), 1)
+        for number, arguments in enumerate(sessions(plan, stage, prepared, root), 1)
     ]
 
 
@@ -359,6 +377,8 @@ def build(layout, plan, stage, out_dir, root=repo.ROOT):
     stage, out_dir = Path(stage), Path(out_dir)
     catalog = repo.images(root)
     verify_stage(layout, stage, root)
+    prepared = preparation.plan(layout.id, root)
+    preparation.verify_stage(prepared, stage, output_groups(plan), root)
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {}
     for name in expected_files(plan):
@@ -384,6 +404,9 @@ def build(layout, plan, stage, out_dir, root=repo.ROOT):
         "scripts": scripts(root),
         "files": files,
     }
+    if prepared is not None:
+        preparation.check_exports(prepared, out_dir, root)
+        manifest["preparation"] = prepared.manifest
     (out_dir / MANIFEST).write_text(render_manifest(manifest), encoding="utf-8")
     return manifest
 
@@ -470,14 +493,7 @@ def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
             for line in differences:
                 log(f"differs: {line}")
             return not differences
-        target.parent.mkdir(parents=True, exist_ok=True)
-        replacement = target.parent / f".{layout_id}.new"
-        if replacement.exists():
-            shutil.rmtree(replacement)
-        shutil.copytree(built, replacement)
-        if target.exists():
-            shutil.rmtree(target)
-        replacement.rename(target)
+        preparation.promote_directory(built, target)
         log(f"wrote {target.relative_to(root)}")
         return True
 
@@ -590,6 +606,15 @@ def check_layout(layout, root=repo.ROOT, verified=None):
     for name in sorted(set(listed) - present):
         fail(f"{shown}/{name}", "file", "the file is missing")
     failures += _join_failures(layout, base, present, root)
+    try:
+        prepared = preparation.plan(layout.id, root)
+        expected_preparation = prepared.manifest if prepared is not None else None
+        if manifest.get("preparation") != expected_preparation:
+            fail(where, "preparation", "the preparation inputs differ from the accepted export")
+        if prepared is not None and set(CORE) <= present:
+            preparation.check_exports(prepared, base, root)
+    except (KbError, OSError, ValueError, KeyError) as error:
+        fail(where, "preparation", str(error))
     return failures
 
 
@@ -658,6 +683,7 @@ def inputs(root=repo.ROOT):
     found.update((repo.GHIDRA_SCRIPTS / name).as_posix() for name in config["l0"]["scripts"])
     found.update(settings["interp"] for settings in config["l0"].get("census", {}).values())
     found.update((MERGES / path.name).as_posix() for path in (root / MERGES).glob("*.csv"))
+    found.update(preparation.inputs(root))
     return sorted(found)
 
 
@@ -685,6 +711,14 @@ def check_all(root=repo.ROOT, only=None):
                     (MERGES / path.name).as_posix(), "layout",
                     "the registry is not of a layout of rom-images/homology.toml",
                     "remove it or declare the layout",
+                ))
+    if only is None:
+        for path in sorted((root / preparation.SEEDS).glob("*.toml")):
+            if path.stem not in known:
+                failures.append(Failure(
+                    path.relative_to(root).as_posix(), "layout",
+                    "the preparation registry names an unknown layout",
+                    "declare its layout or remove the registry",
                 ))
     try:
         cache_path.parent.mkdir(parents=True, exist_ok=True)

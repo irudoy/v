@@ -48,6 +48,8 @@ uv run kb rename <meaning> <semantic-name> --dry-run   # the semantic name of a 
 uv run kb set <ref> <key>=<value> --dry-run   # keys of a meaning, a symbol, a designed entity, or a feature target
 uv run kb move <symbol> <layout>:<address> --dry-run   # the address of a symbol on its layout
 uv run kb move <symbol> <meaning> --dry-run   # a symbol into the meaning that it belongs to
+uv run kb move <generated>/fn/<layout>-<old> <layout>:<new> --legacy-reservation --dry-run
+                                              # preserve a generated name after a reviewed legacy/L0 repair
 uv run kb apply <batch.toml>         # a batch of write operations as one change
 ```
 
@@ -112,6 +114,19 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   "kb": {"type": "stdio", "command": "uv", "args": ["run", "kb", "mcp"]}
   ```
 
+- `kb move --legacy-reservation` preserves one generated function name after
+  the legacy registries and L0 have accepted a registered seed/fragment entry
+  repair. It requires the old full generated reference and a destination on
+  the same layout, an explicit non-implicit legacy function at the new entry,
+  the registered preparation and merge, cited sites owned by that entry,
+  no old legacy symbol, and no occupied destination reservation.
+  It compiles and plans under the primary writer lock before any graph sync,
+  so sync cannot draw another name at the repaired address. It changes only
+  the reservation key, preserves its name and former names, does not adopt a
+  symbol into an entity file, and refuses changed symbol/meaning facts or new
+  model issues. `--dry-run` writes no sources and does not sync the graph.
+  Legacy-source correction, L0 acceptance, the reservation write, and graph
+  loading are distinct operations, not one filesystem/graph transaction.
 - Exit codes follow the specification: 1 for failed checks, 2 for usage
   errors, 3 for a refused write, 4 for an ambiguous reference, 5 for an
   unknown layout, address, or entity, 6 for a failed Ghidra run or an

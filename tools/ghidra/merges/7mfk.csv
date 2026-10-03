@@ -5,6 +5,7 @@
 # Format: entry,fragment,note (addresses are eight hexadecimal digits; note
 # states how the entry reaches the fragment and holds no comma).
 entry,fragment,note
+00028ea2,00029588,fall-through from tst at 00029586 and bt at 00029578 and 00029580; shared frame restored at 0002a294 before rte at 0002a2ba
 0003bd74,0003bdd8,bra at 0003bdd2 over the literal word 0003bdd6 in the transition to state 1
 0003bd74,0003be3c,bf/s at 0003bd96 to the dispatch of states 1 and 2 after the literal pool that ends at 0003be3a
 0003bd74,0003bede,bra at 0003bda2 and 0003bdae and 0003bdb8 and the conditional branches of the state dispatch to the store of state 0

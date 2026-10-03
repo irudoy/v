@@ -268,9 +268,10 @@ class RamStructureEvidenceTest(unittest.TestCase):
         self.assertFalse([issue for issue in before if issue.subject == state.meaning.key])
         self.assertFalse([issue for issue in before
                           if "the structure of 7mfk-ffff1b1a/ram," in issue.message])
-        blocked = {issue for issue in before
-                   if "the structure of 7mfk-ffff196c/ram," in issue.message}
-        self.assertTrue(blocked)
+        ratio = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF196C)]
+        self.assertTrue(levels.held(m, ratio))
+        self.assertFalse([issue for issue in before
+                          if "the structure of 7mfk-ffff196c/ram," in issue.message])
         # Removing the input word's base item restores its own structural
         # boundary through the unchanged input link of the state longword.
         word_position = word.evidence.index(word_base)
@@ -281,11 +282,12 @@ class RamStructureEvidenceTest(unittest.TestCase):
         self.assertIn("the structure of 7mfk-ffff1b1a/ram,", next_barrier.message)
         self.assertIn("(input link)", next_barrier.message)
         self.assertFalse(levels.held(m, word))
-        self.assertTrue(blocked <= without_word_base)
+        self.assertFalse([issue for issue in without_word_base
+                          if "the structure of 7mfk-ffff196c/ram," in issue.message])
         word.evidence.insert(word_position, word_removed)
         self.assertEqual(set(levels.check(m)), before)
         # Removing the state placement restores the earlier input boundary
-        # while the input word stays grounded and the blocked chain remains.
+        # while the input word and ratio placement stay grounded.
         base = self.expected_items(0xFFFF1AA8)[0]
         position = state.evidence.index(base)
         removed = state.evidence.pop(position)
@@ -294,7 +296,8 @@ class RamStructureEvidenceTest(unittest.TestCase):
                            if "the structure of 7mfk-ffff1aa8/ram," in issue.message]
         self.assertIn("(input link)", first_barrier.message)
         self.assertNotIn(next_barrier, without_state_base)
-        self.assertTrue(blocked <= without_state_base)
+        self.assertFalse([issue for issue in without_state_base
+                          if "the structure of 7mfk-ffff196c/ram," in issue.message])
         state.evidence.insert(position, removed)
         pointed = levels.entries(m)
         for key in keys:
@@ -309,11 +312,77 @@ class RamStructureEvidenceTest(unittest.TestCase):
             if found and int(found.group(1), 16) in self.EXPECTED:
                 counts[int(found.group(1), 16)] += 1
         self.assertEqual(dict(counts), self.STRUCTURE_COUNTS)
-        self.assertTrue(blocked <= after)
+        self.assertFalse([issue for issue in after
+                          if "the structure of 7mfk-ffff196c/ram," in issue.message])
         self.assertEqual(snapshot(), unchanged)
         # The cached model remains intact; a test cannot remove its evidence.
         for key in keys:
             self.assert_pair(key.address, model().symbols[key].evidence)
+
+
+class Ici0aRatioOwnerTest(unittest.TestCase):
+    BASE = {"kind": "indirect", "supports": "identity", "at": "7mfk:00028f06",
+            "mode": "base", "value": 0x6E0}
+    TEST = {"kind": "test", "supports": "identity",
+            "path": "tools/mapkit/tests/test_ici0a_ratio_path.py",
+            "key": "test_ici0a_ratio_cell_path"}
+
+    def test_actual_ratio_has_reviewed_base_test_and_handler_access_roles(self):
+        m = model()
+        symbol = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF196C)]
+        self.assertEqual([e for e in symbol.evidence if "legacy" not in e], [self.BASE, self.TEST])
+        self.assertIsNone(match.verify(m, symbol, self.BASE))
+        self.assertIsNone(match.verify(m, symbol, self.TEST))
+        owner = SymbolKey("7mfk", "fn", 0x28EA2)
+        reader = {(link.type, layout, link.to.symbols[layout].key)
+                  for link in symbol.meaning.links
+                  if link.owner is symbol.meaning and link.type in ("writer", "reader")
+                  for layout in checks._claimed(link)}
+        self.assertEqual(reader, {("writer", "7mfk", owner), ("reader", "7mfk", owner)})
+        self.assertTrue(any(e.get("kind") == "trace" and e.get("to") == SymbolKey("7mfk", "fn", 0x21BBC)
+                            for e in symbol.evidence))
+        self.assertTrue(levels.held(m, symbol))
+        self.assertFalse([i for i in levels.check(m)
+                          if "the structure of 7mfk-ffff196c/ram," in i.message])
+
+    def test_ratio_base_and_named_test_removal_restores_the_dependency_barrier(self):
+        from kb import sites
+        m = compile.build()
+        key = SymbolKey("7mfk", "ram", 0xFFFF196C)
+        symbol = m.symbols[key]
+        evidence = copy.deepcopy(symbol.evidence)
+        referenced = {layout: sites.referenced(layout, m.root) for layout in m.layouts}
+        props = copy.deepcopy(symbol.props), copy.deepcopy(symbol.meaning.props)
+        before = set(levels.check(m))
+        self.assertIn(self.BASE, symbol.evidence)
+        self.assertIn(self.TEST, symbol.evidence)
+        # Accepted direct accesses and reviewed base evidence are independent
+        # structural routes. Losing only one must not fabricate a deficiency.
+        with patch.object(sites, "referenced", side_effect=lambda layout, root:
+                          frozenset({0xFFFF196C}) if layout == "7mfk" else frozenset()):
+            symbol.evidence = [e for e in symbol.evidence if e not in (self.BASE, self.TEST)]
+            self.assertTrue(levels.held(m, symbol))
+        symbol.evidence = evidence
+        with patch.object(sites, "referenced", side_effect=lambda layout, root:
+                          referenced[layout] - {key.address} if layout == key.layout else referenced[layout]):
+            self.assertTrue(levels.held(m, symbol))
+            symbol.evidence = [e for e in symbol.evidence if e not in (self.BASE, self.TEST)]
+            self.assertFalse(levels.held(m, symbol))
+            after = set(levels.check(m))
+            barriers = [i for i in after - before
+                        if "the structure of 7mfk-ffff196c/ram," in i.message]
+            self.assertEqual(len(barriers), 4)
+            self.assertEqual({i.subject for i in barriers},
+                             {"knowing-manul/ram", "pastel-yak/fn",
+                              "pink-mustang/ram", "spry-uakari/reg"})
+            self.assertTrue(all("link" in i.message for i in barriers))
+            symbol.evidence = evidence
+            self.assertTrue(levels.held(m, symbol))
+            self.assertFalse([i for i in levels.check(m)
+                              if "the structure of 7mfk-ffff196c/ram," in i.message])
+        self.assertEqual((symbol.props, symbol.meaning.props), props)
+        self.assertEqual(set(levels.check(m)), before)
+        self.assertEqual(model().symbols[key].evidence, evidence)
 
 
 class DtcLedgerAdapterTest(unittest.TestCase):
@@ -1528,7 +1597,7 @@ class ArchitectureAdapterTest(unittest.TestCase):
         endpoint = m.entities[("endpoint", "crank_sensor")]
         self.assertEqual(endpoint.refs, {"block": [("block", "crank_cam")],
                                          "registers": [SymbolKey("7mfk", "reg", 0xFFFFF434)],
-                                         "functions": [SymbolKey("7mfk", "fn", 0x00029588)]})
+                                         "functions": [SymbolKey("7mfk", "fn", 0x00028EA2)]})
 
     def test_the_lists_of_a_block_become_the_block_key_of_their_meanings(self):
         m = model()

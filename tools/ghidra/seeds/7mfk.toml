@@ -1,0 +1,78 @@
+# Exact-image structural preparation of the reviewed JK08A crank handler.
+schema_version = 1
+layout = "7mfk"
+image = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+image_size = 1048576
+forbidden_entries = ["0000056c", "00004720"]
+
+[[seed]]
+entry = "00028ea2"
+sites = ["000290b4", "000290cc", "0002927c", "00029588", "0002a294", "0002a2ba", "0002a2bc"]
+bytes = 4546
+instructions = 2273
+ranges = 19
+instruction_sha256 = "dbb3a83839514875b160742e4a50c73ee9a55836a2bd79a346384aa0fe2ed55a"
+
+[[seed.fragment]]
+entry = "00029588"
+instructions = 1507
+instruction_sha256 = "95a5f77008dd09a295e0573fad20c4c06d84bcce03dbae45d72d8d448481c559"
+
+[[pin]]
+address = "00020154"
+bytes = "00028ea2"
+
+[[pin]]
+address = "00028ea2"
+bytes = "2f062f162f262f362f462f562f662f762f862f962fa62fb62fc62fd62fe64f224f124f13"
+
+[[pin]]
+address = "00029020"
+bytes = "ffff128c"
+
+[[pin]]
+address = "0002909a"
+bytes = "84eac8808d37650367dd2778890961cdd25f41081f7241086073420b4108a0026203e6ff626ce6ff666c32668b00e2ff90410824"
+
+[[pin]]
+address = "00029150"
+bytes = "06e0"
+
+[[pin]]
+address = "00029224"
+bytes = "00008c8100021bbc00008c8900008c82"
+
+[[pin]]
+address = "00029278"
+bytes = "9089d778058c6470655c644c35478b0a"
+
+[[pin]]
+address = "0002938e"
+bytes = "06e0"
+
+[[pin]]
+address = "00029578"
+bytes = "8914d6526060c8808910902e028c22288b0c9622"
+
+[[pin]]
+address = "0002a294"
+bytes = "7f1c4f174f164f266ef66df66cf66bf66af669f668f667f666f665f664f663f662f661f660f6002b0009"
+
+[[reference]]
+owner = "00028ea2"
+site = "000290b4"
+target = "00021bbc"
+type = "call"
+
+[[reference]]
+owner = "00028ea2"
+site = "000290cc"
+target = "ffff196c"
+type = "write"
+
+[[reference]]
+owner = "00028ea2"
+site = "0002927c"
+target = "ffff196c"
+type = "read"

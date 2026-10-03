@@ -422,6 +422,19 @@ def command_rename(args, root=repo.ROOT):
 
 
 def command_move(args, root=repo.ROOT):
+    if args.legacy_reservation:
+        if args.evidence or args.source or args.level or args.note:
+            raise KbError("--legacy-reservation takes no evidence, from, level or note", code=2)
+        from kb import legacy_reservation
+        change, texts = legacy_reservation.apply(
+            args.symbol, args.to, root, dry_run=args.dry_run, log=_stderr)
+        for path in texts:
+            print(f"{path.as_posix()}: {'would be written' if args.dry_run else 'written'}")
+        for line in change.lines:
+            print(line)
+        if args.dry_run:
+            sys.stdout.write(change.diff(texts))
+        return 0
     return _write(args, [{
         "cmd": "move", "symbol": args.symbol, "to": args.to,
         "evidence": [write.parse_evidence(text) for text in args.evidence or ()],
@@ -628,6 +641,9 @@ def build_parser():
     move = writer("move", "correct the address of a symbol on its layout, or its meaning",
                   ("symbol", "the symbol"),
                   ("to", "<layout>:<address> of the symbol, or the meaning that it joins"))
+    move.add_argument("--legacy-reservation", action="store_true",
+                      help="preserve an existing generated function name after a reviewed "
+                           "legacy-owner and L0 entry repair; no entity adoption")
     move.add_argument("--evidence", action="append",
                       help=f"{evidence}; by default the evidence of the search")
     move.add_argument("--from", dest="source", help="the layout of the symbol that the search "

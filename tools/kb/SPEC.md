@@ -1280,6 +1280,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
+| `kb move <symbol> <to> --legacy-reservation [--dry-run]` | Preserves one generated-name reservation after an accepted registered legacy/L0 entry repair, without entity adoption | 4 |
 | `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 5 |
 | `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) | 9 |
 | `kb apply <batch> [--dry-run]` | A batch of the operations above as one change | 3 |
@@ -1305,6 +1306,22 @@ Every write:
 
 `--dry-run` stops after step 3 and prints the diff of the change; a write
 draws its generated names anew.
+
+The reservation-only `kb move --legacy-reservation` is a narrow structural
+repair operation. Its corrected legacy registries and verified L0 already
+hold an explicit, non-implicit function at the new entry, omit the old
+entry, and preserve the old fragment under a registered seed/merge pair.
+A dependency-only symbol does not establish a corrected function owner.
+Under the same writer lock it compiles current
+sources before graph synchronization, plans one existing reservation-key
+change, and refuses an occupied destination, entity ownership, changed
+symbol or meaning facts, or new model issues. The generated name and former
+names stay unchanged, and the old full named reference resolves to the
+current symbol. It creates no entity document and draws no generated name.
+Its dry run writes nothing and does not sync. Source correction, accepted
+L0, reservation writing, and graph synchronization are distinct operations;
+this mode does not provide a multi-file/graph transaction. Generic move
+arguments and a reservation-only batch are not part of this contract.
 
 The file of a meaning that has none starts with the entry of its home symbol,
 which joins the file with the registries that state the meaning. A symbol

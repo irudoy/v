@@ -242,7 +242,7 @@ it low on a `GR11B` compare.
 
 The command is the delay in crank degrees after tooth 7 of the crank signal
 plate, the last tooth before the two-missing-teeth gap. The ICI0A handler
-(vector 84, prologue `0x28EA2`, body `FUN_00029588`) counts ten teeth per 120
+(vector 84, entry `FUN_00028EA2`) counts ten teeth per 120
 crank degrees in `0xFFFF13B2`; on tooth 7 it copies the identified cylinder to
 event index `0xFFFF11DE`, forms set mask `0xFFFF13BD = 1 << (index - 1)`, and
 runs the engine-event tasks that build the command. `0x0002A892` splits the

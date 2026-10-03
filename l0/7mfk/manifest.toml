@@ -32,6 +32,37 @@ copy_helpers = ["00022558"]
 "ProgramSha256.java" = "d9d345bc21e82ce5ba939be3787c7c2fd84e24bfa4959cb2b36da679b1f107bb"
 "ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
 
+[preparation]
+schema_version = 1
+
+[preparation.inputs]
+"defs/JK08A.interp.csv" = "6090e4c3440ebd9b54dc5d48dd2fad4201a2a7bd065c2e1e1170e349a4f3296d"
+"rom-images/homology.toml" = "cd1128d632f9d79f58b3d40439c7720149c05cff7d07b8db99bfad2d4f1064a8"
+"rom-images/roms.csv" = "37df22c77078b25a99999ad5d394db0d7d1f78ce99a1c05bd0c52632cab66441"
+"tools/ghidra/AnalyzeFuncs.java" = "1a28f613dbbacae960c1e0906b7feeb3b8e2ee60838d9568a8cc5eaa08bf439d"
+"tools/ghidra/DecompileFuncs.java" = "638ea5de28f04dd3d9ceb359f9cf559324b211ebb593b5a235cdb17622e47096"
+"tools/ghidra/DumpFuncListing.java" = "36411615013ce69a65d2cc3c42579ffd56c6f51b40eef0f89a05aed0ebda74a3"
+"tools/ghidra/ExportFunctionSignatures.java" = "aa0992582a77b13bcf505cf906b6196f1d81979aeb17b96b6d9d25736c4872f5"
+"tools/ghidra/ExportFunctionTokens.java" = "39516fb4b67103380285a17cd3f1787dec9730b30825793208d252f8b9c29180"
+"tools/ghidra/ExportGraph.java" = "2c450b1417b53e5401efb7aaa83de7e824a5e64f9972f47677305af4ea7055d9"
+"tools/ghidra/ExportXrefs.java" = "ae6b7be698e33f6172fc371b21fb86245d01ab887652a8471a35603fbf0c572c"
+"tools/ghidra/MergeFuncs.java" = "559b7496fbfa306846e4ee6ddf0f50826e2e9e0ed440541b2a627c0f3c70f447"
+"tools/ghidra/PrepareProgram.java" = "267f0173432fdaf38a998d7962bf1f755366c57d9a0145fd3883c6ba8ce997ed"
+"tools/ghidra/ProgramSha256.java" = "d9d345bc21e82ce5ba939be3787c7c2fd84e24bfa4959cb2b36da679b1f107bb"
+"tools/ghidra/RecoverFuncs.java" = "6e829b36f35fc264c426ff5cacdb4e9a0035239c68da4a861032ce360b4d691b"
+"tools/ghidra/ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
+"tools/ghidra/decompile.py" = "e1dc76e27c4909e1e3a1ec34aa563e195ef5b09e144945d41e2c8671c409e183"
+"tools/ghidra/decompile.sh" = "780e164663ab4569926892b2636070caedc8bf4f427b274b7efa25ffd71184d2"
+"tools/ghidra/export-l0.sh" = "fe8fac2d67e13690e0ea95de04156304a6baba782cbebfe8c78eacc33f693711"
+"tools/ghidra/headless-analyze.sh" = "abaf814d82c9f54f7bd1f96735537fc2e888ac2740ea21a9f25d5f351911fe6d"
+"tools/ghidra/merges/7mfk.csv" = "40c8963704fd8855c8a95d707c8abd36313cd6121458864d48d757f4dcd2422c"
+"tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
+"tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
+"tools/ghidra/seeds/7mfk.toml" = "d77671aaa88c37c7e7e392599b3beb6326f3fd341539a7edaf695d0fb793eb50"
+"tools/kb/config.toml" = "01ab995a0266654fd4d146e4342d238f50d1b0272a1c35616a73869b12ad2849"
+"tools/kb/src/kb/ghidra_preparation.py" = "07b801c296dd77c7a720c375aa7ccf19f628602026df28b12022c25e837eb3e7"
+"tools/kb/src/kb/l0.py" = "56448bfc325fe918d21b81f035d4ca21715741dbf78ca9315ada0e9c0a075798"
+
 [files."accessors.26740.csv"]
 sha256 = "10d49f6f9f843dcd40b363192a0d53ac34ac689fac8e2c5f1eb8ea11355e29ba"
 rows = 246
@@ -85,29 +116,29 @@ sha256 = "2bd63f8ff21c2a2b209591169711d3f1cfe5ea70a175dc27660fec8a98f60881"
 rows = 2
 
 [files."calls.csv"]
-sha256 = "338ed6c79ef3b6c2bb65f5729f13877ae892ca1c4747113289fc5ddb3b82cccb"
-rows = 3742
+sha256 = "3e8d296369452aa097d8d9902a4a65fcf228156091ad9be9c7eb88085a288706"
+rows = 3744
 
 [files."funcs.csv"]
-sha256 = "cbda8c2fd8555f23bf8ed20ccbfa13b183d003b12e66166f7b922779bba276d3"
+sha256 = "7c8db99527dac2012dd8f49d36c143092a3ebf5bcd2e9cd591dee28b271011b8"
 rows = 2318
 
 [files."function_references.csv"]
-sha256 = "c28666666cd5dbd65b8d6cb7c5dcffef071104067f7dd6ac701995e6df25a5a1"
-rows = 144907
+sha256 = "2c183b0c5217583cd5593a431046c80a5182b9eaa835ccda8ad872604008441d"
+rows = 145336
 
 [files."function_signatures.csv"]
-sha256 = "52b70e17cd1c02e43209b964e1f2bd807391ec6d2b57fd4a211f2af388acd4df"
+sha256 = "ee9ea51cb393d8bdfb470199368cc195d06d90bd93bffe0e3b36253866c3ed24"
 rows = 2318
 
 [files."function_sites.csv"]
-sha256 = "a7b5cab9bacd30eb6a1bb54a49ab2a89719c664547a9b2638a31a6403e3a33d3"
-rows = 6893
+sha256 = "20e61144892d4d59a8a62258a0378e0a0f26dc1b1388b908a071a7731b402f70"
+rows = 6899
 
 [files."function_tokens.csv"]
-sha256 = "d66ee4501acd1b15c822762efda07ebe4508f04c6c83c097c62de83fd12c4367"
-rows = 311819
+sha256 = "d6e3e5e6e8cbdd6e304880a446c34dc5ccb8466116e13d09d6b204d6f20ac27c"
+rows = 312585
 
 [files."xrefs.csv"]
-sha256 = "60bf9fea65fe034d11626bea3c4b6269ad9c731348785758bc83c20cbe5ef4a3"
-rows = 40396
+sha256 = "99b726bf488fb595e3e93735b08493dfccf11c1a9cb921fe97ab01cc89543f2c"
+rows = 40475
