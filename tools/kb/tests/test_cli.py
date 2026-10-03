@@ -105,8 +105,10 @@ class CypherCommandTest(unittest.TestCase):
 class CheckCommandTest(unittest.TestCase):
     def test_unknown_checks_are_a_usage_error(self):
         with contextlib.redirect_stderr(io.StringIO()) as err:
-            self.assertEqual(cli.main(["check", "--only", "blocks"]), 2)
+            self.assertEqual(cli.main(["check", "--only", "missing_check"]), 2)
         self.assertIn("unknown or inactive checks", err.getvalue())
+        self.assertIn("blocks", err.getvalue())
+        self.assertIn("chains", err.getvalue())
 
 
 class BenchCommandTest(unittest.TestCase):
