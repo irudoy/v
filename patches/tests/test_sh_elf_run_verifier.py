@@ -631,6 +631,14 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-maf-adc": {
+                "REGION_ENTRY": 0x000280B6,
+                "ADC_BASE": 0xFFFFF800,
+                "ADDR4": 0xFFFFF808,
+                "ADDR15": 0xFFFFF826,
+                "MAF_SAMPLE_B1": 0xFFFF1D62,
+                "MAF_SAMPLE_B2": 0xFFFF1D64,
+            },
             "jk08a-direct-byte-axis": {
                 "REGION_ENTRY": 0x00026944,
                 "LAST_OFFSET": 15,

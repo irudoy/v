@@ -122,7 +122,14 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A axis-search fixtures reconstruct the
+   (`verify_stock_code.py`). The JK08A MAF ADC slice reconstructs both unsigned
+   word reads, the six-bit logical shifts, and the two word stores, including
+   the return delay slot. The immediate MMIO-base prologue stays byte-bound
+   outside the slice; the harness supplies its mapped R4 context and relocates
+   only the declared output-window pool word. Independent bank values, signed
+   word boundaries, discarded low bits, maximum counts, read-only MMIO, and
+   neighboring output bytes have literal expectations.
+   The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets
    and fractions. They check clamping, exact points, unequal intervals,

@@ -18,7 +18,7 @@ to = "enthusiastic-pillbug/ram"
 effect = "receives"
 sign = "positive"
 via = ["fuzzy-parakeet/fn"]
-note = "ffff1d62 = ADDR4 >> 6, the ten-bit AN4 sample of the bank-1 MAF sensor."
+note = "ffff1d62 = uint16(fffff808) >> 6"
 
 [[step]]
 from = "zircon-stallion/reg"
@@ -26,8 +26,7 @@ to = "hairy-dalmatian/ram"
 effect = "receives"
 sign = "positive"
 via = ["fuzzy-parakeet/fn"]
-note = """
-ffff1d64 = ADDR15 >> 6, the ten-bit AN15 sample of the bank-2 MAF sensor."""
+note = "ffff1d64 = uint16(fffff826) >> 6"
 
 [[step]]
 from = "enthusiastic-pillbug/ram"

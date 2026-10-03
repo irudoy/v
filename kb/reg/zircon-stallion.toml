@@ -2,6 +2,8 @@
 layout = "7mfk"
 address = "fffff826"
 name = "zircon-stallion"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"

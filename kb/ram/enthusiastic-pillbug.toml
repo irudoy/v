@@ -54,6 +54,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1d62"
 name = "enthusiastic-pillbug"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -86,9 +88,24 @@ key = "reference"
 [[link]]
 type = "input"
 to = "real-sawfish/reg"
+via = ["fuzzy-parakeet/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Function 00028098 reads unsigned word ADDR4 at fffff808, performs three \
+logical right shifts by two, and stores uint16(fffff808)>>6 as a word at \
+ffff1d62. The six low alignment bits are discarded; no sign bit enters the \
+ten-bit result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000280b6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_adc.py"
+key = "test_maf_adc_unsigned_word_sources_and_shifts_match_stock"
 
 [[link]]
 type = "reader"

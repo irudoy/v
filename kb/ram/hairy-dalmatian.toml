@@ -54,6 +54,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1d64"
 name = "hairy-dalmatian"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -86,9 +88,24 @@ key = "body"
 [[link]]
 type = "input"
 to = "zircon-stallion/reg"
+via = ["fuzzy-parakeet/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Function 00028098 reads unsigned word ADDR15 at fffff826, performs three \
+logical right shifts by two, and stores uint16(fffff826)>>6 as a word at \
+ffff1d64 in its RTS delay slot. The six low alignment bits are discarded; \
+bank-1 input and neighboring RAM remain independent."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000280c8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_adc.py"
+key = "test_maf_adc_unsigned_word_sources_and_shifts_match_stock"
 
 [[link]]
 type = "reader"

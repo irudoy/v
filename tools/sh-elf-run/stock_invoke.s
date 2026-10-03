@@ -143,3 +143,16 @@ _stock_invoke_format_curve:
     rts
     nop
     .size _stock_invoke_format_curve,.-_stock_invoke_format_curve
+
+! The MAF slice reads R4 from its already established MMIO-base context.
+    .global _stock_invoke_adc
+    .type _stock_invoke_adc,@function
+_stock_invoke_adc:
+    sts.l pr,@-r15
+    mov r4,r2
+    jsr @r2
+    mov r5,r4
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_adc,.-_stock_invoke_adc

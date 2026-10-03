@@ -97,6 +97,22 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-maf-adc",
+        rom="JK08A",
+        source="stock_jk08a_maf_adc.s",
+        harness="stock_maf_adc_harness.c",
+        start=0x000280B6,
+        end=0x000280D8,
+        pools=((0x000283E8, 4),),
+        ram_literals=(0x000283E8,),
+        cases=12,
+        boundary=False,
+        symbols=(("ADDR4", "real-sawfish/reg"), ("ADDR15", "zircon-stallion/reg"),
+                 ("MAF_SAMPLE_B1", "enthusiastic-pillbug/ram"),
+                 ("MAF_SAMPLE_B2", "hairy-dalmatian/ram")),
+        constants=(("ADC_BASE", 0xFFFFF800),),
+    ),
+    Region(
         key="jk08a-direct-byte-axis",
         rom="JK08A",
         source="stock_jk08a_direct_byte_axis.s",

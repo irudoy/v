@@ -2,6 +2,8 @@
 layout = "7mfk"
 address = "fffff808"
 name = "real-sawfish"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"

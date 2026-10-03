@@ -1855,7 +1855,7 @@ to = "ffff1d62"
 effect = "receives"
 sign = "positive"
 via = ["00028098"]
-note = "ffff1d62 = ADDR4 >> 6, the ten-bit AN4 sample of the bank-1 MAF sensor."
+note = "ffff1d62 = uint16(fffff808) >> 6"
 
 [[chain.step]]
 from = "fffff826"
@@ -1863,8 +1863,7 @@ to = "ffff1d64"
 effect = "receives"
 sign = "positive"
 via = ["00028098"]
-note = """
-ffff1d64 = ADDR15 >> 6, the ten-bit AN15 sample of the bank-2 MAF sensor."""
+note = "ffff1d64 = uint16(fffff826) >> 6"
 
 [[chain.step]]
 from = "ffff1d62"
