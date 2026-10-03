@@ -29,7 +29,7 @@ uv run kb path 7mfk:ffff1079 7mfk:ffff2326   # shortest typed paths between two 
 uv run kb find knock threshold       # meanings and designed entities ranked by name, former name, title, and summary
 uv run kb brief                      # graph state, layouts, stage, owners, legacy names, gaps, and the questions
 uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings without a symbol, by status
-uv run kb log <ref>                  # renames and generated names of an entity
+uv run kb log <ref>                  # former references and recorded profile address corrections
 uv run kb raw <ref>                  # the file of an entity and the registry rows that state it
 uv run kb bench                      # the acceptance questions of the current stage
 uv run kb mcp                        # the read commands and kb_apply as MCP tools on stdio
@@ -176,13 +176,32 @@ name resolves with a note that names the current reference.
   and axes of their definitions, and
   on the layouts of a family where another layout has its symbol;
   `--feature` lists the requirements of one feature, `--layout` one layout.
+- `kb brief` uses the same required binding rows as `kb gaps`, with complete
+  totals by feature, layout, and state. Its priority sample ranks a missing
+  binding by the number of affected project features, then required fields,
+  then link degree; family-only requirements follow project requirements.
+  The sample does not reduce the totals or the complete `gaps` JSON array.
+- `kb log` reads full former references from the owning symbol entries,
+  including entries of every symbol of a meaning. It also lists address
+  corrections of the profile keys that current feature targets associate
+  with that meaning, from the first-parent Git history of
+  `patches/rom-address-profiles.toml`. Each correction retains its commit,
+  layout, table, key, and both addresses. Inherited copies and changes between
+  numeric and hexadecimal string representations share one address.
+  History entries are previous declarations; `kb show` states current facts
+  and their evidence.
 - `kb bench` answers every question of `bench.toml` that the current stage
   activates, with `--full`, and passes a question when its answer exits with
-  0, fits its budget, and stays below its baseline: the output of the `rg`
-  and file reads that answer the question over the registries. `--all` also
-  runs the questions of later stages, and `--only <id>` runs one.
+  0, matches every `expect` pattern, fits its budget, and stays below its
+  baseline: the output of the `rg` and file reads that answer the question
+  over the registries. Patterns use multiline regular expressions and
+  require nonempty content. Invalid or missing contracts, unknown question
+  ids, and selections with no active question are usage errors. `--all`
+  includes later stages, including with `--only <id>`.
   `tools/single_source.py` compares the questions, budgets, and stages of
-  `bench.toml` with the table of section 18 of the specification.
+  `bench.toml` with the table of section 18 of the specification and validates
+  every content contract, including those of later stages. Patterns gate
+  required content; model and executable gates verify the stated facts.
 
 For an ECU source meaning with no engineering scale, enumeration, or named
 bits, the telemetry projection emits `raw count` as a host storage view.
@@ -807,6 +826,7 @@ files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
 | `kb.refs` | References of the read commands and their resolution |
 | `kb.answer` | Answers, sections, token counts, and budgets |
 | `kb.read` | The read commands |
+| `kb.history` | Full former symbol references and recorded profile address corrections |
 | `kb.write` | The write commands: changes of the entity files, the checks of their result, and batches |
 | `kb.mcp` | The read commands and `kb_apply` as MCP tools over JSON-RPC on standard input and output |
 | `kb.spec` | The stages, the ownership table, and the acceptance questions of the specification |
@@ -842,7 +862,8 @@ the JK08A ledgers that stage 1 of the specification states.
 ## Configuration
 
 `bench.toml` holds the acceptance questions with their commands, budgets,
-stages, and baselines, the highest stage that has started, and `converted`,
+stages, baselines, and required `expect` patterns, the highest stage that has
+started, and `converted`,
 the registries whose conversion leaves no file that `kb` renders or that
 reads `kb`.
 `config.toml` lists the L0 export scripts, the census plan of each layout, the

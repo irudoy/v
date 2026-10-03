@@ -528,6 +528,88 @@ class GapsTest(unittest.TestCase):
         self.assertEqual(missing.exception.code, 5)
 
 
+class BriefStore(GapStore):
+    uri = "bolt://fixture"
+
+    def __init__(self, rows=None, family=None, degrees=None):
+        self.FEATURE = self.FEATURE if rows is None else rows
+        self.FAMILY = self.FAMILY if family is None else family
+        self.degrees = degrees or {}
+
+    def run(self, query, **params):
+        if ":REQUIRES]" in query or "$family IN r.required" in query:
+            return super().run(query, **params)
+        if "count(r) AS degree" in query:
+            return [{"key": key, "degree": self.degrees.get(key, 0)} for key in params["keys"]]
+        if "RETURN m" in query and ":Meta" in query:
+            return [{"m": {"fingerprint": "fixture", "commit": "fixture"}}]
+        if "count(c) AS n" in query:
+            return [{"n": 0}]
+        if "r.state AS state" in query:
+            grouped = {}
+            unique = {(row["meaning"], row["layout"]): row
+                      for row in self.FEATURE + self.FAMILY}
+            for row in unique.values():
+                key = row["layout"], (row["status"] or {}).get("state", "unknown")
+                grouped[key] = grouped.get(key, 0) + 1
+            return [{"layout": layout, "state": state, "n": count}
+                    for (layout, state), count in grouped.items()]
+        if "state: 'unresolved'" in query:
+            return [{"key": row["meaning"], "layout": row["layout"],
+                     "l0": row["status"].get("l0"), "current": row["current"]}
+                    for row in self.FEATURE + self.FAMILY
+                    if (row["status"] or {}).get("state") == "unresolved"]
+        return []
+
+
+class BriefTest(unittest.TestCase):
+    def brief(self, source):
+        with mock.patch.object(read.repo, "layouts", return_value={
+                key: mock.Mock(family="fixture") for key in ("1nd", "jk78c", "jk00c")}), \
+                mock.patch.object(read, "bench", return_value={"stage": 5, "question": []}), \
+                mock.patch.object(read.spec, "stages", return_value=[
+                    {"number": 5, "name": "JK08A ledgers"}]), \
+                mock.patch.object(read.project, "owners", return_value={
+                    "converted": [], "pending": {}}), \
+                mock.patch.object(read.project, "legacy", return_value={
+                    "rows": 0, "leave": {}, "stay": {}, "reserved": 0}):
+            return read.brief(source)
+
+    def test_totals_equal_gaps_when_all_missing_bindings_are_unresolved_or_absent(self):
+        source = BriefStore(family=[])
+        full = read.gaps(source)
+        brief = self.brief(source)
+        self.assertEqual(brief.data["gaps"], full.data["gaps"])
+        self.assertEqual(brief.data["gap_summary"], full.data["gap_summary"])
+        self.assertEqual(brief.data["gap_summary"]["states"],
+                         {"unknown": 0, "unresolved": 2, "absent": 1})
+        self.assertIn("open gaps: 3 required meanings without a symbol on 2 layouts\n",
+                      brief.text())
+        self.assertIn("  by feature: can_telemetry 3\n", brief.text())
+        self.assertIn("  by layout: 1nd 2, jk78c 1\n", brief.text())
+        self.assertIn("  by state: unknown 0, unresolved 2, absent 1\n", brief.text())
+
+    def test_feature_impact_precedes_degree_and_the_sample_keeps_complete_totals(self):
+        row = GapStore.FEATURE[0]
+        rows = [{**row, "meaning": "multi/ram"},
+                {**row, "meaning": "multi/ram", "feature": "definitions", "field": None}]
+        rows += [{**row, "meaning": f"single_{n}/ram", "feature": "definitions", "field": None}
+                 for n in range(6)]
+        degrees = {f"single_{n}/ram": 1000 for n in range(6)}
+        degrees["astute-toad/tbl"] = 9999
+        source = BriefStore(rows, degrees=degrees)
+        answer = self.brief(source)
+        self.assertEqual(answer.data["gap_summary"], read.gaps(source).data["gap_summary"])
+        self.assertEqual(answer.data["gap_summary"]["total"], 9)
+        self.assertEqual(len(answer.data["gaps"]), 9)
+        ranked = answer.data["gap_priorities"]
+        self.assertEqual(len(ranked), 5)
+        self.assertEqual(ranked[0]["meaning"], "multi/ram")
+        self.assertEqual(ranked[0]["features"], ["can_telemetry", "definitions"])
+        self.assertEqual(ranked[0]["fields"], ["normalized_load_raw/field"])
+        self.assertNotIn("astute-toad/tbl", [item["meaning"] for item in ranked])
+
+
 class EvidenceTest(unittest.TestCase):
     def test_items_that_differ_in_at_share_a_line(self):
         items = [{"kind": "l0", "supports": "identity", "at": f"7mfk:{address:08x}"}

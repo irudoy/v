@@ -5,7 +5,8 @@
 # conversion leaves no file that `kb` renders or that reads `kb`; the commit
 # that converts such a registry adds it, and the files decide the owner of
 # every other registry. `kb bench` answers every active question with --full
-# and requires the answer to fit the question's budget and to stay below its
+# and requires every `expect` multiline regular expression to match required
+# content, the answer to fit the question's budget and to stay below its
 # baseline: the output of the search and file reads that answer the question
 # over the registries. A baseline step runs `run` from the repository root and
 # counts its output, or with `read = true` counts the files whose paths it
@@ -22,6 +23,11 @@ question = "What is at an address of another layout"
 command = "kb at jk00d:ffff1034"
 budget = 600
 stage = 2
+expect = [
+    '^normalized_load/ram/jk00d-ffff1034\s+ram 8-bit\s+code$',
+    '^  scale\s+x\*100/128$',
+    'normalized_load_raw/field',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "ffff1034", "defs", "patches", "tools/ghidra/symbols", "l0/jk00d"] },
 ]
@@ -32,6 +38,13 @@ question = "Where a meaning is on every layout"
 command = "kb where normalized_load/ram"
 budget = 400
 stage = 3
+expect = [
+    '^7mfk\s+ffff102c',
+    '^jk00d\s+ffff1034',
+    '^jk78c\s+ffff1032',
+    '^1nd\s+unresolved.*masked-match.*count 0',
+    '^1me3b\s+unresolved.*masked-match.*count 0',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "-e", "normalized_load_raw", "-e", "ffff102c", "patches", "defs"] },
 ]
@@ -42,6 +55,12 @@ question = "What depends on a table"
 command = "kb impact 7mfk:0000a4aa"
 budget = 1500
 stage = 2
+expect = [
+    '^impact of .*7mfk-0000a4aa:',
+    '7mfk-ffff1636 computed from .*7mfk-0000a4aa',
+    '7mfk-ffff1a7d lookup of .*7mfk-0000a4aa',
+    '^  .*7mfk-0004d2a6 reads .*7mfk-0000a4aa',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "0000a4aa", "defs", "patches"] },
 ]
@@ -52,6 +71,12 @@ question = "How coolant temperature reaches the intake-cam target"
 command = "kb path 7mfk:ffff1079 7mfk:ffff2326"
 budget = 1500
 stage = 2
+expect = [
+    '^path coolant/ram/7mfk-ffff1079 -> intake_cvtc_target/ram/7mfk-ffff2326: .*dataflow',
+    '^path 1$',
+    'intake_cvtc_target/ram/7mfk-ffff2326 computed from',
+    '\(unverified\)',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "-e", "ffff1079", "-e", "ffff2326", "defs/JK08A.vars.csv", "defs/JK08A.funcs.csv", "defs/JK08A.findings.csv", "defs/JK08A.architecture.toml"] },
 ]
@@ -62,6 +87,13 @@ question = "Which telemetry sources lack a symbol on a layout"
 command = "kb gaps --feature can_telemetry --layout 1nd"
 budget = 1000
 stage = 3
+expect = [
+    '^can_telemetry on 1nd: .*required meanings without a symbol',
+    '^unresolved: [1-9][0-9]*$',
+    'alpha_n_flow_raw/field\s+alpha_n_flow/ram.*masked-match.*count 0',
+    'normalized_load_raw/field\s+normalized_load/ram.*masked-match.*count 0',
+    'request_flow_raw/field\s+request_flow/ram.*masked-match.*count 0',
+]
 baseline = [
     { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1nd-runtime-correspondence.csv"] },
 ]
@@ -72,6 +104,7 @@ question = "Candidates for a producer on another family"
 command = "kb suggest 7mfk:0003b75c --layout jk78c"
 budget = 1500
 stage = 9
+expect = ['7mfk(?:-|:)0003b75c', 'jk78c', '\[candidate\]|no candidates|unresolved']
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "0003b75c", "defs", "patches"] },
 ]
@@ -82,6 +115,7 @@ question = "Find entities by words"
 command = "kb find knock threshold"
 budget = 800
 stage = 2
+expect = ['knock_threshold_base/ram', 'knock_slice_threshold_lookup/fn', 'knock_margin/signal']
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "knock[^,]*threshold|threshold[^,]*knock", "defs", "patches", "tools/ghidra/symbols"] },
 ]
@@ -92,6 +126,12 @@ question = "The code of a function"
 command = "kb code jk78c:000564a4"
 budget = 4000
 stage = 2
+expect = [
+    '^jk78c:000564a4\s+fn\s+\[l0\]',
+    'void FUN_000564a4\(',
+    'FUN_00056baa\(',
+    'DAT_0005680a',
+]
 baseline = [
     { run = ["tools/ghidra/decompile.sh", "-r", "JK78C", "-l", "000564a4"], read = true },
 ]
@@ -102,6 +142,11 @@ question = "The history of a symbol through its corrections"
 command = "kb log apc_output"
 budget = 800
 stage = 3
+expect = [
+    '^apc_output/ram$',
+    'former\s+meaning name apc_command',
+    '904ce7e.*jk00d.*ffff206c -> ffff11f5',
+]
 baseline = [
     { run = ["git", "log", "--oneline", "-G", "apc_output", "--", "patches", "defs"] },
 ]
@@ -112,6 +157,15 @@ question = "The state of the knowledge base"
 command = "kb brief"
 budget = 2000
 stage = 2
+expect = [
+    '^graph .*fingerprint .*commit',
+    '^stage [0-9]+: .*owners$',
+    '^open gaps: [1-9][0-9]* required meanings without a symbol',
+    '^  by feature: .*can_telemetry [1-9][0-9]*.*definitions [1-9][0-9]*',
+    '^  by state: .*unresolved [1-9][0-9]*.*absent [1-9][0-9]*',
+    '^priority gaps: affected features, fields, then link degree$',
+    '^stale searches: [0-9]+; pending candidates: [0-9]+$',
+]
 baseline = [
     { run = ["cat", "AGENTS.md", "tools/kb/README.md"] },
 ]
@@ -122,6 +176,13 @@ question = "Why telemetry fields are unavailable on a layout"
 command = "kb gaps --feature can_telemetry --layout 1me3b"
 budget = 1000
 stage = 3
+expect = [
+    '^can_telemetry on 1me3b: .*required meanings without a symbol',
+    'normalized_load_raw/field\s+normalized_load/ram.*masked-match.*count 0',
+    'request_flow_raw/field\s+request_flow/ram.*masked-match.*count 0',
+    '^absent: [1-9][0-9]*$',
+    'knock_timing_state_raw/field\s+knock_timing_state/ram\s+l0\s+1me3b:00071d64',
+]
 baseline = [
     { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
 ]
@@ -132,6 +193,11 @@ question = "The block and chain steps of a function"
 command = "kb show 7mfk:0003deec"
 budget = 1200
 stage = 6
+expect = [
+    '7mfk-0003deec',
+    '^  block\s+engine_speed/block\s+stage estimation/stage$',
+    '^  step\s+engine_speed/chain #4 .*ffff114a = floor\(0xA2C2/ffff22bc\)',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs"] },
 ]
@@ -142,6 +208,13 @@ question = "The reviewed function facts of a JK08A ledger address"
 command = "kb show 7mfk:0003c3ac"
 budget = 2400
 stage = 5
+expect = [
+    '^dual_bank_maf_diagnostic_coordinator/fn/7mfk-0003c3ac',
+    'MASS AIRFLOW word ffff3852=min\(65535,floor\(ROM8\[0x83ec\]\*ffff105c/256\)\)',
+    '^  writes\s+.*maf_total/ram/7mfk-ffff3852',
+    'rom-bytes.*value ffff3852.*at 7mfk:000228c0',
+    'Engineering conversions require hardware validation\.',
+]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "0003c3ac", "defs/JK08A.funcs.csv", "defs/JK08A.vars.csv", "defs/JK08A.findings.csv", "defs/JK08A.axes.csv", "defs/JK08A.dtc.csv", "defs/JK08A.diagnostic-bindings.csv", "tools/ghidra/symbols/7mfk.csv"] },
 ]

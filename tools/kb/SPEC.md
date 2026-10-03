@@ -1278,7 +1278,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 
 | Command | Answers | Stage |
 |---|---|---|
-| `kb brief [<read options>]` | Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), open gaps ranked by feature impact, stale searches, pending candidates, and the table of questions and commands | 2 |
+| `kb brief [<read options>]` | Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), required binding gaps with the same totals as `kb gaps` by feature, layout, and state and a sample ranked by affected project features, fields, then link degree, stale searches, pending candidates, and the table of questions and commands | 2 |
 | `kb show <ref> [--layout <l>] [<read options>]` | The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning | 2 |
 | `kb at <location> [--layout <l>] [<read options>]` | The symbol at a location `<layout>:<address>`, or at an address on `--layout`, or else the feature allocations, function, or table that contain it, and the L0 facts at that address | 2 |
 | `kb where <ref> [<read options>]` | The symbol or status of a meaning on every layout | 2 |
@@ -1290,11 +1290,11 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb suggest --blocks --layout <l> [<read options>]` | Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms)) | 6 |
 | `kb find <text>... [--limit <n>] [<read options>]` | Meanings and designed entities ranked by name or slug, former name, title, and summary, at most `--limit` of them | 2 |
 | `kb code <ref> [--layout <l>] [--listing] [--force] [--budget <tokens>] [--full] [--no-sync]` | The decompilation of a function through `tools/ghidra/decompile.sh` and its cache, with `--listing` its listing, and with `--force` from a new run of Ghidra: the function whose body holds a location `<layout>:<address>`, the function symbol that the reference names, or the symbol of a meaning on `--layout` or else on its home layout | 1 |
-| `kb log <ref> [<read options>]` | The history of the entity through renames and redirects | 2 |
+| `kb log <ref> [<read options>]` | Full former references of the entity's symbol entries and recorded profile address corrections, with their Git commits | 2 |
 | `kb raw <ref> [<read options>]` | The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included | 2 |
 | `kb cypher <query> [--param <name>=<value>]... [<read options>]` | A read-only Cypher query over the working tree's instance after the fingerprint check | 2 |
 | `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes | 2 |
-| `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their budgets and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
+| `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
 | `kb check [--changed] [--only <check>]...` | The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass | 1 |
 
 ### 12.3 Write commands
@@ -2233,7 +2233,28 @@ third of a UTF-8 byte of output, rounded up, as in [Output](#124-output). The
 baseline is the output an agent reads to answer the same question with `rg`
 and file reads over the registries; stage 2 records each baseline in
 `tools/kb/bench.toml`, and a `kb` answer must stay within its budget and
-below its baseline.
+below its baseline. Every question owns a nonempty `expect` array of
+multiline regular expressions whose required content the complete answer
+contains. Empty or invalid patterns and patterns that accept empty content
+are refused. `kb bench` prints the missing patterns and fails an answer
+that omits any of them, even when its exit code and size satisfy the question.
+An unknown question id or a selection with no active question is a usage
+error; `--all` includes questions of later stages.
+
+`kb brief` and `kb gaps` use the same required binding rows and expose their
+complete `gap_summary` totals by feature, layout, and state. The brief's
+priority sample groups rows by meaning and layout and ranks the unique
+binding by affected project features, required fields, and link degree.
+Family-only requirements follow project requirements. The complete `gaps`
+JSON array remains available alongside the sample.
+
+`kb log` retains full former references from owned symbol entries, including
+all members when asked for a meaning. Its profile corrections are previous
+declarations from the first-parent Git history of
+`patches/rom-address-profiles.toml`, selected by the keys that current feature
+targets associate with the meaning. A correction retains its commit,
+layout, source table, key, and both addresses; inherited copies and numeric
+formatting changes do not create additional corrections.
 
 | # | Question | Command | Budget | From stage |
 |---|---|---|---|---|
@@ -2254,6 +2275,8 @@ below its baseline.
 - `tools/kb/bench.toml` becomes the owner of the budgets and stages in stage
   2, and the single-source gate reads this table against it.
 - Every stage exit runs the questions active at that stage.
+- The single-source gate validates every question's content contract,
+  including questions of stages that have not started.
 
 ## 19. Ownership by stage
 

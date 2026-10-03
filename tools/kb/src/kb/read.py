@@ -6,7 +6,7 @@ returns an `Answer`. The command line prints the answer within its budget, and
 producer: `[l0]`, `[derived]`, or `[candidate]`.
 """
 
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
 import csv
 import math
 import re
@@ -1621,6 +1621,41 @@ def gap_detail(row):
     return " ".join(sorted({item.get("kind", "?") for item in evidence}))
 
 
+def gap_summary(rows):
+    """Totals of the same required binding rows that `kb gaps` lists."""
+    def counts(key):
+        return dict(sorted(Counter(row[key] for row in rows).items()))
+
+    states = Counter((row["status"] or {}).get("state", "unknown") for row in rows)
+    return {"total": len(rows), "features": counts("feature"), "layouts": counts("layout"),
+            "states": {state: states[state] for state in
+                       GAP_STATES + tuple(sorted(set(states) - set(GAP_STATES)))}}
+
+
+def gap_priorities(graph, rows, limit=5):
+    """Missing bindings ranked by affected features, fields, then link degree.
+    Family-only requirements follow requirements of project features."""
+    bindings = {}
+    for row in rows:
+        key = row["meaning"], row["layout"]
+        item = bindings.setdefault(key, {"meaning": row["meaning"], "layout": row["layout"],
+                                        "state": (row["status"] or {}).get("state", "unknown"),
+                                        "features": set(), "fields": set()})
+        item["features"].add(row["feature"])
+        if row["field"]:
+            item["fields"].add(row["field"])
+    if not bindings:
+        return []
+    degrees = {row["key"]: row["degree"] for row in graph.run(
+        "MATCH (m:Kb:Meaning) WHERE m.key IN $keys OPTIONAL MATCH (m)-[r]-(:Kb:Meaning) "
+        "RETURN m.key AS key, count(r) AS degree", keys=sorted({key[0] for key in bindings}))}
+    ranked = sorted(bindings.values(), key=lambda item: (
+        -len(item["features"] - {FAMILY}), -len(item["fields"]),
+        -degrees.get(item["meaning"], 0), item["layout"], item["meaning"]))
+    return [{**item, "features": sorted(item["features"]), "fields": sorted(item["fields"]),
+             "degree": degrees.get(item["meaning"], 0)} for item in ranked[:limit]]
+
+
 def gaps(graph, feature=None, layout=None, root=repo.ROOT):
     if feature is not None and not graph.run(
             "MATCH (f:Kb:Entity {kind: 'feature', slug: $feature}) RETURN f.key AS key",
@@ -1653,7 +1688,7 @@ def gaps(graph, feature=None, layout=None, root=repo.ROOT):
         if groups.get(state):
             answer.section(f"{state}: {len(groups[state])}", FACTS, groups[state])
     answer.data = {"gaps": [{**row, "state": (row["status"] or {}).get("state", "unknown")}
-                            for row in rows]}
+                            for row in rows], "gap_summary": gap_summary(rows)}
     return answer
 
 
@@ -1717,22 +1752,31 @@ def brief(graph, root=repo.ROOT):
         f"  by the registries that state their symbol when none converts: {stay or 'none'}",
         f"  reserving the name of a symbol that no registry states: {legacy['reserved']}"])
     data["names"] = legacy
-    gaps = graph.run("MATCH (m:Kb:Meaning)-[r:STATUS {state: 'unknown'}]->(l:Kb:Layout) "
-                     "OPTIONAL MATCH (m)-[k]-(:Kb:Meaning) "
-                     "RETURN m.key AS key, l.key AS layout, count(k) AS degree "
-                     "ORDER BY degree DESC, key LIMIT 5")
+    required = gap_rows(graph)
+    summary = gap_summary(required)
+    priorities = gap_priorities(graph, required)
     unresolved = graph.run(
         "MATCH (m:Kb:Meaning)-[r:STATUS {state: 'unresolved'}]->(l:Kb:Layout) "
         "RETURN m.key AS key, l.key AS layout, r.l0 AS l0, substring(l.l0, 0, 16) AS current")
     stale = [row for row in unresolved if row["l0"] and row["l0"] != row["current"]]
     candidates = graph.run("MATCH (c:Kb:Candidate) RETURN count(c) AS n")[0]["n"]
-    gap_lines = [f"  {row['key']} on {row['layout']}  degree {row['degree']}" for row in gaps]
-    total_gaps = sum(state.get("unknown", 0) for state in statuses.values())
-    answer.section(f"open gaps: {total_gaps} unknown statuses, ranked by link degree until "
-                   "features require meanings", LINKS, gap_lines or ["  none"])
+    def totals(counts):
+        return ", ".join(f"{key} {value}" for key, value in counts.items()) or "none"
+
+    head = f"open gaps: {summary['total']} required meanings without a symbol"
+    if required:
+        head += f" on {len(summary['layouts'])} layouts"
+    answer.section(head, FACTS, [f"  by {key[:-1]}: {totals(summary[key])}"
+                                for key in ("features", "layouts", "states")])
+    answer.section("priority gaps: affected features, fields, then link degree", LINKS, [
+        f"  {row['meaning']} on {row['layout']}  {row['state']}  "
+        f"features {', '.join(row['features'])}; fields {', '.join(row['fields']) or 'none'}; "
+        f"degree {row['degree']}" for row in priorities] or ["  none"])
     answer.section(f"stale searches: {len(stale)}; pending candidates: {candidates}", LINKS,
                    [f"  {row['key']} on {row['layout']}" for row in stale] or ["  none"])
-    data.update({"gaps": gaps, "stale": stale, "candidates": candidates})
+    data.update({"gaps": [{**row, "state": (row["status"] or {}).get("state", "unknown")}
+                          for row in required], "gap_summary": summary,
+                 "gap_priorities": priorities, "stale": stale, "candidates": candidates})
     questions = []
     for item in config["question"]:
         active = "active" if item["stage"] <= stage else f"from stage {item['stage']}"
@@ -1747,6 +1791,8 @@ def brief(graph, root=repo.ROOT):
 # kb log and kb raw --------------------------------------------------------------------------------
 
 def log(graph, text, root=repo.ROOT):
+    from kb import history
+
     ref = refs.resolve(graph, text, root=root)
     if ref.kind == "location":
         raise KbError(f"{ref.text} holds no symbol", code=5)
@@ -1754,23 +1800,41 @@ def log(graph, text, root=repo.ROOT):
     lines = [ref.text]
     if ref.note:
         lines.append(f"  resolved: {ref.note}")
-    meaning = ref.meaning if ref.kind == "symbol" else ref.node
-    for node, label in ((meaning, "meaning"), (ref.node if ref.kind == "symbol" else None,
-                                                 "symbol")):
-        if not node:
-            continue
-        for name in node.get("former") or ():
-            lines.append(f"  {'former':<15} {label} name {name}")
-        if node.get("generated") and node.get("generated") != node.get("name"):
-            lines.append(f"  generated name {node['generated']}")
+    meaning = (ref.meaning if ref.kind == "symbol" else ref.node) or {}
+    for name in meaning.get("former") or ():
+        lines.append(f"  {'former':<15} meaning name {name}")
+    members = ([ref.node] if ref.kind == "symbol" else [row["s"] for row in graph.run(
+        "MATCH (:Kb:Meaning {key: $key})-[:HAS]->(s:Kb:Symbol) RETURN s ORDER BY s.layout",
+        key=meaning.get("key"))]) if ref.kind != "entity" else []
+    symbols = []
+    for node in members:
+        former = history.former_references(node, meaning.get("src") or (), root)
+        generated = node.get("generated")
+        if generated == node.get("name"):
+            generated = None
+        if former or generated:
+            current = symbol_ref(node)
+            lines.append(f"  symbol          {current}")
+            for previous in former:
+                full = refs.FULL.fullmatch(previous)
+                lines.append(f"  former          symbol {'reference' if full else 'name'} "
+                             f"{previous}" + (f" -> {current}" if full else ""))
+            if generated:
+                lines.append(f"  generated name {generated}")
+            symbols.append({"ref": current, "former": former, "generated": generated})
+    changes = history.profile_changes(graph, meaning["key"], ref.layout if ref.kind == "symbol"
+                                      else None, root) if meaning.get("key") and members else []
     sources = sorted(set(meaning.get("src") or ()) | set(
         (ref.node.get("src") or ()) if ref.kind == "symbol" else ()))
-    lines.append(f"  registries: {', '.join(sources)}")
-    if len(lines) == 2 + bool(ref.note):
+    lines.append(f"  sources: {', '.join(sources)}")
+    if len(lines) == 2 + bool(ref.note) and not changes:
         lines.insert(1 + bool(ref.note), "  no rename or redirect recorded")
     answer.section(None, IDENTITY, lines)
+    answer.section("recorded profile address corrections", FACTS, [
+        f"  {item['commit'][:7]}  {item['layout']}  {item['table']}.{item['key']}: "
+        f"{item['old']} -> {item['new']}  {item['source']}" for item in changes])
     answer.data = {"ref": ref.text, "former": list(meaning.get("former") or ()),
-                   "sources": sources}
+                   "symbols": symbols, "history": changes, "sources": sources}
     return answer
 
 

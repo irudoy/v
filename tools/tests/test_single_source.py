@@ -63,6 +63,17 @@ def test_the_tree_matches_its_sources(facts):
     single_source.check_published(facts)
 
 
+@pytest.mark.parametrize("expected", [None, [], ["["], [".*"]])
+def test_benchmark_content_contracts_are_required_by_the_source_gate(monkeypatch, expected):
+    read = single_source._toml
+    config = read(single_source.KB_BENCH)
+    config["question"][-1]["expect"] = expected
+    monkeypatch.setattr(single_source, "_toml", lambda path: config
+                        if path == single_source.KB_BENCH else read(path))
+    with pytest.raises(single_source.SourceError, match="question 13: expect"):
+        single_source.check_kb_questions()
+
+
 @pytest.mark.parametrize(
     "check, path, old, new",
     [

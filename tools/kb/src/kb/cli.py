@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 from kb import (answer, checks, compile, graph, guard, instance, l0, lock, passes, project,
-                read, refs, repo, sites, store, vocab, write)
+                read, refs, repo, sites, spec, store, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -295,22 +295,31 @@ def baseline_tokens(steps, root=repo.ROOT):
 
 def command_bench(args, root=repo.ROOT):
     config = read.bench(root)
+    questions = [(question, spec.expectations(question)) for question in config["question"]]
+    known = {question["id"] for question, _ in questions}
+    if args.only and (unknown := sorted(set(args.only) - known)):
+        raise KbError(f"no benchmark questions {unknown}; known ids: {sorted(known)}", code=2)
+    selected = [(question, expected) for question, expected in questions
+                if (question["stage"] <= config["stage"] or args.all)
+                and (not args.only or question["id"] in args.only)]
+    if not selected:
+        raise KbError("no active benchmark questions selected; --all includes later stages",
+                      code=2)
     failed = 0
-    for question in config["question"]:
-        if question["stage"] > config["stage"] and not args.all:
-            continue
-        if args.only and question["id"] not in args.only:
-            continue
+    for question, expected in selected:
         out = io.StringIO()
         with redirect_stdout(out):
             code = main(shlex.split(question["command"])[1:] + ["--full"])
-        used = answer.tokens(out.getvalue())
+        rendered = out.getvalue()
+        used = answer.tokens(rendered)
         base = baseline_tokens(question["baseline"], root)
-        passed = code == 0 and used <= question["budget"] and used < base
+        missing = [pattern.pattern for pattern in expected if pattern.search(rendered) is None]
+        passed = code == 0 and not missing and used <= question["budget"] and used < base
         failed += not passed
         print(f"{question['id']:>2}  {'PASS' if passed else 'FAIL'}  {used:>5} tokens, budget "
               f"{question['budget']:>5}, baseline {base:>6}  {question['command']}"
-              + ("" if code == 0 else f"  exit {code}"))
+              + ("" if code == 0 else f"  exit {code}")
+              + (f"  missing expected content: {missing!r}" if missing else ""))
     return 1 if failed else 0
 
 

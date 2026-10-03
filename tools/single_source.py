@@ -28,6 +28,8 @@ if str(ROOT) not in sys.path:
 from patches import can_telemetry_profile
 from patches import rom_address_profiles
 from patches import runtime_targets
+from kb import spec as kb_spec
+from kb.repo import KbError
 from tools.can_dashboard import (
     PRODUCT_NAME,
     PRODUCT_SHORT_NAME,
@@ -236,9 +238,15 @@ def published_questions():
 def check_kb_questions():
     """Require the question table of the kb specification to equal the
     questions, budgets, and stages that `tools/kb/bench.toml` owns."""
+    questions = _toml(KB_BENCH)["question"]
+    for question in questions:
+        try:
+            kb_spec.expectations(question)
+        except KbError as error:
+            raise SourceError(f"{KB_BENCH}: {error}") from error
     owned = [
         (item["id"], item["question"], item["command"], item["budget"], item["stage"])
-        for item in _toml(KB_BENCH)["question"]
+        for item in questions
     ]
     published = published_questions()
     if published != owned:

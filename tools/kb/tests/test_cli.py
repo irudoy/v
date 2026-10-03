@@ -109,5 +109,77 @@ class CheckCommandTest(unittest.TestCase):
         self.assertIn("unknown or inactive checks", err.getvalue())
 
 
+class BenchCommandTest(unittest.TestCase):
+    QUESTION = {"id": 9, "stage": 3, "command": "kb log apc_output", "budget": 100,
+                "baseline": [], "expect": [r"^apc_output/ram$", r"ffff206c -> ffff11f5"]}
+
+    def bench(self, text, *, questions=None, only=None, all=False, code=0, baseline=1000):
+        config = {"stage": 5, "question": questions or [dict(self.QUESTION)]}
+        args = Namespace(only=only, all=all)
+
+        def reply(argv):
+            print(text, end="")
+            return code
+
+        out = io.StringIO()
+        with mock.patch.object(cli.read, "bench", return_value=config), \
+                mock.patch.object(cli, "main", side_effect=reply) as command, \
+                mock.patch.object(cli, "baseline_tokens", return_value=baseline) as base, \
+                contextlib.redirect_stdout(out):
+            result = cli.command_bench(args)
+        return result, out.getvalue(), command.call_args_list, base.call_count
+
+    def test_an_answer_with_all_required_content_passes_within_budget_and_baseline(self):
+        code, text, calls, baselines = self.bench(
+            "apc_output/ram\n  jk00d ffff206c -> ffff11f5\n")
+        self.assertEqual(code, 0)
+        self.assertIn("PASS", text)
+        self.assertEqual(calls, [mock.call(["log", "apc_output", "--full"])])
+        self.assertEqual(baselines, 1)
+
+    def test_a_small_successful_answer_missing_the_correction_fails(self):
+        code, text, _, _ = self.bench("apc_output/ram\n  former meaning name apc_command\n")
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL", text)
+        self.assertIn("missing expected content", text)
+        self.assertIn("ffff206c -> ffff11f5", text)
+
+    def test_expected_content_does_not_override_exit_budget_or_baseline_failures(self):
+        answer = "apc_output/ram\nffff206c -> ffff11f5\n"
+        for params in ({"code": 5}, {"baseline": 1}, {}):
+            with self.subTest(params=params):
+                text = answer + ("x" * 400 if not params else "")
+                self.assertEqual(self.bench(text, **params)[0], 1)
+
+    def test_invalid_contracts_fail_before_any_question_or_baseline_runs(self):
+        for expected in (None, [], "literal", [None], [" "], ["["], [".*"], ["(foo)?"]):
+            with self.subTest(expected=expected):
+                config = {"stage": 5, "question": [{**self.QUESTION, "expect": expected}]}
+                with mock.patch.object(cli.read, "bench", return_value=config), \
+                        mock.patch.object(cli, "main") as command, \
+                        mock.patch.object(cli, "baseline_tokens") as baseline, \
+                        self.assertRaises(KbError) as error:
+                    cli.command_bench(Namespace(only=None, all=False))
+                self.assertEqual(error.exception.code, 2)
+                command.assert_not_called()
+                baseline.assert_not_called()
+
+    def test_an_invalid_later_stage_contract_is_checked_before_active_questions_run(self):
+        future = {**self.QUESTION, "id": 6, "stage": 9, "expect": []}
+        with self.assertRaises(KbError) as error:
+            self.bench("apc_output/ram\nffff206c -> ffff11f5\n",
+                       questions=[self.QUESTION, future])
+        self.assertEqual(error.exception.code, 2)
+        self.assertIn("question 6", str(error.exception))
+
+    def test_unknown_ids_and_inactive_selections_do_not_pass_without_running_a_question(self):
+        for only, questions in (([99], None), ([9], [{**self.QUESTION, "stage": 9}])):
+            with self.subTest(only=only, questions=questions), self.assertRaises(KbError) as error:
+                self.bench("", only=only, questions=questions)
+            self.assertEqual(error.exception.code, 2)
+        self.assertEqual(self.bench("apc_output/ram\nffff206c -> ffff11f5\n", only=[9],
+                                    questions=[{**self.QUESTION, "stage": 9}], all=True)[0], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
