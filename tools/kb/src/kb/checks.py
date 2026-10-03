@@ -91,6 +91,11 @@ def _key_issues(props, kind, path, subject, quantities):
     for key, allowed in VOCABULARY.items():
         if props.get(key) not in (None, *allowed):
             yield Issue("schema", path, subject, f"{key} {props[key]!r}")
+    if kind in ("ram", "reg") and "width" in props:
+        width = props["width"]
+        if type(width) is not int or width not in (8, 16, 32):
+            yield Issue("schema", path, subject,
+                        f"width {width!r} of a {kind} must be 8, 16, or 32 bits")
     if kind == "axis" and props.get("quantity") not in (None, *quantities):
         yield Issue("schema", path, subject, f"quantity {props['quantity']!r} outside [vocab] "
                     "quantity of tools/kb/config.toml")

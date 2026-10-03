@@ -64,6 +64,9 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   ([Matchers](#matchers)); and `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
   A check may print notes, lines marked `note:` that do not fail it.
+  The schema checks RAM and register access widths in bits for meanings and
+  per-layout symbol overrides before writes. Field widths keep their byte
+  contract; independent symbol-to-L0 width reconciliation remains stage-8 work.
   `--changed` runs the checks whose inputs differ from those of their last
   pass: the files a check reads and the source and configuration of `kb`.
   `.kb/cache/checks.json` records the digest of the inputs of each check at

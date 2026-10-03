@@ -301,8 +301,8 @@ class NewTest(unittest.TestCase):
                 meaning, symbol = change.resolve(reference)
                 self.assertEqual(meaning.key, "probe_cell/ram")
                 self.assertEqual(symbol.key, SymbolKey("jk00d", "ram", 0xffff0ff2))
-        change.run(assign("probe_cell/ram/jk00d", {"width": 2}))
-        self.assertEqual(change.resolve("jk00d:ffff0ff2")[1].props["width"], 2)
+        change.run(assign("probe_cell/ram/jk00d", {"width": 16}))
+        self.assertEqual(change.resolve("jk00d:ffff0ff2")[1].props["width"], 16)
 
     def test_a_new_location_does_not_shadow_an_existing_kind(self):
         change = write.Change(self.base, write.model_resolver(self.base))
@@ -327,6 +327,30 @@ class NewTest(unittest.TestCase):
             self.assertIn("op 2", str(caught.exception))
             files.assert_not_called()
             graph.assert_not_called()
+
+    def test_an_unsupported_access_width_refuses_an_entire_batch_before_writes(self):
+        build = compile.build
+
+        def build_result(root, overlay=None):
+            return self.base if overlay is None else build(root, overlay)
+
+        for reference in ("probe_cell/ram", "probe_cell/ram/jk00d"):
+            with self.subTest(reference=reference), \
+                    mock.patch.object(write.lock, "held", return_value=contextlib.nullcontext()), \
+                    mock.patch.object(write.graph, "fresh", return_value=contextlib.nullcontext()), \
+                    mock.patch.object(write.compile, "build", side_effect=build_result), \
+                    mock.patch.object(write, "graph_resolver", return_value=write.model_resolver(self.base)), \
+                    mock.patch.object(write.store, "write") as files, \
+                    mock.patch.object(write.graph, "sync_held") as graph:
+                with self.assertRaises(KbError) as caught:
+                    write.apply([
+                        new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]),
+                        bind("probe_cell/ram", "jk00d:ffff0ff2", evidence=[SPEC]),
+                        assign(reference, {"width": 4}),
+                    ])
+                self.assertIn("width 4 of a ram must be 8, 16, or 32 bits", str(caught.exception))
+                files.assert_not_called()
+                graph.assert_not_called()
 
     def test_a_symbol_without_a_row_draws_its_generated_name(self):
         held = {key.address for key in self.base.symbols
