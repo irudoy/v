@@ -1,0 +1,8 @@
+title = "Misfire monitor"
+stage = "diagnostics/stage"
+summary = """
+Crankshaft irregularity metric, detection core, operating-range counters, \
+and P0300..P0306 reporting."""
+specs = ["defs/JK08A.diagnostics.md"]
+home = "7mfk"
+order = 31

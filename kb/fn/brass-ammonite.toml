@@ -5,6 +5,7 @@ total-MAF calculations."""
 note = ["Caller 0003a904 invokes exactly indices 0 and 1."]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

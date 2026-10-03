@@ -9,6 +9,7 @@ r5/r6 are lost.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

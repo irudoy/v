@@ -9,6 +9,7 @@ of diagnostic naming.""",
 ]
 level = "code"
 role = "driver"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

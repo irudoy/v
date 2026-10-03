@@ -1,4 +1,5 @@
 role = "init"
+block = "memory_integrity/block"
 contract = """
 Not arithmetic: ROM self-test initializer. It takes no arguments, and no \
 register is read before being written. Its only effect is *(u32)0xFFFF2C04 = \

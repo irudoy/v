@@ -10,6 +10,7 @@ external peer's physical identity.""",
 ]
 level = "code"
 role = "service"
+block = "nonvolatile/block"
 
 [[ledger]]
 registry = "funcs"

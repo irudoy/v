@@ -12,6 +12,7 @@ count.""",
 ]
 level = "code"
 role = "accessor"
+block = "dfco/block"
 
 [[ledger]]
 registry = "curated"

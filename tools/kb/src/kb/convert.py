@@ -151,7 +151,7 @@ from pathlib import Path
 import sys
 
 from kb import adapters, compile, graph, lock, match, repo, sites, store, tokens, write
-from kb.adapters import (curated, definitions, interp, ledgers, native, overrides, profiles,
+from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides, profiles,
                          signals, telemetry)
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
@@ -243,7 +243,16 @@ def _table(model, table):
 
 
 def _alone(symbol, inputs):
-    """Whether only the registry and the entity files state a symbol."""
+    """Whether the registry is the only retained declarer of a symbol.
+
+    A converted home architecture placement retains that source's
+    declaration even when the source path no longer joins symbol.sources.
+    It does not declare the corresponding symbol of another layout.
+    """
+    meaning = symbol.meaning
+    if (meaning is not None and symbol.layout == meaning.home
+            and meaning.props.get('block')):
+        return False
     return all(src in inputs or src.startswith(f"{store.TREE.as_posix()}/")
                for src in symbol.sources)
 
@@ -280,7 +289,7 @@ class Conversion:
                 slug: entity.refs["signal"][0][1]
                 for (kind, slug), entity in before.entities.items()
                 if kind == "field" and entity.refs.get("signal")}
-        if adapter is overrides:
+        if adapter in (overrides, architecture):
             # The overrides name the symbols of the model before them.
             self.facts.index(before.symbols)
         if adapter is ledgers:
@@ -1399,6 +1408,54 @@ class Conversion:
             raise KbError(f"the static axis operand {operand.key} has no meaning", code=3)
         return {**table, overrides.OPERAND: held.key}
 
+    def architecture(self):
+        """Move architecture entities and exact placements without a new claim."""
+        before, facts = self.before, self.facts
+        keys = set(facts.symbols)
+        for entity in facts.entities.values():
+            keys.update(ref for refs in entity.refs.values() for ref in refs
+                        if isinstance(ref, SymbolKey))
+            for step in entity.steps:
+                keys.update((step['from'], step['to'], *step.get('via', ())))
+        for key in sorted(keys):
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f'{key.key}: no meaning before architecture conversion', code=3)
+            entry = self._entry(self._document(symbol.meaning), symbol)
+            if symbol.implicit and not entry.get('evidence'):
+                item = self._identity(symbol, None)
+                entry['evidence'] = [item]
+                self.evidence[key] = ([item], [])
+        for anchor, props, _ in facts.meaning_props:
+            meaning = before.meaning_of(anchor)
+            if meaning is None:
+                raise KbError(f'{anchor}: architecture placement has no meaning', code=3)
+            _agree(self._document(meaning), props, meaning.key)
+        for (kind, slug), entity in facts.entities.items():
+            _, document = self.change.designed(kind, slug)
+            props = {key: value for key, value in entity.props.items() if value is not None}
+            for field, references in entity.refs.items():
+                values = [self._architecture_reference(reference) for reference in references]
+                props[field] = values[0] if field in ('stage', 'block', 'output') else values
+            if kind == 'chain':
+                props['step'] = [{**{key: value for key, value in step.items()
+                                    if key not in ('from', 'to', 'via') and value is not None},
+                                  'from': self._architecture_reference(step['from']),
+                                  'to': self._architecture_reference(step['to']),
+                                  **({'via': [self._architecture_reference(ref)
+                                              for ref in step['via']]}
+                                     if step.get('via') else {})} for step in entity.steps]
+            _agree(document, props, entity.key)
+
+    def _architecture_reference(self, reference):
+        if isinstance(reference, tuple):
+            return f'{reference[1]}/{reference[0]}'
+        if isinstance(reference, SymbolKey):
+            symbol = self.before.symbols.get(reference)
+            if symbol is not None and symbol.meaning is not None:
+                return symbol.meaning.key
+        raise KbError(f'architecture reference {reference!r} names no entity or meaning', code=3)
+
     # Comparison -------------------------------------------------------------
 
     def expected(self):
@@ -1625,8 +1682,12 @@ def plan(name, root=repo.ROOT):
     if adapter is None:
         known = ", ".join(item.__name__.rsplit(".", 1)[1] for item in adapters.CONVERTED)
         raise KbError(f"no conversion {name!r}; the conversions are {known}", code=2)
-    before = compile.build(root, order=tuple(
-        item for item in adapters.ORDER if item not in adapters.CONVERTED or item is adapter))
+    order = tuple(
+        item for item in adapters.ORDER if item not in adapters.CONVERTED or item is adapter)
+    if adapter is architecture and any(kind in ('stage', 'block', 'endpoint', 'chain')
+                                        for kind, _, _ in store.files(root)):
+        order = tuple(item for item in order if item is not adapter)
+    before = compile.build(root, order=order)
     conversion = Conversion(adapter, before, root)
     texts = conversion.run()
     result = compile.build(root, {**before.overlay, **texts})
@@ -1645,6 +1706,13 @@ def plan(name, root=repo.ROOT):
             + [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
                for issue in shown[:SHOWN]]), code=3)
     rendered = projections(adapter, result)
+    if adapter is architecture:
+        from kb import architecture_projection
+        path = architecture.ARCHITECTURE
+        original, generated = (root / path).read_text(encoding='utf-8'), rendered[path.as_posix()]
+        architecture_projection.validate_conversion(original, generated, result)
+        if generated != original:
+            texts[path] = generated
     if adapter is ledgers:
         from kb import ledger_projection
         for path, text in rendered.items():
@@ -1702,6 +1770,10 @@ def projections(adapter, model):
     if adapter is ledgers:
         from kb import ledger_projection
         return ledger_projection.render(model)
+    if adapter is architecture:
+        from kb import architecture_projection
+        return {architecture.ARCHITECTURE.as_posix(): architecture_projection.render(
+            architecture_projection.document(model))}
     return {}
 
 

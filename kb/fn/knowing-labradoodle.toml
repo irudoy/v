@@ -11,6 +11,7 @@ conversion remains separate.""",
 ]
 level = "code"
 role = "service"
+block = "library/block"
 contract = """
 It returns uint8 1 iff int32(r4 - (uint8(r7) != 0 ? r6 : 0)) <= int32(r5); \
 otherwise it returns 0. It reads and writes no memory."""

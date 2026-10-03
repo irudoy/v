@@ -1,0 +1,8 @@
+title = "Work support"
+stage = "communication/stage"
+summary = """
+Service 0x3B work-support adjustments, their stored records, and the \
+automatic request selector."""
+specs = ["defs/JK08A.work-support.md"]
+home = "7mfk"
+order = 41

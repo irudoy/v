@@ -1,0 +1,10 @@
+title = "Knock sensors"
+direction = "input"
+block = "knock/block"
+peripheral = "ADC2 with DMAC channel 2"
+summary = """
+DMAC channel 2 transfers ADC2 conversions into the RAM buffers of the knock \
+evaluation."""
+functions = ["bold-hummingbird/fn", "roaring-toad/fn", "meteoric-raptor/fn"]
+specs = ["defs/JK08A.knock-detection.md"]
+order = 8

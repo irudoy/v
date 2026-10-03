@@ -9,6 +9,7 @@ corresponding to one crankshaft revolution on the V6.""",
 ]
 level = "code"
 role = "dispatch"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

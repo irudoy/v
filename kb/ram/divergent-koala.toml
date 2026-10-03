@@ -1,0 +1,11 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1eb2"
+name = "divergent-koala"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000a401e"
+value = 12
+mode = "base"

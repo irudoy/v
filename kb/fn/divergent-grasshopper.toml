@@ -11,6 +11,7 @@ closed-loop arithmetic is retained separately in FUN 0005cbec.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

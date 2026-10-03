@@ -12,6 +12,7 @@ dwell meaning remains unverified.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_output/block"
 
 [[ledger]]
 registry = "curated"

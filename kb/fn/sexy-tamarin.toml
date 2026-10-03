@@ -13,6 +13,7 @@ are byte-identical in stock JK08A. The physical domain is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

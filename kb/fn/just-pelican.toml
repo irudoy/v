@@ -16,6 +16,7 @@ six injector one-shots a 3.2 us step.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

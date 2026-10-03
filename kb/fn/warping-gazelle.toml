@@ -3,6 +3,7 @@ Initializes intake-cam reference bytes ffff4799 and ffff479a from ROM bytes \
 0x831c and 0x8321."""
 level = "code"
 role = "init"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

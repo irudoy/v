@@ -1,0 +1,11 @@
+title = "Fuel injectors"
+direction = "output"
+block = "injector_output/block"
+peripheral = "ATU-II channel 8 one-shot down-counters"
+summary = """
+Scheduler 0002c13c adds each injector duration to DCNT8A+2*i and starts the \
+one-shot through DSTR bit i."""
+registers = ["glossy-tarantula/reg", "imported-panther/reg"]
+functions = ["injector_oneshot_mask_scheduler/fn"]
+specs = ["defs/JK08A.fuel.md"]
+order = 11

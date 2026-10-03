@@ -19,4 +19,5 @@
 /defs/JK08A.axes.csv
 /defs/JK08A.dtc.csv
 /defs/JK08A.diagnostic-bindings.csv
+/defs/JK08A.architecture.toml
 /tools/ghidra/symbols/7mfk.csv

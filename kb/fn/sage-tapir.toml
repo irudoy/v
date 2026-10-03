@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Signed 32/32 remainder: r0 = r1 % r0 under the C rule, where the result has \
 the sign of the dividend and is unaffected by the divisor sign; its \

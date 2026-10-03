@@ -3,6 +3,7 @@ Third explicit-axis word core; six wrappers serve 22 tables. Sub-helper is \
 0x26BC0."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

@@ -11,6 +11,7 @@ The same arithmetic disproves the x-64 degrees scale.""",
 ]
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

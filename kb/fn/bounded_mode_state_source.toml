@@ -18,6 +18,7 @@ stored-record paths; the automatic route stays inactive in JK08A.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

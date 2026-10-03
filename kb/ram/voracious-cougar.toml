@@ -14,6 +14,7 @@ stored to ffff1995. Captured override ramps of 4 counts per tick correspond \
 to ffff11c0=1.""",
 ]
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "centered_u8"
 
 [[ledger]]

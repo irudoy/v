@@ -3,6 +3,7 @@ Signed multiplication wrapper around 0x2657C for a negative multiplier; it \
 reads no tables. One of four non-table entries in the region, with 6 slots."""
 level = "code"
 role = "service"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

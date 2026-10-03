@@ -1,0 +1,8 @@
+title = "Throttle servo"
+stage = "actuation/stage"
+summary = """
+Per-channel feedback selection, throttle regulator, effort-to-duty \
+conversion, and ATU-II PWM publication."""
+specs = ["defs/JK08A.throttle-control.md"]
+home = "7mfk"
+order = 29

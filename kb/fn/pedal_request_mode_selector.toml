@@ -10,6 +10,7 @@ signed request.""",
 ]
 level = "code"
 role = "selector"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

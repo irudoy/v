@@ -3,6 +3,7 @@ Explicit-axis 4x4 wrapper over the byte core; geometry is in the entry \
 registry."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

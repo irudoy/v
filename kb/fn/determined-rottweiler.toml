@@ -1,4 +1,5 @@
 role = "init"
+block = "memory_integrity/block"
 contract = """
 Not arithmetic: background ROM self-test scanner initializer. It takes no \
 arguments. It writes two words: cursor 0xFFFF2FF4 = 0x0002040C and scan step \

@@ -11,6 +11,7 @@ quantity of both channels is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

@@ -20,6 +20,7 @@ that FUN 00054d3e applies through snapshot ffff2390.""",
 ]
 level = "code"
 role = "accessor"
+block = "injection_timing/block"
 
 [[ledger]]
 registry = "curated"

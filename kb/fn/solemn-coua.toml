@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Logical unsigned right shift: r0 = r0 >> r1 with zero fill. A jump table \
 dispatches into a chain of fixed shifts: SH-2E has no SHLD/SHAD, so variable \

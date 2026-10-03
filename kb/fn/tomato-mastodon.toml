@@ -3,6 +3,7 @@ Component where ffff4214 selects the source of local_34 and carries the \
 result of comparison >= 800."""
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

@@ -17,6 +17,7 @@ remainder angle in ATU-II channel-1 counts of 3.2 us. Callers are sequencer \
 ]
 level = "code"
 role = "driver"
+block = "injector_output/block"
 
 [[ledger]]
 registry = "funcs"

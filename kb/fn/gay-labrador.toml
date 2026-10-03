@@ -12,6 +12,7 @@ identify their physical quantity.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

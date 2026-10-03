@@ -15,6 +15,7 @@ established; the physical state and units are unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,6 +1,7 @@
 summary = "2D interpolation over words; entries 0x265F0, 0x26628, and 0x26660."
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

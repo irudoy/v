@@ -1,6 +1,7 @@
 summary = "Implicit-axis primitive: 32 points, step 8, limit 248, uint8 element."
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

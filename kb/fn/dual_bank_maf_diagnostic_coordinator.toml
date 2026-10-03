@@ -13,6 +13,7 @@ Engineering conversions require hardware validation.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "curated"

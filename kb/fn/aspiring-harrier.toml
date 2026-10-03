@@ -11,6 +11,7 @@ scales and all surrounding enable/timing conditions remain unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "o2_catalyst/block"
 
 [[diagnostic]]
 id = "rear-o2-main-high-a-p0138"

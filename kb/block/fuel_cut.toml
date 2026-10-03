@@ -1,0 +1,9 @@
+title = "Fuel-output inhibit"
+stage = "arbitration/stage"
+summary = """
+Six-channel fuel-output inhibit coordinator and its contributors: rev \
+limiters, overtemperature, vehicle speed, faults, CAN ceiling, and Power \
+Balance."""
+specs = ["defs/JK08A.fuel-inhibit.md"]
+home = "7mfk"
+order = 23

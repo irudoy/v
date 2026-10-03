@@ -5,6 +5,7 @@ ffff34a2, limits counter ffff34a3, and through a comparison controls bit \
 note = ["The physical purpose of the internal counter is unresolved."]
 level = "code"
 role = "accessor"
+block = "transmission/block"
 
 [[ledger]]
 registry = "funcs"

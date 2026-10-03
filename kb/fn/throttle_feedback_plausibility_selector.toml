@@ -11,6 +11,7 @@ not asserted.""",
 ]
 level = "code"
 role = "selector"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

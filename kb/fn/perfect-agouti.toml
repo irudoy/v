@@ -9,6 +9,7 @@ from the same source, this establishes RPM/25 at ffff11b3.""",
 ]
 level = "code"
 role = "accessor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

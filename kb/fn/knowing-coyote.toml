@@ -14,6 +14,7 @@ response.""",
 ]
 level = "code"
 role = "handler"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

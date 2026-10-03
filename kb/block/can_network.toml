@@ -1,0 +1,8 @@
+title = "CAN network"
+stage = "communication/stage"
+summary = """
+HCAN1 mailbox setup, receive dispatch and payload decoders, and periodic \
+transmit serialization."""
+specs = ["defs/JK08A.can.md", "defs/JK08A.tuning-telemetry.md"]
+home = "7mfk"
+order = 40

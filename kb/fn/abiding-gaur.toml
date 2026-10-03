@@ -3,6 +3,7 @@ Writes a RAM structure and reads no tables. One of four non-table entries in \
 the region, with 3 slots."""
 level = "code"
 role = "service"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

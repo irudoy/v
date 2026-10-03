@@ -22,6 +22,7 @@ On tooth 9 the exact range ends at count 10.""",
 ]
 level = "code"
 role = "service"
+block = "ignition_output/block"
 
 [[ledger]]
 registry = "curated"

@@ -14,6 +14,7 @@ physical TTEPTD identity and engineering units remain candidate semantics.""",
 ]
 level = "code"
 role = "accessor"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

@@ -9,6 +9,7 @@ body has not been analyzed.""",
 ]
 level = "candidate"
 role = "service"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

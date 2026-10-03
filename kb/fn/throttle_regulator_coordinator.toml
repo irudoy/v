@@ -6,6 +6,7 @@ calls 000cafbc, 000cb078, 000cb140, 000cb1ca, 000cb224, 000cb2b6, 000cb354, \
 note = ["The ROM pointer table fixes the exact regulator-stage order."]
 level = "code"
 role = "dispatch"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

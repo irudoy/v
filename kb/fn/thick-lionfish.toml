@@ -10,6 +10,7 @@ individual physical quantity represented by ffff1752 remains unresolved.""",
 ]
 level = "code"
 role = "consumer"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

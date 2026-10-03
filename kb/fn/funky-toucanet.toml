@@ -27,6 +27,7 @@ and the physical role of the bank flags are unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

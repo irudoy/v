@@ -13,6 +13,7 @@ automatic branches of the timing and idle adjustments.""",
 ]
 level = "code"
 role = "selector"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

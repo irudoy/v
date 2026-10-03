@@ -1,0 +1,16 @@
+title = "Throttle motor"
+direction = "output"
+block = "throttle_servo/block"
+peripheral = "ATU-II channel 6 complementary PWM"
+summary = """
+000407c0 converts duty commands 0xFFFF374C and 0xFFFF374E to 0..320 counts \
+in BFR6A..BFR6D."""
+registers = [
+    "steady-jaguar/reg",
+    "blazing-hog/reg",
+    "thundering-elk/reg",
+    "wondrous-giraffe/reg",
+]
+functions = ["atu2_throttle_pwm_publisher/fn"]
+specs = ["defs/JK08A.throttle-control.md"]
+order = 15

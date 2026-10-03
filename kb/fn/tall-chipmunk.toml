@@ -12,6 +12,7 @@ scale, which is 5.12 V at 5 mV per count.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_sensing/block"
 
 [[ledger]]
 registry = "funcs"

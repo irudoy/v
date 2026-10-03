@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic right shift by 12: r0 = (int32)r0 >> 12, signed division by 4096 \
 rounded down. The result is within -524288..524287 for every input, so \

@@ -1,0 +1,8 @@
+title = "Engine torque model"
+stage = "estimation/stage"
+summary = """
+Engine Torque Map lookup, RPM-curve correction, net engine torque, and \
+accessory-load subtraction that the CAN torque words publish."""
+specs = ["defs/JK08A.can.md"]
+home = "7mfk"
+order = 10

@@ -15,6 +15,7 @@ map coordinate ffff102c: that byte uses fixed Base Fuel Schedule reference \
 ]
 level = "code"
 role = "accessor"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

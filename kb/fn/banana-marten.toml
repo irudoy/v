@@ -1,6 +1,7 @@
 summary = "Component where ffff8cb4 carries the comparison result for map 0x12362."
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

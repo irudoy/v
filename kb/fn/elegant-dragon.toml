@@ -3,6 +3,7 @@ Explicit-axis 16x16 wrapper over the word core, with both axes using words \
 (clamps 30/30 through one r7 pointer)."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

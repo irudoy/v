@@ -1,0 +1,196 @@
+title = "Closed-loop fuel trim"
+summary = """
+Forms bank-1 conversion word ffff29e2 from curve 0x148FA, correction map \
+0xC10E, and A/F adjustment state ffff45a0, runs the 0005cbec feedback into \
+STFT ffff22dc, learns it into LTFT grid ffff4b90, and multiplies precursor \
+ffff18c0 by the trim sum into pulse base ffff191c. Bank 2 mirrors it through \
+ffff29e4, ffff40ae, ffff22de, ffff4b10, ffff2304, and ffff191e."""
+quantity = """
+Bank-1 trimmed pulse base, 10 us counts: precursor ffff18c0 times the STFT, \
+LTFT, and third-trim sum plus opening time"""
+output = "enlightened-mastodon/ram"
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 5
+
+[[step]]
+from = "elite-turaco/tbl"
+to = "chestnut-buffalo/ram"
+effect = "scales"
+sign = "none"
+via = ["screeching-panther/fn", "enlightened-orangutan/fn"]
+note = """
+Z1 = max(0, 880 + sat_s16(trunc0(128*(X-880)/C))), X = 2*ffff267c in stock, \
+C from 0x12292 on ffff4524; the sign follows X-880."""
+
+[[step]]
+from = "chestnut-buffalo/ram"
+to = "esoteric-chachalaca/tbl"
+effect = "indexes"
+sign = "none"
+via = ["enlightened-orangutan/fn"]
+note = """
+Adjusted coordinate Z1 indexes the common conversion curve over axis \
+0x15D20, points 0..1960."""
+
+[[step]]
+from = "esoteric-chachalaca/tbl"
+to = "ruddy-reindeer/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["enlightened-orangutan/fn"]
+note = """
+ffff29e2 = clamp(Y1 + A1 + O1 + P1 - 32768, 0, 65535) with Y1 from this \
+curve, 5000..30000; stock P1 is zero."""
+
+[[step]]
+from = "dandelion-cow/tbl"
+to = "ruddy-reindeer/ram"
+effect = "adds"
+sign = "positive"
+via = ["enlightened-orangutan/fn"]
+note = """
+Offset-binary 8x8 correction A1, stock 32747..32789, adds to Y1 before the \
+32768 offset."""
+
+[[step]]
+from = "thick-goshawk/tbl"
+to = "af_adjustment_b1/ram"
+effect = "integrates"
+sign = "positive"
+via = ["diamond-dragonfly/fn"]
+note = """
+On selector 2 each update adds up step ffff97a4 from this map to ffff45a0, \
+bounded to -500..500."""
+
+[[step]]
+from = "topaz-chameleon/tbl"
+to = "af_adjustment_b1/ram"
+effect = "integrates"
+sign = "negative"
+via = ["diamond-dragonfly/fn"]
+note = "On selector 2 each update subtracts down step ffff97a0 from this map."
+
+[[step]]
+from = "af_adjustment_b1/ram"
+to = "ruddy-reindeer/ram"
+effect = "adds"
+sign = "positive"
+via = ["enlightened-orangutan/fn"]
+note = "Signed A/F adjustment state O1, DID 0x1249, adds to the conversion sum."
+
+[[step]]
+from = "ruddy-reindeer/ram"
+to = "benevolent-bird/ram"
+effect = "feeds"
+sign = "none"
+via = ["strong-tarsier/fn"]
+note = """
+0005cbec runs the two-bank feedback state calculation into working Q8.8 word \
+ffff40ac; the ledger states neither its arithmetic nor a sign."""
+
+[[step]]
+from = "benevolent-bird/ram"
+to = "stft_b1/ram"
+effect = "copies"
+sign = "positive"
+via = ["divergent-grasshopper/fn"]
+note = """
+The normal path copies ffff40ac to STFT ffff22dc, Q8.8 percent with neutral \
+0x6400; an alternate mode forces 75..125 percent."""
+
+[[step]]
+from = "stft_b1/ram"
+to = "delectable-vole/ram"
+effect = "learns"
+sign = "positive"
+via = ["rousing-rhino/fn"]
+note = """
+A signed step from ffff134e, a region coefficient, and STFT updates the \
+selected cell in 90..110 percent; 492 of 518 changes follow the STFT sign."""
+
+[[step]]
+from = "kickass-mole/ram"
+to = "ltft_learned_b1/ram"
+effect = "indexes"
+sign = "none"
+via = ["successful-tarantula/fn"]
+note = """
+BFS ffff1024 against byte thresholds 0x12592 forms one index of the 8x8 \
+learned grid, with hysteresis on the prior packed index."""
+
+[[step]]
+from = "tough-earwig/ram"
+to = "ltft_learned_b1/ram"
+effect = "indexes"
+sign = "none"
+via = ["successful-tarantula/fn"]
+note = """
+Engine speed ffff11ae against thresholds 0x126DC forms the other index, at \
+0, 1000, 1500, 2200, 3400, 4400, 5400, and 6400 rpm."""
+
+[[step]]
+from = "delectable-vole/ram"
+to = "ltft_learned_b1/ram"
+effect = "selects"
+sign = "positive"
+via = ["successful-tarantula/fn"]
+note = """
+One of the 64 Q8.8-percent cells of bank-1 grid ffff4b90 is copied to \
+ffff2306."""
+
+[[step]]
+from = "ltft_learned_b1/ram"
+to = "ltft_b1/ram"
+effect = "adds"
+sign = "positive"
+via = ["liberal-dormouse/fn"]
+note = """
+LTFT ffff2302 = ffff2306 + ffff5648 - 0x6400, clamped to 90..110 percent; \
+fault and control gates force 0x6400."""
+
+[[step]]
+from = "ltft_adjustment_b1/ram"
+to = "ltft_b1/ram"
+effect = "adds"
+sign = "positive"
+via = ["liberal-dormouse/fn"]
+note = "Adjustment term ffff5648 from 00058168 adds around neutral 0x6400."
+
+[[step]]
+from = "stft_b1/ram"
+to = "enlightened-mastodon/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = """
+trim = max(STFT + LTFT + ffff2a24 - 0xC800, 0), or STFT + ffff2a24 - 0x6400 \
+while ffff22e6 > 0x4000; v = ffff2436 + ffff18c0*trim/65536."""
+
+[[step]]
+from = "ltft_b1/ram"
+to = "enlightened-mastodon/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = "LTFT enters the trim sum only while multiplier ffff22e6 <= 0x4000."
+
+[[step]]
+from = "astonishing-hoatzin/ram"
+to = "enlightened-mastodon/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = """
+Third trim ffff2a24 from 0005b534, 90..110 percent with neutral 0x6400, adds \
+to the trim sum; its physical source is unresolved."""
+
+[[step]]
+from = "dainty-oriole/ram"
+to = "enlightened-mastodon/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = """
+The trim sum over 65536 scales bank-1 precursor ffff18c0; offset word \
+ffff2310 stays at neutral 0x8000."""

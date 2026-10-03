@@ -55,6 +55,7 @@ MHz and 10.24 ms per pass.""",
 ]
 level = "code"
 role = "dispatch"
+block = "scheduler/block"
 former = ["periodic_snapshot_dispatch"]
 
 [[ledger]]

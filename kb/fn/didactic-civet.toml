@@ -10,6 +10,7 @@ the registry declares wrapper 0x2642C for it.""",
 ]
 level = "code"
 role = "finisher"
+block = "library/block"
 contract = """
 Unsigned linear interpolation between r0=y0 and r2=y1 at Q0.16 fraction r3 \
 in 0..65535. On a descending segment it returns y0 - \

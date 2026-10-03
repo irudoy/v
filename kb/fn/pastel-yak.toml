@@ -51,6 +51,7 @@ hardware boundary.""",
 ]
 level = "code"
 role = "driver"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

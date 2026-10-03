@@ -13,6 +13,7 @@ comparison.""",
 ]
 level = "code"
 role = "monitor"
+block = "pedal/block"
 
 [[ledger]]
 registry = "funcs"

@@ -24,6 +24,7 @@ follows the oil temperature.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

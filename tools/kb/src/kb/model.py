@@ -103,6 +103,7 @@ class Ref:
     text: str
     src: str
     layout: str | None = None
+    strict: bool = False
 
 
 @dataclass
@@ -638,6 +639,7 @@ class Builder:
             entity.refs = {name: [resolver.entity(item) if isinstance(item, Ref) else item
                                   for item in items]
                            for name, items in entity.refs.items()}
+            entity.steps = value(entity.steps)
 
     def _lift(self, model, same):
         stated = defaultdict(dict)
@@ -809,6 +811,11 @@ class Resolver:
     def _symbol(self, ref):
         match = SYMBOL_REF.fullmatch(ref.text)
         if match:
+            if ref.strict and match.group('layout') != ref.layout:
+                self.builder.issue('references', ref.src, ref.text,
+                                   f'architecture reference lies on {match.group("layout")}, '
+                                   f'not on {ref.layout}')
+                return ref.text
             found = self._meaning(ref, match.group("kind"), match.group("name"))
             symbol = found.symbols.get(match.group("layout")) if found else None
             if symbol is None:
@@ -826,10 +833,13 @@ class Resolver:
         symbol = None
         if found is not None:
             home = self.homes.get(id(found))
-            symbol = (found.symbols.get(ref.layout) if ref.layout else None) \
-                or (found.symbols.get(home) if home else found.home_symbol)
+            symbol = found.symbols.get(ref.layout) if ref.layout else None
+            if symbol is None and not ref.strict:
+                symbol = found.symbols.get(home) if home else found.home_symbol
         if symbol is None:
-            self.builder.issue("references", ref.src, ref.text, "names no meaning")
+            message = (f'has no symbol on {ref.layout}' if found is not None and ref.strict
+                       else 'names no meaning')
+            self.builder.issue("references", ref.src, ref.text, message)
             return ref.text
         return symbol.key
 

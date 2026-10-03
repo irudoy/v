@@ -12,6 +12,7 @@ init-once role from ffff41bc.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

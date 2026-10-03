@@ -15,6 +15,7 @@ not described here.""",
 ]
 level = "code"
 role = "driver"
+block = "cruise/block"
 
 [[ledger]]
 registry = "funcs"

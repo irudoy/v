@@ -12,6 +12,7 @@ represented by the normalized byte is unresolved.""",
 ]
 level = "code"
 role = "consumer"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

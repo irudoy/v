@@ -3,6 +3,7 @@ Scheduler entry at pointer 0x21b38. It calls stored-record request \
 coordinator 00068040 and branches to 00067358."""
 level = "code"
 role = "wrapper"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

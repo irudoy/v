@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 from kb import (answer, checks, compile, graph, guard, instance, l0, lock, passes, project,
-                read, refs, repo, sites, spec, store, vocab, write)
+                read, refs, repo, sites, spec, store, suggest, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -274,6 +274,10 @@ def command_log(args, root=repo.ROOT):
 
 def command_raw(args, root=repo.ROOT):
     return _answer(args, "raw", lambda g: read.raw(g, args.ref, root), root)
+
+
+def command_suggest(args, root=repo.ROOT):
+    return _answer(args, 'suggest', lambda g: suggest.blocks(g, args.layout, root), root)
 
 
 def baseline_tokens(steps, root=repo.ROOT):
@@ -539,6 +543,10 @@ def build_parser():
            layout=False).set_defaults(handler=command_log)
     reader("raw", "the registry records of an entity", reference, layout=False) \
         .set_defaults(handler=command_raw)
+    candidates = reader('suggest', 'candidate blocks from calls and shared RAM', layout=False)
+    candidates.add_argument('--blocks', required=True, action='store_true')
+    candidates.add_argument('--layout', required=True, help='the layout of the call graph')
+    candidates.set_defaults(handler=command_suggest)
 
     bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
     bench.add_argument("--all", action="store_true", help="include questions of later stages")

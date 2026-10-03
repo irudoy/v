@@ -13,6 +13,7 @@ engineering scales remain candidate semantics.""",
 ]
 level = "code"
 role = "accessor"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

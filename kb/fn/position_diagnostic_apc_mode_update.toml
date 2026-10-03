@@ -12,6 +12,7 @@ stock-pass-through gate for a late retard override.""",
 ]
 level = "code"
 role = "monitor"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "curated"

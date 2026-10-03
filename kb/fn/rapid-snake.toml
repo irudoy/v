@@ -10,6 +10,7 @@ represented by ffff283c and ffff454c remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

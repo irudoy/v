@@ -18,6 +18,7 @@ request limiter is outside this formula.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

@@ -1,4 +1,5 @@
 role = "handler"
+block = "startup/block"
 contract = """
 Not arithmetic: default exception and interrupt handler. It takes no \
 arguments, and every register touched by the body is written before it is \

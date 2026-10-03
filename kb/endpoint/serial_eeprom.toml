@@ -1,0 +1,9 @@
+title = "Serial EEPROM"
+direction = "bidirectional"
+block = "nonvolatile/block"
+peripheral = "SCI2 serial EEPROM"
+summary = """
+Read primitive 00066bd0 reads two bytes per key; stable wrapper 0006727c \
+accepts only equal consecutive reads."""
+functions = ["paper-viper/fn", "notorious-goat/fn"]
+order = 18

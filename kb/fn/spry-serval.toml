@@ -15,6 +15,7 @@ eight stock cells of 00011fb6 are zero.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

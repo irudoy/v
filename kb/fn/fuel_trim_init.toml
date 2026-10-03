@@ -14,6 +14,7 @@ producers replace the diagnostic trim words.""",
 ]
 level = "code"
 role = "init"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "curated"

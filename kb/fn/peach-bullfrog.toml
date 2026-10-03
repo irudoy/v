@@ -26,6 +26,7 @@ the 00014cea curve as coolant rises.""",
 ]
 level = "code"
 role = "accessor"
+block = "limiters/block"
 
 [[ledger]]
 registry = "funcs"

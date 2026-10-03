@@ -12,6 +12,7 @@ compositor branch.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

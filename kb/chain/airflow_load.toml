@@ -1,0 +1,281 @@
+title = "Airflow and load"
+summary = """
+Samples the AN4/AN15 MAF voltages, converts them through the bank transfer \
+curves, filters, and the combined aggregate into Base Fuel Schedule ffff1026 \
+with Fuel Compensation Main, and normalizes the schedule to the Q7 load byte \
+ffff102c read by the fuel and ignition maps."""
+quantity = """
+Normalized Base Fuel Schedule load, percent of the ROM16[0x9534] reference \
+(raw*100/128)"""
+output = "normalized_load/ram"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.load.md"]
+home = "7mfk"
+order = 3
+
+[[step]]
+from = "real-sawfish/reg"
+to = "enthusiastic-pillbug/ram"
+effect = "receives"
+sign = "positive"
+via = ["fuzzy-parakeet/fn"]
+note = "ffff1d62 = ADDR4 >> 6, the ten-bit AN4 sample of the bank-1 MAF sensor."
+
+[[step]]
+from = "zircon-stallion/reg"
+to = "hairy-dalmatian/ram"
+effect = "receives"
+sign = "positive"
+via = ["fuzzy-parakeet/fn"]
+note = """
+ffff1d64 = ADDR15 >> 6, the ten-bit AN15 sample of the bank-2 MAF sensor."""
+
+[[step]]
+from = "enthusiastic-pillbug/ram"
+to = "maf_b1/ram"
+effect = "scales"
+sign = "positive"
+via = ["outstanding-penguin/fn"]
+note = """
+ffff101c = min(65535, ffff1d62*ffff4970/32768), +1 at 0x3ff; stock \
+coefficient 0x8000 is unity; DID 0x1204 at 5 mV per count."""
+
+[[step]]
+from = "hairy-dalmatian/ram"
+to = "maf_b2/ram"
+effect = "scales"
+sign = "positive"
+via = ["outstanding-penguin/fn"]
+note = """
+Bank-2 twin of ffff101c with the same guarded coefficient ffff4970; DID \
+0x1205."""
+
+[[step]]
+from = "maf_b1/ram"
+to = "ginger-stingray/ram"
+effect = "subtracts"
+sign = "positive"
+via = ["enchanted-cricket/fn"]
+note = """
+ffff1e48 = uint16(ffff101c - c), c = floor(floor(K*335/65536)/min(65535, \
+prev+80)), K = ffff3998; the first call copies the word."""
+
+[[step]]
+from = "maf_b2/ram"
+to = "careful-penguin/ram"
+effect = "subtracts"
+sign = "positive"
+via = ["enchanted-cricket/fn"]
+note = "Bank-2 twin of ffff1e48 with K = ffff399c."
+
+[[step]]
+from = "ginger-stingray/ram"
+to = "wealthy-woodlouse/tbl"
+effect = "indexes"
+sign = "none"
+via = ["dual_bank_maf_coordinator/fn"]
+note = """
+The low 12 bits of ffff1e48 index the 64-point implicit axis of the bank-1 \
+transfer curve, 16 input counts per cell."""
+
+[[step]]
+from = "careful-penguin/ram"
+to = "ivory-gecko/tbl"
+effect = "indexes"
+sign = "none"
+via = ["dual_bank_maf_coordinator/fn"]
+note = "The low 12 bits of ffff1e4a index the bank-2 transfer curve."
+
+[[step]]
+from = "wealthy-woodlouse/tbl"
+to = "vague-pony/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["dual_bank_maf_coordinator/fn"]
+note = "MAF Sensor Transfer - Bank 1 gives output A; one count is 105/25600 g/s."
+
+[[step]]
+from = "ivory-gecko/tbl"
+to = "opalescent-pronghorn/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["dual_bank_maf_coordinator/fn"]
+note = "MAF Sensor Transfer - Bank 2 gives output B; one count is 105/25600 g/s."
+
+[[step]]
+from = "vague-pony/ram"
+to = "vegan-polecat/ram"
+effect = "filters"
+sign = "positive"
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "brass-ammonite/fn",
+    "sandy-chameleon/fn",
+]
+note = """
+0003a982 copies A to ffff1058; 0003a9aa writes ffff1df0 as a direct copy or \
+a first-order update with one-count anti-stall."""
+
+[[step]]
+from = "opalescent-pronghorn/ram"
+to = "spiked-dalmatian/ram"
+effect = "filters"
+sign = "positive"
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "brass-ammonite/fn",
+    "sandy-chameleon/fn",
+]
+note = "Bank-2 twin through working copy ffff105a."
+
+[[step]]
+from = "vegan-polecat/ram"
+to = "jasper-walrus/ram"
+effect = "converts"
+sign = "positive"
+via = ["mustard-squid/fn"]
+note = """
+Signed 32-bit bank-1 contribution with bounded stateful corrections; fuel.md \
+reproduces BFS from Q = A + B, which fixes the sign."""
+
+[[step]]
+from = "spiked-dalmatian/ram"
+to = "imposing-auk/ram"
+effect = "converts"
+sign = "positive"
+via = ["mustard-squid/fn"]
+note = """
+Signed 32-bit bank-2 contribution; the correction terms of 0003af42 are \
+unresolved."""
+
+[[step]]
+from = "jasper-walrus/ram"
+to = "polar-viper/ram"
+effect = "adds"
+sign = "positive"
+via = ["combined_maf_aggregate/fn"]
+note = """
+ffff1e38 = max(0, ffff1df8 + ffff1dfc + ffff1e2a + ffff2368); stock ffff1e2a \
+is zero and ffff2368 has no application writer."""
+
+[[step]]
+from = "imposing-auk/ram"
+to = "polar-viper/ram"
+effect = "adds"
+sign = "positive"
+via = ["combined_maf_aggregate/fn"]
+note = "The bank-2 contribution enters the combined nonnegative MAF aggregate."
+
+[[step]]
+from = "polar-viper/ram"
+to = "voracious-oarfish/ram"
+effect = "scales"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+Primary branch: fixed = min(floor(floor(F*K*Q/256)/(E*N)), 0x726f9), \
+ffff1e40 = floor(fixed*9163/65536), a quarter BFS."""
+
+[[step]]
+from = "active-caracal/tbl"
+to = "voracious-oarfish/ram"
+effect = "scales"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = "Base Fuel Schedule K-Value K = 26806 multiplies aggregate Q."
+
+[[step]]
+from = "spectral-corgi/tbl"
+to = "voracious-oarfish/ram"
+effect = "scales"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = "MAF Factor F = 109 multiplies aggregate Q."
+
+[[step]]
+from = "vigorous-horse/ram"
+to = "voracious-oarfish/ram"
+effect = "scales"
+sign = "negative"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+N is ffff11e8 (1.5625 rpm per count) or ffff11dc, lower-bounded at 64; E*N \
+divides F*K*Q with E = ROM8[0x88fb] = 3."""
+
+[[step]]
+from = "voracious-oarfish/ram"
+to = "tall-quoll/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = "ffff1062 = min(65535, floor(ffff1e40*ffff1160/128))."
+
+[[step]]
+from = "fuel_compensation_main/tbl"
+to = "majestic-jackrabbit/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["fuel_compensation_coordinator/fn"]
+note = """
+Fuel Compensation Main, Q7 with 128 = 100 percent, on RPM/12.5 ffff11f4 and \
+alpha-N byte ffff1170; runtime gates can write a bounded bypass."""
+
+[[step]]
+from = "majestic-jackrabbit/ram"
+to = "tall-quoll/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+The Q7 Fuel Compensation Main byte multiplies the quarter-BFS source \
+ffff1e40."""
+
+[[step]]
+from = "tall-quoll/ram"
+to = "bfs/ram"
+effect = "filters"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+Rate stage on T = 4*ffff1062*ffff115c and P = ffff1f30*ffff1e06 into \
+ffff1dee, blend, ffff1060; fuel.md replays steady BFS from the primary \
+branch."""
+
+[[step]]
+from = "lilac-magpie/tbl"
+to = "bfs/ram"
+effect = "limits"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+Upper-limit curve on RPM/25 byte ffff11eb, cell << 8, caps the corrected \
+schedule while ffff2449.bit7 is clear."""
+
+[[step]]
+from = "bfs/ram"
+to = "benign-cassowary/ram"
+effect = "scales"
+sign = "positive"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+ffff1048 = min(255, floor(ffff1026*128/ROM16[0x9534])); raw 128 is 100 \
+percent of the reference."""
+
+[[step]]
+from = "precise-nuthatch/tbl"
+to = "benign-cassowary/ram"
+effect = "scales"
+sign = "negative"
+via = ["base_fuel_schedule_producer/fn"]
+note = """
+Internal Load Normalization Reference 0x6a5a = 27226 divides the schedule; \
+it also scales the torque filling coordinate."""
+
+[[step]]
+from = "benign-cassowary/ram"
+to = "normalized_load/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+00020dfe copies ffff1048..ffff1063 to ffff102c..ffff1047 before the periodic \
+tasks; the maps of that pass read ffff102c."""

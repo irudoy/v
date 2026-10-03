@@ -6,6 +6,7 @@ column searches. Maps are 0x991A/0x9A1A/0x9B1A."""
 note = ["Bit 7 is not numerically interpolated."]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

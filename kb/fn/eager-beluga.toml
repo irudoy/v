@@ -13,6 +13,7 @@ raw 100 is 8.00 V.""",
 ]
 level = "code"
 role = "selector"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

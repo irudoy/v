@@ -5,6 +5,7 @@ ffff2410=sat_u16(u16[ffff1818]+u16[ffff196e]+u16[ffff1838]), or zero while \
 byte ffff11b3 is zero."""
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

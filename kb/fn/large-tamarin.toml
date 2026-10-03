@@ -22,6 +22,7 @@ STFT holds neutral 0x6400 whenever the command exceeds 0x4000.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

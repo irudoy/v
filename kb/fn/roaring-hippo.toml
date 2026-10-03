@@ -11,6 +11,7 @@ count to 120 crank degrees.""",
 ]
 level = "code"
 role = "accessor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

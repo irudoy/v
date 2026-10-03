@@ -3,6 +3,7 @@ Primary developer-immobilizer state machine. Reads bit 0 of ROM 0x8725 and \
 updates internal states 0xffff3e28, 0xffff4230, 0xffff55e4, and 0xffff4198."""
 level = "code"
 role = "handler"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

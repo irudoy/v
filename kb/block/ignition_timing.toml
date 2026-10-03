@@ -1,0 +1,9 @@
+title = "Ignition timing"
+stage = "control/stage"
+summary = """
+Base ignition angle, cold, high-octane, and high-detonation state surfaces, \
+knock, transition, and cam-deviation corrections, and final timing \
+coordinate 0xFFFF11D4."""
+specs = ["defs/JK08A.ignition-state.md", "defs/JK08A.ignition-output.md"]
+home = "7mfk"
+order = 15

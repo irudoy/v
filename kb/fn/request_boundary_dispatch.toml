@@ -10,6 +10,7 @@ inverse-coordinate calculations.""",
 ]
 level = "code"
 role = "dispatch"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "curated"

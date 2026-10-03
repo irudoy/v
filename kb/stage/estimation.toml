@@ -1,0 +1,6 @@
+title = "Engine state"
+lane = "flow"
+order = 2
+summary = """
+Engine speed, airflow and load, temperatures, vehicle speed, accelerator \
+pedal, engine torque, and knock estimates."""

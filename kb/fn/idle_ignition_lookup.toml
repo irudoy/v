@@ -9,6 +9,7 @@ recover no inputs. A slot is not a call: FUN_0005185c has one slot at \
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

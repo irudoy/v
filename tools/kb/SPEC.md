@@ -1168,7 +1168,8 @@ writes carries the label `:Kb` in addition to its own label.
 | `HAS` | `Meaning` | `Symbol` | | `claim` |
 | `AT` | `Symbol` | `Function`, `Location` | | `derived` |
 | `STATUS` | `Meaning` | `Layout` | `state`, `method`, `target`, `count`, `l0`, `stale` | `claim`; `derived` for `unknown` |
-| `CALL` | `Function` | `Function` | `sites` | `l0` |
+| `CALL` | `Function` | `Function` | `sites`, `weight` (1 for block suggestions) | `l0` |
+| `SHARED_RAM` | `Function` | `Function` | `weight` (distinct RAM locations read or written by both functions; pointer-only literals excluded) | `derived` |
 | `ACCESS` | `Function` | `Location` | `modes`, `sites` | `l0`, `derived` for paired literals |
 | `WRITER`, `READER`, `INPUT`, `COPY`, `INDEX`, `AXIS`, `LOOKUP`, `SELECTOR`, `THRESHOLD`, `BASE`, `TARGET`, `SOURCE`, `MONITOR`, `DEPENDS` | `Meaning` | `Meaning` | the link keys | `claim` |
 | the same types | `Symbol` | `Symbol` | `layout`, `verified`, and the link's `role`, `slot`, and `offset` | `derived` |
@@ -1178,7 +1179,7 @@ writes carries the label `:Kb` in addition to its own label.
 | `STAGE` | `Entity` (block) | `Entity` (stage) | | `claim` |
 | `REGISTER`, `FUNCTION` | `Entity` (endpoint) | `Meaning` | | `claim` |
 | `STEP` | `Entity` (chain) | `Step` | `order` | `claim` |
-| `FROM`, `TO`, `THROUGH` | `Step` | `Meaning` | | `claim` |
+| `FROM`, `TO`, `THROUGH` | `Step` | `Meaning` | `order` for `THROUGH` | `claim` |
 | `OUTPUT` | `Entity` (chain) | `Meaning` | | `claim` |
 | `OBSERVES` | `Entity` (signal) | `Meaning` | | `claim` |
 | `SERVES` | `Entity` (field) | `Entity` (signal) | | `claim` |

@@ -12,6 +12,7 @@ criteria of more than 0.36 V released and less than 4.75 V depressed.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

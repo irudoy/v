@@ -14,6 +14,7 @@ before common gain 00053698, transient coordinator 000522c4, precursor \
 ]
 level = "code"
 role = "dispatch"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

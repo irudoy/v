@@ -3,6 +3,7 @@ Component where ffff2465 and ffff24c2 select the source of a calibrated \
 limit."""
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

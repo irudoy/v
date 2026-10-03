@@ -22,6 +22,7 @@ in 000bf630; the indicators feed the P1078/P1084 judgement of 00090086 and \
 ]
 level = "code"
 role = "monitor"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,0 +1,124 @@
+title = "Exhaust CVTC magnet circuit monitor"
+summary = """
+Monitor 00090642 counts zero-duty passes on which the output-driver status \
+decoded from the device-1 diagnostic word equals 1. Ten passes set result \
+ffff358d and the stored fault of P0078/P0084, one hundred set judged latch \
+ffff3584, and a stored record clears the exhaust-CVTC electrical enable."""
+quantity = """
+P0078 magnet retarder circuit fault count, bank 1 (bank 2 at ffff3597): \
+consecutive zero-duty passes with driver status code 1"""
+output = "magenta-nightingale/ram"
+specs = ["defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 17
+
+[[step]]
+from = "divergent-koala/ram"
+to = "excellent-toucan/ram"
+effect = "converts"
+sign = "none"
+via = ["brawny-sheep/fn"]
+note = """
+Device-1 word (identifier 0x4000) received by 00040e6c; channel 2 gets (word \
+>> 6) & 3, and a rejected word zeroes the channel bytes."""
+
+[[step]]
+from = "excellent-toucan/ram"
+to = "mauve-guillemot/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+Scheduler block copy ffff1114..ffff1193 -> ffff1094..ffff1113 at 0x20F56; \
+ffff109e and ffff109f are the bank-1 status bytes."""
+
+[[step]]
+from = "mauve-guillemot/ram"
+to = "magenta-nightingale/ram"
+effect = "integrates"
+sign = "none"
+via = ["cherubic-goose/fn"]
+note = """
+The counter increments with saturation on each evaluating pass with a bank \
+status byte equal to 1 and returns to zero otherwise."""
+
+[[step]]
+from = "exhaust_cvtc_duty_b1_word/ram"
+to = "magenta-nightingale/ram"
+effect = "gates"
+sign = "none"
+via = ["cherubic-goose/fn"]
+note = """
+Evaluation needs duty word ffff1aac + 2b at zero, so the pair judges the \
+de-energized output; a non-zero duty zeroes the counter."""
+
+[[step]]
+from = "private-groundhog/ram"
+to = "magenta-nightingale/ram"
+effect = "gates"
+sign = "none"
+via = ["paper-hippo/fn", "cherubic-goose/fn"]
+note = """
+The 0008f168 enable needs ffff1108 above 0x89 and at most 0xC8, ffff41c8 bit \
+7 clear, and ROM8[0x186DE] bit 1 for bank 1."""
+
+[[step]]
+from = "magenta-nightingale/ram"
+to = "spiffy-pronghorn/ram"
+effect = "compares"
+sign = "none"
+via = ["cherubic-goose/fn"]
+note = "A count of ROM8[0x8B00] = 10 sets result bit b of ffff358d."
+
+[[step]]
+from = "magenta-nightingale/ram"
+to = "heretic-aardwark/ram"
+effect = "compares"
+sign = "none"
+via = ["cherubic-goose/fn"]
+note = """
+A count of ROM8[0x8B02] = 100 sets judged latch bit b; evaluation stops \
+while the latch bit is set."""
+
+[[step]]
+from = "spiffy-pronghorn/ram"
+to = "hallowed-malkoha/ram"
+effect = "stores"
+sign = "none"
+via = ["paper-hippo/fn", "prehistoric-skua/fn"]
+note = """
+The 0008f168 routing calls 0008c2d2: byte 1 bit 7 of ffff5718 + 3*0x43 \
+(P0078) or 0x44 (P0084), bit 4 on a fresh fault."""
+
+[[step]]
+from = "heretic-aardwark/ram"
+to = "hallowed-malkoha/ram"
+effect = "stores"
+sign = "none"
+via = ["paper-hippo/fn", "naughty-oxpecker/fn"]
+note = """
+0008f168 calls dispatcher 0007d8b8 with index 0x43 or 0x44 while the judged \
+latch bit is set."""
+
+[[step]]
+from = "hallowed-malkoha/ram"
+to = "onyx-jerboa/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "diagnostic_record_byte1_bit7_predicate/fn",
+    "boisterous-cuttlefish/fn",
+]
+note = """
+A stored fault of 0x43 or 0x44 (00025e20, byte 1 bit 7) clears exhaust-VTC \
+electrical enable ffff248b bit 0 in 000bf630."""
+
+[[step]]
+from = "hallowed-malkoha/ram"
+to = "khaki-narwhal/fn"
+effect = "transmits"
+sign = "none"
+note = """
+0003614c and 00036e2c publish the code while attribute bit 7 is set (0x00a0 \
+for P0078/P0084) and record byte 2 has bit 2 or 3."""
+specs = ["defs/README.md"]

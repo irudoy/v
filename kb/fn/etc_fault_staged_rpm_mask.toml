@@ -10,6 +10,7 @@ injector order.""",
 ]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

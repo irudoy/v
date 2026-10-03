@@ -26,6 +26,7 @@ ffff430a, ffff2568, ffff2535, ffff2536, and ffff2539.""",
 ]
 level = "code"
 role = "handler"
+block = "scheduler/block"
 
 [[ledger]]
 registry = "curated"

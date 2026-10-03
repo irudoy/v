@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not arithmetic: bytewise block copy. It copies r0 bytes from [r2] to [r1] in \
 ascending address order. The loop is unrolled by four bytes, but the bound \

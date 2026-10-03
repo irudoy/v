@@ -12,6 +12,7 @@ aggregate to periodic-table index-21 boundary FUN 00079030.""",
 ]
 level = "code"
 role = "driver"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "curated"

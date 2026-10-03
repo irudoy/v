@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not a standalone function: internal point in the unrolled copy ladder, at \
 the 16-longword step. Public entries are 000220f8 and 00022104; this address \

@@ -3,6 +3,7 @@ Second independent copy of the implicit-axis shift chain: 12 SHLR/ROTCR \
 pairs, step 4096. Core for primitive 0x266A0."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

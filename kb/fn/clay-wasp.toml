@@ -16,6 +16,7 @@ capture clock).""",
 ]
 level = "code"
 role = "handler"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

@@ -25,6 +25,7 @@ ffff11de equals the cylinder number of the P0301..P0306 descriptors.""",
 ]
 level = "code"
 role = "monitor"
+block = "misfire/block"
 contract = """
 The main weighted-accumulator path retains and updates state only while \
 ffff4251.bit7 and both low readiness bits of ffff41d2 are set. A failed gate \

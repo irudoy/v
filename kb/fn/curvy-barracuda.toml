@@ -11,6 +11,7 @@ ffff99f4 bits 0..3 are the apply and store bits of service-0x3b LIDs 1 and \
 ]
 level = "code"
 role = "selector"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

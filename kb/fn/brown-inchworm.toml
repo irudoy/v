@@ -10,6 +10,7 @@ quantity of ffff277c and ffff35ea is unresolved.""",
 ]
 level = "code"
 role = "selector"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

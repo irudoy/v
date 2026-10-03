@@ -11,6 +11,7 @@ note = [
 ]
 level = "code"
 role = "dispatch"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

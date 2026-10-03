@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Logical left shift: r0 = r0 << r1, with a signed count. For r1 < 0 it \
 returns the input unchanged; for r1 >= 32 it returns 0. The shifted value is \

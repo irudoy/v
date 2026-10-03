@@ -10,6 +10,7 @@ before paired minimum selection.""",
 ]
 level = "code"
 role = "driver"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

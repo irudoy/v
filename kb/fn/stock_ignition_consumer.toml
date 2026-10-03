@@ -18,6 +18,7 @@ fallback mode because its physical angle contract is unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "ignition_output/block"
 former = ["apc_set_compare_scheduler"]
 
 [[ledger]]

@@ -11,6 +11,7 @@ calls it when the retained-memory validation fails.""",
 ]
 level = "code"
 role = "init"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

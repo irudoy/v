@@ -17,6 +17,7 @@ in crank degrees: the coefficient-1 chain ffff2404 -> ffff2378 -> ffff12d6 \
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

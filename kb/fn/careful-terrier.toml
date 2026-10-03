@@ -4,6 +4,7 @@ serves six explicit-axis entries plus 0x26040. Both operands of each \
 interpolation are read unsigned with EXTU.B."""
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

@@ -12,6 +12,7 @@ physical quantity of ffff15de is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

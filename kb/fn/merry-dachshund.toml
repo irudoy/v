@@ -12,6 +12,7 @@ upper bound excludes only a high byte of 255.""",
 ]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

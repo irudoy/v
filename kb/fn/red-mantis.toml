@@ -6,6 +6,7 @@ ffff34d4."""
 note = ["The physical quantity of the limited state is unresolved."]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

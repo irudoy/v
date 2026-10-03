@@ -11,6 +11,7 @@ indices 64, 65, and 66.""",
 ]
 level = "code"
 role = "dispatch"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

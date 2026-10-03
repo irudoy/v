@@ -4,6 +4,7 @@ bit 0 of ROM 0x8725 and states 0xffff3e28, bit 2 of 0xffff55e4, and bit 0 of \
 0xffff4251."""
 level = "code"
 role = "handler"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

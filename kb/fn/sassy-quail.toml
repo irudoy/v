@@ -10,6 +10,7 @@ precise aggregation interpretation remain unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[diagnostic]]
 id = "evap-pressure-range-p0451"

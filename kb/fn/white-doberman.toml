@@ -12,6 +12,7 @@ runtime writes.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

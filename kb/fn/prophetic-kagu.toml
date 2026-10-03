@@ -11,6 +11,7 @@ shift of 15. The physical purpose of the coefficient is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

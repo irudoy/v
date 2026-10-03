@@ -13,6 +13,7 @@ loop. Any additional copy extends an existing interrupt-disabled interval.""",
 ]
 level = "code"
 role = "dispatch"
+block = "scheduler/block"
 
 [[ledger]]
 registry = "funcs"

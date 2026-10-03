@@ -50,7 +50,7 @@ TARGET_ARRAYS = {"variants": "symbol", "omitted": "symbol", "unsupported": "symb
 TARGET_TABLES = ("families", "symbols")
 TARGET_LISTS = ("requires",)
 # Designed kinds that the store holds from the stage that converts them.
-CONVERTED_KINDS = ("feature", "field", "signal")
+CONVERTED_KINDS = ("feature", "field", "signal", "stage", "block", "endpoint", "chain")
 # The feature that transmits the fields, and the layout of the symbols that
 # the source of an `ecu_ram` field and the observed meanings of a signal name
 # and of the targets whose allocations a signal observes.
@@ -91,6 +91,9 @@ def declare(b, root):
         elif kind == "signal":
             _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
             _signal(b, name, document, src)
+        elif kind in ("stage", "block", "endpoint", "chain"):
+            _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
+            _architecture(b, kind, name, document, src)
         else:
             b.issue("schema", src, f"{name}/{kind}",
                     f"the store holds no {kind} entities before their conversion stage")
@@ -284,6 +287,44 @@ def _signal(b, slug, document, src):
     refs = [Ref(item, src, TELEMETRY_LAYOUT) if MEANING_REF.fullmatch(item) else item
             for item in observes]
     b.entity("signal", slug, src, props=props, refs={"observes": refs} if refs else None)
+
+
+def _architecture(b, kind, slug, document, src):
+    """Architecture references resolve on the entity's home layout."""
+    fields = {'block': ('stage',), 'endpoint': ('block', 'registers', 'functions'),
+              'chain': ('output',)}.get(kind, ())
+    props = {key: value for key, value in document.items() if key not in (*fields, 'step')}
+    home = document.get('home', '7mfk')
+    references = {}
+    for field in fields:
+        value = document.get(field)
+        if value is None:
+            continue
+        listed = [value] if field in ('stage', 'block', 'output') else value
+        if not isinstance(listed, list) or any(not isinstance(ref, str) for ref in listed):
+            b.issue('schema', src, f'{slug}/{kind}', f'{field} is no array of references')
+            continue
+        references[field] = [Ref(ref, src, home, strict=True) for ref in listed]
+    entity = b.entity(kind, slug, src, props=props, refs=references)
+    if kind != 'chain':
+        return
+    steps = document.get('step', [])
+    if not isinstance(steps, list) or any(not isinstance(step, dict) for step in steps):
+        b.issue('schema', src, f'{slug}/chain', 'step is no array of tables')
+        return
+    for index, step in enumerate(steps, 1):
+        if any(not isinstance(step.get(field), str) for field in ('from', 'to')):
+            b.issue('schema', src, f'{slug}/chain#{index}', 'from and to must be references')
+            continue
+        via = step.get('via', [])
+        if not isinstance(via, list) or any(not isinstance(ref, str) for ref in via):
+            b.issue('schema', src, f'{slug}/chain#{index}', 'via is no array of references')
+            continue
+        entity.steps.append({'from': Ref(step['from'], src, home, strict=True),
+                             'to': Ref(step['to'], src, home, strict=True),
+                             'effect': step.get('effect'), 'sign': step.get('sign'),
+                             'via': [Ref(ref, src, home, strict=True) for ref in via],
+                             'note': step.get('note'), 'specs': step.get('specs')})
 
 
 def _feature(b, slug, document, src):

@@ -10,6 +10,7 @@ ORed.""",
 ]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

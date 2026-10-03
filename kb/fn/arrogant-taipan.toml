@@ -1,4 +1,5 @@
 role = "monitor"
+block = "memory_integrity/block"
 contract = """
 Not arithmetic: incremental ROM self-test scanner. It takes no arguments. \
 Each call scans the next group of longwords from cursor 0xFFFF2FF4, \

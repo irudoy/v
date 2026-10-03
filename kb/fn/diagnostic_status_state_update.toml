@@ -11,6 +11,7 @@ Preservation of ffff41ea.bit7 is code-proven.""",
 ]
 level = "code"
 role = "monitor"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "curated"

@@ -12,6 +12,7 @@ both alternatives are crank degrees of the final coordinate.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

@@ -22,6 +22,7 @@ cross-checks.""",
 ]
 level = "code"
 role = "service"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

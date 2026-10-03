@@ -10,6 +10,7 @@ axis element width; downward-search stride is the decisive distinction.""",
 ]
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

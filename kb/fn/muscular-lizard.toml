@@ -21,6 +21,7 @@ it is set.""",
 ]
 level = "code"
 role = "driver"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

@@ -9,6 +9,7 @@ physical units.""",
 ]
 level = "code"
 role = "init"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

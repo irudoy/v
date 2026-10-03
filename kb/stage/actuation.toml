@@ -1,0 +1,6 @@
+title = "Actuator output"
+lane = "flow"
+order = 5
+summary = """
+Injector, ignition, throttle, and output-driver scheduling onto the ATU-II \
+timer unit."""

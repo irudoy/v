@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1733"
+name = "provocative-axolotl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008171c"

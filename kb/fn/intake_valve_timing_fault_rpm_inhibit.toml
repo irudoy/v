@@ -10,6 +10,7 @@ and U1010 predicates are prerequisites rather than output DTCs.""",
 ]
 level = "code"
 role = "monitor"
+block = "fuel_cut/block"
 
 [[diagnostic]]
 id = "intake-valve-timing-fault-inhibit-p0011"

@@ -9,6 +9,7 @@ initialization.""",
 ]
 level = "code"
 role = "selector"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

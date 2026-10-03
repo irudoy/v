@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not a function: data forming the tail of jump table 0x2231c..0x2235b, \
 entries for counts 24..31, belonging to arithmetic right-shift dispatcher \

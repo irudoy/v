@@ -9,6 +9,7 @@ execution chain.""",
 ]
 level = "code"
 role = "handler"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

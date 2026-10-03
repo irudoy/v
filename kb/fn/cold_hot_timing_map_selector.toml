@@ -17,6 +17,7 @@ raw*100/128 percent of the fixed BFS reference.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

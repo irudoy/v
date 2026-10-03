@@ -32,6 +32,7 @@ unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

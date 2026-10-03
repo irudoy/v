@@ -302,9 +302,12 @@ def claim_rows(model):
                 {"from": entity.key, "to": key, "props": {"order": order, **claim}})
             for name, kind in STEP_LINKS:
                 refs = step[name] if isinstance(step[name], list) else [step[name]]
-                entity_links[(kind, "Step", "Meaning")].extend(
-                    {"from": key, "to": meaning, "props": claim}
-                    for meaning in _named_keys(model, refs))
+                for index, reference in enumerate(refs, start=1):
+                    meaning = model.meaning_of(reference)
+                    if meaning is not None and meaning.name:
+                        entity_links[(kind, 'Step', 'Meaning')].append({
+                            'from': key, 'to': meaning.key,
+                            'props': {**claim, **({'order': index} if name == 'via' else {})}})
     targets, required = [], defaultdict(lambda: (set(), set()))
     for (feature, layout), target in sorted(model.targets.items()):
         props = {key: value for key, value in target.props.items() if key != "requires"}
@@ -449,6 +452,8 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "locations": _create_nodes(graph, "Location", rows["locations"]),
             "calls": _create_links(graph, "CALL", "Function", "Function", rows["calls"]),
             "accesses": _create_links(graph, "ACCESS", "Function", "Location", rows["accesses"]),
+            "shared RAM": _create_links(graph, "SHARED_RAM", "Function", "Function",
+                                        rows["shared_ram"]),
         }
         graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = $digest",
                   key=layout.id, digest=digest)

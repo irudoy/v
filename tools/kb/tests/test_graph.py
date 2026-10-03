@@ -2,8 +2,8 @@ from functools import lru_cache
 import os
 import unittest
 
-from kb import compile, fingerprint, graph, l0graph, repo
-from kb.model import SymbolKey
+from kb import compile, fingerprint, graph, l0graph, names, repo
+from kb.model import Builder, SymbolKey
 
 
 def model():
@@ -56,6 +56,27 @@ class L0RowsTest(unittest.TestCase):
 
 
 class ClaimRowsTest(unittest.TestCase):
+    def test_step_call_order_preserves_repeated_entries(self):
+        b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
+        source = b.symbol('7mfk', 'ram', 0xffff1000, 'fixture')
+        target = b.symbol('7mfk', 'ram', 0xffff1002, 'fixture')
+        first = b.symbol('7mfk', 'fn', 0x1000, 'fixture')
+        second = b.symbol('7mfk', 'fn', 0x2000, 'fixture')
+        for key, name in ((source, 'source'), (target, 'target'),
+                          (first, 'first'), (second, 'second')):
+            b.name(key, name, 'file', 'fixture')
+        chain = b.entity('chain', 'ordered', 'fixture')
+        chain.steps = [{'from': source, 'to': target, 'via': [first, second, first],
+                        'effect': 'converts', 'sign': 'positive'}]
+        compiled = b.finish()
+        names.assign(compiled, [])
+        rows = graph.claim_rows(compiled)['entity_links']
+        self.assertEqual([(item['to'], item['props']['order'])
+                          for item in rows['THROUGH', 'Step', 'Meaning']],
+                         [('first/fn', 1), ('second/fn', 2), ('first/fn', 3)])
+        self.assertEqual(rows['FROM', 'Step', 'Meaning'][0]['to'], 'source/ram')
+        self.assertEqual(rows['TO', 'Step', 'Meaning'][0]['to'], 'target/ram')
+
     def test_meanings_symbols_and_links(self):
         rows = graph.claim_rows(model())
         self.assertEqual(len(rows["has"]), len(rows["symbols"]))

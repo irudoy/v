@@ -11,6 +11,7 @@ cannot produce ffff2368.""",
 ]
 level = "code"
 role = "handler"
+block = "knock/block"
 
 [[ledger]]
 registry = "funcs"

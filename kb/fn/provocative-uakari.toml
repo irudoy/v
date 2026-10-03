@@ -3,6 +3,7 @@ Finisher recovered by wave 2 in the crossfade blend path of component \
 0007a804 together with core 0x26B28."""
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

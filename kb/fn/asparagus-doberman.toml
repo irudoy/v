@@ -9,6 +9,7 @@ unresolved.""",
 ]
 level = "code"
 role = "dispatch"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

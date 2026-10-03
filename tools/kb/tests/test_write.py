@@ -302,8 +302,6 @@ class NewTest(unittest.TestCase):
 
     def test_new_refuses_a_held_place_or_name_and_the_keys_of_the_other_form(self):
         symbol = new("ram", self.LOCATION, evidence=[SPEC])
-        stage = next(kind for kind in vocab.DESIGNED_KINDS
-                     if kind not in file_adapter.CONVERTED_KINDS)
         cases = [
             ({**symbol, "symbol": f"7mfk:{THROTTLE_HOME:08x}"}, 3,
              f"7mfk:{THROTTLE_HOME:08x} is {THROTTLE}/7mfk-{THROTTLE_HOME:08x}"),
@@ -324,8 +322,6 @@ class NewTest(unittest.TestCase):
              "a designed entity takes no evidence, note"),
             (new("feature", "Probe"), 2, "'Probe' is no slug"),
             (new("feature", "map_switching"), 3, "map_switching/feature exists"),
-            (new(stage, "probe_entity"), 3,
-             f"the store holds no {stage} entities before their conversion stage"),
             ({"cmd": "new", "kind": "ram"}, 2, "new takes a symbol <layout>:<address> or a slug"),
             ({**symbol, "slug": "probe_cell"}, 2, "new takes a symbol"),
             (new("widget", "probe_widget"), 2, "kind 'widget'; the kinds are"),

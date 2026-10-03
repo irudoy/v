@@ -8,6 +8,7 @@ note = [
 ]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

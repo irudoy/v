@@ -33,6 +33,7 @@ count.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

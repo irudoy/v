@@ -12,6 +12,7 @@ an engine-speed coordinate.""",
 ]
 level = "code"
 role = "driver"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

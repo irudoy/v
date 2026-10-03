@@ -10,6 +10,7 @@ cleared by the memory task when a pass completes.""",
 ]
 level = "code"
 role = "dispatch"
+block = "memory_integrity/block"
 
 [[ledger]]
 registry = "funcs"

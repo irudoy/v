@@ -19,6 +19,7 @@ period. Returned bit 5 becomes global mask 0x3f.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

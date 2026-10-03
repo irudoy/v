@@ -9,6 +9,7 @@ Bank order follows the adjacent-pair convention of ffff2442/ffff2443; it is \
 not established by a diagnostic identity.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "percent"
 scale = "x*39/100"

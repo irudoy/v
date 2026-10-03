@@ -13,6 +13,7 @@ precursor 0004e974. The physical transient qualifier remains unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

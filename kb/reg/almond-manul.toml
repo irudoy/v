@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff4c8"
+name = "almond-manul"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000272ae"

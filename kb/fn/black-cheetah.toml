@@ -9,6 +9,7 @@ PTR_FUN slots, not this wrapper.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

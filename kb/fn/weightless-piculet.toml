@@ -14,6 +14,7 @@ command path modeled in JK08A.throttle-control.md.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_sensing/block"
 
 [[ledger]]
 registry = "funcs"

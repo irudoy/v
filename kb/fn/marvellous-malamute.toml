@@ -23,6 +23,7 @@ writer for ffff4251.""",
 ]
 level = "code"
 role = "monitor"
+block = "misfire/block"
 contract = """
 The common readiness path sets ffff4251.bit7 in stock JK08A exactly when all \
 listed prerequisites pass. FUN 00025a12 must return 0. Direct FUN 000259e4 \

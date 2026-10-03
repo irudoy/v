@@ -18,6 +18,7 @@ unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "curated"

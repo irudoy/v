@@ -6,6 +6,7 @@ references. It writes ffff3926/ffff3928."""
 note = ["The selected word is the target input used by 000cb2b6."]
 level = "code"
 role = "selector"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

@@ -1,4 +1,5 @@
 role = "monitor"
+block = "memory_integrity/block"
 contract = """
 Not arithmetic: ROM self-test verifier. It takes no arguments. It compares \
 accumulators 0xFFFF3000 (XOR) and 0xFFFF3008 (sum) with ROM references \

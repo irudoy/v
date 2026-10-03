@@ -4,6 +4,7 @@ stride ADD #-2,R4. Seven wrappers serve 107 tables; sub-helper 0x26C78 \
 computes the fractional part."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

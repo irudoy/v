@@ -11,6 +11,7 @@ identities remain unverified.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_sensing/block"
 
 [[ledger]]
 registry = "curated"

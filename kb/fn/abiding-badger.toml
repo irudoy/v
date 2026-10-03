@@ -5,6 +5,7 @@ ffff413f. An alternate path reduces ffff32b8 with saturation toward zero."""
 note = ["The physical subsystem of the internal state is unresolved."]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

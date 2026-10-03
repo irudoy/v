@@ -24,6 +24,7 @@ scheduler snapshot of ffff281a, which 0003d19c writes.""",
 ]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

@@ -8,6 +8,7 @@ inhibit bit 1 of 0xffff4198.""",
 ]
 level = "code"
 role = "handler"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

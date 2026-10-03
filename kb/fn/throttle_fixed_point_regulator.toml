@@ -13,6 +13,7 @@ PID or physical torque interpretation is not assigned.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

@@ -17,6 +17,7 @@ validation.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

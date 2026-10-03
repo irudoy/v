@@ -6,6 +6,7 @@ composition."""
 note = ["The physical purpose of the correction is unresolved."]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

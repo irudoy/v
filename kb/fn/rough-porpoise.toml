@@ -3,6 +3,7 @@ Saturating addition that returns INT_MIN/INT_MAX on overflow; reads no \
 tables. One of four non-table entries in the region, with 11 slots."""
 level = "code"
 role = "service"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

@@ -11,6 +11,7 @@ for 0x15012 remains candidate based on the catalog.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

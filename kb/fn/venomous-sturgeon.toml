@@ -27,6 +27,7 @@ structure that selector 0003967a applies to coolant.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

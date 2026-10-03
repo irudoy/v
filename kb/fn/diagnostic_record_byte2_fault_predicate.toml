@@ -12,6 +12,7 @@ names are assigned.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = """
 Input r4 is interpreted as a signed 16-bit record index. Index -1 returns 0 \
 without reading RAM. Every other index returns 1 when either bit 5 or bit 6 \

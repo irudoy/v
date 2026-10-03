@@ -6,6 +6,7 @@ components it closes a fixed-point denominator: angle summation in 0004afdc \
 0x145ca, and 50000 is divisor literal 0xC350."""
 level = "code"
 role = "service"
+block = "library/block"
 contract = """
 Unsigned 32/32 division: r0 = r1 / r0 (dividend r1, divisor r0), rounding \
 down. The implementation is an unrolled div0u/div1 sequence that selects a \

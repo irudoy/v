@@ -36,6 +36,7 @@ ROM8[00018709]=0xf8 enable both records.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

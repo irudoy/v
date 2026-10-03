@@ -5,6 +5,7 @@ ffff247b."""
 note = ["The physical purpose of the threshold is unresolved."]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

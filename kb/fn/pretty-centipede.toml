@@ -12,6 +12,7 @@ for ffff1980; 00072e5e reads ffff1988.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

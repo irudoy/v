@@ -30,6 +30,7 @@ debounced low level through scheduler copy ffff4184.bit7.""",
 ]
 level = "code"
 role = "accessor"
+block = "discrete_inputs/block"
 
 [[ledger]]
 registry = "funcs"

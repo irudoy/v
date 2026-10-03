@@ -4,6 +4,7 @@ Work-support periodic coordinator at scheduler pointer 0x21a80. It calls \
 this order and branches to 000685f2."""
 level = "code"
 role = "dispatch"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

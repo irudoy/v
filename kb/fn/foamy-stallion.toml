@@ -19,6 +19,7 @@ ROM8[00008b0a]=0; stock 00012a62 holds 255, 234, 117, and 39 from node 3.""",
 ]
 level = "code"
 role = "accessor"
+block = "knock/block"
 
 [[ledger]]
 registry = "funcs"

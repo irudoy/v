@@ -9,6 +9,7 @@ disagree on the physical conversion.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

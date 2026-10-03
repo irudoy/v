@@ -17,6 +17,7 @@ consumer 00090bd2 does not.""",
 ]
 level = "code"
 role = "dispatch"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

@@ -11,6 +11,7 @@ injector signal at a time.""",
 ]
 level = "code"
 role = "handler"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "curated"

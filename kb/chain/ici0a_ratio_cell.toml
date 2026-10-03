@@ -1,0 +1,22 @@
+title = "ICI0A bounded ratio-cell action"
+summary = """
+The input-capture handler conditionally writes a saturated ratio byte from \
+independent unsigned interval operands and compares its unsigned value \
+against the stock threshold. This bounded action does not establish the \
+interval producer or hardware behavior."""
+quantity = "Unsigned ratio byte, previous/current * 64"
+output = "thundering-bonobo/ram"
+specs = ["defs/JK08A.ici0a-ratio.md"]
+home = "7mfk"
+order = 1
+
+[[step]]
+from = "pastel-yak/fn"
+to = "thundering-bonobo/ram"
+effect = "stores"
+sign = "none"
+via = ["pompous-firefly/fn"]
+note = """
+With ffff8505.bit7 set, write 255 for zero current or min(255, floor(64 * \
+previous / current)); otherwise retain the byte. MOV.B writer 000290cc and \
+reader 0002927c use ffff128c + 06e0."""

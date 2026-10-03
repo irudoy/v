@@ -13,6 +13,7 @@ one combined save/body/restore/RTE handler instead.""",
 ]
 level = "code"
 role = "handler"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

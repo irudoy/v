@@ -3,6 +3,7 @@ Explicit-axis 8x8 wrapper over the word core; geometry is in the entry \
 registry."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

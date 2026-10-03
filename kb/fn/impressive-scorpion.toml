@@ -3,6 +3,7 @@ Component where bit 6 of ffff24ac is a one-shot initialization latch that \
 gates a single baseline lookup of map 0x18766 using test-then-set."""
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

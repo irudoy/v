@@ -1,0 +1,8 @@
+title = "Scheduler"
+stage = "platform/stage"
+summary = """
+ATU-II periodic interrupt, pending-task dispatch, engine-event task feeder, \
+and main-loop snapshot copier."""
+generic = true
+home = "7mfk"
+order = 42

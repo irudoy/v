@@ -10,6 +10,7 @@ command.""",
 ]
 level = "code"
 role = "consumer"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

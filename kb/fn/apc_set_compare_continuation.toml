@@ -15,6 +15,7 @@ external driver stage remains a hardware boundary.""",
 ]
 level = "code"
 role = "handler"
+block = "ignition_output/block"
 
 [[ledger]]
 registry = "curated"

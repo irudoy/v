@@ -5,6 +5,7 @@ and ffff10e4.bit2 is set, otherwise zero."""
 note = ["This mask is ORed with the staged RPM mask."]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

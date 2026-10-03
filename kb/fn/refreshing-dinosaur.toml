@@ -13,6 +13,7 @@ path.""",
 ]
 level = "code"
 role = "dispatch"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

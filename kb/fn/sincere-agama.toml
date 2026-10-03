@@ -12,6 +12,7 @@ rather than code confidence.""",
 ]
 level = "code"
 role = "monitor"
+block = "limiters/block"
 
 [[ledger]]
 registry = "funcs"

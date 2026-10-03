@@ -10,6 +10,7 @@ of map 0x12a3a, ffff1f78, ffff1062, and the state remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

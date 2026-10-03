@@ -11,7 +11,7 @@
 # over the registries. A baseline step runs `run` from the repository root and
 # counts its output, or with `read = true` counts the files whose paths it
 # prints. Tokens are UTF-8 bytes divided by three, rounded up.
-stage = 5
+stage = 6
 converted = [
     "Ghidra export directories",
     "Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata",
@@ -199,7 +199,8 @@ expect = [
     '^  step\s+engine_speed/chain #4 .*ffff114a = floor\(0xA2C2/ffff22bc\)',
 ]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs/JK08A.funcs.csv"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "-B", "30", "-A", "8", "0003deec", "defs/JK08A.architecture.toml"] },
 ]
 
 [[question]]

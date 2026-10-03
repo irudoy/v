@@ -14,6 +14,7 @@ code confidence is limited to the conversion and correction arithmetic.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

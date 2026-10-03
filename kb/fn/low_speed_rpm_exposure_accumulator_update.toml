@@ -9,6 +9,7 @@ Update sustained low-speed RPM exposure accumulator with discarded return""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

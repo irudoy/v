@@ -20,6 +20,7 @@ asserted at code confidence.""",
 ]
 level = "code"
 role = "driver"
+block = "injector_output/block"
 
 [[ledger]]
 registry = "curated"

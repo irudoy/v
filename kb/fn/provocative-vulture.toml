@@ -9,6 +9,7 @@ status names are assigned.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

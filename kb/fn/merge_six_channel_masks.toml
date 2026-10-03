@@ -4,6 +4,7 @@ Merge three mask inputs with bitwise OR and return only the low six bits."""
 note = ["The result is the final value written to ffff22e0."]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Unsigned 16/16 division: r0 = (r1 & 0xFFFF) / (r0 & 0xFFFF), with the result \
 zero-extended to 32 bits. Wide inputs are silently truncated: divisor \

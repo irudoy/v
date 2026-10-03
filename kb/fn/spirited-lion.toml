@@ -10,6 +10,7 @@ caller-visible meaning of the output pair remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

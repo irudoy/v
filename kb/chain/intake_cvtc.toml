@@ -1,0 +1,225 @@
+title = "Intake CVTC"
+summary = """
+RPM/50 ffff11ae and normalized BFS ffff102c index the intake main, cold, and \
+correction surfaces; coolant selection, the operating bit, and idle source \
+ffff1553 form common target ffff2326. The GR1F/GR1E capture handlers measure \
+both intake cams, and the scheduler latch of live duty pair \
+ffff2440/ffff2441 drives ATU-II channels 7B/7A."""
+quantity = """
+Intake cam advance target, crank degrees ((raw-128)*0.5, advance positive)"""
+output = "intake_cvtc_target/ram"
+specs = ["defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 11
+
+[[step]]
+from = "tough-earwig/ram"
+to = "golden-rhino/ram"
+effect = "indexes"
+sign = "none"
+via = ["victorious-catfish/fn"]
+note = """
+RPM/50 snapshot is the row key of 0xB43A, 0xB53A, and 0xAB5A; the sign \
+follows the surface shape."""
+
+[[step]]
+from = "normalized_load/ram"
+to = "golden-rhino/ram"
+effect = "indexes"
+sign = "none"
+via = ["victorious-catfish/fn"]
+note = """
+Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three \
+intake surfaces."""
+
+[[step]]
+from = "intake_cvtc_target/tbl"
+to = "golden-rhino/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["victorious-catfish/fn"]
+note = """
+base_main = interpolate_u8(0xB43A, rpm50, load); 16x16, (raw-128)*0.5 degCA, \
+advance positive."""
+
+[[step]]
+from = "humongous-skunk/tbl"
+to = "golden-rhino/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["victorious-catfish/fn"]
+note = """
+With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); \
+otherwise main = base_main."""
+
+[[step]]
+from = "cunning-jackrabbit/tbl"
+to = "flawless-raccoon/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["victorious-catfish/fn"]
+note = "cold = interpolate_u8(0xB53A, rpm50, load); 8x8 over the same keys."
+
+[[step]]
+from = "golden-rhino/ram"
+to = "intake_cvtc_target/ram"
+effect = "selects"
+sign = "positive"
+via = ["radiant-cuckoo/fn"]
+note = """
+Raw coolant > 131 selects main; 106..131 blends cold + \
+trunc0((c-106)*(main-cold)/25); mode, rate, and offset logic follow."""
+
+[[step]]
+from = "flawless-raccoon/ram"
+to = "intake_cvtc_target/ram"
+effect = "selects"
+sign = "positive"
+via = ["radiant-cuckoo/fn"]
+note = """
+Raw coolant <= 106 selects cold; the weight of cold falls from 1 to 0 across \
+106..131."""
+
+[[step]]
+from = "raspberry-dragon/ram"
+to = "intake_cvtc_target/ram"
+effect = "selects"
+sign = "none"
+via = ["radiant-cuckoo/fn"]
+note = """
+Raw coolant snapshot chooses cold, blend, or main; the sign follows main - \
+cold."""
+
+[[step]]
+from = "crimson-crane/ram"
+to = "intake_cvtc_target/ram"
+effect = "gates"
+sign = "none"
+via = ["radiant-cuckoo/fn"]
+note = """
+Bit 6 clear stores neutral 0x80 unless ffff248b bit 1 and IOLID 0x19 test \
+bit ffff41fa bit 0 are both set."""
+
+[[step]]
+from = "gainful-tarsier/ram"
+to = "intake_cvtc_target/ram"
+effect = "overrides"
+sign = "positive"
+via = ["radiant-cuckoo/fn"]
+note = """
+With ffff24a7 bit 1 set the target continues from idle source ffff1553; with \
+ffff247b bit 1 set a rise climbs one count per countdown."""
+
+[[step]]
+from = "thankful-woodlouse/tbl"
+to = "gainful-tarsier/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["amphibian-sponge/fn"]
+note = """
+S = interpolate_u8(0x122EA over axis 0x12F66, ffff11ae); ffff1553 = \
+clamp_u8(128 + trunc0((S-128)*W/128))."""
+
+[[step]]
+from = "stoic-ladybug/tbl"
+to = "gainful-tarsier/ram"
+effect = "multiplies"
+sign = "none"
+via = ["amphibian-sponge/fn"]
+note = """
+W = 0x122F2 by coolant index ffff106f, 0..128; the sign of the product \
+follows S - 128."""
+
+[[step]]
+from = "capable-mamba/reg"
+to = "evasive-degu/ram"
+effect = "converts"
+sign = "positive"
+via = ["quick-mantis/fn"]
+note = """
+GR1F: phase = 20*ffff13b2 + floor(20*(GR1F - ffff158a)/ffff22bc) - 60 or - \
+20, stored while ffff13c8 is 2, 4, 6; 0.5 degCA."""
+
+[[step]]
+from = "inescapable-bullfinch/reg"
+to = "portable-dachshund/ram"
+effect = "converts"
+sign = "positive"
+via = ["lovely-cuttlefish/fn"]
+note = """
+GR1E forms the second intake edge phase with the same arithmetic while event \
+state ffff13c8 is 1, 3, or 5."""
+
+[[step]]
+from = "evasive-degu/ram"
+to = "intake_cvtc_actual_b1/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["hallowed-chameleon/fn"]
+note = """
+ffff2442 = clamp_u8(0x80 + ffff4799 - ffff22cc): an edge earlier than the \
+rest edge reads above 0x80; DID 0x1135."""
+
+[[step]]
+from = "portable-dachshund/ram"
+to = "intake_cvtc_actual_b2/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["hallowed-chameleon/fn"]
+note = """
+ffff2443 = clamp_u8(0x80 + ffff479a - ffff22cd), the same unit and sign as \
+ffff2442."""
+
+[[step]]
+from = "intake_cvtc_duty_b1/ram"
+to = "intake_cvtc_duty_command_b1/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+000BE814 stores the live byte at ffff23bc+0x84; the 140-byte copy ffff23bc \
+-> ffff2330 at 0x21318 latches it."""
+
+[[step]]
+from = "intake_cvtc_duty_b2/ram"
+to = "intake_cvtc_duty_command_b2/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+The same block copy latches the second live cell; the bank order follows the \
+adjacent-pair convention, not code."""
+
+[[step]]
+from = "intake_cvtc_duty_command_b1/ram"
+to = "stalwart-ape/reg"
+effect = "converts"
+sign = "positive"
+via = ["smart-chicken/fn"]
+note = """
+BFR7B = u8*ROM8[0x8DFC]*39/80, duty = raw*39/100 percent of CYLR7B; ffff4247 \
+bit 0 forces 825 (20 percent)."""
+
+[[step]]
+from = "intake_cvtc_duty_command_b2/ram"
+to = "outrageous-pug/reg"
+effect = "converts"
+sign = "positive"
+via = ["smart-chicken/fn"]
+note = "BFR7A = u8*ROM8[0x8DFC]*39/80; ffff4247 bit 0 forces 1238 (30 percent)."
+
+[[step]]
+from = "imaginary-labradoodle/tbl"
+to = "lime-tuna/reg"
+effect = "scales"
+sign = "positive"
+via = ["striped-tiger/fn"]
+note = "CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts, the intake PWM period."
+
+[[step]]
+from = "imaginary-labradoodle/tbl"
+to = "visionary-saluki/reg"
+effect = "scales"
+sign = "positive"
+via = ["striped-tiger/fn"]
+note = "CYLR7A = 125 * ROM8[0x8DFC] = 4125 counts."

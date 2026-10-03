@@ -9,6 +9,7 @@ ffff245c.bit2 is unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

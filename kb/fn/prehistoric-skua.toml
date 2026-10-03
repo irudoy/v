@@ -12,6 +12,7 @@ directly to store a result.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = """
 Input r4 is a record index; -1 returns without a write. The descriptor bytes \
 are not read; the attribute word is read through pointer table 0001a14c only \

@@ -2,17 +2,30 @@ import unittest
 from types import SimpleNamespace
 
 from kb import adapters, convert, repo
-from kb.adapters import definitions, interp, ledgers, native, overrides, profiles, signals, telemetry
+from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
+                         profiles, signals, telemetry)
 from kb.model import Entity
 from kb.repo import KbError
 
 
 class ConvertTest(unittest.TestCase):
+    def test_a_converted_home_declaration_remains_a_distinct_source(self):
+        meaning = SimpleNamespace(home='7mfk', tables={}, props={})
+        symbol = SimpleNamespace(layout='7mfk', meaning=meaning,
+                                 sources={'kb/fn/probe.toml', 'defs/JK08A.interp.csv'})
+        inputs = {'defs/JK08A.interp.csv'}
+        self.assertTrue(convert._alone(symbol, inputs))
+        meaning.props = {'block': 'engine_speed/block'}
+        self.assertFalse(convert._alone(symbol, inputs))
+        symbol.layout = 'jk00d'
+        self.assertTrue(convert._alone(symbol, inputs))
+
     def test_a_converted_registry_converts_to_no_change(self):
         for registry, counts in (("interp", (247, 2)), ("native", (226, 23)),
                                  ("definitions", (718, 50)), ("profiles", (459, 15)),
                                  ("telemetry", (0, 0)), ("signals", (0, 0)),
-                                 ("overrides", (0, 0)), ("ledgers", None)):
+                                 ("overrides", (0, 0)), ("ledgers", None),
+                                 ("architecture", (0, 0))):
             with self.subTest(registry=registry):
                 conversion, texts, _ = convert.plan(registry, repo.ROOT)
                 self.assertEqual(texts, {})
@@ -25,12 +38,12 @@ class ConvertTest(unittest.TestCase):
     def test_only_a_converted_registry_converts(self):
         self.assertEqual(adapters.CONVERTED,
                          (interp, native, definitions, profiles, telemetry, signals,
-                          overrides, ledgers))
+                          overrides, ledgers, architecture))
         with self.assertRaises(KbError) as error:
-            convert.plan("architecture", repo.ROOT)
+            convert.plan("curated", repo.ROOT)
         self.assertEqual(error.exception.code, 2)
         self.assertIn("the conversions are interp, native, definitions, profiles, telemetry, "
-                      "signals, overrides, ledgers", str(error.exception))
+                      "signals, overrides, ledgers, architecture", str(error.exception))
 
     def test_a_registry_target_keeps_the_entries_of_its_file_that_it_lacks(self):
         held = {"layout": "7mfk", "status": "supported", "mailbox_index": 26,

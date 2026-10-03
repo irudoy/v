@@ -5,6 +5,7 @@ forms ffff9651 = (ffff35c4 > interpolate(0x15182))."""
 note = ["The physical quantities of ffff35c0 and ffff35c4 are unresolved."]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

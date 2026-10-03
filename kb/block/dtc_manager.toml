@@ -1,0 +1,8 @@
+title = "DTC records"
+stage = "diagnostics/stage"
+summary = """
+Runtime DTC records, descriptor dispatch, aging, readiness latches, and \
+stored-fault projections."""
+specs = ["defs/JK08A.diagnostics.md", "defs/JK08A.fuel-inhibit.md"]
+home = "7mfk"
+order = 38

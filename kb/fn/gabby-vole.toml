@@ -10,6 +10,7 @@ declares both maps in the manual layer.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

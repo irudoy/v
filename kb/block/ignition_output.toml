@@ -1,0 +1,8 @@
+title = "Ignition drivers"
+stage = "actuation/stage"
+summary = """
+APC command builders and crank-angle compare schedulers of the ATU-II coil \
+outputs."""
+specs = ["defs/JK08A.ignition-output.md"]
+home = "7mfk"
+order = 28

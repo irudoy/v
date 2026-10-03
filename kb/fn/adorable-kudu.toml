@@ -5,6 +5,7 @@ ffff240e=sat_i16(s16[ffff18d8]-u16[ffff2410]), the source of CAN word \
 ffff3f98."""
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

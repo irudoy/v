@@ -16,6 +16,7 @@ driving pattern A lists the same three conditions.""",
 ]
 level = "code"
 role = "monitor"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "curated"

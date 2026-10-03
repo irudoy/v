@@ -9,6 +9,7 @@ remains unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

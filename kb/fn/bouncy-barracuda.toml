@@ -20,6 +20,7 @@ multiplier; its physical quantity is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

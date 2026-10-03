@@ -1,0 +1,266 @@
+title = "Injection pulse"
+summary = """
+Scales current Base Fuel Schedule ffff1024 by the fuel multiplier from \
+target mixture and the base terms, the transient term, and the common gain \
+into bank precursors, adds the battery-dependent opening time, and applies \
+the channel multiplier and minimum-pulse floor to the durations that \
+0002c13c loads into ATU-II channel 8."""
+quantity = """
+Injector pulse duration after the minimum-pulse floor, 10 us counts (ms = \
+raw/100)"""
+output = "handsome-spaniel/ram"
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 4
+
+[[step]]
+from = "normalized_load/ram"
+to = "prudent-numbat/tbl"
+effect = "indexes"
+sign = "none"
+via = ["large-tamarin/fn"]
+note = """
+Load axis 0x11AC7 reads normalized BFS ffff102c; wide-open latch \
+ffff2468.bit3 forces 0xFF."""
+
+[[step]]
+from = "rpm/ram"
+to = "prudent-numbat/tbl"
+effect = "indexes"
+sign = "none"
+via = ["large-tamarin/fn"]
+note = "RPM axis 0x11CC0 at 50 rpm per count reads RPM/12.5 word ffff11bc."
+
+[[step]]
+from = "prudent-numbat/tbl"
+to = "inquisitive-crow/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["large-tamarin/fn"]
+note = """
+Target Mixture - Main, Q7 with 128 = stoichiometric; ffff15eb = m while rich \
+latch ffff24a2.bit7 holds (set at m >= 130), else 128."""
+
+[[step]]
+from = "inquisitive-crow/ram"
+to = "af_state_factor/ram"
+effect = "limits"
+sign = "positive"
+via = ["large-tamarin/fn"]
+note = """
+ffff123a ramps from snapshot ffff1278 toward ffff15eb << 7; ffff22e8 = \
+max(ffff123a, ffff123c), 0x4000 below 400 rpm or while ffff2531 != 0."""
+
+[[step]]
+from = "af_state_factor/ram"
+to = "dazzling-sawfly/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["fuel_multiplier_publisher/fn"]
+note = """
+target = floor(min(65535, ffff231a + ffff240a)*ffff22e8/16384); gates, \
+bounds, and rate limits give ffff18e4, published as ffff22e6."""
+
+[[step]]
+from = "hasty-eel/ram"
+to = "fair-horse/tbl"
+effect = "indexes"
+sign = "none"
+via = ["knowing-potoo/fn"]
+note = """
+The previous-cycle normalized coolant index ffff106f is the lookup \
+coordinate."""
+
+[[step]]
+from = "fair-horse/tbl"
+to = "competent-pillbug/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["knowing-potoo/fn"]
+note = """
+The lookup times selected ROM8[0x990a] is step-limited relative to ffff15da \
+and capped before it updates ffff15da."""
+
+[[step]]
+from = "competent-pillbug/ram"
+to = "happy-curassow/ram"
+effect = "adds"
+sign = "positive"
+via = ["fuel_base_accumulator/fn"]
+note = "ffff231a = clamp_u16(ffff15f8 + 0x4000 + ffff230c + ffff15da)."
+
+[[step]]
+from = "happy-curassow/ram"
+to = "dazzling-sawfly/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["fuel_multiplier_publisher/fn"]
+note = """
+The base term plus conditional term ffff240a is scaled by commanded mixture \
+ffff22e8 over 16384."""
+
+[[step]]
+from = "kickass-mole/ram"
+to = "dainty-oriole/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["injection_pulse_precursor_builder/fn"]
+note = """
+S = current BFS ffff1024, or ffff123e while ffff245d.bit5 is set; H = \
+floor(S*ffff22e6/131072)."""
+
+[[step]]
+from = "dazzling-sawfly/ram"
+to = "dainty-oriole/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["injection_pulse_precursor_builder/fn"]
+note = """
+H = floor(S*ffff22e6/131072) with unity 0x4000; a full inhibit mask 0x3f \
+publishes ffff22e6 = 0."""
+
+[[step]]
+from = "vegan-bittern/tbl"
+to = "enigmatic-mouse/ram"
+effect = "scales"
+sign = "negative"
+via = ["transient_fuel_term_coordinator/fn", "transient_fuel_additive/fn"]
+note = """
+Only while ffff1a66 < 0: ffff150a = cell/2 and ffff2300 = \
+clamp_s16(trunc0(ffff150a*ffff1a66/256)), so a larger cell lowers ffff2300."""
+
+[[step]]
+from = "enigmatic-mouse/ram"
+to = "dainty-oriole/ram"
+effect = "adds"
+sign = "positive"
+via = ["injection_pulse_precursor_builder/fn"]
+note = "X_b = floor(H*ffff40b6/0x6400) + ffff2300, the signed transient term."
+
+[[step]]
+from = "married-whippet/tbl"
+to = "versatile-bobcat/ram"
+effect = "scales"
+sign = "positive"
+via = ["fuel_common_gain_builder/fn"]
+note = """
+Curve 0x129E2 on load byte ffff13b1 adds to s; ffff31d8 = P*(256-s)>>8 \
+falls, so ffff17ee = (K<<18)/((K<<10)+ffff31d8) and the gain rise."""
+
+[[step]]
+from = "greedy-sunfish/tbl"
+to = "versatile-bobcat/ram"
+effect = "scales"
+sign = "positive"
+via = ["fuel_common_gain_builder/fn"]
+note = """
+Curve 0x129F2 on RPM/25 byte ffff11b3 adds to s; ffff165e = \
+ffff160d*ROM16[0x9332]/256 rises with s."""
+
+[[step]]
+from = "versatile-bobcat/ram"
+to = "dainty-oriole/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["injection_pulse_precursor_builder/fn"]
+note = """
+I_b = max(170, clamp_u16(trunc0(X_b*ffff165e/16384))); the common Q14 gain \
+spans 0.7495..0.8494."""
+
+[[step]]
+from = "dainty-oriole/ram"
+to = "enlightened-mastodon/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = """
+v = ffff2436 + floor(ffff18c0*trim/65536); the neutral trim 0x6400 is the \
+factor 100/256 to 10 us counts."""
+
+[[step]]
+from = "private-groundhog/ram"
+to = "portable-kingfisher/ram"
+effect = "scales"
+sign = "negative"
+via = ["fuel_output_override_word/fn"]
+note = """
+ffff2436 = clamp_u16(max(0, ((175 - ffff1108)*92 >> 7) + 70)) on battery \
+byte ffff1108: 0.70 ms at 14.0 V, 0.09 ms per V."""
+
+[[step]]
+from = "portable-kingfisher/ram"
+to = "enlightened-mastodon/ram"
+effect = "adds"
+sign = "positive"
+via = ["bank_base_pulse_builder/fn"]
+note = "Injector opening time ffff2436 adds to both parity bases."
+
+[[step]]
+from = "enlightened-mastodon/ram"
+to = "injection_0/ram"
+effect = "scales"
+sign = "positive"
+via = ["injector_channel_pulse_builder/fn"]
+note = """
+Even channels: v = ffff191c + ffff1396[i] - ffff1466[i], zero if negative, \
+times ROM8[0x129C0+i] >> 7; DID 0x1206, ms = raw/100."""
+
+[[step]]
+from = "over_run_channel_multiplier/tbl"
+to = "injection_0/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["injector_channel_pulse_builder/fn"]
+note = """
+Injection Pulse Channel Multiplier, Q1.7; all six stock cells are 0x80, \
+unity."""
+
+[[step]]
+from = "injection_0/ram"
+to = "handsome-spaniel/ram"
+effect = "limits"
+sign = "positive"
+via = ["injector_channel_pulse_builder/fn", "pulse_affine_floor_transform/fn"]
+note = """
+Minimum-pulse floor: max(x, sat_u16(floor((13656*x + 425000)/16384))) with \
+the stock coefficients at 0x91DA."""
+
+[[step]]
+from = "handsome-spaniel/ram"
+to = "berserk-terrier/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+The periodic 140-byte copy ffff23bc -> ffff2330 snapshots the transformed \
+words."""
+
+[[step]]
+from = "berserk-terrier/ram"
+to = "portable-gecko/ram"
+effect = "selects"
+sign = "positive"
+via = ["bulky-hound/fn"]
+note = """
+Running: ffff224e+2i = max(ffff2348+2i, ffff2390); stopped, inhibited, and \
+start modes fill ffff23aa or the start words."""
+
+[[step]]
+from = "portable-gecko/ram"
+to = "glossy-tarantula/reg"
+effect = "drives"
+sign = "positive"
+via = ["injector_oneshot_mask_scheduler/fn"]
+note = """
+DCNT8x += sat_u16(800*d >> 8), one duration count is 10 us; inhibited \
+channels take opening time ffff23aa."""
+
+[[step]]
+from = "portable-gecko/ram"
+to = "imported-panther/reg"
+effect = "schedules"
+sign = "none"
+via = ["injector_oneshot_mask_scheduler/fn"]
+note = """
+0002c13c sets DSTR bit i to start the one-shot of channel i under the \
+aggregate channel mask."""

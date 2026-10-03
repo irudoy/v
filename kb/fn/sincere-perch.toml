@@ -9,6 +9,7 @@ dispatcher 0004e162 calls it before 0004d99c.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

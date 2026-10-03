@@ -10,6 +10,7 @@ effort, or PWM duty.""",
 ]
 level = "code"
 role = "monitor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

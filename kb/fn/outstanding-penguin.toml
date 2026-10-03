@@ -13,6 +13,7 @@ last converted value.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

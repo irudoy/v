@@ -13,6 +13,7 @@ event-to-crank-angle conversion remain hardware-level unknowns.""",
 ]
 level = "code"
 role = "accessor"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "curated"

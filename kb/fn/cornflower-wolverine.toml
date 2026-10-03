@@ -15,6 +15,7 @@ reports P0306. ffff4200.bit6 marks two or more cylinders at the threshold.""",
 ]
 level = "code"
 role = "monitor"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

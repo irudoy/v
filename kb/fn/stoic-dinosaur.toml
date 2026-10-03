@@ -8,6 +8,7 @@ note = [
 ]
 level = "code"
 role = "accessor"
+block = "injection_timing/block"
 
 [[ledger]]
 registry = "funcs"

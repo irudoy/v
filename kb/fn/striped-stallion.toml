@@ -3,6 +3,7 @@ Explicit-axis 16x16 wrapper over core 0x26B84; geometry is in the entry \
 registry."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

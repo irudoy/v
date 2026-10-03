@@ -12,6 +12,7 @@ release point is 7800 RPM.""",
 ]
 level = "code"
 role = "service"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

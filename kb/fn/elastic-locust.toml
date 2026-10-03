@@ -20,6 +20,7 @@ established.""",
 ]
 level = "code"
 role = "driver"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

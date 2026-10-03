@@ -7,6 +7,7 @@ decides when the loader replaces the L0 part of a layout.
 
 from collections import Counter, defaultdict
 import csv
+from itertools import combinations
 import re
 
 from kb import derive, repo
@@ -17,6 +18,7 @@ POINTER_REFERENCES = ("data", "param")
 WIDTH = {"b": 1, "w": 2, "l": 4}
 SUFFIX = re.compile(r"\.([bwl])$")
 DERIVED_SRC = "literal-pairs"
+RAM_ACCESS_MODES = frozenset({'read', 'write', 'read_write', 'load', 'store', 'update'})
 
 
 def _read(path):
@@ -35,6 +37,28 @@ def space_of(spaces, address):
 def width_of(mnemonic):
     match = SUFFIX.search(mnemonic)
     return WIDTH[match.group(1)] if match else None
+
+
+def shared_ram(functions, locations, accesses):
+    """One weighted candidate edge per pair, counting distinct RAM locations.
+
+    Duplicate access sites and producers do not increase a pair's weight.
+    ROM, peripheral registers, pointer-only literals, and functions outside
+    the layout are excluded.
+    These edges describe structural proximity, without a semantic claim.
+    """
+    entries = {row['key'] for row in functions}
+    ram = {row['key'] for row in locations if row['space'] == 'ram'}
+    users = defaultdict(set)
+    for access in accesses:
+        if (access['from'] in entries and access['to'] in ram
+                and RAM_ACCESS_MODES.intersection(access['props']['modes'])):
+            users[access['to']].add(access['from'])
+    weights = Counter(pair for found in users.values()
+                      for pair in combinations(sorted(found), 2))
+    return [{'from': first, 'to': second, 'props': {
+                'weight': weight, 'producer': 'derived', 'src': 'shared-ram'}}
+            for (first, second), weight in sorted(weights.items())]
 
 
 def l0_rows(layout, spaces, root=repo.ROOT):
@@ -93,7 +117,7 @@ def l0_rows(layout, spaces, root=repo.ROOT):
         caller, callee = int(row["src"], 16), int(row["dst"], 16)
         calls.append({"from": key(caller), "to": key(callee), "props": properties({
             "sites": sorted(call_sites.get((caller, callee), ())),
-            "producer": "l0", "src": src["calls.csv"]})})
+            "weight": 1, "producer": "l0", "src": src["calls.csv"]})})
     derived = defaultdict(list)
     for pair in derive.literal_pairs(layout.id, root):
         if space_of(spaces, pair.address) is None:
@@ -118,10 +142,12 @@ def l0_rows(layout, spaces, root=repo.ROOT):
             accesses.append({"from": key(func), "to": key(address), "props": {
                 "modes": sorted({site["mode"] for site in sites}), "sites": sites,
                 "producer": producer, "src": origin}})
+    location_rows = [locations[address] for address in sorted(locations)]
     return {
         "functions": functions,
         "calls": calls,
-        "locations": [locations[address] for address in sorted(locations)],
+        "locations": location_rows,
         "accesses": accesses,
+        "shared_ram": shared_ram(functions, location_rows, accesses),
         "outside": dict(outside),
     }

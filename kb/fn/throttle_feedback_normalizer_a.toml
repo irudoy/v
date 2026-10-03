@@ -6,6 +6,7 @@ ffff2660[channel]."""
 note = ["Array elements use a two-byte stride."]
 level = "code"
 role = "driver"
+block = "throttle_sensing/block"
 
 [[ledger]]
 registry = "curated"

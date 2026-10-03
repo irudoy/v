@@ -1,0 +1,5 @@
+title = "Memory integrity"
+stage = "platform/stage"
+summary = "Background ROM self-test scanner and the memory and ROM-check task."
+home = "7mfk"
+order = 44

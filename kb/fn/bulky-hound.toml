@@ -17,6 +17,7 @@ start words ffff2386..ffff2392 remains unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "injector_output/block"
 
 [[ledger]]
 registry = "funcs"

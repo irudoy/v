@@ -12,6 +12,7 @@ definition, and work-support writes by local identifier.""",
 ]
 level = "code"
 role = "dispatch"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

@@ -13,6 +13,7 @@ configured capability and does not prove traffic observed on a vehicle.""",
 ]
 level = "code"
 role = "init"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

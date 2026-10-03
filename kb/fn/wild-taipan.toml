@@ -25,6 +25,7 @@ performed in N at 1,800 to 2,000 rpm for 20 seconds.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

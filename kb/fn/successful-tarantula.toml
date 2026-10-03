@@ -15,6 +15,7 @@ affected bank to neutral 0x6400.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

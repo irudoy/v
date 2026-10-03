@@ -10,6 +10,7 @@ represented by states 0..4 remains unresolved.""",
 ]
 level = "code"
 role = "selector"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

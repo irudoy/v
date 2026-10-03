@@ -9,6 +9,7 @@ FUN 00065e54, entry 96 of the periodic table at 0002196c, calls 00065b08, \
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

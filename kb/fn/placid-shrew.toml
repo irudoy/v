@@ -3,6 +3,7 @@ Implicit-axis primitive: 4 points, step 16384, limit 0xC000, uint16 \
 element."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

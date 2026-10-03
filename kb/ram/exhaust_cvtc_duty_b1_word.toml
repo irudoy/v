@@ -12,6 +12,7 @@ stage divides raw*ROM8[00008dfd]*125/1024 into a cycle register of \
 homologous.""",
 ]
 level = "code"
+block = "cvtc_exhaust/block"
 width = 16
 unit = "percent"
 scale = "x*100/1024"

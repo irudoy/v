@@ -11,6 +11,7 @@ engineering units remain unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "misfire/block"
 contract = """
 It has no arguments. The ffff4251.bit7 test at 000867e8 is mandatory for \
 reaching the accumulation path. The function returns an internal \

@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic right shift by 6: r0 = (int32)r0 >> 6, signed division by 64 \
 rounded down. The body is six shar instructions and rts. It is pure, with no \

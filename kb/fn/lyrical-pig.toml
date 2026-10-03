@@ -12,6 +12,7 @@ candidate. ffff41e5 selects the bypass constant versus interpolation.""",
 ]
 level = "code"
 role = "accessor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

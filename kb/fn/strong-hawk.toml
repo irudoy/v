@@ -15,6 +15,7 @@ load-limit and torque-request labels are not reinstated.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

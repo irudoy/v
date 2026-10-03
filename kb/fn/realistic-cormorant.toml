@@ -4,6 +4,7 @@ from the bank: DAT_0002646C = 128 is subtracted from the result, so values \
 use offset-binary with 128 as zero, forming a signed correction map."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

@@ -9,6 +9,7 @@ ordered path from correction state to both APC compare registers.""",
 ]
 level = "code"
 role = "dispatch"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

@@ -18,6 +18,7 @@ Normal/Reverse column labels.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

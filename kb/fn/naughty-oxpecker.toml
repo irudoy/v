@@ -12,6 +12,7 @@ branches. FUN 000b4ef8 is the distinct complementary state updater.""",
 ]
 level = "code"
 role = "dispatch"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

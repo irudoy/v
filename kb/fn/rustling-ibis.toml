@@ -3,6 +3,7 @@ One of eight consumers of outputs from component 0003b498. Together the \
 consumers close the loop but do not establish physical units."""
 level = "code"
 role = "consumer"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,0 +1,8 @@
+title = "Intake valve timing"
+stage = "control/stage"
+summary = """
+Intake CVTC target surfaces, coolant selection, reference learning, and \
+centered intake-cam timing."""
+specs = ["defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 16

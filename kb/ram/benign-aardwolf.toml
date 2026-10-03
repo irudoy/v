@@ -5,6 +5,7 @@ reloads settle countdown ffff25e7 in FUN 000bfe88 and is the integrator \
 input of error stage 000c1152."""
 note = ["FUN 000bced0 only initializes the bytes."]
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "centered_u8, 0.5 degCA per count"
 
 [[ledger]]

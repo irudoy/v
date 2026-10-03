@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic right shift by 11: r0 = (int32)r0 >> 11, signed division by 2048 \
 rounded down. It is pure; its only memory access spills r1 to the stack. \

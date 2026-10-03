@@ -10,6 +10,7 @@ deg C, and values from 120 deg C saturate to 255.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

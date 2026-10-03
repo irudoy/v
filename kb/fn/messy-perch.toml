@@ -9,6 +9,7 @@ least 3 for mask 0x15.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

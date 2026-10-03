@@ -66,6 +66,7 @@ log = 800
 path = 1500
 raw = 3000
 show = 1500
+suggest = 1500
 where = 400
 
 # Address spaces of each MCU from its hardware manual: on-chip flash, on-chip

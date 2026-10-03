@@ -11,6 +11,7 @@ physical option set encoded by ROM8[0x8B28].""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

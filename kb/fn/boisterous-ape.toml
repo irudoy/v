@@ -9,6 +9,7 @@ remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "o2_catalyst/block"
 
 [[diagnostic]]
 id = "catalyst-limit-accessor-p0420"

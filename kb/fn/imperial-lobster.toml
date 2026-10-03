@@ -13,6 +13,7 @@ itself identify an Over Run Fuel Cut gate.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

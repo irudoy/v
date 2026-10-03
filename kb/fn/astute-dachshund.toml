@@ -4,6 +4,7 @@ equals 1, it calls FUN_00035856, the Mode 01 PID handler."""
 note = ["Other selector values dispatch separate diagnostic services."]
 level = "code"
 role = "dispatch"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

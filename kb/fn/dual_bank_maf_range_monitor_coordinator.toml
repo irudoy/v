@@ -12,6 +12,7 @@ supplies FUN 0008152a as dispatcher argument 4 and FUN 00081d74 as argument \
 ]
 level = "code"
 role = "monitor"
+block = "maf_monitors/block"
 
 [[ledger]]
 registry = "curated"

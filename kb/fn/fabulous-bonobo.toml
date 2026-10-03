@@ -4,6 +4,7 @@ Its body lies outside their boundaries, so the physical quantity of their \
 argument cannot be resolved internally."""
 level = "code"
 role = "service"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

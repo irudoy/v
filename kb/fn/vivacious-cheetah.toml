@@ -11,6 +11,7 @@ scale is claimed for 00014ed2.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

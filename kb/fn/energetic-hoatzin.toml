@@ -12,6 +12,7 @@ scheduled quantity is an injection duration in 10 us counts.""",
 ]
 level = "code"
 role = "driver"
+block = "injector_output/block"
 
 [[ledger]]
 registry = "funcs"

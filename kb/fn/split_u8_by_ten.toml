@@ -6,6 +6,7 @@ pointer, and stores input-10*quotient through the byte pointer."""
 note = ["The reciprocal is exact over the admitted byte domain."]
 level = "code"
 role = "service"
+block = "ignition_output/block"
 contract = """
 Given r4=x in 0..255, r5=&q and r6=&r, writes q=floor(x/10) as uint16 and \
 r=x-10*q as uint8."""

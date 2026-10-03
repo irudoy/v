@@ -9,6 +9,7 @@ With the homologous DID conversion deg C = raw-50, implicit lookup nodes \
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

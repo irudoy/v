@@ -15,6 +15,7 @@ publication conversion are not connected to this internal result by code.""",
 ]
 level = "code"
 role = "service"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

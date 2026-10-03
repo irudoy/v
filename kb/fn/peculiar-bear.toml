@@ -11,6 +11,7 @@ cadence and sensor voltage conversion remain unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

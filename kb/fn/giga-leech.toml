@@ -6,6 +6,7 @@ to ffff2404."""
 note = ["The physical purpose of the composite result is unresolved."]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

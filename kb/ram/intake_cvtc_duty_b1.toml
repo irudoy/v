@@ -13,6 +13,7 @@ both pairs. The eleven 2026-09-21 profile-5 captures hold both pairs equal \
 in all 279,130 records that carry them, 112,598 of them nonzero.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "percent"
 scale = "x*39/100"

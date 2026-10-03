@@ -9,6 +9,7 @@ function to component 0003b498 is not established.""",
 ]
 level = "code"
 role = "consumer"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

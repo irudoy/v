@@ -16,6 +16,7 @@ the community definition raw*0.5-64 degCA; the unit follows the 3.2 us \
 capture clock and the 120-degree event interval.""",
 ]
 level = "code"
+block = "cvtc_exhaust/block"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"

@@ -15,6 +15,7 @@ and is never dereferenced as an axis.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

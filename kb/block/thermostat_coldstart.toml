@@ -1,0 +1,6 @@
+title = "Thermostat and cold-start monitors"
+stage = "diagnostics/stage"
+summary = """
+P0128 thermostat model and the cold-start control monitor P1421 and P1422."""
+home = "7mfk"
+order = 35

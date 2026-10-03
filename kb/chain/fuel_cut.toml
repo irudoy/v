@@ -1,0 +1,294 @@
+title = "Fuel cut"
+summary = """
+Deceleration fuel cut, the main and stationary rev limiters, the \
+vehicle-speed cut, and P1217 overtemperature protection form six-channel \
+inhibit mask ffff22e0 in FUN_0004ED88 after the Power Balance replacement. \
+FUN_0002C13C gives each inhibited channel the no-fuel opening-time pulse on \
+DCNT8A..DCNT8F."""
+quantity = """
+Six-channel fuel-injection inhibit mask; bit k set cuts fuel to injector \
+channel k, cylinder k + 1 by the Power Balance bit assignment"""
+output = "fuel_inhibit_mask/ram"
+specs = [
+    "defs/JK08A.dfco.md",
+    "defs/JK08A.fuel-inhibit.md",
+    "defs/JK08A.limiters.md",
+    "defs/JK08A.rpm-drop-state.md",
+    "defs/JK08A.fuel.md",
+]
+home = "7mfk"
+order = 13
+
+[[step]]
+from = "asparagus-cockle/ram"
+to = "fortunate-sunfish/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "dfco_cut_request/fn",
+    "dfco_restore_classify/fn",
+    "dfco_state_machine/fn",
+]
+note = """
+With snapshot ffff2458.bit5 of upstream DFCO mode bit ffff2459.bit5 clear, \
+0004fbe2 requests no cut and 00050018 returns inhibit class 1."""
+
+[[step]]
+from = "over_run_fuel_cut/tbl"
+to = "fortunate-sunfish/ram"
+effect = "compares"
+sign = "none"
+via = ["dfco_cut_request/fn", "dfco_state_machine/fn"]
+note = """
+On a rising edge (previous ffff245a.bit5 clear, coarse speed >= 4) 0004fbe2 \
+requests cut when ffff11b3 > Entry threshold, x*25 RPM by coolant."""
+
+[[step]]
+from = "over_run_fuel_hold/tbl"
+to = "fortunate-sunfish/ram"
+effect = "compares"
+sign = "none"
+via = ["dfco_cut_request/fn", "dfco_state_machine/fn"]
+note = """
+While the mode bit is held, 0004fbe2 compares ffff11b3 with the Hold \
+threshold, x*25 RPM by coolant; a higher threshold needs more RPM to cut."""
+
+[[step]]
+from = "daffodil-gibbon/ram"
+to = "fortunate-sunfish/ram"
+effect = "compares"
+sign = "none"
+via = [
+    "dfco_cut_request/fn",
+    "dfco_restore_classify/fn",
+    "dfco_state_machine/fn",
+]
+note = """
+Cut request is 1 only while RPM/25 ffff11b3 is strictly above the selected \
+threshold; 00050018 compares the same byte with the restore thresholds."""
+
+[[step]]
+from = "over_run_fuel_restore/tbl"
+to = "sassy-markhor/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["dfco_restore_classify/fn"]
+note = """
+00050018 interpolates Full Restore 0x12818 by coolant into lower threshold \
+ffff16aa, RPM/25, after runtime floors and offsets."""
+
+[[step]]
+from = "over_run_fuel_intermediate_restore/tbl"
+to = "nocturnal-adder/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["dfco_restore_classify/fn"]
+note = """
+00050018 interpolates Intermediate Restore 0x1298C by coolant into upper \
+threshold ffff1778, RPM/25, after runtime floors and offsets."""
+
+[[step]]
+from = "teal-giraffe/ram"
+to = "sassy-markhor/ram"
+effect = "limits"
+sign = "none"
+via = ["dfco_restore_classify/fn"]
+note = """
+The class of RPM-drop byte ffff106a at 0x11CB5 = [4, 8, 12] selects restore \
+floor 0x1299C = [36, 48, 54, 62] RPM/25 (900..1550 RPM)."""
+
+[[step]]
+from = "sassy-markhor/ram"
+to = "fortunate-sunfish/ram"
+effect = "compares"
+sign = "none"
+via = ["dfco_restore_classify/fn", "dfco_state_machine/fn"]
+note = """
+ffff11b3 <= ffff16aa returns full-restore class 3; entry from idle needs \
+class 0, so a higher threshold vetoes DFCO up to a higher RPM."""
+
+[[step]]
+from = "nocturnal-adder/ram"
+to = "fortunate-sunfish/ram"
+effect = "compares"
+sign = "none"
+via = ["dfco_restore_classify/fn", "dfco_state_machine/fn"]
+note = """
+Below coarse speed 4, ffff16aa < ffff11b3 <= ffff1778 returns intermediate \
+class 2; stock moving branches do not compare ffff1778."""
+
+[[step]]
+from = "fortunate-sunfish/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "masks"
+sign = "none"
+via = ["dfco_state_machine/fn", "fuel_output_inhibit_coordinator/fn"]
+note = """
+000503e0 steps idle, entry delays, full cut, and exit delay; table 0x2371C \
+gives D = 00, 00, 15, 3F, 15 and 0004ed88 forms P = G | D | C."""
+
+[[step]]
+from = "rev_limit_fuel_cut/tbl"
+to = "fuel_inhibit/ram"
+effect = "compares"
+sign = "none"
+via = ["main_rpm_fuel_cut_state_machine/fn"]
+note = """
+ffff2468.bit4 selects a column; bit 2 sets at RPM/12.5 >= 612 (7650 RPM) and \
+clears below 596 in column 0, 596 and 368 in column 1."""
+
+[[step]]
+from = "rpm/ram"
+to = "fuel_inhibit/ram"
+effect = "compares"
+sign = "none"
+via = ["main_rpm_fuel_cut_state_machine/fn"]
+note = """
+0004f282 compares RPM/12.5 word ffff11bc with the active pair; equality with \
+the release word retains the cut, and the stock delay is zero."""
+
+[[step]]
+from = "fuel_inhibit/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "main_rpm_fuel_cut_state_machine/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+Active main cut bit ffff2497.bit2 is one of the 15 global Booleans, so \
+0004ed88 sets G = 0x3F for all six channels."""
+
+[[step]]
+from = "robust-meerkat/tbl"
+to = "blue-oyster/ram"
+effect = "compares"
+sign = "none"
+via = ["stationary_rpm_fuel_cut_state_machine/fn"]
+note = """
+Readiness bit 4 sets when accumulator ffff16a6 reaches ROM16[0x911C] = 381; \
+any failed entry gate clears ffff16a6 and bits 3..5."""
+
+[[step]]
+from = "wooden-moose/tbl"
+to = "blue-oyster/ram"
+effect = "integrates"
+sign = "none"
+via = ["stationary_rpm_fuel_cut_state_machine/fn"]
+note = """
+Each 100-count expiry adds lookup(0x124D2 at clamp((ffff11bc - 160) / 2, 0, \
+255)) - 128 to ffff16a6; stock step 0 at <= 2000 RPM, 127 at the limiter."""
+
+[[step]]
+from = "gifted-jackrabbit/tbl"
+to = "blue-oyster/ram"
+effect = "compares"
+sign = "none"
+via = ["stationary_rpm_fuel_cut_state_machine/fn"]
+note = """
+With readiness set and coarse speed ffff110e = 0, RPM/50 ffff11ae >= \
+ROM8[0x85D9] = 36 (1800 RPM) sets bit 5; it clears below 30 (1500 RPM)."""
+
+[[step]]
+from = "blue-oyster/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "stationary_rpm_fuel_cut_state_machine/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+Stationary cut bit ffff247f.bit5 enters the same global Boolean group and \
+becomes a full 0x3F mask."""
+
+[[step]]
+from = "vehicle_speed/ram"
+to = "xanthic-yak/ram"
+effect = "compares"
+sign = "none"
+via = ["vehicle_speed_fuel_cut_state_machine/fn"]
+note = """
+With RPM gate ffff24a7.bit5 clear, bit 0 arms at coarse speed >= 93 and \
+holds at >= 91 (candidate 186 and 182 km/h); stock delay ROM8[0x8CAF] is 0."""
+
+[[step]]
+from = "xanthic-yak/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "vehicle_speed_fuel_cut_state_machine/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+Active vehicle-speed cut bit ffff24a6.bit0 is a global Boolean and makes G = \
+0x3F."""
+
+[[step]]
+from = "raspberry-dragon/ram"
+to = "heavenly-whippet/ram"
+effect = "compares"
+sign = "none"
+via = ["engine_overtemperature_fuel_inhibit/fn"]
+note = """
+P1217: raw coolant ffff1071 >= ROM8[0x8D15] = 190 sets, >= 180 retains; bit \
+5 also needs 1900/1700 RPM hysteresis and ffff2458.bit5 clear."""
+
+[[step]]
+from = "heavenly-whippet/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "engine_overtemperature_fuel_inhibit/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+Overtemperature fuel-inhibit bit ffff41f2.bit5 is a global Boolean and makes \
+G = 0x3F."""
+
+[[step]]
+from = "cuddly-dragon/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "overrides"
+sign = "none"
+via = [
+    "power_balance_mask_update/fn",
+    "power_balance_mask_apply/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+While service 0x30 IOLID 0x0C is active, 00050a34 returns Power Balance mask \
+ffff2b2c in place of P; the ETC-fault mask A is ORed after it."""
+
+[[step]]
+from = "fuel_inhibit_mask/ram"
+to = "glossy-tarantula/reg"
+effect = "gates"
+sign = "none"
+via = ["injector_oneshot_mask_scheduler/fn"]
+note = """
+For a channel bit set in ffff22e0, 0002c13c adds opening time ffff23aa, a \
+pulse that delivers no fuel, to DCNT8A + 2*i instead of the duration."""
+
+[[step]]
+from = "wealthy-toad/ram"
+to = "quantum-tiger/ram"
+effect = "stores"
+sign = "none"
+via = ["injector_event_isr/fn"]
+note = """
+While rotating count ffff1937 and ffff22e0 are nonzero, 0002be40 decrements \
+the count and adds the current channel to history ffff1935."""
+
+[[step]]
+from = "quantum-tiger/ram"
+to = "glossy-tarantula/reg"
+effect = "gates"
+sign = "none"
+via = ["injector_oneshot_mask_scheduler/fn"]
+note = """
+A channel set in rotating-release history ffff1935 also receives opening \
+time ffff23aa; the DFCO release tail follows injector events."""

@@ -12,6 +12,7 @@ descriptor.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[diagnostic]]
 id = "dual-bank-maf-fault-inhibit-p0101"

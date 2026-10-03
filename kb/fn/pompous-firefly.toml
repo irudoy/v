@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Signed 32/32 division: r0 = r1 / r0 (dividend r1, divisor r0), truncating \
 toward zero (-7/2 = -3). It does not return a remainder. It clobbers r1; r2, \

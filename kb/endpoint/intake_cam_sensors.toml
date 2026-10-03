@@ -1,0 +1,10 @@
+title = "Intake cam position sensors"
+direction = "input"
+block = "crank_cam/block"
+peripheral = "ATU-II channel 1A captures GR1E and GR1F"
+summary = """
+GR1E and GR1F capture the bank-2 and bank-1 intake-cam edges; the handlers \
+store cam intervals 0xFFFF22CA and 0xFFFF22C8."""
+functions = ["lovely-cuttlefish/fn", "quick-mantis/fn"]
+specs = ["defs/JK08A.cvtc.md"]
+order = 2

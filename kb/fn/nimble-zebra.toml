@@ -10,6 +10,7 @@ division produces 0.1 km/h units at ffff113c before filtering.""",
 ]
 level = "code"
 role = "driver"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

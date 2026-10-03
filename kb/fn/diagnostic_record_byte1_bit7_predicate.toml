@@ -10,6 +10,7 @@ Indices 0x71 and 0x123 are exact P2119 and P1238 descriptors in 0005096c.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = """
 Input r4 is interpreted as a signed 16-bit record index. Index -1 returns \
 zero without reading RAM; other indices return byte1.bit7 of the selected \

@@ -1,0 +1,6 @@
+title = "Control calculations"
+lane = "flow"
+order = 3
+summary = """
+Fuel quantity and phase, closed-loop fuel, ignition timing, valve timing, \
+idle air, torque request, and throttle target."""

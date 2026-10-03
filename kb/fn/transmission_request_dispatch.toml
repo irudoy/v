@@ -12,6 +12,7 @@ code-proven.""",
 ]
 level = "code"
 role = "dispatch"
+block = "transmission/block"
 
 [[ledger]]
 registry = "curated"

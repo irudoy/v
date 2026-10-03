@@ -15,6 +15,7 @@ not consumed by the fuel path.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "curated"

@@ -1,0 +1,6 @@
+title = "Platform"
+lane = "support"
+order = 8
+summary = """
+Scheduler, startup, memory integrity, serial EEPROM access, and shared \
+interpolation kernels."""

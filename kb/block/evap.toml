@@ -1,0 +1,7 @@
+title = "EVAP monitors"
+stage = "diagnostics/stage"
+summary = """
+Fuel-level conditioning, vent, purge, pressure-sensor, and leak monitors of \
+the EVAP system."""
+home = "7mfk"
+order = 34

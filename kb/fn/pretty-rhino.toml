@@ -9,6 +9,7 @@ degrees.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

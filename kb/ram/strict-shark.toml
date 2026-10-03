@@ -4,6 +4,7 @@ Bank-2 rest-edge deviation 128 + clamp(ROM8[0000831e]=88 - ffff11c9, \
 ffff246b bit 4 is set, with the same bound flag as ffff1376. FUN 000bced0 \
 initializes it to 0x80 at 000bd04a."""
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "centered_u8"
 
 [[ledger]]

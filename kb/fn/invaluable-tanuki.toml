@@ -5,6 +5,7 @@ clears it at 0008c268."""
 note = ["The only caller is 0008bff0."]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

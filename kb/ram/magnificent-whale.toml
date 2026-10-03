@@ -8,6 +8,7 @@ note = [
 req = floor((P>>16)*150/batt) + ((floor(((P>>8)&0xff)*150/batt)+128)>>8).""",
 ]
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "duty/1024"
 
 [[ledger]]

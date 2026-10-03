@@ -1,0 +1,366 @@
+title = "Electronic throttle target"
+summary = """
+Two accelerator-pedal samples form a normalized pedal word that scales a \
+signed request; the rotational-speed limiter and the signed-min arbitration \
+bound it, and 0xE98E inverts it to an opening-area request that joins the \
+idle base. 0006F48C converts the shared target area through 0x13202 to \
+channel targets, which the regulator publishes as ATU-II BFR6A-D duty."""
+quantity = """
+Throttle opening target of code channel 0, raw opening coordinate of the \
+inverse 0x13202/0x155A0 pair (FFFF28BE holds channel 1)"""
+output = "throttle_target_channel_0/ram"
+specs = ["defs/JK08A.throttle-control.md", "defs/JK08A.limiters.md"]
+home = "7mfk"
+order = 9
+
+[[step]]
+from = "auburn-finch/ram"
+to = "fiery-puma/ram"
+effect = "converts"
+sign = "positive"
+via = ["accelerator_pedal_channel_0_adjuster/fn"]
+note = """
+ffff27a0 = signed(AN10 sample ffff362c - learned offset ffff55c0); \
+calibrated range checks share the first pedal DTC thresholds."""
+
+[[step]]
+from = "merry-shrimp/ram"
+to = "nifty-earthworm/ram"
+effect = "converts"
+sign = "positive"
+via = ["accelerator_pedal_channel_1_adjuster/fn"]
+note = "ffff27a4 = signed(2 * AN17 sample ffff362e - learned offset ffff55c2)."
+
+[[step]]
+from = "fiery-puma/ram"
+to = "pedal/ram"
+effect = "selects"
+sign = "positive"
+via = ["accelerator_pedal_pair_selector/fn"]
+note = """
+ffff2672 = minimum of both channels clamped at zero, with mode substitution \
+by ffff24c8 and an optional rate limit through ffff1384."""
+
+[[step]]
+from = "nifty-earthworm/ram"
+to = "pedal/ram"
+effect = "selects"
+sign = "positive"
+via = ["accelerator_pedal_pair_selector/fn"]
+note = """
+The second channel enters the same zero-clamped minimum; mode bits in \
+ffff24c8 can substitute one channel."""
+
+[[step]]
+from = "pedal/ram"
+to = "capable-cassowary/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = "Periodic scheduler 00020dfe snapshots the normalized pedal word."
+
+[[step]]
+from = "capable-cassowary/ram"
+to = "enchanted-tamarin/ram"
+effect = "converts"
+sign = "positive"
+via = ["pedal_request_compensator/fn"]
+note = """
+Q15 pedal fraction ffff18c8 = clamp(floor(ffff266e * 32768 / 170), 0, 32768) \
+with stock ROM16[0x94e4] = 0 and ROM16[0x94e8] = 170."""
+
+[[step]]
+from = "enchanted-tamarin/ram"
+to = "maize-firefly/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["pedal_request_compensator/fn"]
+note = """
+With stock 0x89fb.bit5 set, coefficient max(ffff18c8, lookup 0x10b0e), \
+capped at 0xa000, multiplies a nonnegative difference / 32768."""
+
+[[step]]
+from = "esoteric-salmon/tbl"
+to = "maize-firefly/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["pedal_request_compensator/fn"]
+note = """
+Q15 multiplier map 0x10b0e competes with ffff18c8 in the maximum; ffff19be \
+records the selected coefficient before the 0xa000 cap."""
+
+[[step]]
+from = "capable-cassowary/ram"
+to = "arcane-cuscus/ram"
+effect = "converts"
+sign = "positive"
+via = ["accelerator_pedal_request_preprocessor/fn"]
+note = """
+ffff1e6c = 0 at <= 45, 1500 at >= 170, else floor((x - 45) * 1500 / 125); \
+bounded offsets and corrections then form ffff18f2."""
+
+[[step]]
+from = "arcane-cuscus/ram"
+to = "aloof-chameleon/ram"
+effect = "scales"
+sign = "positive"
+via = ["pedal_request_scaler/fn"]
+note = """
+ffff19d4 = s16 clamp of ffff18f2 * ROM16[0x944e] divided by ffff19a2 and \
+ffff23fc; zero when either divisor is zero."""
+
+[[step]]
+from = "aloof-chameleon/ram"
+to = "curious-falcon/ram"
+effect = "selects"
+sign = "positive"
+via = ["pedal_request_mode_selector/fn"]
+note = """
+00075396 selects ffff19d4 or forward-surface value ffff19ba by \
+ffff2488.bit7, ROM8[0x8b28], ffff418a.bit2, and ffff24d2.bit7."""
+
+[[step]]
+from = "curious-falcon/ram"
+to = "maize-firefly/ram"
+effect = "scales"
+sign = "positive"
+via = ["pedal_request_compensator/fn"]
+note = """
+000753d4 applies the bounded coefficient adjustment to ffff19d0 and writes \
+ffff19d2; with 0x89fb.bit5 clear it copies ffff19d0."""
+
+[[step]]
+from = "arcane-griffin/tbl"
+to = "maize-firefly/ram"
+effect = "looks-up"
+sign = "none"
+via = ["pedal_request_compensator/fn"]
+note = """
+Basis B = lookup(0xe98e, row ffff1702, column of the first 0x13202 point) - \
+0x8000 and ffff19d2 = B + c * max(ffff19d0 - B, 0), so B raises ffff19d2 \
+while c < 1 and lowers it while c > 1."""
+
+[[step]]
+from = "maize-firefly/ram"
+to = "vigorous-binturong/ram"
+effect = "limits"
+sign = "positive"
+via = ["pedal_request_inverse_lookup/fn"]
+note = """
+00075540 stores the mode-dependent floor of 00075230 back into ffff19d2 and \
+writes the lesser of it and the 0xe98e cap as APP request ffff243c."""
+
+[[step]]
+from = "arcane-griffin/tbl"
+to = "vigorous-binturong/ram"
+effect = "limits"
+sign = "positive"
+via = ["pedal_request_inverse_lookup/fn"]
+note = """
+The cap is lookup(0xe98e, row ffff1702, last column 0xffff) - 0x8000; a \
+larger last-column cell raises the APP request ceiling."""
+
+[[step]]
+from = "vigorous-binturong/ram"
+to = "snobbish-tapir/ram"
+effect = "limits"
+sign = "positive"
+via = ["rotational_speed_request_limiter/fn"]
+note = """
+The ramp engages while previous ffff19d8 < ffff243c; the inactive branch \
+reloads ramp ffff19da with ffff243c, so the output tracks APP."""
+
+[[step]]
+from = "rev_limit_throttle_cut/tbl"
+to = "snobbish-tapir/ram"
+effect = "limits"
+sign = "positive"
+via = ["rotational_speed_request_limiter/fn"]
+note = """
+Threshold 0x942c (x*0.78125 RPM, stock 0x2580 = 7500 RPM) sets the onset of \
+progressive request reduction; 0xffff writes neutral 0x7fff."""
+
+[[step]]
+from = "snobbish-tapir/ram"
+to = "shapeless-cricket/ram"
+effect = "selects"
+sign = "positive"
+via = ["signed_request_limit_arbiter/fn"]
+note = """
+Index-18 arbiter 00071508 takes the signed minimum of ffff19d8, limiter \
+candidate ffff19de, and the other bounds into ffff243a."""
+
+[[step]]
+from = "shapeless-cricket/ram"
+to = "elegant-marmoset/ram"
+effect = "selects"
+sign = "positive"
+via = ["request_limit_selector/fn"]
+note = """
+With ffff2490.bit1 clear 00070d82 selects ffff243a; with the bit set it \
+selects controller result ffff19c0, bounded by ffff243a while ffff25d6 is \
+zero."""
+
+[[step]]
+from = "elegant-marmoset/ram"
+to = "throttle_request_bounded/ram"
+effect = "limits"
+sign = "positive"
+via = ["signed_request_boundary/fn"]
+note = """
+Index-21 boundary stage 00079030 applies the mode-controlled lower and upper \
+bounds, including ffff347e..ffff3484, and writes ffff19c6."""
+
+[[step]]
+from = "throttle_request_bounded/ram"
+to = "accelerated-whippet/ram"
+effect = "converts"
+sign = "positive"
+via = ["primary_request_inverse_lookup/fn"]
+note = """
+00073432 interpolates the current-RPM row of 0xe98e and inverse-searches \
+ffff19c6 + 0x8000, returning coordinates from 0x14114."""
+
+[[step]]
+from = "arcane-griffin/tbl"
+to = "accelerated-whippet/ram"
+effect = "converts"
+sign = "negative"
+via = ["primary_request_inverse_lookup/fn"]
+note = """
+Inverse lookup: larger 0xe98e requested-torque cells reach a given request \
+at a lower 0x14114 coordinate."""
+
+[[step]]
+from = "accelerated-whippet/ram"
+to = "papaya-swallow/ram"
+effect = "converts"
+sign = "positive"
+via = ["request_coordinate_coordinator/fn"]
+note = """
+000730fc converts the coordinate through 0x15500/0x15690 or 0x15540/0x156d0, \
+applies ffff1702 and ROM8[0x8d8f], and clamps at 0x13202[0]."""
+
+[[step]]
+from = "papaya-swallow/ram"
+to = "throttle_target_shared/ram"
+effect = "adds"
+sign = "positive"
+via = ["throttle_area_compositor/fn"]
+note = """
+With ffff24d2.bit0 and ffff24ce.bit2 clear: ffff19b2 = clamp_u16(ffff183e + \
+ffff1340 - (ffff120e >> 2))."""
+
+[[step]]
+from = "analytic-mole/ram"
+to = "throttle_target_shared/ram"
+effect = "adds"
+sign = "positive"
+via = ["throttle_area_compositor/fn"]
+note = """
+The idle/opening-area base ffff1340 adds to the request area in the normal \
+composition."""
+
+[[step]]
+from = "red-sidewinder/ram"
+to = "throttle_target_shared/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["throttle_area_compositor/fn"]
+note = """
+Inflow opening area ffff120e, in four times the raw 0x13202 counts, is \
+subtracted as ffff120e >> 2."""
+
+[[step]]
+from = "throttle_target_shared/ram"
+to = "throttle_target_channel_0/ram"
+effect = "converts"
+sign = "positive"
+via = ["channel_throttle_target_builder/fn"]
+note = """
+0006f48c converts the area through inverse pair 0x155a0/0x13202, adds a \
+channel correction, and clamps from ROM16[0x9574] = 15 to the upper bound."""
+
+[[step]]
+from = "muscular-leech/tbl"
+to = "throttle_target_channel_0/ram"
+effect = "converts"
+sign = "negative"
+via = ["channel_throttle_target_builder/fn"]
+note = """
+Inverse lookup: larger 0x13202 opening-area cells reach a given area at a \
+lower 0x155a0 opening coordinate."""
+specs = ["defs/JK08A.throttle-control.md"]
+
+[[step]]
+from = "flat-fennec/tbl"
+to = "throttle_target_channel_0/ram"
+effect = "limits"
+sign = "positive"
+via = ["channel_throttle_target_builder/fn"]
+note = """
+Upper target ffff3508 = clamp(raw(0x12daa) * 13, 908, 2908) while \
+ffff417e.bit5 is clear; otherwise ROM16[0x9578] * 4 = 2908 applies."""
+
+[[step]]
+from = "throttle_target_channel_0/ram"
+to = "omniscient-goat/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "throttle_target_scaler/fn",
+    "throttle_target_fault_selector/fn",
+    "throttle_target_error_encoder/fn",
+    "throttle_target_error_scaler/fn",
+    "throttle_fixed_point_regulator/fn",
+    "throttle_regulator_coordinator/fn",
+]
+note = """
+Scaled target sat_u16(t * 16 + 0x2000) gives magnitude and direction for \
+regulator 000cb614. Sign none: effort has separate direction ffff369a."""
+
+[[step]]
+from = "pistachio-manatee/ram"
+to = "black-gazelle/ram"
+effect = "converts"
+sign = "positive"
+via = ["throttle_feedback_normalizer_a/fn"]
+note = """
+Feedback estimate of 0003e75a: ffff2660 = clamp_u16(ffff38a8 - 64 * ffff454e \
++ 0x2000) per channel."""
+
+[[step]]
+from = "black-gazelle/ram"
+to = "omniscient-goat/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "throttle_feedback_plausibility_selector/fn",
+    "throttle_feedback_fault_selector/fn",
+    "throttle_feedback_error_encoder/fn",
+    "throttle_fixed_point_regulator/fn",
+    "throttle_regulator_coordinator/fn",
+]
+note = """
+000cafbc selects ffff2660 or ffff2664, 000cb140 forms feedback magnitude and \
+direction, 000cb614 regulates. Sign none: closed-loop feedback."""
+
+[[step]]
+from = "omniscient-goat/ram"
+to = "acrid-tarantula/ram"
+effect = "converts"
+sign = "positive"
+via = ["throttle_effort_to_duty/fn"]
+note = """
+Duty = effort >> 6 with supply-compensation divisor ffff39b0, clamped to 500 \
+and capped at stock literal 490."""
+
+[[step]]
+from = "acrid-tarantula/ram"
+to = "steady-jaguar/reg"
+effect = "drives"
+sign = "none"
+via = ["atu2_throttle_pwm_publisher/fn"]
+note = """
+min(320, floor(duty * 320 / 500)) goes to BFR6A or BFR6B by direction mask \
+ffff36dc; channel 1 uses BFR6C/D. Sign none: mask-selected member."""

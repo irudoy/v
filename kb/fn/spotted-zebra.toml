@@ -9,6 +9,7 @@ only zeros in the current ROM.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

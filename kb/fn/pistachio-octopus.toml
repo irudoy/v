@@ -8,6 +8,7 @@ status 0xa2 holds for 25.6 s after computed START SIGNAL clears.""",
 ]
 level = "code"
 role = "service"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

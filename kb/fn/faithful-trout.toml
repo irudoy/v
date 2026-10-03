@@ -11,6 +11,7 @@ around the 900-count design point of the sequence.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

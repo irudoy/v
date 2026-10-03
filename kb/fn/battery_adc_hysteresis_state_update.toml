@@ -12,6 +12,7 @@ pre-conversion word thresholds.""",
 ]
 level = "code"
 role = "monitor"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "curated"

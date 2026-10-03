@@ -9,6 +9,7 @@ exact physical adaptation semantics remain unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

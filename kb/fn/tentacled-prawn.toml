@@ -12,6 +12,7 @@ is RPM/3.125, the representation of ffff11ee.""",
 ]
 level = "code"
 role = "service"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

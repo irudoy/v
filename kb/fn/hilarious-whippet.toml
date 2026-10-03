@@ -14,6 +14,7 @@ declares for table 00012dea through J1979 Mode 01 PIDs 0x05 and 0x0F.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

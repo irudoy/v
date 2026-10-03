@@ -3,6 +3,7 @@ summary = "Critical diagnostic-record predicate with minus-one sentinel support.
 note = ["The descriptor-attribute pointer table begins at 0001a14c."]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = """
 Given signed record index n, return 1 iff n is not -1, runtime[n].byte1.bit7 \
 is set, and either runtime[n].byte1.bit5 or descriptor_attribute[n].bit13 is \

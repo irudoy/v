@@ -12,6 +12,7 @@ signal identities remain unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "dfco/block"
 
 [[ledger]]
 registry = "curated"

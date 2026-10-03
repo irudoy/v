@@ -18,6 +18,7 @@ the initialization source of ffff4247 bit 6.""",
 ]
 level = "code"
 role = "monitor"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

@@ -9,6 +9,7 @@ an internal representation rather than a map scale.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,0 +1,245 @@
+title = "Idle air opening base"
+summary = """
+000476D2 adds coolant-indexed base 0x1465A and speed-indexed correction \
+0x1469A and bounds the sum by FFFF133E, a scaled copy of the 000474A4 \
+air/throttle quantity FFFF122A built from curve aggregate FFFF173A, floor \
+curve 0x12908, and multiplier maps. 00072C3C adds the result FFFF1340 to the \
+shared throttle target area."""
+quantity = """
+Idle/opening-area base, raw opening-area counts added to the shared throttle \
+target area FFFF19B2"""
+output = "analytic-mole/ram"
+specs = ["defs/JK08A.throttle-control.md"]
+home = "7mfk"
+order = 10
+
+[[step]]
+from = "neat-dalmatian/tbl"
+to = "analytic-mole/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["idle_opening_area_builder/fn"]
+note = """
+base = lookup(0x1465a, ffff106f << 8), stored in ffff1e74; ffff1340 = \
+min(sat_u16(base + correction), ffff133e)."""
+
+[[step]]
+from = "hasty-eel/ram"
+to = "analytic-mole/ram"
+effect = "indexes"
+sign = "none"
+via = ["idle_opening_area_builder/fn"]
+note = """
+Previous-cycle coolant index ffff106f (0..240 = -40..110 deg C) indexes \
+0x1465a; the sign follows the table shape."""
+
+[[step]]
+from = "fierce-tamarin/tbl"
+to = "analytic-mole/ram"
+effect = "adds"
+sign = "positive"
+via = ["idle_opening_area_builder/fn"]
+note = """
+correction = lookup(0x1469a, ffff11bc), stored in ffff12fc, adds to the base \
+with uint16 saturation into ffff12fa."""
+
+[[step]]
+from = "rpm/ram"
+to = "analytic-mole/ram"
+effect = "indexes"
+sign = "none"
+via = ["idle_opening_area_builder/fn"]
+note = """
+Engine-speed word ffff11bc (RPM/12.5) indexes correction 0x1469a; the sign \
+follows the table shape."""
+
+[[step]]
+from = "saffron-manul/ram"
+to = "silky-parakeet/ram"
+effect = "indexes"
+sign = "none"
+via = ["vivid-peacock/fn"]
+note = """
+uint8 ffff22e4 indexes curves A and B over explicit axis 0x12778 while \
+ROM8[0x8710].bit3 is set; the sign follows the curve shape."""
+
+[[step]]
+from = "garrulous-civet/tbl"
+to = "silky-parakeet/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["vivid-peacock/fn"]
+note = """
+Curve A while ffff244f.bit1 is clear: ffff1752 = 4 * lookup(0x127a8, \
+ffff22e4)."""
+
+[[step]]
+from = "complex-condor/tbl"
+to = "silky-parakeet/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["vivid-peacock/fn"]
+note = """
+Curve B while ffff244f.bit1 is set: ffff1752 = 4 * lookup(0x127e8, \
+ffff22e4)."""
+
+[[step]]
+from = "silky-parakeet/ram"
+to = "mindful-mamba/ram"
+effect = "adds"
+sign = "positive"
+via = ["thick-lionfish/fn"]
+note = """
+S = ffff1752 + 4*ffff1765 + ffff1748 + s16 ffff1230 + ffff15ac + ffff13f7 + \
+s16 ffff170a; ffff173a = clamp(S, 0, 65535)."""
+
+[[step]]
+from = "scrupulous-yak/tbl"
+to = "eminent-rottweiler/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["burrowing-peccary/fn"]
+note = """
+lookup(0x1296c, ffff106f), conditionally multiplied by ffff22e4 and divided \
+by nonzero ffff16b1, is saturated at 255 into ffff1765."""
+
+[[step]]
+from = "hasty-eel/ram"
+to = "eminent-rottweiler/ram"
+effect = "indexes"
+sign = "none"
+via = ["burrowing-peccary/fn"]
+note = """
+Coolant index ffff106f indexes 0x1296c; the sign follows the table shape."""
+
+[[step]]
+from = "eminent-rottweiler/ram"
+to = "mindful-mamba/ram"
+effect = "adds"
+sign = "positive"
+via = ["thick-lionfish/fn"]
+note = "4 * u8 ffff1765 is a term of saturating aggregate ffff173a."
+
+[[step]]
+from = "kind-mouse/tbl"
+to = "mahogany-otter/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["able-crow/fn"]
+note = "lookup(0x122e2, ffff1077) is extended to uint16 in ffff1230."
+
+[[step]]
+from = "coolant_index/ram"
+to = "mahogany-otter/ram"
+effect = "indexes"
+sign = "none"
+via = ["able-crow/fn"]
+note = """
+Current coolant index ffff1077 indexes 0x122e2; the sign follows the table \
+shape."""
+
+[[step]]
+from = "mahogany-otter/ram"
+to = "mindful-mamba/ram"
+effect = "adds"
+sign = "positive"
+via = ["thick-lionfish/fn"]
+note = "s16 ffff1230 is a term of saturating aggregate ffff173a."
+
+[[step]]
+from = "mindful-mamba/ram"
+to = "maroon-aardwolf/ram"
+effect = "converts"
+sign = "none"
+via = ["astonishing-macaw/fn"]
+note = """
+000474a4 uses ffff173a in the ffff122a calculation before the ffff171a \
+floor. Sign none: the ledger does not state this formula."""
+
+[[step]]
+from = "manipulative-moose/tbl"
+to = "urban-ammonite/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["dramatic-roadrunner/fn"]
+note = """
+Floor curve 0x12908, or byte-identical 0x12918 while ffff4250.bit3 is clear, \
+is written to ffff171a."""
+
+[[step]]
+from = "urban-ammonite/ram"
+to = "maroon-aardwolf/ram"
+effect = "limits"
+sign = "positive"
+via = ["astonishing-macaw/fn"]
+note = """
+000474a4 applies lower bound max(uVar4, ffff171a << 3) in the ffff122a \
+calculation."""
+
+[[step]]
+from = "quaint-lion/tbl"
+to = "maroon-aardwolf/ram"
+effect = "adds"
+sign = "positive"
+via = ["sceptical-dingo/fn", "astonishing-macaw/fn"]
+note = """
+ffff15b1 = high byte of sat_u16((0x1234a << 8) + (0x12342 << 8)) by \
+ffff1070; 000474a4 adds 2 * ffff15b1 before saturation."""
+
+[[step]]
+from = "archetypal-herring/tbl"
+to = "maroon-aardwolf/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
+note = """
+000473ac writes lookup 0x1233a, or neutral 0x80 while ffff41d0.bit3 is set, \
+to ffff2fc0, a factor of the 000474a4 product."""
+
+[[step]]
+from = "rugged-turkey/tbl"
+to = "maroon-aardwolf/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
+note = """
+000473ac writes lookup(0x12352, ffff10f4) to ffff2fc1, which multiplies with \
+ffff2fc0 in the 000474a4 product."""
+
+[[step]]
+from = "solid-peccary/tbl"
+to = "maroon-aardwolf/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["astonishing-macaw/fn"]
+note = """
+Correction multiplier 0x12dd2 scales the 000474a4 intermediate with ffff2fc0 \
+and ffff2fc1 before limiting into ffff122a."""
+
+[[step]]
+from = "maroon-aardwolf/ram"
+to = "attractive-sambar/ram"
+effect = "scales"
+sign = "positive"
+via = ["opening_area_upper_builder/fn"]
+note = """
+ffff133e = sat_u16(ffff122a * ROM16[0x92fc] >> 13) with stock 0x92fc = \
+0x235f."""
+
+[[step]]
+from = "attractive-sambar/ram"
+to = "analytic-mole/ram"
+effect = "limits"
+sign = "positive"
+via = ["idle_opening_area_builder/fn"]
+note = "ffff133e is the upper bound: ffff1340 = min(ffff12fa, ffff133e)."
+
+[[step]]
+from = "analytic-mole/ram"
+to = "throttle_target_shared/ram"
+effect = "adds"
+sign = "positive"
+via = ["throttle_area_compositor/fn"]
+note = """
+Normal composition ffff19b2 = clamp_u16(ffff183e + ffff1340 - (ffff120e >> \
+2)) carries the base into the throttle target area."""

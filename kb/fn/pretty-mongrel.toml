@@ -11,6 +11,7 @@ operating-mode name for this adjustment term remains unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

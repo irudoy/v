@@ -24,6 +24,7 @@ for the low-speed intermediate band under stock flags.""",
 ]
 level = "code"
 role = "accessor"
+block = "dfco/block"
 
 [[ledger]]
 registry = "curated"

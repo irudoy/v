@@ -5,6 +5,7 @@ ffff9358."""
 note = ["The physical quantities of ffff9372 and ffff9358 are unresolved."]
 level = "code"
 role = "accessor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

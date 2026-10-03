@@ -1,0 +1,8 @@
+title = "Exhaust valve timing"
+stage = "control/stage"
+summary = """
+Exhaust VTC enable, target surfaces, rest-edge and reference learning, and \
+the per-bank duty controller."""
+specs = ["defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 17

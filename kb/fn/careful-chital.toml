@@ -3,6 +3,7 @@ Implicit-axis primitive: 16 points, step 4096, limit 0xF000, uint16 element; \
 its core is the second copy of shift chain 0x26C1C."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

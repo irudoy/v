@@ -10,6 +10,7 @@ Callers pass 0x0100 (0008c24e), 0x4000 (0008c2ae), and 0x0400 and 0x2000 \
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = """
 Input r4 is a 16-bit attribute mask. It returns 1 on the first matching \
 record and 0 when none matches."""

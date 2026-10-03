@@ -22,6 +22,7 @@ warm deceleration. Physical degree units remain unverified.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

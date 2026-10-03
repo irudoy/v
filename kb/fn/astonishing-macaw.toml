@@ -4,6 +4,7 @@ establishing the lower-bound role for quantity ffff122a in an air/throttle \
 target calculation with opening-area multipliers."""
 level = "code"
 role = "consumer"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

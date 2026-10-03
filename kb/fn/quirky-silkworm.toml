@@ -18,6 +18,7 @@ rpm per count gives the 20-count limit as 250 rpm.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

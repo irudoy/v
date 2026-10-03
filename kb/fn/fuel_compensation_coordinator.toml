@@ -25,6 +25,7 @@ unresolved, and no reader of ffff1f81 was found.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

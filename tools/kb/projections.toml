@@ -323,6 +323,18 @@ consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/mem
 read = "guarded"
 
 [[projection]]
+path = "defs/JK08A.architecture.toml"
+generator = "kb.architecture_projection:registry"
+stage = 6
+inputs = [
+    "kb/stage/", "kb/block/", "kb/endpoint/", "kb/chain/",
+    "kb/fn/", "kb/ram/", "kb/reg/", "kb/tbl/", "kb/axis/", "kb/const/",
+    "tools/kb/src/kb/architecture_projection.py", "tools/kb/src/kb/adapters/architecture.py",
+]
+consumers = ["tools/romviz/", "tools/kb/tests/"]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

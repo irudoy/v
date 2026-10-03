@@ -12,6 +12,7 @@ that replacement.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[diagnostic]]
 id = "etc-actuator-fault-mask-p1238"

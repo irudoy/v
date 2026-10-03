@@ -13,6 +13,7 @@ transition neutralizer ffff4252.bit1 in FUN 00077892.""",
 ]
 level = "code"
 role = "driver"
+block = "transmission/block"
 
 [[ledger]]
 registry = "funcs"

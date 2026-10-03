@@ -12,6 +12,7 @@ bytes bind the initializer to the exhaust-VTC subsystem.""",
 ]
 level = "code"
 role = "init"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

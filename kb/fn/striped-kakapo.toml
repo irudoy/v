@@ -16,6 +16,7 @@ use ffff19a2 as a zero-protected divisor.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

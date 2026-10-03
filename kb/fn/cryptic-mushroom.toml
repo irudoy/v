@@ -18,6 +18,7 @@ P0198, and P0196.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

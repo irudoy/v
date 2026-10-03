@@ -14,6 +14,7 @@ positions remain unnamed.""",
 ]
 level = "code"
 role = "driver"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "curated"

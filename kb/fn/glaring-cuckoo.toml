@@ -14,6 +14,7 @@ registry rows themselves.""",
 ]
 level = "code"
 role = "service"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

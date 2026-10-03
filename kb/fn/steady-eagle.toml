@@ -12,6 +12,7 @@ diagnostic phase of these buckets remains unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

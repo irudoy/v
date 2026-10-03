@@ -14,6 +14,7 @@ throttle opening.""",
 ]
 level = "code"
 role = "monitor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

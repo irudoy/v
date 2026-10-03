@@ -12,6 +12,7 @@ substitutes this writer for stage 0005594a.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

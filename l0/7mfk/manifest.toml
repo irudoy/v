@@ -59,7 +59,7 @@ schema_version = 1
 "tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
 "tools/ghidra/seeds/7mfk.toml" = "d77671aaa88c37c7e7e392599b3beb6326f3fd341539a7edaf695d0fb793eb50"
-"tools/kb/config.toml" = "01ab995a0266654fd4d146e4342d238f50d1b0272a1c35616a73869b12ad2849"
+"tools/kb/config.toml" = "5e4c6d3de9c88a9a7a77f3eb2e320f4201df0fd263d6eafd85a38a7bf1697abd"
 "tools/kb/src/kb/ghidra_preparation.py" = "07b801c296dd77c7a720c375aa7ccf19f628602026df28b12022c25e837eb3e7"
 "tools/kb/src/kb/l0.py" = "56448bfc325fe918d21b81f035d4ca21715741dbf78ca9315ada0e9c0a075798"
 

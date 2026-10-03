@@ -9,6 +9,7 @@ Initializer FUN 000bced0 writes neutral 0x8000 to both elements. The \
 physical quantity and engineering unit are unresolved.""",
 ]
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "signed raw addition"
 
 [[ledger]]

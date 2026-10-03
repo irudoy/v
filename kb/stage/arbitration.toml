@@ -1,0 +1,6 @@
+title = "Protection and arbitration"
+lane = "flow"
+order = 4
+summary = """
+Fuel-output inhibit, deceleration fuel cut, request limiters, and the \
+immobilizer."""

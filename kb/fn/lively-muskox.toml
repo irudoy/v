@@ -9,6 +9,7 @@ source address.""",
 ]
 level = "code"
 role = "accessor"
+block = "diag_services/block"
 contract = """
 Given r4=offset, returns uint32(request[0xffff8005 + uint8(offset) : +4]) in \
 big-endian byte order."""

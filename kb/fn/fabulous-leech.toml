@@ -10,6 +10,7 @@ lookup 00012332 by 8 bits is an internal representation.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

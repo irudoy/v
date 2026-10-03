@@ -10,6 +10,7 @@ represents deg C = code-40.""",
 ]
 level = "code"
 role = "accessor"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

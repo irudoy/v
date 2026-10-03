@@ -15,6 +15,7 @@ complete listed state.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

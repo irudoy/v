@@ -15,6 +15,7 @@ RPM. Its mode branches match those of shared-area compositor 00072c3c.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

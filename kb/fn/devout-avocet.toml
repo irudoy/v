@@ -13,6 +13,7 @@ groups 0..2.""",
 ]
 level = "code"
 role = "monitor"
+block = "misfire/block"
 contract = """
 Inputs are r4=snapshot native-speed word, r5=snapshot calculated-load byte, \
 and r6=snapshot coolant byte. It returns 1 exactly when ffff4251.bit7 and \

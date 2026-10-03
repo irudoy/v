@@ -1,0 +1,8 @@
+title = "Exhaust cam position sensors"
+direction = "input"
+block = "crank_cam/block"
+peripheral = "ATU-II input captures IMI4C and IMI4D"
+summary = "IMI4C and IMI4D capture the bank-2 and bank-1 exhaust-cam edges."
+functions = ["perky-gopher/fn", "complex-mongrel/fn"]
+specs = ["defs/JK08A.cvtc.md"]
+order = 3

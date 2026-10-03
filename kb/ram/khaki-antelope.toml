@@ -13,6 +13,7 @@ The clamp at 32 counts (100 RPM) lies below the first row point, 16*16 = 256 \
 counts (800 RPM).""",
 ]
 level = "code"
+block = "engine_speed/block"
 unit = "rpm/3.125"
 
 [logparam]

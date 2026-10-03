@@ -1,0 +1,12 @@
+title = "Analog acquisition"
+stage = "acquisition/stage"
+summary = """
+On-chip A/D sampling with the PF13..PF15 external multiplexer, the AN10 and \
+AN17 pedal samples, the battery-voltage state, and the Q1.15 trim of the MAF \
+and battery words."""
+specs = [
+    "defs/JK08A.diagnostics.md",
+    "defs/JK08A.start-signal-temperature-selector.md",
+]
+home = "7mfk"
+order = 2

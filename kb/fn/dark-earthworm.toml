@@ -11,6 +11,7 @@ unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

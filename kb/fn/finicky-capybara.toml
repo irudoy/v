@@ -6,6 +6,7 @@ limits the sum to 125..(ffff201a-125) before it writes ffff201e."""
 note = ["The physical purpose of the correction is unresolved."]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

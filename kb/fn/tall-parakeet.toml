@@ -11,6 +11,7 @@ has seven reads in four EVAP functions.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

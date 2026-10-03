@@ -18,6 +18,7 @@ remains a hardware boundary.""",
 ]
 level = "code"
 role = "driver"
+block = "ignition_output/block"
 
 [[ledger]]
 registry = "curated"

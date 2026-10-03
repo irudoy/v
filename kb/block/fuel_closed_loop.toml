@@ -1,0 +1,8 @@
+title = "Closed-loop fuel"
+stage = "control/stage"
+summary = """
+A/F sensor words, short-term correction, and the learned long-term fuel-trim \
+grid of each bank."""
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 13

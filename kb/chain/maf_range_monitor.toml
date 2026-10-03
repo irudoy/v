@@ -1,0 +1,237 @@
+title = "MAF range-performance monitor"
+summary = """
+P0101 monitor 0008152a composes threshold Q0 in ffff12eb from RPM factor \
+0x1236A, factors 0x12AC2 and 0x12868, and bank weights, and 00082604 forms \
+model byte ffff15bc; a true monitor result reaches record 0xBA through \
+00080f82 and 0007d8b8. A stored MAF record requests fuel inhibit at 2400 RPM \
+and blocks the exhaust-VTC operating enable; P010B mirrors the path in \
+00081d74."""
+quantity = """
+P0101 composite threshold Q0, raw byte: model byte ffff15bc below it is a \
+fault candidate while ROM8[0x8D92].bit5 is clear"""
+output = "clay-dugong/ram"
+specs = ["defs/JK08A.maf-range-monitor.md", "defs/JK08A.fuel-inhibit.md"]
+home = "7mfk"
+order = 16
+
+[[step]]
+from = "tough-earwig/ram"
+to = "elegant-guan/ram"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+RPM/50 byte ffff11ae indexes axis 0x1238A = 8..128, exactly 400..6400 RPM."""
+
+[[step]]
+from = "golden-goose/tbl"
+to = "elegant-guan/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+M = interp(0x1236A, 0x1238A, ffff11ae), raw 74..125, shared by P0101 and \
+P010B."""
+
+[[step]]
+from = "elegant-guan/ram"
+to = "idealistic-wren/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = "C = min(255, floor(M*A*B/16384))."
+
+[[step]]
+from = "persimmon-crow/tbl"
+to = "idealistic-wren/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = "A = lookup_u8_1d8(0x12AC2, ffff10f5), raw 108..154."
+
+[[step]]
+from = "feathered-boobook/ram"
+to = "idealistic-wren/ram"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+Runtime byte ffff10f5 indexes factor A; the ledgers do not identify the \
+byte."""
+
+[[step]]
+from = "smiling-piculet/tbl"
+to = "idealistic-wren/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = "B = lookup_u8_1d8(0x12868, high8(ffff517c)), raw 56..148."
+
+[[step]]
+from = "wondrous-bumblebee/ram"
+to = "idealistic-wren/ram"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+The pressure word high byte indexes factor B; stock slope ROM8[0x89FE] = 0 \
+holds the word at 51865, so B is constant in stock."""
+
+[[step]]
+from = "idealistic-wren/ram"
+to = "clay-dugong/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+G = floor(ffff1733*C/256); R0 = min(255, floor(W0*G/(W0+W1))); Q0 = \
+floor(ROM8[0x82BA]*R0/256) with stock 128."""
+
+[[step]]
+from = "provocative-axolotl/ram"
+to = "clay-dugong/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = "Byte ffff1733 scales C into G = floor(ffff1733*C/256)."
+
+[[step]]
+from = "glittering-ostrich/ram"
+to = "clay-dugong/ram"
+effect = "scales"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+First-bank weight W0: R0 = min(255, floor(W0*G/(W0+W1))); R0 is 255 when W0 \
+and W1 are both zero."""
+
+[[step]]
+from = "teal-gibbon/ram"
+to = "clay-dugong/ram"
+effect = "scales"
+sign = "negative"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+Second-bank weight W1 enters only the denominator of R0 = W0*G/(W0+W1), so a \
+larger W1 lowers Q0."""
+
+[[step]]
+from = "spectral-corgi/tbl"
+to = "friendly-poodle/ram"
+effect = "feeds"
+sign = "none"
+via = ["maf_range_model_byte_builder/fn"]
+note = """
+00082604 combines ffff1956, bank state, MAF Factor 0x8A27, K-Value 0x9284, \
+reference 0x9534, ROM8[0x88FB], and ffff10e0; conversion unresolved."""
+
+[[step]]
+from = "active-caracal/tbl"
+to = "friendly-poodle/ram"
+effect = "feeds"
+sign = "none"
+via = ["maf_range_model_byte_builder/fn"]
+note = """
+The Base Fuel Schedule K-Value enters model bytes ffff15bc (P0101) and \
+ffff15bd (P010B); the formula is not stated."""
+
+[[step]]
+from = "clay-dugong/ram"
+to = "muscular-turaco/ram"
+effect = "copies"
+sign = "positive"
+via = ["maf_range_performance_bank_1_monitor/fn"]
+note = """
+Event-snapshot copy at 0x81C62, the stock terminal consumer of Q0; the model \
+byte goes to ffff4564."""
+
+[[step]]
+from = "clay-dugong/ram"
+to = "naughty-oxpecker/fn"
+effect = "compares"
+sign = "none"
+via = [
+    "maf_range_performance_bank_1_monitor/fn",
+    "dual_bank_maf_diagnostic_dispatch/fn",
+]
+note = """
+Candidate ffff15bc < Q0 runs only with ROM8[0x8D92].bit5 clear (compare at \
+0x81942); stock 0x7A bypasses it."""
+
+[[step]]
+from = "friendly-poodle/ram"
+to = "naughty-oxpecker/fn"
+effect = "compares"
+sign = "none"
+via = [
+    "maf_range_performance_bank_1_monitor/fn",
+    "dual_bank_maf_diagnostic_dispatch/fn",
+]
+note = """
+A true return of 0008152a makes 00080f82 call 0007d8b8 with record 0xBA \
+(P0101); the stock direct-condition branch is not described."""
+
+[[step]]
+from = "naughty-oxpecker/fn"
+to = "hallowed-malkoha/ram"
+effect = "stores"
+sign = "none"
+via = ["prehistoric-skua/fn"]
+note = """
+0007d8b8 calls 0008c2d2 first for every index, which sets byte 1 bit 7 \
+(stored fault) of ffff5718 + 3*0xBA."""
+specs = ["defs/JK08A.cvtc.md"]
+
+[[step]]
+from = "naughty-oxpecker/fn"
+to = "succinct-worm/ram"
+effect = "stores"
+sign = "none"
+via = ["prehistoric-skua/fn"]
+note = """
+0008c2d2 sets event byte ffff48e0 for records with attribute bit 10, which \
+the six MAF records carry."""
+specs = ["defs/JK08A.cvtc.md"]
+
+[[step]]
+from = "hallowed-malkoha/ram"
+to = "tourmaline-jackal/ram"
+effect = "detects"
+sign = "none"
+via = ["diagnostic_group_summary_update/fn"]
+note = """
+Record 0x129 bytes 1 and 2 are the OR over records 0xBA, 0x07, 0xBB, 0x08, \
+0xBC, and 0x09 (P0101..P0103, P010B..P010D)."""
+
+[[step]]
+from = "tourmaline-jackal/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "masks"
+sign = "none"
+via = [
+    "dual_bank_maf_diagnostic_coordinator/fn",
+    "dual_bank_maf_fault_rpm_inhibit/fn",
+    "fuel_output_inhibit_coordinator/fn",
+]
+note = """
+0003c3ac copies byte 1 bit 7 to ffff2449 bit 7 (snapshot ffff2448); 0004f736 \
+then requests the full fuel-inhibit mask at >= 2400 RPM."""
+
+[[step]]
+from = "succinct-worm/ram"
+to = "merciful-bobcat/ram"
+effect = "copies"
+sign = "none"
+via = ["famous-platypus/fn"]
+note = """
+0008c272 sets ffff41d1 bits 7, 2, and 0 while ffff48e0 is nonzero and clears \
+them otherwise."""
+
+[[step]]
+from = "merciful-bobcat/ram"
+to = "onyx-jerboa/ram"
+effect = "gates"
+sign = "none"
+via = ["boisterous-cuttlefish/fn"]
+note = """
+A set bit 7 blocks exhaust-VTC operating enable ffff248b bit 2 in 000bf630."""

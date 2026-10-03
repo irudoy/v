@@ -13,6 +13,7 @@ code does not connect it to fuel or actuator control.""",
 ]
 level = "code"
 role = "monitor"
+block = "maf_monitors/block"
 
 [[diagnostic]]
 id = "maf-range-monitor-bank1-p0101"

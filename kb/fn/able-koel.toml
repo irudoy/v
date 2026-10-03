@@ -11,6 +11,7 @@ semantics because no physically named consumer is present.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"

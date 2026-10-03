@@ -6,6 +6,7 @@ it."""
 note = ["Every map cell equals 6; the physical subsystem is unresolved."]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

@@ -15,6 +15,7 @@ base-tick handler 0002040c, so the reload of 100 is 10.24 s.""",
 ]
 level = "code"
 role = "monitor"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

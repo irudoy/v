@@ -1,0 +1,8 @@
+title = "Diagnostic services"
+stage = "communication/stage"
+summary = """
+Diagnostic transport, Nissan and UDS service handlers, J1979 PIDs, and \
+output-control active tests."""
+specs = ["defs/JK08A.diagnostics.md"]
+home = "7mfk"
+order = 39

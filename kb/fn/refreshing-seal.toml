@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not a standalone function: count-7 leaf of left-shift ladder 000221bc and \
 also the base of its jump table. It computes r0 = r0 << 7, discarding bits \

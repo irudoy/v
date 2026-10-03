@@ -10,6 +10,7 @@ offset-binary neutral encoding.""",
 ]
 level = "code"
 role = "init"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

@@ -14,6 +14,7 @@ Engineering conversions remain pending hardware validation.""",
 ]
 level = "code"
 role = "accessor"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "curated"

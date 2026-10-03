@@ -3,6 +3,7 @@ Reciprocal-pair component where bit 5 of ROM byte 0x89fb selects \
 interpolation versus direct pass-through."""
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

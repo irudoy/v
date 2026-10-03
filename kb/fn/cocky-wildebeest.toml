@@ -5,6 +5,7 @@ update of ffff17c0 by subtracting a step or clearing the state."""
 note = ["The physical quantity of the state and steps is unresolved."]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

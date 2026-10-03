@@ -15,6 +15,7 @@ axis 00023884, and scaler 000095f6.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

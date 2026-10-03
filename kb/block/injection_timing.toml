@@ -1,0 +1,8 @@
+title = "Injection phase"
+stage = "control/stage"
+summary = """
+End-of-injection angle, injection start delay, and the mode-dependent \
+six-channel phase calculation."""
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 14

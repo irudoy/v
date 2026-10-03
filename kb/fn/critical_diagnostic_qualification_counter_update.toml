@@ -7,6 +7,7 @@ latches holds the prior count rather than resetting it."""
 note = ["The consumer requires the count to exceed stock threshold four."]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "curated"

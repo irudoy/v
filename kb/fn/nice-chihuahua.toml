@@ -21,6 +21,7 @@ factory learning description.""",
 ]
 level = "code"
 role = "kernel"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

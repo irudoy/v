@@ -22,6 +22,7 @@ JK08A LID-0 support bitmap does not advertise.""",
 ]
 level = "code"
 role = "service"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

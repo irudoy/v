@@ -11,6 +11,7 @@ same component failed refutation and remain candidate.""",
 ]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

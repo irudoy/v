@@ -5,6 +5,7 @@ writes 0."""
 note = ["The physical purpose of threshold ffff15cc is unresolved."]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

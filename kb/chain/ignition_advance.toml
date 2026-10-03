@@ -1,0 +1,359 @@
+title = "Ignition advance"
+summary = """
+Builds the final software spark advance ffff11d4 from the RPM and load \
+timing surfaces 0x991A, 0x9A1A, and 0x9B1A, the computed base angle, the \
+retard and cam terms, the event corrections, and the work-support \
+adjustment, then converts it into APC command ffff2022, which programs the \
+GR11A spark edge, the GR11B reset edge that starts the dwell, and the POPCR \
+output actions."""
+quantity = """
+Spark advance, crank degrees BTDC in the software coordinate that J1979 PID \
+0x0E reports"""
+output = "final_timing/ram"
+specs = [
+    "defs/JK08A.ignition-state.md",
+    "defs/JK08A.ignition-output.md",
+    "defs/JK08A.work-support.md",
+]
+home = "7mfk"
+order = 7
+
+[[step]]
+from = "rpm/ram"
+to = "rare-weasel/ram"
+effect = "indexes"
+sign = "none"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+Row axis 0x11ECE: each point times four is compared with RPM/12.5 word \
+ffff11bc, so one count is 50 RPM over 400..7400 RPM."""
+specs = ["defs/JK08A.ignition-state.md"]
+
+[[step]]
+from = "normalized_load/ram"
+to = "rare-weasel/ram"
+effect = "indexes"
+sign = "none"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+Column axis 0x11EBE is Q7 normalized BFS ffff102c, the scheduler snapshot of \
+ffff1048."""
+
+[[step]]
+from = "ignition_gated_surface_1/tbl"
+to = "rare-weasel/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+Cold surface, 16x16: bits 0..6 are an x - 64 crank-degree timing trim; bit 7 \
+enables the knock-state path."""
+
+[[step]]
+from = "high_octane_timing_state/tbl"
+to = "rare-weasel/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+High-octane hot surface; it is the hot input while ffff2466 bit 6 is clear."""
+
+[[step]]
+from = "high_detonation_timing_state/tbl"
+to = "rare-weasel/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+High-detonation hot surface; it is the hot input while ffff2466 bit 6 is \
+set."""
+
+[[step]]
+from = "raspberry-dragon/ram"
+to = "rare-weasel/ram"
+effect = "selects"
+sign = "none"
+via = ["cold_hot_timing_map_selector/fn"]
+note = """
+Coolant raw ffff1071 (deg C = raw - 50) <= 106 uses the cold surface, \
+107..131 blends cold with the selected hot surface, above 131 uses hot."""
+
+[[step]]
+from = "knock_surface_state/ram"
+to = "rare-weasel/ram"
+effect = "selects"
+sign = "none"
+via = ["cold_hot_timing_map_selector/fn"]
+note = "Bit 6 selects the hot surface: clear 0x9A1A, set 0x9B1A."
+
+[[step]]
+from = "magnificent-crab/ram"
+to = "knock_surface_state/ram"
+effect = "compares"
+sign = "none"
+via = ["knock_function/fn"]
+note = """
+Hysteresis: Q8 state ffff1382 <= ROM16[0x8F02] = -1792 sets bit 6; only a \
+value above ROM16[0x8F00] = 8192 clears it."""
+
+[[step]]
+from = "rare-weasel/ram"
+to = "spicy-stoat/ram"
+effect = "masks"
+sign = "positive"
+via = ["selected_timing_state_terms/fn"]
+note = """
+ffff23bd = max((ffff160f & 0x7F) - ffff11af, 0); ffff11af is the snapshot of \
+adjustment follower ffff11e7."""
+
+[[step]]
+from = "spicy-stoat/ram"
+to = "obedient-civet/ram"
+effect = "adds"
+sign = "positive"
+via = ["timing_state_compositor/fn"]
+note = """
+Normal branch: ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc \
+- ffff15ea - 128 + ffff1a7d + ffff134a)."""
+
+[[step]]
+from = "silky-agama/ram"
+to = "obedient-civet/ram"
+effect = "adds"
+sign = "positive"
+via = ["timing_state_compositor/fn"]
+note = """
+Base angle of 0004ae6c: divider result r of ffff17b8, ffff14dc, ffff1630, \
+and ffff11bc, stored as r - 14 below 0x8E and 127 otherwise."""
+
+[[step]]
+from = "purple-chihuahua/ram"
+to = "obedient-civet/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["timing_state_compositor/fn"]
+note = """
+Unsigned retard sum clamp_u8(ffff22fe + ffff22f8 - (ffff1657 >> 4)) of \
+0004bb6a; both branches subtract it."""
+
+[[step]]
+from = "fine-herring/ram"
+to = "obedient-civet/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["timing_state_compositor/fn"]
+note = """
+Retard max(curve(RPM/25 ffff11b3) - curve(coolant index ffff106f), 0) of \
+0004bbac; the normal branch subtracts it."""
+
+[[step]]
+from = "unique-loon/ram"
+to = "obedient-civet/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["timing_state_compositor/fn"]
+note = """
+Bounded ramp of 0004bbee from live load ffff1048 and ffff22e8; the normal \
+branch subtracts it."""
+
+[[step]]
+from = "just-dog/ram"
+to = "obedient-civet/ram"
+effect = "adds"
+sign = "positive"
+via = ["timing_state_compositor/fn"]
+note = """
+Centered cam-coordinate correction of 0004d2a6, neutral at 64; both branches \
+add it."""
+
+[[step]]
+from = "cold_idle_ignition_timing/tbl"
+to = "truthful-agama/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["signed_timing_state_accumulator/fn"]
+note = """
+Default/post-transition addend, the last selector choice; ffff1511 = x - 128 \
+of the selected 8-point map."""
+
+[[step]]
+from = "idle_ignition_timing/tbl"
+to = "truthful-agama/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["signed_timing_state_accumulator/fn"]
+note = """
+Warm DFCO-transition addend, second choice after stock-inert 0x121A6, while \
+window timer ffff2590 is nonzero."""
+
+[[step]]
+from = "truthful-agama/ram"
+to = "space-bird/ram"
+effect = "adds"
+sign = "positive"
+via = ["signed_timing_state_accumulator/fn"]
+note = """
+ffff23ee = clamp_s8(s8(ffff1514) + u8(ffff12db) + s8(ffff1511) + \
+u8(ffff1512) + u8(ffff1349) - 128)."""
+
+[[step]]
+from = "space-bird/ram"
+to = "obedient-civet/ram"
+effect = "adds"
+sign = "positive"
+via = ["timing_state_compositor/fn"]
+note = """
+Alternate branch: ffff1830 = clamp_s8(ffff1a7d + ffff23ee - ffff23c5 - 64)."""
+
+[[step]]
+from = "obedient-civet/ram"
+to = "functional-corgi/ram"
+effect = "stores"
+sign = "positive"
+via = ["timing_state_latch/fn"]
+note = "Timing-state latch 0004c136 stores ffff1830 or ffff1831 into ffff2404."
+
+[[step]]
+from = "functional-corgi/ram"
+to = "liberal-gorilla/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+Scheduler block copy ffff23bc..ffff2447 -> ffff2330..ffff23bb; ffff2378 is \
+the previous-pass latched state."""
+
+[[step]]
+from = "liberal-gorilla/ram"
+to = "viridian-koel/ram"
+effect = "adds"
+sign = "positive"
+via = ["event_timing_correction_builder/fn"]
+note = """
+Normal path: ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - \
+ffff1ff6)."""
+
+[[step]]
+from = "eccentric-badger/ram"
+to = "viridian-koel/ram"
+effect = "adds"
+sign = "positive"
+via = ["event_timing_correction_builder/fn"]
+note = "Signed event correction in crank degrees; negative values retard."
+
+[[step]]
+from = "hopeful-hedgehog/ram"
+to = "eccentric-badger/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["event_timing_correction_builder/fn"]
+note = """
+ffff11d6 = -ffff11f9 while ffff24c5 bit 5 and ffff24cb bit 2 are clear; \
+00062e10 forms ffff11f9 from Q8 states ffff23c2 and ffff23ea."""
+
+[[step]]
+from = "steady-lionfish/ram"
+to = "eccentric-badger/ram"
+effect = "adds"
+sign = "positive"
+via = ["event_timing_correction_builder/fn"]
+note = """
+Knock branch (ROM8[0x8710] bit 5): ffff11d6 = min(ffff22fa - hi(ffff23c2), \
+-ffff11fa); chain knock-retard forms ffff22fa."""
+
+[[step]]
+from = "sincere-dragonfly/tbl"
+to = "viridian-koel/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["event_timing_correction_builder/fn"]
+note = """
+Subtracted ffff1ff6 = byte coefficient * interp(0x147DA by ffff237e) / 100; \
+its operating-mode qualifier is unresolved."""
+
+[[step]]
+from = "viridian-koel/ram"
+to = "holistic-mouflon/ram"
+effect = "adds"
+sign = "positive"
+via = ["final_timing_coordinate_builder/fn"]
+note = """
+ffff11da = clamp(ffff12d6 + gated ffff564c, ROM8[0x8221] = -7, ROM8[0x821E] \
+= 50)."""
+
+[[step]]
+from = "cryptic-honeybee/ram"
+to = "holistic-mouflon/ram"
+effect = "adds"
+sign = "positive"
+via = ["final_timing_coordinate_builder/fn"]
+note = """
+Work-support adjustment TARGET IGN TIM ADJ, -5..0 degrees, added only while \
+ffff5b31 bits 1..5 are clear."""
+specs = ["defs/JK08A.work-support.md"]
+
+[[step]]
+from = "holistic-mouflon/ram"
+to = "final_timing/ram"
+effect = "limits"
+sign = "positive"
+via = ["final_timing_coordinate_builder/fn"]
+note = """
+Moves from the previous ffff11d4 by at most +4 (15 in flagged modes) or -15 \
+per pass, then -7..50, a coolant floor, and 70."""
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "negative"
+via = ["apc_set_command_builder/fn"]
+note = """
+Normal path: command ffff2022 = uint8(110 - uint8(ffff11d4)), the spark \
+delay in crank degrees after tooth 7."""
+
+[[step]]
+from = "apc_output/ram"
+to = "loyal-snail/reg"
+effect = "schedules"
+sign = "none"
+via = [
+    "stock_ignition_consumer/fn",
+    "split_u8_by_ten/fn",
+    "apc_command_phase_normalizer/fn",
+    "apc_set_compare_continuation/fn",
+]
+note = """
+0002a892 stores command / 10 and the remainder at ffff1558 and ffff155a; \
+ffff1558 counts teeth down, then GR11A = ffff158a + ffff22bc * remainder / \
+10."""
+
+[[step]]
+from = "apc_output/ram"
+to = "steadfast-yak/reg"
+effect = "schedules"
+sign = "none"
+via = ["apc_reset_command_builder/fn", "apc_reset_compare_scheduler/fn"]
+note = """
+0004e080 adds 120 - dwell ffff237a to the command; 0002acba programs the \
+GR11B reset edge with the same divide-by-ten scheme."""
+
+[[step]]
+from = "invaluable-weasel/ram"
+to = "spry-uakari/reg"
+effect = "selects"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]
+note = """
+Set mask ffff13bd = 1 << (cylinder - 1) enables the POPCR low-byte action \
+that drives the PULS pin high at GR11A."""
+
+[[step]]
+from = "pink-mustang/ram"
+to = "spry-uakari/reg"
+effect = "selects"
+sign = "none"
+via = ["apc_reset_compare_scheduler/fn"]
+note = """
+Reset mask ffff13d1 of the next cylinder enables the POPCR high-byte action \
+that drives its PULS pin low at GR11B, which starts its dwell."""

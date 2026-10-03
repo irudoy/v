@@ -9,6 +9,7 @@ a 10-bit sample.""",
 ]
 level = "code"
 role = "service"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "funcs"

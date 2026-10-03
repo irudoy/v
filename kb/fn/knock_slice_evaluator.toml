@@ -16,6 +16,7 @@ effectively prevents an exceedance.""",
 ]
 level = "code"
 role = "monitor"
+block = "knock/block"
 
 [[ledger]]
 registry = "curated"

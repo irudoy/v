@@ -1,0 +1,286 @@
+title = "Exhaust CVTC"
+summary = """
+RPM/50 ffff11ae and normalized BFS ffff102c index the exhaust main, \
+cold/fallback, and correction surfaces; coolant selection, the standstill \
+override, the limiter, the slew, and the demand gate form common target \
+ffff2327. Per bank, the error against the filtered cam position feeds the \
+gain-scaled controller and the battery-compensated duty words \
+ffff1aac/ffff1aae, which drive ATU-II channels 7D/7C."""
+quantity = """
+Exhaust cam retard target, crank degrees ((raw-128)*0.5, retard positive)"""
+output = "exhaust_cvtc_target/ram"
+specs = ["defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 12
+
+[[step]]
+from = "tough-earwig/ram"
+to = "illegal-husky/ram"
+effect = "indexes"
+sign = "none"
+via = ["divergent-mongrel/fn"]
+note = """
+RPM/50 snapshot is the row key of 0xB33A, 0xB2FA, and 0xAB4A; the sign \
+follows the surface shape."""
+
+[[step]]
+from = "normalized_load/ram"
+to = "illegal-husky/ram"
+effect = "indexes"
+sign = "none"
+via = ["divergent-mongrel/fn"]
+note = """
+Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three \
+exhaust surfaces."""
+
+[[step]]
+from = "exhaust_cvtc_target/tbl"
+to = "illegal-husky/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["divergent-mongrel/fn"]
+note = """
+base_main = interpolate_u8(0xB33A, rpm50, load); 16x16, (raw-128)*0.5 degCA, \
+retard positive."""
+
+[[step]]
+from = "righteous-sparrow/tbl"
+to = "illegal-husky/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["divergent-mongrel/fn"]
+note = """
+With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); \
+otherwise main = base_main."""
+
+[[step]]
+from = "meaty-guillemot/tbl"
+to = "cornflower-millipede/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["divergent-mongrel/fn"]
+note = """
+cold = interpolate_u8(0xB2FA, rpm50, load); stock 0xB2FA is neutral 128 \
+throughout."""
+
+[[step]]
+from = "illegal-husky/ram"
+to = "lovely-hyrax/ram"
+effect = "selects"
+sign = "positive"
+via = ["wild-taipan/fn"]
+note = """
+Raw coolant > 131 selects main; 106..131 blends cold + \
+trunc0((c-106)*(main-cold)/25); the override stage passes it otherwise."""
+
+[[step]]
+from = "cornflower-millipede/ram"
+to = "lovely-hyrax/ram"
+effect = "selects"
+sign = "positive"
+via = ["wild-taipan/fn"]
+note = """
+Raw coolant <= 106 selects cold/fallback; the weight of cold falls from 1 to \
+0 across 106..131."""
+
+[[step]]
+from = "raspberry-dragon/ram"
+to = "lovely-hyrax/ram"
+effect = "selects"
+sign = "none"
+via = ["wild-taipan/fn"]
+note = """
+Raw coolant snapshot chooses cold, blend, or main; the sign follows main - \
+cold."""
+
+[[step]]
+from = "umber-bull/tbl"
+to = "lovely-hyrax/ram"
+effect = "overrides"
+sign = "positive"
+via = ["wild-taipan/fn"]
+note = """
+With ffff246c bit 1 set and latch ffff2478 bit 4 clear, byte = \
+clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 degCA)."""
+
+[[step]]
+from = "lovely-hyrax/ram"
+to = "voracious-cougar/ram"
+effect = "limits"
+sign = "positive"
+via = ["wild-taipan/fn"]
+note = """
+Limiter for bytes >= ROM8[0x8DE4] = 190 (counter ffff1954), then slew: rise \
+over previous ffff1c90 <= 4 or 20 * ffff11c0; store 0xC055C."""
+
+[[step]]
+from = "voracious-cougar/ram"
+to = "exhaust_cvtc_target/ram"
+effect = "gates"
+sign = "positive"
+via = ["wild-taipan/fn"]
+note = """
+Demand bit ffff24a7.3 sets at ffff1c90 >= 142, holds to 140; set: the byte \
+continues to 0xC0CEE; clear: 140 while ffff1246 has a bank bit, then 128."""
+
+[[step]]
+from = "almond-manul/reg"
+to = "smooth-chicken/ram"
+effect = "converts"
+sign = "positive"
+via = ["complex-mongrel/fn", "clay-wasp/fn"]
+note = """
+IMI4D: phase = 20*segment + floor(20*(GR4D - ffff158a)/ffff22bc), stored at \
+0xC2E60 for cylinders 1, 3, 5; 0.5 degCA."""
+
+[[step]]
+from = "smooth-chicken/ram"
+to = "exhaust_cvtc_actual_b1/ram"
+effect = "filters"
+sign = "positive"
+via = ["coherent_snapshot/fn", "black-vulture/fn"]
+note = """
+Snapshot ffff11c8; out = 128 + filtered mean deviation of three edges from \
+rest edge ffff479b, curve 0x12F7E; DID 0x1164."""
+
+[[step]]
+from = "calculating-donkey/reg"
+to = "invaluable-taipan/ram"
+effect = "converts"
+sign = "positive"
+via = ["perky-gopher/fn"]
+note = """
+IMI4C forms the bank-2 phase from GR4C with the same arithmetic, stored at \
+0xC2D2C for cylinders 2, 4, 6."""
+
+[[step]]
+from = "invaluable-taipan/ram"
+to = "exhaust_cvtc_actual_b2/ram"
+effect = "filters"
+sign = "positive"
+via = ["coherent_snapshot/fn", "black-vulture/fn"]
+note = """
+Snapshot ffff11c9 passes the same filter against learned rest edge ffff479c; \
+DID 0x1165."""
+
+[[step]]
+from = "exhaust_cvtc_target/ram"
+to = "benign-aardwolf/ram"
+effect = "compares"
+sign = "positive"
+via = ["neon-beaver/fn"]
+note = """
+Bank-1 error ffff1240 = clamp_u8(ffff2327 - ffff2324 + 128) at 0xC0D62; bank \
+2 writes ffff1241 from ffff2325."""
+
+[[step]]
+from = "exhaust_cvtc_actual_b1/ram"
+to = "benign-aardwolf/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["neon-beaver/fn"]
+note = """
+The actual position enters the error negatively; an error outside 128 +/- 6 \
+also reloads settle countdown ffff25e7."""
+
+[[step]]
+from = "benign-aardwolf/ram"
+to = "aquatic-guillemot/ram"
+effect = "feeds"
+sign = "none"
+via = ["nice-chihuahua/fn"]
+note = """
+Error word = 0..65535 clamp of saturating sum 0x265C4, written only while \
+ffff1246 bit 0 is set; the sum operands are not stated."""
+
+[[step]]
+from = "aquatic-guillemot/ram"
+to = "neon-fennec/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["orange-hamster/fn"]
+note = """
+P = floor(floor(u16*ROM16[0x9212])*gain*2/625), K = 8866, clamped to \
+0..0x04000000; control mode 0 forces P = 0."""
+
+[[step]]
+from = "outgoing-cuttlefish/tbl"
+to = "neon-fennec/ram"
+effect = "multiplies"
+sign = "positive"
+via = ["orange-hamster/fn"]
+note = """
+Gain ffff143a = curve 0x1205A over axis 0x12850 by oil-temperature snapshot \
+ffff2772, stock 102..128; P scales with it."""
+
+[[step]]
+from = "neon-fennec/ram"
+to = "exhaust_cvtc_duty_b1_word/ram"
+effect = "scales"
+sign = "positive"
+via = ["grinning-fulmar/fn"]
+note = """
+req = floor((P>>16)*150/batt) + rounded low byte, min 1024; mode 1 publishes \
+req, mode 2 ramps down; stored at 0xC213E."""
+
+[[step]]
+from = "private-groundhog/ram"
+to = "exhaust_cvtc_duty_b1_word/ram"
+effect = "scales"
+sign = "negative"
+via = ["grinning-fulmar/fn"]
+note = """
+Battery-voltage snapshot ffff1108 divides the request: req = \
+floor((P>>16)*150/batt) plus the rounded low-byte term."""
+
+[[step]]
+from = "exhaust_cvtc_actual_b2/ram"
+to = "exhaust_cvtc_duty_b2_word/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "neon-beaver/fn",
+    "nice-chihuahua/fn",
+    "orange-hamster/fn",
+    "grinning-fulmar/fn",
+]
+note = """
+Bank 2 (b = 1) repeats the loop: error ffff1241, error word ffff1b1a, P \
+ffff1aa8, duty ffff1aae; the error-word operands are not stated."""
+
+[[step]]
+from = "exhaust_cvtc_duty_b1_word/ram"
+to = "fanatic-kingfisher/reg"
+effect = "converts"
+sign = "positive"
+via = ["precise-angelfish/fn"]
+note = """
+BFR7D = u16*ROM8[0x8DFD]*125/1024, duty = raw/1024 of CYLR7D; ffff4251 bit 0 \
+forces 1250 (50 percent)."""
+
+[[step]]
+from = "exhaust_cvtc_duty_b2_word/ram"
+to = "glossy-squid/reg"
+effect = "converts"
+sign = "positive"
+via = ["precise-angelfish/fn"]
+note = """
+BFR7C = u16*ROM8[0x8DFD]*125/1024; ffff4251 bit 0 forces 1500 (60 percent)."""
+
+[[step]]
+from = "imported-caracara/tbl"
+to = "cryptic-potoo/reg"
+effect = "scales"
+sign = "positive"
+via = ["striped-tiger/fn"]
+note = "CYLR7D = 125 * ROM8[0x8DFD] = 2500 counts, the exhaust PWM period."
+
+[[step]]
+from = "imported-caracara/tbl"
+to = "complex-hummingbird/reg"
+effect = "scales"
+sign = "positive"
+via = ["striped-tiger/fn"]
+note = """
+CYLR7C = 125 * ROM8[0x8DFD] = 2500 counts; 000C2152 reprograms both cycle \
+registers under ffff4251 bit 0."""

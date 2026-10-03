@@ -10,6 +10,7 @@ The operational coordinate is exact and carries the percent scale of axis \
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

@@ -13,6 +13,7 @@ remain unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

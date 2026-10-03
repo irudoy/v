@@ -18,6 +18,7 @@ producer, and physical terminal purpose are outside it.""",
 ]
 level = "candidate"
 role = "consumer"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

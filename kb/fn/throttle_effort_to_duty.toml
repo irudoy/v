@@ -12,6 +12,7 @@ immediate -0x20 to unsigned 0xe0 before the base addition.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

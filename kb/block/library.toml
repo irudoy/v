@@ -1,0 +1,8 @@
+title = "Shared kernels"
+stage = "platform/stage"
+summary = """
+Interpolation wrappers, kernels, and finishers and the arithmetic helpers \
+shared by every subsystem."""
+generic = true
+home = "7mfk"
+order = 46

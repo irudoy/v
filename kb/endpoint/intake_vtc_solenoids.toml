@@ -1,0 +1,15 @@
+title = "Intake valve timing solenoids"
+direction = "output"
+block = "cvtc_intake/block"
+peripheral = "ATU-II channel 7A and 7B PWM"
+summary = """
+BFR7A and BFR7B carry intake-VTC duty cells 0xFFFF23B5 and 0xFFFF23B4 into \
+the channel-7 PWM; CYLR7A and CYLR7B set the period."""
+registers = [
+    "outrageous-pug/reg",
+    "stalwart-ape/reg",
+    "visionary-saluki/reg",
+    "lime-tuna/reg",
+]
+specs = ["defs/JK08A.cvtc.md"]
+order = 13

@@ -26,6 +26,7 @@ does not change either relative divisor under normal pending-flag service.""",
 ]
 level = "code"
 role = "dispatch"
+block = "scheduler/block"
 
 [[ledger]]
 registry = "funcs"

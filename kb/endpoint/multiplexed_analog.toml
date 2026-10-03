@@ -1,0 +1,14 @@
+title = "Multiplexed analog inputs"
+direction = "input"
+block = "analog_inputs/block"
+peripheral = "A/D ADDR0 and ADDR1 with the PF13..PF15 external multiplexer"
+summary = """
+AN0 samples each external-multiplexer code that PFDR selects, including \
+coolant on code 000, fuel temperature on code 111, and the battery-voltage \
+sample."""
+registers = ["blue-condor/reg", "tunneling-pig/reg", "dancing-porpoise/reg"]
+functions = [
+    "cyclic_adc_mux_scan_update/fn",
+    "adc_channel_read_with_mux_select/fn",
+]
+order = 4

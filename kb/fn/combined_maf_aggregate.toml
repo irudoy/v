@@ -12,6 +12,7 @@ engineering scale and physical meaning of ffff2368 remain unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "curated"

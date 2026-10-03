@@ -4,6 +4,7 @@ addition ffff171d in the selected mode, and saturates above at 510."""
 note = ["The physical purpose of the local limiter is unresolved."]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

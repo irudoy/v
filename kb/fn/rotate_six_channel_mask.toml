@@ -6,6 +6,7 @@ release-tail mask."""
 note = ["The loop in 000503e0 limits the generated mask to six channels."]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

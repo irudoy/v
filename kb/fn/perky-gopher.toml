@@ -25,6 +25,7 @@ ffff11c9 -> monitor index 1 -> descriptor 0xd3 (P0024); one phase unit is \
 ]
 level = "code"
 role = "handler"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

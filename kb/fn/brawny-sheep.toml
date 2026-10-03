@@ -16,6 +16,7 @@ ffff1114..ffff1193 to ffff1094..ffff1113 at 00020f56.""",
 ]
 level = "code"
 role = "driver"
+block = "aux_outputs/block"
 
 [[ledger]]
 registry = "funcs"

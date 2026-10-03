@@ -1,0 +1,11 @@
+title = "Crank position sensor"
+direction = "input"
+block = "crank_cam/block"
+peripheral = "ATU-II channel 0A input capture ICR0A"
+summary = """
+Crank tooth edges latch ICR0A; handler 00028ea2 dispatches each tooth and \
+samples the tooth-9 interval."""
+registers = ["abstract-pudu/reg"]
+functions = ["pastel-yak/fn"]
+specs = ["defs/JK08A.ignition-output.md"]
+order = 1

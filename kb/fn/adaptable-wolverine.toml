@@ -11,6 +11,7 @@ word.""",
 ]
 level = "code"
 role = "service"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

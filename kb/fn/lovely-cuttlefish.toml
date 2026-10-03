@@ -14,6 +14,7 @@ edge phase is 0.5 crank degrees, the same unit as the bank-1 handler \
 ]
 level = "code"
 role = "driver"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

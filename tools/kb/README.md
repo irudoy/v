@@ -31,6 +31,7 @@ uv run kb brief                      # graph state, layouts, stage, owners, lega
 uv run kb gaps --feature can_telemetry --layout 1nd   # required meanings without a symbol, by status
 uv run kb log <ref>                  # former references and recorded profile address corrections
 uv run kb raw <ref>                  # the file of an entity and the registry rows that state it
+uv run kb suggest --blocks --layout jk78c   # MAGE communities propose blocks for unplaced functions
 uv run kb bench                      # the acceptance questions of the current stage
 uv run kb mcp                        # the read commands and kb_apply as MCP tools on stdio
 uv run kb project                    # render the projections that kb generates, such as AGENTS.md#kb
@@ -359,11 +360,10 @@ a reference that names nothing fails the `references` check.
 
 | Adapter | Registry | Symbols |
 |---|---|---|
-| `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the features with their targets; the telemetry fields with the `7mfk` symbols of their source meanings, which `can_telemetry` requires, and the source symbols whose unit their files state; the signals with the `7mfk` symbols of the meanings and the allocations that they observe |
+| `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the features with their targets; the telemetry fields with the `7mfk` symbols of their source meanings, which `can_telemetry` requires, and the source symbols whose unit their files state; the signals with the `7mfk` symbols of the meanings and the allocations that they observe; architecture stages, blocks, endpoints, and ordered chains |
 | `curated` | `tools/ghidra/symbols/1nd.csv` | `fn` symbols with curated names; the `7mfk` view belongs to the converted ledgers |
 | `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch`; the RAM that each feature allocates on `7mfk`, whose addresses name no meaning |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
-| `architecture` | `defs/JK08A.architecture.toml` | `stage`, `block`, `endpoint`, and `chain` entities with the chain steps; the `block` key of the `7mfk` functions and signals of each block |
 
 Evidence tokens map by the table of section 20.7 of the specification: a
 dependency token becomes a link stored at the end its type names or `trace`
@@ -406,6 +406,7 @@ a projection of the files.
 | `defs/JK08A.tuning-signals.toml` | 4 | `signal` entities with their keys and the meanings and allocations that they observe; the widths of the observed meanings and the identity item of an observed symbol that no evidence grounds; the catalog keys of `kb/feature/can_telemetry.toml` | `kb.adapters.signals:catalog` |
 | `defs/JK08A.overrides.toml` | 4 | `[editor]` of the `7mfk` tables and axes with their masked views and `[logparam]` of the `7mfk` RAM; `default_emit` and the switches of `kb/feature/definitions.toml` and the JK08A entry of its `7mfk` target | `kb.adapters.overrides:presentation` |
 | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv`, `tools/ghidra/symbols/7mfk.csv` | 5 | Symbol properties, typed evidence, canonical links with both claiming ends, diagnostic tables, and curated names in the meaning files; `[[ledger]]` selectors retain the legacy views | `kb.ledger_projection:registries`, `kb.ledger_projection:curated_names` |
+| `defs/JK08A.architecture.toml` | 6 | Architecture stages, blocks, endpoints, ordered chains and their steps; meaning `block` placements | `kb.architecture_projection:registry` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -420,6 +421,22 @@ into the graph. On a converted tree it writes nothing. Before the stage 5
 conversion, `uv run python -m kb.ledger_projection --normalize [--dry-run]`
 orders complete evidence token texts lexically, retains every token, and
 compares all model facts before writing the CSV files.
+
+The architecture converter compares every property, reference, ordered step,
+note, and block placement before writing. It verifies an L0 identity anchor
+for each symbol previously declared only by a chain, without changing the
+symbol's semantic level. The generated TOML preserves every fact and the
+order used for block voting. Architecture references require a symbol on the
+entity's home layout and cannot substitute one from another layout.
+
+`kb suggest --blocks --layout <layout>` runs the installed read-only MAGE
+Leiden procedure on that layout's functions, calls, and weighted shared-RAM
+pairs. A call weighs 1; a shared-RAM pair weighs the number of distinct RAM
+locations both functions read or write; a pointer-only literal is excluded.
+Repeated sites and access producers count once. The procedure uses gamma 1.0,
+theta 0.01, and resolution 1.0. A community proposes its most represented existing block, retains all
+tied blocks as alternatives, or proposes a new block when none is placed.
+Candidates require review and do not change blocks, levels, or source facts.
 
 The ledger converter preserves all cells and row order except for removed
 `wave` and `arg` process tokens. It records the classification of each site
@@ -833,6 +850,8 @@ files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
 | `kb.project` | `projections.toml`, `kb project`, the `projections` check, the owners of the current stage, the count of `kb/names.csv` by stage, and the `AGENTS.md#kb` section |
 | `kb.matrix` | The `features` section of `rom-images/support-matrix.md` |
 | `kb.convert` | The conversions of legacy registries into entity files |
+| `kb.architecture_projection` | The generated architecture view of owned entities and meaning placements |
+| `kb.suggest` | Read-only MAGE block candidates over calls and shared RAM |
 | `kb.guard` | The `guard` check of the settings, `.ignore`, and the hook |
 | `kb.l0` | L0 export, normal form, manifest, the fragment registries, the export review, and the `l0` check |
 | `kb.sh2` | SH-2E instruction decoding for the derivations |

@@ -10,6 +10,7 @@ engine-running, temperature-difference, and coolant-warm latches.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[diagnostic]]
 id = "critical-ecm-etc-rpm-inhibit-p0603-72"

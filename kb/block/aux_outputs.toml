@@ -1,0 +1,5 @@
+title = "Output-driver status"
+stage = "actuation/stage"
+summary = "Status decoder of the five-device output-driver table."
+home = "7mfk"
+order = 30

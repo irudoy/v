@@ -1,0 +1,6 @@
+title = "Unattributed components"
+stage = "unattributed/stage"
+summary = """
+Reviewed accessors whose functional role the ledgers do not yet establish."""
+home = "7mfk"
+order = 47

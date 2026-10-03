@@ -6,6 +6,7 @@ clamps the unsigned count to 0..6, and for nonzero counts selects table \
 note = ["The physical producer meanings of both counts remain unresolved."]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

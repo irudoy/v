@@ -10,6 +10,7 @@ this function does not by itself identify a fault-producing branch.""",
 ]
 level = "code"
 role = "consumer"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

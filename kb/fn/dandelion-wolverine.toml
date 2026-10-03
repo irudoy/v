@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not a standalone function: count-7 leaf of unsigned right-shift ladder \
 0002227c. It computes r0 = r0 >> 7 with zero fill. The leaf does not read \

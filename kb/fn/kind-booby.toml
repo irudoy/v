@@ -11,6 +11,7 @@ mailbox remains outside this serializer.""",
 ]
 level = "code"
 role = "driver"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

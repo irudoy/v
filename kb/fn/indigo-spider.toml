@@ -15,6 +15,7 @@ the bit before it runs the startup initializers.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

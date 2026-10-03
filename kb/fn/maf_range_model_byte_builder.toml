@@ -13,6 +13,7 @@ conversion remains unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "maf_monitors/block"
 
 [[ledger]]
 registry = "curated"

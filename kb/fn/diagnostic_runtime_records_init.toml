@@ -11,6 +11,7 @@ range and is not in the preserved exception set.""",
 ]
 level = "code"
 role = "init"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "curated"

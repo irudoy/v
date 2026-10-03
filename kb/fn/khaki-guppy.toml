@@ -15,6 +15,7 @@ does not advertise LIDs 4..20.""",
 ]
 level = "code"
 role = "service"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

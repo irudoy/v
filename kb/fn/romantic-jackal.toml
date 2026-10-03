@@ -12,6 +12,7 @@ Internal metric units and the physical output driver are unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

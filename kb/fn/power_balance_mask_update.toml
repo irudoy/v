@@ -11,6 +11,7 @@ defines the test as cutting one injector signal at a time.""",
 ]
 level = "code"
 role = "service"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

@@ -17,6 +17,7 @@ control states, not physical output pins. The structured profile names DID \
 ]
 level = "code"
 role = "service"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

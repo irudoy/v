@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Signed 32-bit absolute value: r0 = abs(r4). The argument is passed in r4 \
 rather than r0 or r1, unlike the rest of the library convention. r4 also \

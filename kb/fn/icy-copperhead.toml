@@ -5,6 +5,7 @@ the composite value above by uint16(ffff133e)."""
 note = ["The physical identity of the pair and upper bound is unresolved."]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

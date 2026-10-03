@@ -14,6 +14,7 @@ assigned.""",
 ]
 level = "code"
 role = "service"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

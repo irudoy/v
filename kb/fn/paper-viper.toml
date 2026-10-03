@@ -11,6 +11,7 @@ mechanics.""",
 ]
 level = "code"
 role = "driver"
+block = "nonvolatile/block"
 
 [[ledger]]
 registry = "funcs"

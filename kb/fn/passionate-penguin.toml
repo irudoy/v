@@ -25,6 +25,7 @@ specifies the complete path.""",
 ]
 level = "code"
 role = "service"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

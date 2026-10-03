@@ -17,6 +17,7 @@ remain candidate physical semantics.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

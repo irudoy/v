@@ -10,6 +10,7 @@ identity; ECM-terminal continuity still requires bench verification.""",
 ]
 level = "code"
 role = "driver"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "funcs"

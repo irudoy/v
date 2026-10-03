@@ -3,6 +3,7 @@ Byte-axis search called by mixed wrapper 0x262E0 for r5 when r6 is \
 word-based."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

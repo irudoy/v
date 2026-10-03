@@ -4,6 +4,7 @@ bit 1 of 0xffff4198 for diagnostic state."""
 note = ["The diagnostic path is not the only inhibit consumer."]
 level = "code"
 role = "monitor"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

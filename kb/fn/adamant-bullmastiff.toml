@@ -12,6 +12,7 @@ second pointer to it at 000ce844.""",
 ]
 level = "code"
 role = "init"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

@@ -7,6 +7,7 @@ Both compositor branches of 0004bdc2 subtract the result in crank degrees.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

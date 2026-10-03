@@ -3,6 +3,7 @@ Explicit-axis 1D-16 wrapper with a word axis and byte element: SHLR R4 \
 converts the byte offset returned by the core back into an element index."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

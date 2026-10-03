@@ -3,6 +3,7 @@ Thunk at scheduler pointer 0x21a84 that branches to LIDs-4..20 status and \
 slot copier 00034fe4."""
 level = "code"
 role = "wrapper"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

@@ -23,6 +23,7 @@ when the writer is busy in that pass.""",
 ]
 level = "code"
 role = "service"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

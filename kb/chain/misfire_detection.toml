@@ -1,0 +1,283 @@
+title = "Misfire detection"
+summary = """
+Tooth-9 crank intervals captured by ICR0A form offset-binary irregularity \
+metrics that detection core 00085a70 compares with surface-derived threshold \
+windows to count misfire events per cylinder. Per-cylinder counts at the \
+threshold set the P0301..P0306 and P0300 records through reporter 00084cd0 \
+and handler 0007dc32."""
+quantity = """
+Misfire event count: total element 0 of the ffff3806 array, with \
+per-cylinder elements 1..6 at byte offset 2*cylinder"""
+output = "clay-lizard/ram"
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 15
+
+[[step]]
+from = "abstract-pudu/reg"
+to = "capable-ape/ram"
+effect = "subtracts"
+sign = "none"
+via = ["pastel-yak/fn"]
+note = """
+Tooth 9: ffff1dac = abs(ICR0A - ffff84d4), the capture interval over 120 \
+crank degrees, spanning 50..170 degrees after TDC of index c - 2."""
+
+[[step]]
+from = "capable-ape/ram"
+to = "meek-griffin/ram"
+effect = "filters"
+sign = "none"
+via = ["fat-buzzard/fn", "lovely-koala/fn"]
+note = """
+0003cf24 shifts the 14-longword history; ffff3816 = 6*T[n-7] - 5*T[n-8] - \
+T[n-2], offset-binary with 0x80 neutral."""
+
+[[step]]
+from = "capable-ape/ram"
+to = "sexy-flounder/ram"
+effect = "filters"
+sign = "none"
+via = ["fat-buzzard/fn", "lovely-koala/fn"]
+note = """
+Group ffff3820..3826 from the same history, e.g. ffff3822 = 3*(2*T[n-6] - \
+T[n-12] - T[n]); 00086b0c runs only with ffff55a2 at 0x8000 +/- 1%."""
+
+[[step]]
+from = "vermilion-panda/tbl"
+to = "cryptic-kudu/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["marvellous-malamute/fn"]
+note = """
+16x16 surface on RPM axis 0x11B6B and BFS axis 0x11B8B; its output 33..63 \
+never equals sentinel 0x80, so the != 0x80 predicate is always true."""
+
+[[step]]
+from = "primitive-sawfish/tbl"
+to = "obedient-dingo/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["marvellous-malamute/fn"]
+note = """
+Selected while ffff4217 bit 0 is clear; uint8 interpolation 40..128 written \
+unconverted; raw 0x80 is the blocking sentinel."""
+
+[[step]]
+from = "sceptical-galago/tbl"
+to = "obedient-dingo/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["marvellous-malamute/fn"]
+note = """
+Selected while ffff4217 bit 0 is set; same axes, output 34..128, raw 0x80 \
+blocks its conjunct."""
+
+[[step]]
+from = "tough-earwig/ram"
+to = "cryptic-kudu/ram"
+effect = "indexes"
+sign = "none"
+via = ["marvellous-malamute/fn"]
+note = """
+RPM/50 byte ffff11ae indexes axis 0x11B6B of all three surfaces; the high \
+byte of BFS ffff1024 indexes axis 0x11B8B."""
+
+[[step]]
+from = "cryptic-kudu/ram"
+to = "amazing-pegasus/ram"
+effect = "scales"
+sign = "none"
+via = ["dashing-coucal/fn", "truthful-nightingale/fn"]
+note = """
+Threshold array ffff3100..3105 is built from ffff314a and ffff314b through \
+shift helper 000224f8; the build formula is not stated."""
+
+[[step]]
+from = "obedient-dingo/ram"
+to = "amazing-pegasus/ram"
+effect = "scales"
+sign = "none"
+via = ["dashing-coucal/fn", "truthful-nightingale/fn"]
+note = """
+Second surface input of the build; channel bytes 0x87C1..C6 = 60 ff 40 40 ff \
+60, where 0xff disables a channel."""
+
+[[step]]
+from = "amazing-pegasus/ram"
+to = "clay-lizard/ram"
+effect = "compares"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+Threshold windows ffff3100..3105 and ffff306e..3070 bound the metric \
+comparisons of detection core 00085a70."""
+
+[[step]]
+from = "meek-griffin/ram"
+to = "clay-lizard/ram"
+effect = "integrates"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+A metric hit inside the threshold windows is a detected event; it increments \
+element ffff4038 and total element 0."""
+
+[[step]]
+from = "sexy-flounder/ram"
+to = "clay-lizard/ram"
+effect = "integrates"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+Second metric group of the window comparison; ffff3102 <= ffff3820 with \
+ffff314a != 0x80 also shifts a bit into window ffff36f4."""
+
+[[step]]
+from = "knock_channel_primary/ram"
+to = "gorgeous-sawfish/ram"
+effect = "looks-up"
+sign = "none"
+via = ["pastel-yak/fn"]
+note = """
+ffff4038 = ROM8[0x2265C + ffff11de] = c + 3 mod 6 on tooth 9: the cylinder \
+whose expansion stroke fills tested interval T[n-7]."""
+
+[[step]]
+from = "gorgeous-sawfish/ram"
+to = "clay-lizard/ram"
+effect = "indexes"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+Cylinder 1..6 selects the element at byte offset 2*ffff4038 in ffff3806, \
+ffff37f8, and ffff37dc; element 1 reports P0301."""
+
+[[step]]
+from = "shaggy-nyala/ram"
+to = "clay-lizard/ram"
+effect = "gates"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+Bit 7 (sole writer 00082c8a) needs 300 <= RPM < 7600 (6 <= ffff11ae < 0x98), \
+ffff1108 >= 0x89, ffff4096 >= 1, and ffff436f == 0."""
+
+[[step]]
+from = "loutish-puma/ram"
+to = "clay-lizard/ram"
+effect = "gates"
+sign = "none"
+via = ["dashing-coucal/fn"]
+note = """
+Bits 0 and 1 must be set; bit 0 needs coolant ffff1071 < 150 and >= \
+lookup(0x12DE2), ffff106e >= 40, and ffff2736 >= 40."""
+
+[[step]]
+from = "stylish-bandicoot/tbl"
+to = "finicky-gazelle/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["marvellous-malamute/fn"]
+note = """
+1D-4 uint16 event-count threshold, stock constant 33; the findings trace \
+indexes it from ffff106f."""
+
+[[step]]
+from = "finicky-gazelle/ram"
+to = "clay-lizard/ram"
+effect = "compares"
+sign = "none"
+note = """
+Total element 0 is compared with ffff2b90; the ledgers do not state the \
+outcome of the comparison."""
+
+[[step]]
+from = "clay-lizard/ram"
+to = "charming-lynx/ram"
+effect = "compares"
+sign = "none"
+via = [
+    "dashing-coucal/fn",
+    "marvellous-malamute/fn",
+    "cornflower-wolverine/fn",
+]
+note = """
+00084aa4 compares elements 1..5 (from ffff3808) with ROM8[0x8863] = 6 and \
+sets ffff41ff bits 4..0 for P0301..P0305."""
+
+[[step]]
+from = "clay-lizard/ram"
+to = "tricky-basilisk/ram"
+effect = "compares"
+sign = "none"
+via = [
+    "dashing-coucal/fn",
+    "marvellous-malamute/fn",
+    "cornflower-wolverine/fn",
+]
+note = """
+Element 6 at the threshold sets ffff4200 bit 7 (P0306); two or more \
+qualifying elements set bit 6 (P0300)."""
+
+[[step]]
+from = "charming-lynx/ram"
+to = "hallowed-malkoha/ram"
+effect = "stores"
+sign = "none"
+via = [
+    "berserk-sturgeon/fn",
+    "naughty-oxpecker/fn",
+    "ultraviolet-mushroom/fn",
+]
+note = """
+00084cd0 maps bits 4..0 to records 0x0f..0x0b; descriptor byte 8 = 0x40 \
+routes 0007d8b8 to 0007dc32, which sets third-byte bits 0 and 1."""
+
+[[step]]
+from = "tricky-basilisk/ram"
+to = "hallowed-malkoha/ram"
+effect = "stores"
+sign = "none"
+via = [
+    "berserk-sturgeon/fn",
+    "naughty-oxpecker/fn",
+    "ultraviolet-mushroom/fn",
+]
+note = """
+Bit 7 reports record 0x0a (P0306); bit 6 or the no-cylinder fallback reports \
+0x10 (P0300) on the same 0007dc32 route."""
+
+[[step]]
+from = "clever-dragon/ram"
+to = "jumping-carp/ram"
+effect = "selects"
+sign = "none"
+via = ["marvellous-malamute/fn"]
+note = """
+000872d0 sets bits 5, 7, 6 at 200, 1000, 200 revolutions; 00082c8a then sets \
+ffff5b2b bit 6, 5, or 4 before even reporter calls."""
+
+[[step]]
+from = "jumping-carp/ram"
+to = "hallowed-malkoha/ram"
+effect = "selects"
+sign = "none"
+via = [
+    "ultraviolet-mushroom/fn",
+    "provocative-vulture/fn",
+    "cherry-wildcat/fn",
+]
+note = """
+Selector bits 4..6 set: 0008c942 sets third-byte bits 3 and 6; all clear: \
+bit 5, 0008c968 bit 4, and ffff5b2c bit 3."""
+
+[[step]]
+from = "hallowed-malkoha/ram"
+to = "satisfied-bulldog/ram"
+effect = "detects"
+sign = "none"
+via = ["scarlet-nautilus/fn"]
+note = """
+0008042c scans P0306..P0300 and sets ffff2461 bit 3 at the first record with \
+third-byte bit 5 or 6; its presentation is unresolved."""

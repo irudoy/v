@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic signed right shift: r0 = (int32)r0 >> r1, dispatched through a \
 32-entry jump table. The count is compared as signed. It clobbers r1; r2 is \

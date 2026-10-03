@@ -3,6 +3,7 @@ summary = """
 identical to 0x26740."""
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

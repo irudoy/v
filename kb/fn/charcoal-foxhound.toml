@@ -9,6 +9,7 @@ write: they may be unprogrammed flash or a saturated limit.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

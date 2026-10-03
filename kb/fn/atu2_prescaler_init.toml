@@ -10,6 +10,7 @@ the SH7059 hardware manual.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "curated"

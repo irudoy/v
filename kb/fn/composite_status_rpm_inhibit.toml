@@ -16,6 +16,7 @@ RPM hysteresis. Two calls with index -1 are inert.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

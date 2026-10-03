@@ -12,6 +12,7 @@ quantity.""",
 ]
 level = "code"
 role = "monitor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "curated"

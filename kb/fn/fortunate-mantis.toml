@@ -12,6 +12,7 @@ with the stock reload of 0 it is always expired.""",
 ]
 level = "code"
 role = "monitor"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

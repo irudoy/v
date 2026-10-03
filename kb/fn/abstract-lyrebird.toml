@@ -12,6 +12,7 @@ physical sampling cadence remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

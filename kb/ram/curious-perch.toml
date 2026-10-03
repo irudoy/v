@@ -5,6 +5,7 @@ multiplies the controller state by it. Initializer FUN 000bced0 writes its \
 reset value."""
 note = ["Stock curve rises from 102 to 128 across the axis."]
 level = "code"
+block = "cvtc_exhaust/block"
 unit = "raw/128"
 
 [[ledger]]

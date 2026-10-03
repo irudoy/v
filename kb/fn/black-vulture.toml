@@ -22,6 +22,7 @@ passes 255/256 of each new sample above 1600 RPM.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

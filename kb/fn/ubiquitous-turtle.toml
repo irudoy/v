@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not a standalone function: count-24 leaf of arithmetic right-shift ladder \
 0002235c. It computes r0 = (int32)(int8)(r0 >> 24), sign-extending the high \

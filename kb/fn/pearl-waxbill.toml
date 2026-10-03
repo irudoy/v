@@ -11,6 +11,7 @@ ffff11f4, which UDS DID 0x1201 returns.""",
 ]
 level = "code"
 role = "accessor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

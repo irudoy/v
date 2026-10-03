@@ -14,6 +14,7 @@ Stock mailbox records 0x9786 and 0x9782 independently encode standard IDs \
 ]
 level = "code"
 role = "dispatch"
+block = "can_network/block"
 
 [[ledger]]
 registry = "curated"

@@ -5,6 +5,7 @@ zeroes ffff4514..ffff5cf3, including coolant latch byte ffff5b2c."""
 note = ["FUN 00026f08 is its only direct caller."]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

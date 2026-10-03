@@ -19,6 +19,7 @@ does not name their diagnostic phases.""",
 ]
 level = "code"
 role = "dispatch"
+block = "misfire/block"
 contract = """
 Its only caller restricts the unsigned argument to 0..5. group = argument >> \
 1 selects group 0, 1, or 2; polarity = argument & 1 selects the \

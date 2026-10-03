@@ -17,6 +17,7 @@ lies inside the recorded range of 12.56..14.40 V.""",
 ]
 level = "code"
 role = "accessor"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "curated"

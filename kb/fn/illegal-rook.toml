@@ -9,6 +9,7 @@ data identifies that field as vehicle speed.""",
 ]
 level = "code"
 role = "accessor"
+block = "vehicle_speed/block"
 
 [[ledger]]
 registry = "funcs"

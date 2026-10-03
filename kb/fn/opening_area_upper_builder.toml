@@ -10,6 +10,7 @@ candidate.""",
 ]
 level = "code"
 role = "driver"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "curated"

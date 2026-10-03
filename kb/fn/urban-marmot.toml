@@ -13,6 +13,7 @@ coefficient/state calculation are unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

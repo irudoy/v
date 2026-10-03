@@ -17,6 +17,7 @@ interpretation as valve-overlap correction remains a physical candidate.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

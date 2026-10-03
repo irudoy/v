@@ -5,6 +5,7 @@ w=ROM8[000087ed] and adds one count when the result equals the previous \
 value below the input."""
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

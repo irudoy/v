@@ -1,6 +1,7 @@
 summary = "Component where ffff24a0 is a mode selector and override."
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

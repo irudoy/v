@@ -19,6 +19,7 @@ reaches the final coordinate through ffff2336 and ffff11f9 with coefficient \
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "curated"

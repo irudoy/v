@@ -3,6 +3,7 @@ Second accessor for the same 0x12e3a/0x12e32 pair, redirected to the twin by \
 the same bit 0 of ROM configuration byte 0x8616."""
 level = "code"
 role = "accessor"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

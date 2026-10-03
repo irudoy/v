@@ -13,6 +13,7 @@ cause represented by the entry-state condition remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

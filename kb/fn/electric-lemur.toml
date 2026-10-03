@@ -10,6 +10,7 @@ feedback bytes, not on coordinator graph structure alone.""",
 ]
 level = "code"
 role = "dispatch"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

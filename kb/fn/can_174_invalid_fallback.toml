@@ -11,6 +11,7 @@ through these two bytes alone.""",
 ]
 level = "code"
 role = "handler"
+block = "can_network/block"
 
 [[ledger]]
 registry = "curated"

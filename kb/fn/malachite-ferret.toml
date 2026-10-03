@@ -11,6 +11,7 @@ exact; the physical quantity remains unresolved.""",
 ]
 level = "code"
 role = "consumer"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

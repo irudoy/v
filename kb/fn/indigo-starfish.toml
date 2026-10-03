@@ -3,6 +3,7 @@ Throttle-opening byte producer and first stage of coordinator 00057608: \
 ffff3528 = min(255, uint16 ffff40c6 * 0x505b >> 16)."""
 level = "code"
 role = "monitor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

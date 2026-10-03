@@ -12,6 +12,7 @@ is always zero in stock JK03A and JK08A.""",
 ]
 level = "code"
 role = "accessor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

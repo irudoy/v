@@ -10,6 +10,7 @@ duration remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "funcs"

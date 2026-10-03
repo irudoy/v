@@ -29,6 +29,7 @@ engineering units remain source-derived pending hardware validation.""",
 ]
 level = "code"
 role = "accessor"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "curated"

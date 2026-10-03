@@ -11,6 +11,7 @@ establishing the shared internal domain.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

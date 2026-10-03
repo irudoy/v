@@ -3,6 +3,7 @@ Implicit-axis primitive: 16 points, step 16, limit 240, uint8 element. It \
 has 31 slots and 57 tables."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

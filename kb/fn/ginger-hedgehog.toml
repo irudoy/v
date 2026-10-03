@@ -28,6 +28,7 @@ records no reader of ffff1608, ffff19a0, or ffff34d6.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

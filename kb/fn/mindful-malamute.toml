@@ -12,6 +12,7 @@ cleared after handling.""",
 ]
 level = "code"
 role = "dispatch"
+block = "evap/block"
 
 [[diagnostic]]
 id = "evap-pressure-high-p0453"

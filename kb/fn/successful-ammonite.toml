@@ -11,6 +11,7 @@ unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "diag_services/block"
 
 [[ledger]]
 registry = "funcs"

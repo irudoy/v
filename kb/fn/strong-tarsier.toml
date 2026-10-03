@@ -11,6 +11,7 @@ unresolved physical names to its internal terms.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

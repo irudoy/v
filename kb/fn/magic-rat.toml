@@ -10,6 +10,7 @@ seed is therefore 255.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

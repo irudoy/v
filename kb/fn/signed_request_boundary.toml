@@ -22,6 +22,7 @@ places this request coordinate in the torque domain.""",
 ]
 level = "code"
 role = "driver"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "curated"

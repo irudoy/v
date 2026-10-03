@@ -1,0 +1,6 @@
+title = "Acquisition"
+lane = "flow"
+order = 1
+summary = """
+Peripheral capture of crank and cam edges, analog and discrete inputs, and \
+throttle position sensors."""

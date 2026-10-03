@@ -11,6 +11,7 @@ belong to the dual-channel accelerator-pedal path.""",
 ]
 level = "code"
 role = "driver"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "curated"

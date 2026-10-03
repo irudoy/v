@@ -10,6 +10,7 @@ accumulated ADC2 channels remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "knock/block"
 
 [[ledger]]
 registry = "funcs"

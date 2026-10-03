@@ -1,0 +1,8 @@
+title = "Torque request"
+stage = "control/stage"
+summary = """
+Conditioning of both request channels, request boundaries, controller-limit \
+arbitration, and endpoint normalization."""
+specs = ["defs/JK08A.request-conditioning.md", "defs/JK08A.limiters.md"]
+home = "7mfk"
+order = 19

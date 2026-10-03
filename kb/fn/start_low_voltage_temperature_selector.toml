@@ -17,6 +17,7 @@ monitors.""",
 ]
 level = "code"
 role = "selector"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "curated"

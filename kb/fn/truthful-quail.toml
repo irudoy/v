@@ -4,6 +4,7 @@ bit 6 set selects ROM word 0x916c. FUN_0003b520 calculates ffff3a76 through \
 a separate inverse-table branch, and 0003b498 reads ffff1e60."""
 level = "code"
 role = "driver"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

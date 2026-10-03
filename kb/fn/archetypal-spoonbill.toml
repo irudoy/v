@@ -12,6 +12,7 @@ ffff41b0 bit 4 is set.""",
 ]
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

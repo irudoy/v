@@ -3,6 +3,7 @@ Sub-helper for cores 0x26944 and 0x26984: the second search stage that \
 computes the fractional part."""
 level = "code"
 role = "service"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

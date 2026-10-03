@@ -14,6 +14,7 @@ high8(F).""",
 ]
 level = "code"
 role = "accessor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

@@ -17,6 +17,7 @@ service 0xa0 (handler 000306f8).""",
 ]
 level = "code"
 role = "service"
+block = "memory_integrity/block"
 
 [[ledger]]
 registry = "funcs"

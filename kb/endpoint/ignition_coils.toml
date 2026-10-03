@@ -1,0 +1,18 @@
+title = "Ignition coils"
+direction = "output"
+block = "ignition_output/block"
+peripheral = "ATU-II APC channel 11 compare registers"
+summary = """
+The primary and secondary APC schedulers program GR11A and GR11B against \
+TCNT11 from the APC command; the low byte of POPCR selects the output of \
+each compare event."""
+registers = [
+    "loyal-snail/reg",
+    "steadfast-yak/reg",
+    "diligent-manatee/reg",
+    "alluring-galago/reg",
+    "spry-uakari/reg",
+]
+functions = ["stock_ignition_consumer/fn", "apc_reset_compare_scheduler/fn"]
+specs = ["defs/JK08A.ignition-output.md"]
+order = 12

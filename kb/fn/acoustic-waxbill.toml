@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Not arithmetic: block copier, even-parity entry into unrolled ladder \
 0x22116. It copies r0 bytes from [r2] to [r1], with r0 divisible by 4 and an \

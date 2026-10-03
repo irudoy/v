@@ -3,6 +3,7 @@ Per-axis implicit search for entry 0x26040. It is called once per axis, so \
 the axes for this map pair are implicit as in the bank."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

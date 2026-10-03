@@ -1,0 +1,9 @@
+title = "Crank and cam capture"
+stage = "acquisition/stage"
+summary = """
+ATU-II input-capture handlers for crank teeth and the four cam sensors, \
+event-interval snapshots, cam edge-count monitors, and the crank and cam \
+fault predicates."""
+specs = ["defs/JK08A.ignition-output.md", "defs/JK08A.cvtc.md"]
+home = "7mfk"
+order = 1

@@ -134,6 +134,61 @@ class FilesTest(unittest.TestCase):
                          [("references", "missing_producer/fn")])
         self.assertEqual(model.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1048)).links, [])
 
+    def test_owned_architecture_resolves_typed_references_and_ordered_steps(self):
+        self.write('stage', 'estimation', {'title': 'Estimation', 'lane': 'flow', 'order': 2})
+        self.write('block', 'engine_speed', {'title': 'Engine speed',
+                                            'stage': 'estimation/stage', 'home': '7mfk'})
+        self.write('fn', 'producer', {'block': 'engine_speed/block', 'symbol': [
+            {'layout': '7mfk', 'address': f'{WRITER:08x}'}]})
+        self.write('fn', 'copier', {'symbol': [
+            {'layout': '7mfk', 'address': f'{COPIER:08x}'}]})
+        self.write('ram', 'speed', {'symbol': [
+            {'layout': '7mfk', 'address': 'ffff1048'}]})
+        self.write('reg', 'capture', {'symbol': [
+            {'layout': '7mfk', 'address': 'fffff434'}]})
+        self.write('endpoint', 'crank', {'block': 'engine_speed/block', 'direction': 'input',
+                                        'registers': ['capture/reg'], 'functions': ['producer/fn']})
+        self.write('chain', 'engine_speed', {'output': 'speed/ram', 'home': '7mfk', 'step': [
+            {'from': 'capture/reg', 'to': 'speed/ram', 'effect': 'converts',
+             'sign': 'negative', 'via': ['copier/fn', 'producer/fn'], 'note': 'y = 100 / x'},
+            {'from': 'speed/ram', 'to': 'capture/reg', 'effect': 'stores', 'sign': 'none'}]})
+        b, model = self.build()
+        self.assertEqual(b.issues, [])
+        self.assertEqual(model.entities['block', 'engine_speed'].refs,
+                         {'stage': [('stage', 'estimation')]})
+        self.assertEqual(model.entities['endpoint', 'crank'].refs,
+                         {'block': [('block', 'engine_speed')],
+                          'registers': [SymbolKey('7mfk', 'reg', 0xFFFFF434)],
+                          'functions': [SymbolKey('7mfk', 'fn', WRITER)]})
+        steps = model.entities['chain', 'engine_speed'].steps
+        self.assertEqual(steps[0]['via'], [SymbolKey('7mfk', 'fn', COPIER),
+                                          SymbolKey('7mfk', 'fn', WRITER)])
+        self.assertEqual(steps[1]['from'], SymbolKey('7mfk', 'ram', 0xFFFF1048))
+        self.assertEqual(steps[0]['note'], 'y = 100 / x')
+
+    def test_an_architecture_reference_cannot_borrow_a_foreign_layout_symbol(self):
+        self.write('ram', 'speed', {'symbol': [
+            {'layout': 'jk78c', 'address': 'ffff1000'}]})
+        for reference, message in (
+                ('speed/ram', 'has no symbol on 7mfk'),
+                ('speed/ram/jk78c', 'architecture reference lies on jk78c, not on 7mfk')):
+            with self.subTest(reference=reference):
+                self.write('chain', 'probe', {'home': '7mfk', 'output': reference, 'step': []})
+                b, model = self.build()
+                self.assertIn(message, [issue.message for issue in b.issues])
+                self.assertEqual(model.entities['chain', 'probe'].refs['output'], [reference])
+
+    def test_malformed_architecture_steps_fail_without_untyped_references(self):
+        for step, message in (
+                ({'from': 7, 'to': 'speed/ram'}, 'from and to must be references'),
+                ({'from': 'speed/ram', 'to': 'speed/ram', 'via': 'producer/fn'},
+                 'via is no array of references')):
+            with self.subTest(step=step):
+                self.write('chain', 'probe', {'step': [step]})
+                b, model = self.build()
+                self.assertIn(message, [issue.message for issue in b.issues])
+                self.assertEqual(model.entities['chain', 'probe'].steps, [])
+
     def test_an_unnamed_meaning_takes_the_generated_names_of_its_file(self):
         self.write("ram", "quiet-otter", {"title": "Unnamed", "home": "7mfk", "symbol": [
             {"layout": "7mfk", "address": "ffff1048", "name": "quiet-otter"},

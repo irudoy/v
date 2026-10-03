@@ -17,6 +17,7 @@ meaning of the bank multiplier remains unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

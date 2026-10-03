@@ -27,6 +27,7 @@ response, and channel-to-bank assignment require separate evidence.""",
 ]
 level = "code"
 role = "monitor"
+block = "limiters/block"
 
 [[ledger]]
 registry = "curated"

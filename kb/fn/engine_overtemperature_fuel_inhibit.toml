@@ -10,6 +10,7 @@ The exact homologous coolant conversion raw-50 gives candidate thresholds \
 ]
 level = "code"
 role = "monitor"
+block = "fuel_cut/block"
 
 [[diagnostic]]
 id = "engine-overtemperature-inhibit-p1217"

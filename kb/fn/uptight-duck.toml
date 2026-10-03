@@ -12,6 +12,7 @@ physical meanings of the three curve outputs remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

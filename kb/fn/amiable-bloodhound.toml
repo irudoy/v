@@ -3,6 +3,7 @@ summary = """
 operands are read unsigned with EXTU.W."""
 level = "code"
 role = "finisher"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

@@ -9,6 +9,7 @@ index 71.""",
 ]
 level = "code"
 role = "dispatch"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

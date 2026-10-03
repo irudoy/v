@@ -12,6 +12,7 @@ threshold.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

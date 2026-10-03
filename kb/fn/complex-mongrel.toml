@@ -13,6 +13,7 @@ branch re-enters the body below the entry; the two parts form one handler.""",
 ]
 level = "code"
 role = "handler"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

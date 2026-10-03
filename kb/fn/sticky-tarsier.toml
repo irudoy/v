@@ -8,6 +8,7 @@ calculated.""",
 ]
 level = "code"
 role = "dispatch"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

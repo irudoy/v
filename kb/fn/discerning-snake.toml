@@ -25,6 +25,7 @@ scheduler 0002c13c.""",
 ]
 level = "code"
 role = "driver"
+block = "injection_timing/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,6 +1,7 @@
 summary = "Caller of init routine 0002c648."
 level = "code"
 role = "init"
+block = "startup/block"
 
 [[ledger]]
 registry = "funcs"

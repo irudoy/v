@@ -17,6 +17,7 @@ ffff301c remains unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[diagnostic]]
 id = "evap-gross-leak-p0455"

@@ -10,6 +10,7 @@ previously established by independent traces.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

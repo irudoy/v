@@ -6,6 +6,7 @@ forming ffff303e."""
 note = ["The physical quantity and units of the addition are unresolved."]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

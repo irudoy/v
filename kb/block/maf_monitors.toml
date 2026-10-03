@@ -1,0 +1,6 @@
+title = "MAF monitors"
+stage = "diagnostics/stage"
+summary = "Dual-bank MAF circuit and range-performance monitors P0101 and P010B."
+specs = ["defs/JK08A.maf-range-monitor.md"]
+home = "7mfk"
+order = 32

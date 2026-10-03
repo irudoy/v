@@ -1,0 +1,7 @@
+title = "Immobilizer"
+stage = "arbitration/stage"
+summary = """
+NATS registration and lock handlers and the developer-immobilizer state \
+machine that forms the engine inhibit."""
+home = "7mfk"
+order = 26

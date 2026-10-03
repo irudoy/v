@@ -18,6 +18,7 @@ count is cleared before the end-of-FUN-00020dfe snapshot boundary.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 former = ["knock_timing_state_coordinator"]
 
 [[ledger]]

@@ -3,6 +3,7 @@ Stored-fault clearer of the diagnostic runtime records. For an index other \
 than -1 it clears bit 7 of byte 1 of ffff5718 + 3*index."""
 level = "code"
 role = "service"
+block = "dtc_manager/block"
 contract = "Input r4 is a record index; -1 returns without a write."
 contract_level = "code"
 

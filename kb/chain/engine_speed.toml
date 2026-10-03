@@ -1,0 +1,258 @@
+title = "Engine speed"
+summary = """
+The ICI0A crank handler forms the 10-degree tooth time ffff22bc on every \
+tooth and, on the tooth-7 engine event, the 120-degree interval ffff11fc; \
+ffff1196 = 32000000/ffff11fc is engine speed, and its shifted words and \
+scheduler snapshots index the maps."""
+quantity = "Engine speed, RPM*5.12 counts"
+output = "classic-caracal/ram"
+specs = [
+    "defs/JK08A.cvtc.md",
+    "defs/JK08A.rpm-drop-state.md",
+    "defs/JK08A.fuel.md",
+]
+home = "7mfk"
+order = 2
+
+[[step]]
+from = "abstract-pudu/reg"
+to = "soft-seagull/ram"
+effect = "stores"
+sign = "none"
+via = ["pastel-yak/fn"]
+note = """
+On every crank tooth the ICI0A prologue 00028ea2 stores OSBR1 at 00028f22 as \
+crank reference capture ffff158a, in 3.2 us counts."""
+
+[[step]]
+from = "soft-seagull/ram"
+to = "pistachio-porcupine/ram"
+effect = "subtracts"
+sign = "none"
+via = ["pastel-yak/fn"]
+note = """
+Timestamp difference: ffff22ba = current minus previous ffff158a, 0xffff on \
+the first capture; it spans 10 crank degrees, 30 on tooth 8."""
+
+[[step]]
+from = "pistachio-porcupine/ram"
+to = "spry-koel/ram"
+effect = "copies"
+sign = "positive"
+via = ["pastel-yak/fn"]
+note = """
+The prologue copies ffff22ba to 10-degree time ffff22bc; with sync, tooth 8 \
+stores one third. P0335 fallback 0002b768 writes floor(ffff11fc/12)."""
+
+[[step]]
+from = "spry-koel/ram"
+to = "sophisticated-magpie/ram"
+effect = "converts"
+sign = "negative"
+via = ["natural-roadrunner/fn"]
+note = """
+ffff114a = floor(0xA2C2/ffff22bc) in RPM/12.5; ffff24c9.bit5 copies ffff11f4 \
+instead and ffff417f.bit5 writes zero."""
+
+[[step]]
+from = "spry-koel/ram"
+to = "statuesque-husky/ram"
+effect = "converts"
+sign = "negative"
+via = ["tidy-tiger/fn"]
+note = """
+ffff2804 = median of the last three min(255, 41666/ffff22bc) samples in \
+RPM/12.5; ffff24c9.bit5 substitutes ffff11ea."""
+
+[[step]]
+from = "sophisticated-magpie/ram"
+to = "satisfied-macaque/ram"
+effect = "filters"
+sign = "negative"
+via = ["phenomenal-cricket/fn"]
+note = """
+ffff1e50 = min(65535, 64*max(ffff1f76 - ffff114a, 0) + \
+floor(192*ffff1e58/256)), the Q8 filtered positive four-sample RPM drop."""
+
+[[step]]
+from = "abstract-pudu/reg"
+to = "imported-kudu/ram"
+effect = "schedules"
+sign = "none"
+via = ["pastel-yak/fn", "gentle-bat/fn", "event_interval_snapshot_a/fn"]
+note = """
+Tooth 7 with sync calls feeder 000208f8; 00028af8 writes ffff11fc = \
+wrap-corrected (ffff185c - ffff84cc) >> 5, the 120-degree event interval."""
+
+[[step]]
+from = "imported-kudu/ram"
+to = "classic-caracal/ram"
+effect = "converts"
+sign = "negative"
+via = ["roaring-hippo/fn"]
+note = """
+ffff1196 = floor(32000000/ffff11fc) through unsigned divider 00021ce0; the \
+interval is 6250000/RPM counts, so ffff1196 is RPM*5.12."""
+
+[[step]]
+from = "classic-caracal/ram"
+to = "vigorous-horse/ram"
+effect = "scales"
+sign = "positive"
+via = ["pearl-waxbill/fn"]
+note = """
+ffff11e8 = ffff1196 >> 3 in RPM/1.5625, denominator N of the primary MAF \
+calculation in 0003b75c."""
+
+[[step]]
+from = "classic-caracal/ram"
+to = "hungry-sawfish/ram"
+effect = "scales"
+sign = "positive"
+via = ["pearl-waxbill/fn"]
+note = """
+ffff11ee = ffff1196 >> 4 in RPM/3.125; serializer 000c577a sends \
+sat_u16(ffff11ee*25) = RPM*8 in 0x180 bytes 0 and 1."""
+
+[[step]]
+from = "classic-caracal/ram"
+to = "authentic-wasp/ram"
+effect = "scales"
+sign = "positive"
+via = ["pearl-waxbill/fn"]
+note = """
+ffff11f4 = ffff1196 >> 6 in RPM/12.5, the word that UDS DID 0x1201 returns."""
+
+[[step]]
+from = "classic-caracal/ram"
+to = "aquamarine-spaniel/ram"
+effect = "scales"
+sign = "positive"
+via = ["pearl-waxbill/fn"]
+note = "ffff11e6 = min(255, ffff1196 >> 8) in RPM/50."
+
+[[step]]
+from = "vigorous-horse/ram"
+to = "liberal-falcon/ram"
+effect = "scales"
+sign = "positive"
+via = ["perfect-agouti/fn"]
+note = "ffff11eb = min(255, ffff11e8 >> 4) = min(255, ffff1196 >> 7) in RPM/25."
+
+[[step]]
+from = "vigorous-horse/ram"
+to = "angelic-shark/ram"
+effect = "scales"
+sign = "positive"
+via = ["hypersonic-seagull/fn"]
+note = """
+ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6), the saturated \
+RPM/12.5 byte."""
+
+[[step]]
+from = "hungry-sawfish/ram"
+to = "private-sloth/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+Scheduler 00020dfe copies ffff11d4..ffff120b to ffff119c..ffff11d3, so \
+ffff11b6 is the RPM/3.125 snapshot of ffff11ee."""
+
+[[step]]
+from = "authentic-wasp/ram"
+to = "rpm/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+ffff11bc is the RPM/12.5 snapshot of ffff11f4; fuel-cut state machine \
+0004f282 compares it with its activation and release words."""
+
+[[step]]
+from = "aquamarine-spaniel/ram"
+to = "tough-earwig/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+ffff11ae is the RPM/50 snapshot of ffff11e6, the speed input of the intake \
+and exhaust CVTC target surfaces."""
+
+[[step]]
+from = "liberal-falcon/ram"
+to = "daffodil-gibbon/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+ffff11b3 is the RPM/25 snapshot of ffff11eb; 0004fbe2 and 00050018 compare \
+it with the Over Run Fuel Cut and Restore table outputs."""
+
+[[step]]
+from = "angelic-shark/ram"
+to = "succinct-pudu/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+ffff11b2 is the saturated RPM/12.5 snapshot of ffff11ea; it indexes \
+implicit-axis maps and the P030 speed gate of 0007c4e0."""
+
+[[step]]
+from = "authentic-wasp/ram"
+to = "fascinating-hog/axis"
+effect = "indexes"
+sign = "none"
+note = """
+Row axis 0x11CF0 of Fuel Compensation Map 0xA29A: the byte core compares \
+each point times four with ffff11f4, so one count is 50 RPM."""
+
+[[step]]
+from = "rpm/ram"
+to = "able-butterfly/axis"
+effect = "indexes"
+sign = "none"
+note = """
+Shared row axis 0x11ECE of ignition maps 0x991A, 0x9A1A, and 0x9B1A: each \
+point times four is compared with ffff11bc, 400..7400 RPM."""
+
+[[step]]
+from = "private-sloth/ram"
+to = "functional-jackrabbit/axis"
+effect = "indexes"
+sign = "none"
+via = ["primitive-lizard/fn"]
+note = """
+00065928 passes ffff11b6 through wrapper 000262a8 as the row input of Engine \
+Torque Map 0x10B8E; axis 0x14B4A spans 400..7600 RPM."""
+
+[[step]]
+from = "tough-earwig/ram"
+to = "intake_cvtc_target/tbl"
+effect = "indexes"
+sign = "none"
+via = ["victorious-catfish/fn"]
+note = """
+000bda64 interpolates Intake CVTC Target - Main 0xB43A by RPM/50 byte \
+ffff11ae and normalized-BFS snapshot ffff102c."""
+
+[[step]]
+from = "daffodil-gibbon/ram"
+to = "tangible-gharial/tbl"
+effect = "indexes"
+sign = "none"
+via = ["enthusiastic-salmon/fn"]
+note = """
+00056bd0 forms end-of-injection delay ffff192e = 2*min(lookup(0x12302 at \
+ffff11b3) + ffff340c, 209) in 2-degree counts."""
+
+[[step]]
+from = "succinct-pudu/ram"
+to = "cold_idle_ignition_timing/tbl"
+effect = "indexes"
+sign = "none"
+via = ["signed_timing_state_accumulator/fn"]
+note = """
+0004afdc interpolates Timing-State Addend - Default/Post-Transition 0x12196 \
+over the saturated RPM/12.5 byte ffff11b2."""

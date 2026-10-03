@@ -4,6 +4,7 @@ bypasses state-machine transitions and clears bit 2 of 0xffff55e4 before \
 forming the engine inhibit."""
 level = "code"
 role = "handler"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

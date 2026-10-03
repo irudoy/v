@@ -9,6 +9,7 @@ and flags is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Unsigned 32/32 remainder: r0 = r1 % r0, strictly less than the divisor by \
 construction. The quotient is computed and discarded. It clobbers r1. On \

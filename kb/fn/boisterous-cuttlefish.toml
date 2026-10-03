@@ -40,6 +40,7 @@ written by 0008c24e (ffff41be bit 6), 0008c272 (ffff41d1 bit 7), 00090d54 \
 ]
 level = "code"
 role = "driver"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

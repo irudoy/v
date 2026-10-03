@@ -6,6 +6,7 @@ serves as the minimum threshold for ffff1814."""
 note = ["The physical quantities of both thresholds are unresolved."]
 level = "code"
 role = "accessor"
+block = "thermostat_coldstart/block"
 
 [[ledger]]
 registry = "funcs"

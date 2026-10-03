@@ -15,6 +15,7 @@ catalog TVO engineering scale remain unverified.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

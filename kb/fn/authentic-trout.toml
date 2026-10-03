@@ -15,6 +15,7 @@ selects the crossfade pair in 0007a592.""",
 ]
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

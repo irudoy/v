@@ -3,6 +3,7 @@ Implicit-axis primitive: 4 points, step 64, limit 192, uint8 element. No \
 axis array exists; arithmetic in the core chain defines the axis."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "implicit"

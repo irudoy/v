@@ -9,6 +9,7 @@ the corrected difference is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

@@ -8,6 +8,7 @@ floor-rounding before its explicit lower clamp.""",
 ]
 level = "code"
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic right shift by 7: r0 = (int32)r0 >> 7, equivalent to signed \
 division by 128 rounded down toward negative infinity. The body is seven \

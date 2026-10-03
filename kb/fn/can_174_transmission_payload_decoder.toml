@@ -13,6 +13,7 @@ and upshifts.""",
 ]
 level = "code"
 role = "handler"
+block = "can_network/block"
 
 [[ledger]]
 registry = "curated"

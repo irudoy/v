@@ -13,6 +13,7 @@ The opening-area scale and the catalog degree scale remain candidates.""",
 ]
 level = "code"
 role = "wrapper"
+block = "throttle_sensing/block"
 
 [[ledger]]
 registry = "funcs"

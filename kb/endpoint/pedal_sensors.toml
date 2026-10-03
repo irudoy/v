@@ -1,0 +1,10 @@
+title = "Accelerator pedal sensors"
+direction = "input"
+block = "analog_inputs/block"
+peripheral = "A/D channels AN10 and AN17"
+summary = """
+AN10 and AN17 samples 0xFFFF362C and 0xFFFF362E feed the two pedal \
+channels."""
+functions = ["accelerator_pedal_adc_sampler/fn"]
+specs = ["defs/JK08A.throttle-control.md"]
+order = 6

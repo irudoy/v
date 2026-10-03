@@ -11,6 +11,7 @@ The output has the same RPM/12.5 count scale as word ffff11f4, which FUN \
 ]
 level = "code"
 role = "accessor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

@@ -12,6 +12,7 @@ simplifies to sat_s16(s16[ffff18ca]+u16[ffff2408]). FUN 000655b4 and FUN \
 ]
 level = "code"
 role = "accessor"
+block = "torque_model/block"
 
 [[ledger]]
 registry = "funcs"

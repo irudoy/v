@@ -10,6 +10,7 @@ duration depends on the unresolved task timebase.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

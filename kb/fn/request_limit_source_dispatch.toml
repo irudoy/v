@@ -10,6 +10,7 @@ FUN 00071508.""",
 ]
 level = "code"
 role = "dispatch"
+block = "limiters/block"
 
 [[ledger]]
 registry = "curated"

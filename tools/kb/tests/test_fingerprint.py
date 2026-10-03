@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from kb import compile, fingerprint, repo
-from kb.adapters import ledgers
+from kb.adapters import architecture, ledgers
 
 
 class BlobTest(unittest.TestCase):
@@ -27,6 +27,14 @@ class BlobTest(unittest.TestCase):
         self.assertFalse(paths & {path.as_posix() for path in ledgers.PATHS.values()})
         self.assertNotIn("tools/ghidra/symbols/7mfk.csv", paths)
         self.assertIn("tools/ghidra/symbols/1nd.csv", paths)
+
+    def test_architecture_entities_own_the_view_and_read_modules_do_not_change_the_graph(self):
+        paths = set(compile.inputs())
+        self.assertNotIn(architecture.ARCHITECTURE.as_posix(), paths)
+        self.assertNotIn('tools/kb/src/kb/architecture_projection.py', paths)
+        self.assertNotIn('tools/kb/src/kb/suggest.py', paths)
+        self.assertIn('kb/chain/engine_speed.toml', paths)
+        self.assertIn('tools/kb/src/kb/l0graph.py', paths)
 
 
 class CacheTest(unittest.TestCase):

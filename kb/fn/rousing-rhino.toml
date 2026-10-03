@@ -13,6 +13,7 @@ cadence remain unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

@@ -9,6 +9,7 @@ clamp establishes both axis length and element type.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

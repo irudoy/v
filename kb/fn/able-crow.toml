@@ -10,6 +10,7 @@ do not establish a physical quantity.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

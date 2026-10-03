@@ -5,6 +5,7 @@ ffff25f0..ffff25f3 from ROM8[00008e34] and ROM8[00008e35]."""
 note = ["Called by 00090e5e while ffff424f bit 2 is set."]
 level = "code"
 role = "init"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

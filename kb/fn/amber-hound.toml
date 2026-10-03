@@ -11,6 +11,7 @@ the design point of the sequence is 4.50 V at 5 mV per count.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

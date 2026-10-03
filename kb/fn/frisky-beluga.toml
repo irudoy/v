@@ -9,6 +9,7 @@ constants keep ffff123c at 0x4000, so the max() in 0005594a always returns \
 ffff123a."""
 level = "code"
 role = "driver"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

@@ -168,9 +168,10 @@ def test_a_code_confidence_map_without_a_block_fails_the_gate(
 def test_a_pinned_map_passes_the_gate(tmp_path, tracked):
     assert not tracked.block("crank-cam").maps
     text = _source_text()
-    pinned = text.replace(
-        'id = "crank-cam"\n', f'id = "crank-cam"\nmaps = ["{FREE_MAP}"]\n', 1
-    )
+    start = text.index('id = "crank-cam"\n')
+    stop = text.index('[[block]]', start + 1)
+    pinned = (text[:start] + text[start:stop].replace(
+        'maps = []', f'maps = ["{FREE_MAP}"]', 1) + text[stop:])
     assert pinned != text
     extended = _with_map(tmp_path, "code", "table", pinned)
     assert extended.errors == []

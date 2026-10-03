@@ -8,6 +8,7 @@ Both cells must be zero for the condition, so the check confirms that no \
 intake bank is commanded rather than testing one bank.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "percent"
 scale = "x*39/100"

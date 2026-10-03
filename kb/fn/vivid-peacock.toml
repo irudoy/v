@@ -12,6 +12,7 @@ this function. The physical curve quantity is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

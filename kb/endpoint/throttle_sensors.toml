@@ -1,0 +1,9 @@
+title = "Throttle position sensors"
+direction = "input"
+block = "throttle_sensing/block"
+peripheral = "A/D acquisition of both throttle position sensors"
+summary = """
+Per-channel throttle feedback enters the six-sample estimator of 0003e75a."""
+functions = ["throttle_feedback_acquisition/fn"]
+specs = ["defs/JK08A.throttle-control.md"]
+order = 7

@@ -1,6 +1,7 @@
 summary = "Component where bit 7 of ffff2464 bypasses interpolation."
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

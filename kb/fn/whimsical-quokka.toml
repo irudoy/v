@@ -20,6 +20,7 @@ and the reference word in the whole-program references.""",
 ]
 level = "code"
 role = "monitor"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

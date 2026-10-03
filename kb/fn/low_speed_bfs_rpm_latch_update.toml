@@ -12,6 +12,7 @@ name remains unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

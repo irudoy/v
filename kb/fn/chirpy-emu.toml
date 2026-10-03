@@ -12,6 +12,7 @@ so the current multiplier is 1. The physical quantity is unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

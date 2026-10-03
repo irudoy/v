@@ -9,6 +9,7 @@ work-support status 0xa3.""",
 ]
 level = "code"
 role = "selector"
+block = "work_support/block"
 
 [[ledger]]
 registry = "funcs"

@@ -13,6 +13,7 @@ n, correction, and ffff11f2 remain unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

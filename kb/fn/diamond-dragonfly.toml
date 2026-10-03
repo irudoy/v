@@ -9,6 +9,7 @@ and writes it back."""
 note = ["The physical scale of the states is not derived."]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

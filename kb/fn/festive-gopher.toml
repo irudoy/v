@@ -11,6 +11,7 @@ ROM8[0x18700].bit0 is clear.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[diagnostic]]
 id = "evap-vent-open-b-p0447"

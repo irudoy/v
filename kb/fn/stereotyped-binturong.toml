@@ -11,6 +11,7 @@ scale of ffff10c4 remains unresolved.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[ledger]]
 registry = "funcs"

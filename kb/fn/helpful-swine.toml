@@ -14,6 +14,7 @@ branches are unreachable for the unsigned, nonnegative operands used here.""",
 ]
 level = "code"
 role = "driver"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

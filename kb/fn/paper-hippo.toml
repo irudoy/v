@@ -11,6 +11,7 @@ for the three centered bytes.""",
 ]
 level = "code"
 role = "monitor"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

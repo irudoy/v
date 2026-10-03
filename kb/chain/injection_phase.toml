@@ -1,0 +1,246 @@
+title = "Injection phase"
+summary = """
+RPM/25 byte ffff11b3 indexes End of Injection Angle Base 0x12302 or \
+Conditional 0x1230A into injection-end delay ffff192e. FUN_000521A8 \
+subtracts the pulse angle into lead ffff23f0 and start angle ffff23bf, which \
+place the delayed start that FUN_0002C13C fires into DSTR and \
+DCNT8A..DCNT8F."""
+quantity = """
+Injection-end delay from the reference tooth to the end of the pulse, 2 \
+crank degrees per count; end of injection is 130 + 2*count degrees after \
+intake TDC"""
+output = "injection_end_angle/ram"
+specs = ["defs/JK08A.fuel.md"]
+home = "7mfk"
+order = 6
+
+[[step]]
+from = "classic-caracal/ram"
+to = "daffodil-gibbon/ram"
+effect = "converts"
+sign = "positive"
+via = ["pearl-waxbill/fn", "perfect-agouti/fn", "coherent_snapshot/fn"]
+note = """
+000384fe writes ffff11e8 = ffff1196 >> 3, 000384cc writes ffff11eb = \
+min(255, ffff11e8 >> 4), and 00020dfe copies it to RPM/25 byte ffff11b3."""
+
+[[step]]
+from = "daffodil-gibbon/ram"
+to = "tangible-gharial/tbl"
+effect = "indexes"
+sign = "none"
+via = ["enthusiastic-salmon/fn", "idle_ignition_lookup/fn"]
+note = """
+00056bd0 looks up the base table over 8-point implicit axis 00026370 (step \
+32, limit 224) at RPM/25 byte ffff11b3."""
+
+[[step]]
+from = "daffodil-gibbon/ram"
+to = "crouching-orca/tbl"
+effect = "indexes"
+sign = "none"
+via = [
+    "enthusiastic-salmon/fn",
+    "idle_ignition_lookup/fn",
+    "didactic-civet/fn",
+]
+note = """
+00056bd0 interpolates the conditional table over implicit axis 00026370 (8 \
+points, step 32) through 00026740 at ffff11b3."""
+
+[[step]]
+from = "tangible-gharial/tbl"
+to = "injection_end_angle/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["enthusiastic-salmon/fn"]
+note = """
+Base path: ffff192e = 2 * min(lookup + uint8[ffff340c], 209); one cell count \
+is 4 crank degrees, stock 133 in all 8 cells (532 degrees)."""
+
+[[step]]
+from = "crouching-orca/tbl"
+to = "injection_end_angle/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["enthusiastic-salmon/fn"]
+note = """
+Conditional path: ffff192e = 2 * min(y, 209); stock cells 160..200 (640..800 \
+crank degrees) end the pulse 50..210 degrees after intake TDC."""
+
+[[step]]
+from = "orchid-angelfish/ram"
+to = "injection_end_angle/ram"
+effect = "adds"
+sign = "positive"
+via = ["enthusiastic-salmon/fn"]
+note = """
+The base path adds uint8[ffff340c] to the table value before the 209-count \
+limit; the conditional path omits it."""
+specs = ["defs/JK08A.fuel.md"]
+
+[[step]]
+from = "lurking-locust/ram"
+to = "injection_end_angle/ram"
+effect = "selects"
+sign = "none"
+via = ["enthusiastic-salmon/fn"]
+note = """
+00056bd0 selects 0x1230A while ffff2484 bits 4 and 5 and warm latch \
+ffff41d0.bit1 are set; ffff24d0.bit1 selects a path that bypasses both \
+maps."""
+
+[[step]]
+from = "thick-orangutan/ram"
+to = "injection_end_angle/ram"
+effect = "selects"
+sign = "none"
+via = ["enthusiastic-salmon/fn"]
+note = """
+Warm latch ffff41d0.bit1 sets at raw coolant ROM8[0x8770] = 120 (70 deg C) \
+and releases below 115; it enables the conditional table."""
+
+[[step]]
+from = "injection_end_angle/ram"
+to = "flat-coyote/ram"
+effect = "converts"
+sign = "positive"
+via = ["transformed_pulse_maximum/fn"]
+note = """
+Start delay d = 2*E - 4*p crank degrees, or 0 when E < 2*p; lead ffff23f0 = \
+d / 120 engine events, forced to 3 while ffff4251.bit0 is set."""
+
+[[step]]
+from = "injection_end_angle/ram"
+to = "righteous-scorpion/ram"
+effect = "converts"
+sign = "none"
+via = ["transformed_pulse_maximum/fn"]
+note = """
+Start angle ffff23bf = clamp(d % 120, 4, 116) / 4 in 4 crank degrees per \
+count; the remainder has no monotonic sign in d."""
+
+[[step]]
+from = "handsome-spaniel/ram"
+to = "flat-coyote/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["transformed_pulse_maximum/fn"]
+note = """
+The longest transformed pulse ffff23d4..ffff23de, floored at ffff241c in 10 \
+us counts, gives pulse angle p = min((k * pulse) >> 16, 255)."""
+
+[[step]]
+from = "rpm/ram"
+to = "flat-coyote/ram"
+effect = "scales"
+sign = "negative"
+via = ["transformed_pulse_maximum/fn"]
+note = """
+k = ((ffff11bc << 4) * 0xC49B) >> 16 turns pulse time into angle, so a \
+higher RPM/12.5 speed raises p and lowers the start delay d."""
+
+[[step]]
+from = "flat-coyote/ram"
+to = "fabulous-koel/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = """
+00020dfe copies the 140-byte block 0xFFFF23BC..0xFFFF2447 to 0xFFFF2330, so \
+ffff2364 is the scheduler snapshot of lead ffff23f0."""
+specs = ["defs/JK08A.fuel.md"]
+
+[[step]]
+from = "righteous-scorpion/ram"
+to = "nippy-caribou/ram"
+effect = "copies"
+sign = "positive"
+via = ["coherent_snapshot/fn"]
+note = "The same 140-byte copy places start angle ffff23bf in snapshot ffff2333."
+specs = ["defs/JK08A.fuel.md"]
+
+[[step]]
+from = "fabulous-koel/ram"
+to = "acrid-bonobo/ram"
+effect = "indexes"
+sign = "none"
+via = ["amigurumi-dormouse/fn"]
+note = """
+On every engine event 00054a44 forms slot ffff20b4 = (ffff11de - 1 - lead) \
+mod 6; the lead is ffff2364 while ffff8513.bit5 is set, else 3."""
+
+[[step]]
+from = "knock_channel_primary/ram"
+to = "acrid-bonobo/ram"
+effect = "indexes"
+sign = "none"
+via = ["amigurumi-dormouse/fn"]
+note = """
+ffff11de is the engine-event cylinder number 1..6 that tooth 7 copies before \
+feeder 000208f8 runs the engine-event tasks."""
+
+[[step]]
+from = "acrid-bonobo/ram"
+to = "uber-deer/ram"
+effect = "selects"
+sign = "none"
+via = ["amigurumi-dormouse/fn"]
+note = """
+For an accepted slot the pending mask ffff2228 = ROM8[0x22695 + slot] (02 04 \
+08 10 20 01); with no accepted slot it is 0."""
+
+[[step]]
+from = "nippy-caribou/ram"
+to = "amphibian-panda/ram"
+effect = "converts"
+sign = "none"
+via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+note = """
+00054a44 passes angle 4*ffff2333 to 0002b64a, which splits it by 10 into \
+tooth count and remainder; offset ffff16c2 = ffff22bc * rem / 10."""
+
+[[step]]
+from = "spry-koel/ram"
+to = "amphibian-panda/ram"
+effect = "scales"
+sign = "positive"
+via = ["pumpkin-peacock/fn"]
+note = """
+ffff22bc is the time of one 10-degree crank tooth in 3.2 us channel-1 \
+counts."""
+
+[[step]]
+from = "amphibian-panda/ram"
+to = "imported-panther/reg"
+effect = "schedules"
+sign = "none"
+via = [
+    "pumpkin-peacock/fn",
+    "amigurumi-dormouse/fn",
+    "injector_event_isr/fn",
+    "injector_oneshot_mask_scheduler/fn",
+]
+note = """
+With a zero tooth count 0002b64a sets GR1A = ffff158a + ffff16c2; on the \
+IMI1A match 0002be40 fires ffff2228 through 0002c13c into DSTR."""
+
+[[step]]
+from = "uber-deer/ram"
+to = "imported-panther/reg"
+effect = "drives"
+sign = "none"
+via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
+note = """
+0002be40 copies ffff2228 to ffff1936 and calls 0002c13c, which sets DSTR bit \
+i to start the one-shot of each channel in the mask."""
+
+[[step]]
+from = "uber-deer/ram"
+to = "glossy-tarantula/reg"
+effect = "selects"
+sign = "none"
+via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
+note = """
+For each channel i in the mask 0002c13c adds sat_u16(800 * d >> 8) to DCNT8A \
++ 2*i with interrupts masked."""

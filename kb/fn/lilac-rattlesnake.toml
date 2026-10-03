@@ -10,6 +10,7 @@ The physical pressure scale of either sample remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "evap/block"
 contract = """
 Given r4=a and r5=b, returns r0=min(65535, \
 floor((uint16(a)-uint16(b))*112/32)) as a signed 32-bit result. Negative \

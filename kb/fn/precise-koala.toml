@@ -3,6 +3,7 @@ Offset entry into the same shift chain, core for primitive 0x263D8 with step \
 8192; it holds a pointer to 0x26740."""
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

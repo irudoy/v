@@ -11,6 +11,7 @@ state sets below 4500 RPM and clears at or above 5000 RPM.""",
 ]
 level = "code"
 role = "service"
+block = "library/block"
 contract = """
 Given uint8 value r4, threshold r5, hysteresis r6, and previous Boolean r7, \
 returns uint8((r4 - (r7 ? r6 : 0)) < r5)."""

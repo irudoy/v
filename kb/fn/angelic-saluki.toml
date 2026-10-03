@@ -9,6 +9,7 @@ and inverse tables of one relationship.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

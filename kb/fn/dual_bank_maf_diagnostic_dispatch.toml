@@ -12,6 +12,7 @@ cannot report a descriptor on this exact path.""",
 ]
 level = "code"
 role = "service"
+block = "maf_monitors/block"
 contract = """
 Arguments 1..7 dispatch records 0xbc, 0xbb, -1, 0xba, 0x09, 0x08, and 0x07 \
 respectively when nonzero. The exact non-sentinel descriptors encode P0103, \

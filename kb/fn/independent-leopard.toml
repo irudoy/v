@@ -5,6 +5,7 @@ k for 500 - floor((-d)*k/100). Results are written to array ffff40a4."""
 note = ["The physical name of the per-channel quantity is unresolved."]
 level = "code"
 role = "accessor"
+block = "fuel_closed_loop/block"
 
 [[ledger]]
 registry = "funcs"

@@ -10,6 +10,7 @@ ffff1d18. L0 records no reader of ffff1cea.""",
 ]
 level = "code"
 role = "accessor"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "funcs"

@@ -9,6 +9,7 @@ conditions remain in the surrounding monitor state machine.""",
 ]
 level = "code"
 role = "monitor"
+block = "sensor_monitors/block"
 
 [[diagnostic]]
 id = "ascd-steering-switch-p1564"

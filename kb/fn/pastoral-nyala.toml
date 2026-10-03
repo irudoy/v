@@ -11,6 +11,7 @@ establish the fuel-level context for ffff3e24.""",
 ]
 level = "code"
 role = "handler"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

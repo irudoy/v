@@ -11,6 +11,7 @@ conversion trace.""",
 ]
 level = "code"
 role = "monitor"
+block = "evap/block"
 
 [[diagnostic]]
 id = "evap-small-leak-p0442"

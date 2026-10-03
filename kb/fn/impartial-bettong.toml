@@ -12,6 +12,7 @@ physical-time duration.""",
 ]
 level = "code"
 role = "service"
+block = "misfire/block"
 
 [[ledger]]
 registry = "funcs"

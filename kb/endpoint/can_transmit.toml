@@ -1,0 +1,18 @@
+title = "CAN transmit"
+direction = "output"
+block = "can_network/block"
+peripheral = "HCAN1 transmit mailboxes"
+summary = """
+Periodic scanner 000c38de requests transmission through TXPR1 after the \
+serializers fill frames such as 0x160 and 0x180; mailbox-empty handler \
+000c7914 observes TXACK1."""
+registers = ["unyielding-bullfinch/reg", "poetic-chipmunk/reg"]
+functions = [
+    "bright-octopus/fn",
+    "free-coot/fn",
+    "space-puma/fn",
+    "shapeless-eagle/fn",
+    "stock_sle1_isr/fn",
+]
+specs = ["defs/JK08A.can.md"]
+order = 16

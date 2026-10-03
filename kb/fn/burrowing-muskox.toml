@@ -12,6 +12,7 @@ standalone global fuel-enable state.""",
 ]
 level = "code"
 role = "driver"
+block = "injector_output/block"
 
 [[ledger]]
 registry = "funcs"

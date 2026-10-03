@@ -1,0 +1,178 @@
+title = "Knock retard"
+summary = """
+Samples ADC2 in a 50-degree window per cylinder, compares the rise over a \
+learned per-channel reference with the RPM threshold from 0x1108E, and \
+integrates the event count into Q8 knock timing state ffff121a, whose degree \
+byte ffff22fa enters event correction ffff11d6 of the advance sum."""
+quantity = """
+Knock timing-state correction, crank degrees; negative values retard the \
+spark"""
+output = "steady-lionfish/ram"
+specs = ["defs/JK08A.knock-detection.md", "defs/JK08A.ignition-state.md"]
+home = "7mfk"
+order = 8
+
+[[step]]
+from = "vehement-hare/reg"
+to = "knock_metric_base/ram"
+effect = "detects"
+sign = "none"
+via = [
+    "bold-hummingbird/fn",
+    "meteoric-raptor/fn",
+    "knock_slice_evaluator/fn",
+]
+note = """
+Tooth 7 opens and tooth 0 closes the window; DMAC 2 reads ADDR24 (AN24/AN25 \
+scan); metric = sum of the 3 largest rises over the reference."""
+
+[[step]]
+from = "vehement-hare/reg"
+to = "gigantic-goshawk/ram"
+effect = "learns"
+sign = "none"
+via = [
+    "bold-hummingbird/fn",
+    "meteoric-raptor/fn",
+    "knock_slice_evaluator/fn",
+]
+note = """
+Per-channel reference update ref = (224 * v + 31 * ref) >> 8, plus 1 when \
+below the old value; weight ROM8[0x884B] = 0xE0."""
+
+[[step]]
+from = "gigantic-goshawk/ram"
+to = "knock_metric_base/ram"
+effect = "subtracts"
+sign = "negative"
+via = ["knock_slice_evaluator/fn"]
+note = """
+d[i] = v[i] - reference[c][i] with the reference at 0xFFFF2178 + 16 * (c - \
+1); a higher reference lowers the metric."""
+
+[[step]]
+from = "knock_channel_primary/ram"
+to = "knock_threshold_base/ram"
+effect = "selects"
+sign = "none"
+via = ["knock_slice_threshold_lookup/fn"]
+note = """
+Channel c = cylinder ffff11de of the tooth-7 event selects row 0x1108E + \
+0x20 * (c - 1) and slot ffff2144 + 2 * (c - 1)."""
+
+[[step]]
+from = "authentic-wasp/ram"
+to = "knock_threshold_base/ram"
+effect = "indexes"
+sign = "none"
+via = ["knock_slice_threshold_lookup/fn"]
+note = """
+RPM/12.5 word ffff11f4 interpolates the row on axis 0x15340 (400..6400 \
+RPM)."""
+
+[[step]]
+from = "amorphous-bird/tbl"
+to = "knock_threshold_base/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["knock_slice_threshold_lookup/fn"]
+note = "Six rows of 16 uint16 thresholds; stock rows 3 and 5 hold only 0xFFFF."
+
+[[step]]
+from = "knock_threshold_base/ram"
+to = "knock_count/ram"
+effect = "compares"
+sign = "negative"
+via = ["knock_slice_evaluator/fn"]
+note = """
+An exceedance is metric > threshold, so a higher threshold admits fewer \
+events."""
+
+[[step]]
+from = "knock_metric_base/ram"
+to = "knock_count/ram"
+effect = "compares"
+sign = "positive"
+via = ["knock_slice_evaluator/fn"]
+note = """
+Each exceedance increments ffff2142 up to 0xFF and sets ffff24c2 bit 6 and \
+bit c - 1 of ffff2150."""
+
+[[step]]
+from = "knock_count/ram"
+to = "curious-mustang/ram"
+effect = "integrates"
+sign = "negative"
+via = ["knock_function/fn"]
+note = """
+Knock branch: ffff1380 = sat16(ffff1258 + 13) after a quiet interval, else \
+sat16(ffff1258 - 307 * ffff2142); the count is then cleared."""
+
+[[step]]
+from = "thick-dalmatian/ram"
+to = "curious-mustang/ram"
+effect = "adds"
+sign = "positive"
+via = ["knock_function/fn"]
+note = """
+Q8 state ffff1258 is the base of the knock step; ROM16[0x8EAA] = 13 and \
+ROM16[0x8EAE] = 307."""
+
+[[step]]
+from = "curious-mustang/ram"
+to = "knock_timing_state/ram"
+effect = "adds"
+sign = "positive"
+via = ["knock_function/fn"]
+note = """
+Direct branch adds (low7 0x9A1A - low7 0x9B1A) << 8; otherwise ffff121a \
+slews from ffff1258 toward ffff1380 by ROM16[0x9078] = 0x500, clamped to <= \
+0."""
+
+[[step]]
+from = "high_octane_timing_state/tbl"
+to = "knock_timing_state/ram"
+effect = "looks-up"
+sign = "positive"
+via = ["knock_function/fn"]
+note = """
+Direct branch (ffff2469 bit 7 clear, ffff2467 bit 6 set): the high-octane \
+low 7 bits enter with weight +256."""
+
+[[step]]
+from = "high_detonation_timing_state/tbl"
+to = "knock_timing_state/ram"
+effect = "looks-up"
+sign = "negative"
+via = ["knock_function/fn"]
+note = "Direct branch: the high-detonation low 7 bits enter with weight -256."
+
+[[step]]
+from = "knock_timing_state/ram"
+to = "steady-lionfish/ram"
+effect = "scales"
+sign = "positive"
+via = ["knock_function/fn"]
+note = """
+ffff22fa = trunc_toward_zero(int16(ffff121a) / 256), one crank degree per \
+count."""
+
+[[step]]
+from = "steady-lionfish/ram"
+to = "eccentric-badger/ram"
+effect = "adds"
+sign = "positive"
+via = ["event_timing_correction_builder/fn"]
+note = """
+With ffff24c5 bit 5 or ffff24cb bit 2 set and ROM8[0x8710] bit 5: ffff11d6 = \
+min(ffff22fa - hi(ffff23c2), -ffff11fa)."""
+
+[[step]]
+from = "eccentric-badger/ram"
+to = "viridian-koel/ram"
+effect = "adds"
+sign = "positive"
+via = ["event_timing_correction_builder/fn"]
+note = """
+ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6); 0004dbe8 \
+carries it into advance ffff11d4."""

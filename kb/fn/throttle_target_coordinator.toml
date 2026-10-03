@@ -6,6 +6,7 @@ and 1."""
 note = ["Channel-to-bank identity remains unverified."]
 level = "code"
 role = "dispatch"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

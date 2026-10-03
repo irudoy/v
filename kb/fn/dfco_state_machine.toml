@@ -19,6 +19,7 @@ cut-request threshold pair is retained.""",
 ]
 level = "code"
 role = "driver"
+block = "dfco/block"
 
 [[ledger]]
 registry = "curated"

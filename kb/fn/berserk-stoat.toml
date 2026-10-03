@@ -6,6 +6,7 @@ dwell mask as ffff13d1 = ROM8[00022687 + ffff13d3], the one-hot bit of dwell \
 channel ffff13d3."""
 level = "code"
 role = "driver"
+block = "ignition_output/block"
 
 [[ledger]]
 registry = "funcs"

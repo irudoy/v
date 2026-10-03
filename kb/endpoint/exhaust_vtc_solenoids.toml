@@ -1,0 +1,15 @@
+title = "Exhaust valve timing solenoids"
+direction = "output"
+block = "cvtc_exhaust/block"
+peripheral = "ATU-II channel 7C and 7D PWM"
+summary = """
+BFR7C and BFR7D carry exhaust-VTC duty words 0xFFFF1AAE and 0xFFFF1AAC into \
+the channel-7 PWM."""
+registers = [
+    "glossy-squid/reg",
+    "fanatic-kingfisher/reg",
+    "complex-hummingbird/reg",
+    "cryptic-potoo/reg",
+]
+specs = ["defs/JK08A.cvtc.md"]
+order = 14

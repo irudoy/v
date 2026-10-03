@@ -11,6 +11,7 @@ factors remains in their individual claims.""",
 ]
 level = "code"
 role = "accessor"
+block = "ignition_timing/block"
 
 [[ledger]]
 registry = "funcs"

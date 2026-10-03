@@ -11,6 +11,7 @@ contains other terms and is not a pure pedal percentage.""",
 ]
 level = "code"
 role = "driver"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

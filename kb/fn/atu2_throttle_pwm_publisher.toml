@@ -13,6 +13,7 @@ H-bridge polarity, and channel-to-bank identity require bench validation.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

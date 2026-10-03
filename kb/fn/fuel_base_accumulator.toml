@@ -9,6 +9,7 @@ Coordinator 00057608 calls this before 000554f8 and final publisher \
 ]
 level = "code"
 role = "service"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

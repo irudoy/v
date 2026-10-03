@@ -10,6 +10,7 @@ two working bytes are not established.""",
 ]
 level = "code"
 role = "monitor"
+block = "o2_catalyst/block"
 
 [[diagnostic]]
 id = "rear-o2-alt-high-b-p0138"

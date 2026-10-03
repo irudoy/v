@@ -12,6 +12,7 @@ setting the bit.""",
 ]
 level = "code"
 role = "init"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

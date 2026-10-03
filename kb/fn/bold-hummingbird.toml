@@ -13,6 +13,7 @@ and DMAC control fields follow the SH7058 hardware manual.""",
 ]
 level = "code"
 role = "driver"
+block = "knock/block"
 
 [[ledger]]
 registry = "funcs"

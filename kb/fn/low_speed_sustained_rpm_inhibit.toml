@@ -6,6 +6,7 @@ active through 1500 RPM and clears below it."""
 note = ["FUN 0004f7e0 is the exact accumulator producer."]
 level = "code"
 role = "accessor"
+block = "fuel_cut/block"
 
 [[ledger]]
 registry = "curated"

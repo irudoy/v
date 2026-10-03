@@ -1,4 +1,5 @@
 role = "service"
+block = "memory_integrity/block"
 contract = """
 Not arithmetic: ROM self-test pass epilogue. It takes no arguments and runs \
 unconditionally after every completed pass. It performs four writes: \

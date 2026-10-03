@@ -4,6 +4,7 @@ and r6 axis is word-based, with clamps 15 and 30. The second of two mixed \
 wrappers in the catalog."""
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

@@ -15,6 +15,7 @@ selector step is 20 counts), the same unit as the exhaust edge handlers \
 ]
 level = "code"
 role = "driver"
+block = "crank_cam/block"
 
 [[ledger]]
 registry = "funcs"

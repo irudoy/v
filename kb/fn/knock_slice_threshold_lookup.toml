@@ -16,6 +16,7 @@ ffff2143. Physical cylinder or sensor order is not established.""",
 ]
 level = "code"
 role = "accessor"
+block = "knock/block"
 
 [[ledger]]
 registry = "curated"

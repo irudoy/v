@@ -6,6 +6,7 @@ note = [
 ]
 level = "code"
 role = "service"
+block = "immobilizer/block"
 
 [[ledger]]
 registry = "funcs"

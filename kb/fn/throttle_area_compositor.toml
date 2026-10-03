@@ -14,6 +14,7 @@ alternate branch does not establish a normal reverse dependency.""",
 ]
 level = "code"
 role = "driver"
+block = "throttle_target/block"
 
 [[ledger]]
 registry = "curated"

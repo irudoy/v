@@ -11,6 +11,7 @@ ffff23bc to ffff2330 through the block-copy call at 00021318, so this cell \
 receives ffff2440 once per scheduler pass.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "percent"
 scale = "x*39/100"

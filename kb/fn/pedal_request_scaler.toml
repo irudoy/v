@@ -11,6 +11,7 @@ unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "pedal/block"
 
 [[ledger]]
 registry = "curated"

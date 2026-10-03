@@ -6,6 +6,7 @@ toward zero."""
 note = ["The physical purpose of the weighted result is unresolved."]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

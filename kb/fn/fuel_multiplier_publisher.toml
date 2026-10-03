@@ -12,6 +12,7 @@ consumed later by 0004e974. Other physical mode names remain unresolved.""",
 ]
 level = "code"
 role = "driver"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "curated"

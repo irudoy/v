@@ -16,6 +16,7 @@ high byte.""",
 ]
 level = "code"
 role = "accessor"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

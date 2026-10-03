@@ -20,6 +20,7 @@ condition behind driver status code 1 is not recoverable from ECU code.""",
 ]
 level = "code"
 role = "monitor"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

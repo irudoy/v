@@ -12,6 +12,7 @@ family is unsigned, and both maps contain monotonic data.""",
 ]
 level = "code"
 role = "wrapper"
+block = "library/block"
 
 [interp]
 access = "explicit"

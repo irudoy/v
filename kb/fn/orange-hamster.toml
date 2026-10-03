@@ -17,6 +17,7 @@ coordinate ffff2772 remains unresolved; P feeds duty stage 000c2040.""",
 ]
 level = "code"
 role = "service"
+block = "cvtc_exhaust/block"
 
 [[ledger]]
 registry = "funcs"

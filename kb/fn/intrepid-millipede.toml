@@ -10,6 +10,7 @@ Adjacent entries are 4 bytes apart, exactly one SHLR/ROTCR pair.""",
 ]
 level = "code"
 role = "kernel"
+block = "library/block"
 
 [[ledger]]
 registry = "funcs"

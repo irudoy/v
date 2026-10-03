@@ -12,6 +12,7 @@ is present in the tracked sources.""",
 ]
 level = "code"
 role = "monitor"
+block = "vtc_monitors/block"
 
 [[ledger]]
 registry = "funcs"

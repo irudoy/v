@@ -13,6 +13,7 @@ engine-event path.""",
 ]
 level = "code"
 role = "handler"
+block = "scheduler/block"
 
 [[ledger]]
 registry = "funcs"

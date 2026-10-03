@@ -24,6 +24,7 @@ In stock JK08A the battery window is raw 137..199, 10.96..15.92 V.""",
 ]
 level = "code"
 role = "accessor"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

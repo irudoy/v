@@ -8,6 +8,7 @@ engine-speed byte ffff11ea to ffff2804 instead."""
 note = ["The diagnostic substitute equates the representation with rpm/12.5."]
 level = "code"
 role = "monitor"
+block = "engine_speed/block"
 
 [[ledger]]
 registry = "funcs"

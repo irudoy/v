@@ -13,6 +13,7 @@ output.""",
 ]
 level = "code"
 role = "dispatch"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

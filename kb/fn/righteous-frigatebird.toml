@@ -26,6 +26,7 @@ quantities of the products are unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

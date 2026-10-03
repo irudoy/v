@@ -6,6 +6,7 @@ fixed closed-reference fallbacks according to channel status masks."""
 note = ["The selected word is the regulator feedback input."]
 level = "code"
 role = "selector"
+block = "throttle_servo/block"
 
 [[ledger]]
 registry = "curated"

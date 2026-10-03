@@ -10,6 +10,7 @@ full-scale correction in 0003c408.""",
 ]
 level = "code"
 role = "service"
+block = "analog_inputs/block"
 
 [[ledger]]
 registry = "funcs"

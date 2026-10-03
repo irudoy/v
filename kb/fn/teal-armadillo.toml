@@ -10,6 +10,7 @@ surrounding catalyst-monitor subsystem.""",
 ]
 level = "code"
 role = "monitor"
+block = "o2_catalyst/block"
 
 [[diagnostic]]
 id = "catalyst-result-dispatch-p0420"

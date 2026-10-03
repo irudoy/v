@@ -10,6 +10,7 @@ pass/fail label is assigned to FUN 000b4ef8 here.""",
 ]
 level = "code"
 role = "monitor"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

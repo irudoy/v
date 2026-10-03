@@ -1,0 +1,9 @@
+title = "Switch inputs"
+direction = "input"
+block = "discrete_inputs/block"
+peripheral = "Port H data register PHDR and PLDR bit 4"
+summary = """
+PHDR bits, the park/neutral input on bit 4 included, form packed input byte \
+0xFFFF1164; PLDR bit 4 is debounced into 0xFFFF4185 bit 7."""
+functions = ["pearl-malamute/fn"]
+order = 9

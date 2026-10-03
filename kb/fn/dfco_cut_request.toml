@@ -18,6 +18,7 @@ result confirms that distinction in warm moving operation.""",
 ]
 level = "code"
 role = "accessor"
+block = "dfco/block"
 
 [[ledger]]
 registry = "curated"

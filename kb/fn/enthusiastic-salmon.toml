@@ -13,6 +13,7 @@ delay in 2 crank degrees per count read by FUN 000521a8.""",
 ]
 level = "code"
 role = "accessor"
+block = "fuel_quantity/block"
 
 [[ledger]]
 registry = "funcs"

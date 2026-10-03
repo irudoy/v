@@ -8,6 +8,7 @@ lookup 00073628 compares it with the 0x18716 points after the same \
 multiplication, and 00073a44 divides the doubled trustful opening area by \
 it."""
 level = "code"
+block = "engine_speed/block"
 unit = "rpm/3.125"
 
 [logparam]

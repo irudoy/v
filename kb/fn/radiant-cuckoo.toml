@@ -25,6 +25,7 @@ the time base of the rise is not established.""",
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

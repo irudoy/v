@@ -12,6 +12,7 @@ semantics.""",
 ]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "curated"

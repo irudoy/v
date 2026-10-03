@@ -11,6 +11,7 @@ at entry 63. Type 4 is intentionally excluded.""",
 ]
 level = "code"
 role = "driver"
+block = "can_network/block"
 
 [[ledger]]
 registry = "funcs"

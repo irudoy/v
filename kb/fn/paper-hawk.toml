@@ -9,6 +9,7 @@ unreachable in the stock image.""",
 ]
 level = "code"
 role = "dispatch"
+block = "sensor_monitors/block"
 
 [[ledger]]
 registry = "funcs"

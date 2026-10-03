@@ -11,6 +11,7 @@ physical time constant remains unresolved.""",
 ]
 level = "code"
 role = "service"
+block = "airflow_load/block"
 
 [[ledger]]
 registry = "funcs"

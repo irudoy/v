@@ -35,6 +35,7 @@ against dashboard recordings with a fitted re-arm wait in snapshots \
 ]
 level = "code"
 role = "accessor"
+block = "cvtc_intake/block"
 
 [[ledger]]
 registry = "funcs"

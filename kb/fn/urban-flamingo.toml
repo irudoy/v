@@ -10,6 +10,7 @@ scales are not established.""",
 ]
 level = "code"
 role = "monitor"
+block = "o2_catalyst/block"
 
 [[ledger]]
 registry = "funcs"

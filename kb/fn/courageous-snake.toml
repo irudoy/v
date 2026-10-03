@@ -1,6 +1,7 @@
 summary = "Component where ffff248b selects a map path versus constant 0x8000."
 level = "code"
 role = "accessor"
+block = "torque_request/block"
 
 [[ledger]]
 registry = "funcs"

@@ -1,4 +1,5 @@
 role = "service"
+block = "library/block"
 contract = """
 Arithmetic right shift by 10: r0 = (int32)r0 >> 10, signed division by 1024 \
 rounded down. The shlr8/swap.w/exts.b/xtrct sequence restores the sign \

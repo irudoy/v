@@ -24,6 +24,7 @@ service-0x30 arrays.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "curated"

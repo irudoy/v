@@ -12,6 +12,7 @@ remains unnamed.""",
 ]
 level = "code"
 role = "dispatch"
+block = "dtc_manager/block"
 
 [[ledger]]
 registry = "curated"

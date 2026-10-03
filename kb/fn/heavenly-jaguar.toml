@@ -18,6 +18,7 @@ rely on the shape of the calibration.""",
 ]
 level = "code"
 role = "accessor"
+block = "temperatures/block"
 
 [[ledger]]
 registry = "funcs"

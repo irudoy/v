@@ -11,6 +11,7 @@ M107-101, but the exact JK08A ADC channel and MCU pin are not traced.""",
 ]
 level = "code"
 role = "driver"
+block = "cruise/block"
 
 [[ledger]]
 registry = "funcs"

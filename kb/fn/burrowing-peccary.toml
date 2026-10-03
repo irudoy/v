@@ -5,6 +5,7 @@ nonzero ffff16b1, saturated at 255, and written to ffff1765."""
 note = ["The physical quantity of the result is unresolved."]
 level = "code"
 role = "accessor"
+block = "idle_air/block"
 
 [[ledger]]
 registry = "funcs"

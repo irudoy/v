@@ -14,6 +14,7 @@ hold byte 5 constant through each shift event and at 0x78 outside them.""",
 ]
 level = "code"
 role = "handler"
+block = "can_network/block"
 
 [[ledger]]
 registry = "curated"

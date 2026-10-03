@@ -1,0 +1,8 @@
+title = "Knock detection"
+stage = "estimation/stage"
+summary = """
+ADC2 DMAC acquisition of the knock signal, per-channel slice thresholds, the \
+knock monitor, and the knock-circuit monitor surfaces."""
+specs = ["defs/JK08A.knock-detection.md"]
+home = "7mfk"
+order = 11

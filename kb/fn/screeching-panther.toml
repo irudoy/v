@@ -12,6 +12,7 @@ quantity and engineering scale of the coordinates are unresolved.""",
 ]
 level = "code"
 role = "accessor"
+block = "unattributed/block"
 
 [[ledger]]
 registry = "funcs"
