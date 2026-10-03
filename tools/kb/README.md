@@ -236,7 +236,7 @@ diff instead of writing; the write draws the generated names of the diff
 anew. A batch renames a meaning after its other operations: an operation on a
 meaning that an earlier operation renames is refused. `set` also names a
 designed entity that an earlier `new` of the batch starts, so a batch starts
-a field with its keys, whose empty file fails the checks.
+a field or a chain with its keys, whose empty file fails the checks.
 
 - The file of a meaning without one starts with the entry of the home symbol,
   so that the file joins the meaning that the registries state. The row of
@@ -259,7 +259,12 @@ a field with its keys, whose empty file fails the checks.
   symbols, statuses, links, analogs, and former names of a meaning and the
   layout, address, and names of a symbol entry, are refused. A feature takes
   every key besides its targets, as the wire constants and `profiles` of
-  `can_telemetry`.
+  `can_telemetry`. Another designed entity takes every key of its schema,
+  including the `step` array of a chain. Setting that array replaces all
+  held steps in the stated order and preserves repeated calls in `via`.
+  A batch can replace steps and add their typed conditions together. The
+  model checks refuse invalid references, cycles, or an empty chain before
+  either the entity files or the graph are written.
 - `kb bind <meaning> <layout>:<address>` records the evidence of the
   candidate that `match.search` finds at the address, from the symbol on the
   layout of `--from`, the symbol that the reference names, or the home

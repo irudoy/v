@@ -605,8 +605,7 @@ class Change:
             if layout is None and kind == "feature":
                 return document, "target", f"{slug}/{kind}"
             if layout is None:
-                return document, {name: spec for name, spec in store.DESIGNED[kind].keys
-                                  if not isinstance(spec, store.Array)}, f"{slug}/{kind}"
+                return document, dict(store.DESIGNED[kind].keys), f"{slug}/{kind}"
             if kind != "feature":
                 raise KbError(f"a layout names a target of a feature; {slug}/{kind} is a {kind}",
                               code=2)

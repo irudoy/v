@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Derive, validate, and query the firmware architecture model.
 
-`defs/<ROM>.architecture.toml` is the curated source. It places every reviewed
-function in one functional block, declares the peripheral endpoints, and binds
-calculation chains whose steps carry an effect and a sign. Nodes, semantics,
-confidence, and directed relations come from the tracked ledgers on every
-load, so the model follows the ledgers without a separate regeneration step.
+`defs/JK08A.architecture.toml` projects the owned architecture entities. This
+module validates that view against the ledger projections and supplies node
+and edge helpers. The view places reviewed functions, declares peripheral
+endpoints, and binds calculation chains with effects and signs. Layout
+atlases read actual symbols and relations from kb through `graph_atlas.py`.
 """
 
 from __future__ import annotations

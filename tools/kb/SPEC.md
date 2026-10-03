@@ -1393,7 +1393,11 @@ references.
   `target`, since its file states the facts of the feature under keys of its
   own, as the wire constants, `profiles`, and `contexts` of `can_telemetry`;
   a feature target takes every key besides its layout; another designed
-  entity takes the keys of its schema besides its arrays of tables. A key
+  entity takes the keys of its schema, including arrays of tables. A chain's
+  `step` array replaces the held steps in the stated order, with repeated
+  calls in `via` preserved. A batch can replace steps and their meanings'
+  conditions together, and the chain checks run before any file is written.
+  A key
   outside those, a value against its schema, and an unset key that the table
   lacks are refused.
 - `kb new <kind> <layout>:<address>` starts the file of a meaning with the
@@ -1404,9 +1408,11 @@ references.
   name of its row of `kb/names.csv`, whose other names become `former`
   references, or draws one. `kb new <kind> <slug>` starts the empty file of a
   designed entity of a kind that the store holds, from stage 3 a `feature`
-  and from stage 4 a `signal` and a `field`. The empty file of a field fails
-  the `fields` and `widths` checks, so a batch starts a field with `new` and
-  a `set` of its keys.
+  and from stage 4 a `signal` and a `field`; stage 6 adds a `stage`, `block`,
+  `endpoint`, and `chain`. The empty file of a field fails the `fields` and
+  `widths` checks, and that of a chain fails `chains`, so a batch starts either
+  entity with `new` and a `set` of its keys, including the chain's output and
+  steps.
 - `kb absent` requires evidence.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
