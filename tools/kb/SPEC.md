@@ -748,6 +748,22 @@ Chains:
 - A step `note` states only the arithmetic that relates `to` to `from`.
   Conditions and alternatives are links of the meanings (`selector`, `copy`,
   `threshold`), so queries reach them.
+  `[chains.arithmetic]` of `tools/kb/config.toml` declares address, number,
+  and name tokens; initially available variables; memory readers; unary
+  operators; binary operators in increasing precedence; and the exact arity
+  of each arithmetic function. A note holds equations separated by `;`.
+  An equation assigns an address or a variable to an expression; `=` may
+  continue with an equivalent expression. A temporary variable is available
+  after its equation, within that note. Expressions admit numeric constants,
+  addresses, available variables, indexed reads, configured functions and
+  operators, and parentheses. Text conditions, comparisons, units, unknown
+  variables, and malformed expressions fail. Syntax grants no evidence or
+  claim level and does not evaluate an equation.
+  During the stage-6 migration, `kb audit --section chain-notes` reports
+  rejected notes with their exact text and step binding. A write refuses a
+  new rejection, including a change to a held note, its ends, ordered calls,
+  effect, or sign. The mandatory `chains` gate retains its
+  structural checks until every held note satisfies the arithmetic contract.
 - `output` is a reference to the meaning the chain computes.
 
 Signals:
@@ -1297,7 +1313,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb log <ref> [<read options>]` | Full former references of the entity's symbol entries and recorded profile address corrections, with their Git commits | 2 |
 | `kb raw <ref> [<read options>]` | The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included | 2 |
 | `kb cypher <query> [--param <name>=<value>]... [<read options>]` | A read-only Cypher query over the working tree's instance after the fingerprint check | 2 |
-| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check until it becomes a gate ([Levels](#71-levels)). `--section` restricts the audit to the named sections, which it alone computes | 2 |
+| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check ([Levels](#71-levels)); `chain-notes` outside the configured arithmetic grammar during the stage-6 migration. `--section` restricts the audit to the named sections, which it alone computes | 2 |
 | `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
 | `kb check [--changed] [--only <check>]...` | The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass | 1 |
 
@@ -1339,8 +1355,9 @@ Every write:
 2. builds the change in memory and compiles the model with the changed files
    in place of those on disk;
 3. refuses the whole change with exit code 3 when the result has an issue of
-   a model check of [Checks](#13-checks) or a registry disagreement of `kb
-   audit` that the working tree lacks, or contradicts what an operation
+   a model check of [Checks](#13-checks), a registry disagreement, or a
+   `chain-notes` rejection of `kb audit` that the working tree lacks, or
+   contradicts what an operation
    expects of it, such as the meaning of a moved symbol, and prints those
    issues and contradictions;
 4. writes the files in canonical form through temporary files and renames,

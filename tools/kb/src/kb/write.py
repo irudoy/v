@@ -59,7 +59,8 @@ become `former` references.
 
 `plan` compiles the model with the rendered files in place of those on disk
 and refuses the change with exit code 3 when the result has an issue of a
-model check or a registry disagreement that the working tree lacks, or when
+model check, registry disagreement, or chain-note rejection that the working
+tree lacks, or when
 it contradicts an expectation of an operation, such as a moved symbol that a
 registry keeps in its former meaning or names. `apply` takes the lock,
 resolves the references on a current graph, plans, writes the files through
@@ -1537,15 +1538,16 @@ class Change:
 
 
 def _issues(model):
-    """{(check, subject, message): issue} of the model checks and the registry
-    disagreements of a model, computed once per model."""
+    """{(check, subject, message): issue} of model checks, disagreements,
+    and rejected chain notes, computed once per model."""
     if model not in _CHECKED:
         found = {}
         for check in checks.CHECKS.values():
             for issue in check(model):
                 found.setdefault((issue.check, issue.subject, issue.message), issue)
-        for issue in checks.audit(model, ("disagreements",))["disagreements"]:
-            found.setdefault(("audit", issue.subject, issue.message), issue)
+        for section, issues in checks.audit(model, ('disagreements', 'chain-notes')).items():
+            for issue in issues:
+                found.setdefault((section, issue.subject, issue.message), issue)
         _CHECKED[model] = found
     return _CHECKED[model]
 

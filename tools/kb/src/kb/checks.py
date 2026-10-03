@@ -6,6 +6,7 @@ while reading a registry under the check that owns them.
 """
 
 from collections import Counter, defaultdict
+import hashlib
 from pathlib import Path
 import re
 
@@ -913,7 +914,7 @@ NOTES = {
 }
 
 
-AUDIT_SECTIONS = ("disagreements", "names", "untyped", "levels")
+AUDIT_SECTIONS = ("disagreements", "names", "untyped", "levels", "chain-notes")
 # The model issues that each section reports.
 AUDIT_ISSUES = {"audit": "disagreements", "untyped": "untyped"}
 
@@ -942,4 +943,34 @@ def audit(model, sections=AUDIT_SECTIONS):
         from kb import levels
 
         found["levels"].update(levels.check(model))
+    if 'chain-notes' in found:
+        found['chain-notes'].update(chain_notes(model))
     return {section: sorted(issues) for section, issues in found.items()}
+
+
+def chain_notes(model):
+    """Notes awaiting arithmetic-only migration, without changing levels.
+
+    The exact rejected text and the step binding enter each issue. A changed
+    note or flow cannot reuse the held rejection in differential write checks.
+    """
+    from kb.arithmetic import Grammar
+
+    grammar = Grammar(model.config)
+    found = []
+    for (kind, _), entity in model.entities.items():
+        if kind != 'chain':
+            continue
+        for index, step in enumerate(entity.steps, 1):
+            note = step.get('note')
+            if note is None:
+                continue
+            failure = grammar.validate(note)
+            if failure:
+                binding = repr(tuple(step.get(field) for field in
+                                     ('from', 'to', 'via', 'effect', 'sign')))
+                digest = hashlib.sha256(binding.encode()).hexdigest()[:16]
+                found.append(Issue('chain-notes', ';'.join(sorted(entity.sources)),
+                                   f'{entity.key} step {index}',
+                                   f'note {note!r}: {failure}; step binding {digest}'))
+    return found

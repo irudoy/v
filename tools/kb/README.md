@@ -77,8 +77,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   their generated view, positive order values, and repository-local named
   specification files. `chains` verifies symbols on the home layout,
   ordered function paths, effects, signs, a destination output, unique step
-  pairs, acyclic flow, and text notes. The migration of prose conditions and the
-  arithmetic-only note grammar remain stage-6 work.
+  pairs, acyclic flow, and text notes. `kb audit --section chain-notes`
+  checks arithmetic against `[chains.arithmetic]` of `config.toml`; writes
+  refuse a new rejected note or a change to its exact text or step binding
+  (ends, ordered calls, effect, or sign). The complete migration of prose conditions and the
+  arithmetic requirement of the mandatory `chains` gate remain stage-6 work.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -94,7 +97,7 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   query parameter, `--json` prints the records as JSON without a budget.
 - `kb instance up|down|status|prune` manages the graph instance of the working
   tree ([Graph](#graph)).
-- `kb audit` prints four sections: `disagreements`, where two registries
+- `kb audit` prints `disagreements`, where two registries
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
   that lack the keys of their evidence kind, under the registry that states
@@ -103,8 +106,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   each and the end of its chain, the `candidate` claims without evidence,
   the `code` and `silicon` claims without grounding, the `hardware` keys
   without a passing record, and the `arithmetic` equations that do not hold
-  (SPEC, section 7.1). `--section` computes only the named sections, and the
-  write commands compute only `disagreements`.
+  (SPEC, section 7.1); and `chain-notes`, notes outside the configured
+  arithmetic grammar, with their exact text and parse failure.
+  `--section` computes only the named sections. Write commands compare
+  `disagreements` and `chain-notes` with the working tree as well as the
+  mandatory model checks. An audit report does not change claim levels.
 - `kb code` shows the function whose L0 body holds a location
   `<layout>:<address>`, the function symbol that a reference names, or the
   symbol of a meaning on `--layout` or else on its home layout, and calls
@@ -849,6 +855,7 @@ files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
 | `kb.names` | `kb/names.csv`, the domain dictionary, and generated names |
 | `kb.compile` | The compiler from the tracked inputs, or from those with an overlay of changed files, to the model |
 | `kb.checks` | The model checks and the audit |
+| `kb.arithmetic` | Chain-note equations under the configured arithmetic grammar, without evaluation or stock-code grounding |
 | `kb.levels` | Claims, effective levels, grounding, and the `levels` section of the audit |
 | `kb.fingerprint` | Input paths, git blob hashes, and the fingerprint |
 | `kb.passes` | The inputs of the checks and the record of their passes, which `kb check --changed` compares |

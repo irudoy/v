@@ -496,7 +496,7 @@ def build_parser():
     cypher.set_defaults(handler=command_cypher)
 
     audit = commands.add_parser(
-        "audit", help="disagreements between registries and the levels of claims")
+        "audit", help="registry disagreements, claim levels, and chain arithmetic")
     audit.add_argument("--section", action="append", choices=checks.AUDIT_SECTIONS,
                        help="compute and print one section; repeatable")
     audit.set_defaults(handler=command_audit)

@@ -37,6 +37,7 @@ def replacement(document):
     step = copy.deepcopy(document['step'][0])
     first = step['via'][0]
     step['via'] = [first, document['step'][6]['via'][-1], first]
+    step['note'] = 'to = from'
     return {'output': step['to'], 'step': [step]}
 
 
@@ -179,3 +180,42 @@ def test_invalid_chain_prevents_condition_files_and_graph_writes(model):
     assert 'a chain needs ordered steps' in str(refused.value)
     written.assert_not_called()
     synced.assert_not_called()
+
+
+@pytest.mark.parametrize('note', [
+    'to = from while the gate is clear', 'to = min(from)',
+    'to = from; use alternate input', 'to = lookup(from, selected)',
+])
+def test_new_prose_and_malformed_arithmetic_refuse_the_complete_batch(model, document, note):
+    keys = replacement(document)
+    keys['step'][0]['note'] = note
+    with mock.patch.object(write.lock, 'held', return_value=contextlib.nullcontext()), \
+            mock.patch.object(write.graph, 'fresh',
+                              return_value=contextlib.nullcontext('session')), \
+            mock.patch.object(write, 'graph_resolver', side_effect=
+                              lambda session, base, root, log: write.model_resolver(base)), \
+            mock.patch.object(write.store, 'write') as written, \
+            mock.patch.object(write.graph, 'sync_held') as synced:
+        with pytest.raises(KbError) as refused:
+            write.apply([condition(), assign(keys)])
+    assert refused.value.code == 3
+    assert 'chain-notes' in str(refused.value)
+    assert repr(note) in str(refused.value)
+    written.assert_not_called()
+    synced.assert_not_called()
+
+
+def test_held_prose_remains_reported_without_blocking_an_unrelated_metadata_edit(model):
+    _, texts, result = plan(model, assign({'summary': 'A checked description of engine speed.'}))
+    assert tomllib.loads(texts[CHAIN_FILE])['step'] == store.load(repo.ROOT, CHAIN_FILE)['step']
+    assert not write.refusals(model, result)
+
+
+def test_a_changed_step_cannot_reuse_a_held_prose_rejection(model, document):
+    steps = copy.deepcopy(document['step'])
+    steps[0]['via'] = document['step'][3]['via']
+    with pytest.raises(KbError) as refused:
+        plan(model, assign({'step': steps}))
+    assert refused.value.code == 3
+    assert 'chain-notes' in str(refused.value)
+    assert 'engine_speed/chain step 1' in str(refused.value)

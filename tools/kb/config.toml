@@ -116,3 +116,36 @@ base = 1024
 # an entry that no longer reproduces.
 [writers]
 review = []
+
+# Arithmetic notation of chain notes. Binary groups run from the lowest
+# precedence to the highest. A function declares its exact operand count.
+# Other variable names require an earlier assignment in the same note.
+[chains.arithmetic]
+address = '[0-9a-f]{8}'
+number = '0[xX][0-9a-fA-F]+|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)'
+name = '[A-Za-z_][A-Za-z0-9_]*'
+variables = ['from', 'to', 'x', 'prev']
+readers = ['ROM8', 'ROM16', 'ROM32', 'RAM8', 'RAM16', 'RAM32']
+unary = ['+', '-', '~']
+binary = [['|'], ['^'], ['&'], ['<<', '>>'], ['+', '-'], ['*', '/', '%']]
+
+[chains.arithmetic.functions]
+floor = 1
+trunc0 = 1
+abs = 1
+min = 2
+max = 2
+clamp = 3
+median = 3
+uint8 = 1
+uint16 = 1
+uint32 = 1
+int8 = 1
+int16 = 1
+int32 = 1
+sat_u8 = 1
+sat_u16 = 1
+sat_s8 = 1
+sat_s16 = 1
+lookup = 2
+interpolate = 3
