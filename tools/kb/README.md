@@ -392,7 +392,10 @@ It refuses the conversion with exit code 3 when the two models differ beyond
 the rules of the registry, when the files add an issue of a model check or a
 registry disagreement, or when a projection of the registry differs from its
 file; otherwise it writes the files and `kb/names.csv` and loads the result
-into the graph. On a converted tree it writes nothing. The rules of the
+into the graph. On a converted tree it writes nothing. Before the stage 5
+conversion, `uv run python -m kb.ledger_projection --normalize [--dry-run]`
+orders complete evidence token texts lexically, retains every token, and
+compares all model facts before writing the CSV files. The rules of the
 interpolation registries:
 
 - The meaning of every symbol that the registries state takes `[interp]`,

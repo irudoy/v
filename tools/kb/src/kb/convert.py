@@ -1231,7 +1231,10 @@ def _value(model, value):
             held = model.symbols.get(value["kernel"])
             if held is not None and held.meaning is not None:
                 value = {**value, "kernel": held.meaning.key}
-        return tuple(sorted((key, _value(model, item)) for key, item in value.items()))
+        return tuple(sorted((key, _value(model, frozenset(_value(model, entry)
+                                                        for entry in item))
+                             if key == "evidence" and isinstance(item, (list, tuple))
+                             else _value(model, item)) for key, item in value.items()))
     if isinstance(value, (list, tuple, set, frozenset)):
         items = tuple(_value(model, item) for item in value)
         return tuple(sorted(items, key=repr)) if isinstance(value, (set, frozenset)) else items

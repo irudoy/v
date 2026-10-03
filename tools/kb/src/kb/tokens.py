@@ -128,6 +128,15 @@ def parse(text):
     return tokens
 
 
+def canonical(text):
+    """One evidence cell, ordered lexically by complete token text.
+
+    The order does not group or discard claims. Values, offsets, target
+    properties, and process tokens remain exactly those that `parse` reads.
+    """
+    return "; ".join(sorted(token.text for token in parse(text)))
+
+
 def evidence(token, layout, manual_prefixes):
     """The evidence item of a terminal token, or None for a process token.
 

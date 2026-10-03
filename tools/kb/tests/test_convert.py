@@ -46,6 +46,14 @@ class ConvertTest(unittest.TestCase):
             "symbols ('7mfk:00026390', 'fn'): expected None, found ('c',)"])
         self.assertEqual(convert.differences(expected, expected), [])
 
+    def test_nested_evidence_is_a_set_but_other_sequences_keep_their_order(self):
+        first = {"kind": "l0", "at": "7mfk:00031118"}
+        second = {"kind": "rom-bytes", "at": "7mfk:0000991a", "value": "02"}
+        self.assertEqual(convert._value(None, {"evidence": [first, second]}),
+                         convert._value(None, {"evidence": [second, first]}))
+        self.assertNotEqual(convert._value(None, {"step": [first, second]}),
+                            convert._value(None, {"step": [second, first]}))
+
 
 class NativeNoteConversionTest(unittest.TestCase):
     def test_equivalent_image_notes_keep_the_owner_paragraphs(self):

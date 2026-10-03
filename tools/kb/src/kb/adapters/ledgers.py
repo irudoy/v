@@ -14,6 +14,7 @@ profile states it (`telemetry_units` of the stash).
 
 import csv
 import importlib.util
+import io
 from pathlib import Path
 import sys
 
@@ -50,7 +51,10 @@ def inputs(root):
             for path in (*PATHS.values(), DTC_DECODER, _dtc_decoder(root).LAYOUTS)]
 
 
-def rows(root, name):
+def rows(root, name, overlay=None):
+    if overlay and PATHS[name] in overlay:
+        yield from csv.DictReader(io.StringIO(overlay[PATHS[name]]))
+        return
     with (root / PATHS[name]).open(newline="", encoding="utf-8") as source:
         yield from csv.DictReader(source)
 
@@ -92,7 +96,7 @@ def declare(b, root):
                     b.symbol(key.layout, key.kind, key.address, src, evidence=[item])
 
     src = PATHS["funcs"].as_posix()
-    for row in rows(root, "funcs"):
+    for row in rows(root, "funcs", b.overlay):
         key = b.symbol(LAYOUT, "fn", _address(row["addr"]), src)
         b.props(key, {
             "role": row["role"],
@@ -106,7 +110,7 @@ def declare(b, root):
 
     src = PATHS["vars"].as_posix()
     units = b.stash.setdefault(UNITS, [])
-    for row in rows(root, "vars"):
+    for row in rows(root, "vars", b.overlay):
         address = _address(row["addr"])
         kind = b.data_kind(LAYOUT, address)
         if kind is None:
@@ -122,7 +126,7 @@ def declare(b, root):
         record(key, row, ("evidence",), src)
 
     src = PATHS["findings"].as_posix()
-    for row in rows(root, "findings"):
+    for row in rows(root, "findings", b.overlay):
         key = b.symbol(LAYOUT, "tbl", _address(row["addr"]), src)
         b.props(key, {
             "access": row["family"] or "explicit",
@@ -143,7 +147,7 @@ def declare(b, root):
             pending.append((key, "accessor", _address(row["accessor"]), src))
 
     src = PATHS["axes"].as_posix()
-    for row in rows(root, "axes"):
+    for row in rows(root, "axes", b.overlay):
         address = _address(row["addr"])
         call = native.census_call(LAYOUT, root, {address})
         key = b.symbol(LAYOUT, "axis", address, src, evidence=[call] if call else [])
@@ -163,7 +167,7 @@ def declare(b, root):
     tables = dtc_projection.canonical_tables(root)
     image_size = len(derive.image_bytes(b.layouts[LAYOUT], root))
     seen = set()
-    for row in rows(root, "dtc"):
+    for row in rows(root, "dtc", b.overlay):
         try:
             dtc_projection.canonical_evidence(row, tables, image_size)
             index = _integer(row["index"])
@@ -187,7 +191,7 @@ def declare(b, root):
         record(key, row, ("evidence",), src, typed=True)
 
     src = PATHS["diagnostic-bindings"].as_posix()
-    for row in rows(root, "diagnostic-bindings"):
+    for row in rows(root, "diagnostic-bindings", b.overlay):
         address = _address(row["firmware_addr"])
         kinds = LEGACY_KINDS.get(row["firmware_label"])
         if kinds is None:

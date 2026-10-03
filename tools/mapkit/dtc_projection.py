@@ -118,8 +118,10 @@ def canonical_evidence(row, tables, image_size):
         raise DtcProjectionError("evidence values are not whole hexadecimal bytes") from error
     expected = ((record, RECORD_SIZE), (tables.attribute_pointer_address(index), POINTER_SIZE),
                 (attribute, 2))
-    if [(address, len(data)) for address, data in spans] != list(expected):
+    if sorted((address, len(data)) for address, data in spans) != sorted(expected):
         raise DtcProjectionError("evidence must cover the complete descriptor, pointer slot, and attribute")
+    by_address = dict(spans)
+    spans = [(address, by_address[address]) for address, _ in expected]
     if dtc_code(spans[0][1]) != row["dtc"]:
         raise DtcProjectionError(f"dtc {row['dtc']} differs from descriptor evidence")
     if int.from_bytes(spans[1][1], "big") != attribute:

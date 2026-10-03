@@ -2335,7 +2335,9 @@ that no registry states.
 ### 20.2 JK08A ledgers
 
 Stage 5. Before the conversion, one commit rewrites every evidence cell in
-the canonical token order of the projection. The regenerated ledgers then
+the canonical token order of the projection: complete token texts in lexical
+order, separated by `; `. The normalization retains every token and compares
+all model facts before writing. The regenerated ledgers then
 equal the originals except for removed `wave` tokens and for `site` tokens,
 which the projection emits from L0 for every relation that L0 verifies. The
 stage lists both differences, and the consumers of the ledgers pass their

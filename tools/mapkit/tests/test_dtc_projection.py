@@ -1,6 +1,7 @@
 """The DTC registry projection must be reproducible from the exact images."""
 
 import io
+from itertools import permutations
 from pathlib import Path
 from unittest.mock import mock_open, patch
 
@@ -81,13 +82,28 @@ def test_canonical_evidence_accepts_0x_without_losing_leading_zeroes(source):
     assert [len(raw) for _, raw in spans] == [12, 4, 2]
 
 
+def test_canonical_evidence_binds_spans_by_address_in_every_token_order(source):
+    rows, data = source
+    row = next(row for row in rows if row["index"] == "17")
+    tables = dtc_projection.canonical_tables()
+    expected = dtc_projection.canonical_evidence(row, tables, len(data))
+    for parts in permutations(row["evidence"].split(";")):
+        assert dtc_projection.canonical_evidence(
+            {**row, "evidence": ";".join(parts)}, tables, len(data)) == expected
+    parts = row["evidence"].split(";")
+    with pytest.raises(dtc_projection.DtcProjectionError, match="complete"):
+        dtc_projection.canonical_evidence(
+            {**row, "evidence": ";".join([parts[0], parts[0], parts[2]])},
+            tables, len(data))
+
+
 @pytest.mark.parametrize("part", range(3))
 @pytest.mark.parametrize("mutation", ("short", "address", "missing"))
 def test_canonical_evidence_requires_every_complete_expected_span(part, mutation, source):
     rows, data = source
     row = dict(next(row for row in rows if row["index"] == "17"))
     parts = row["evidence"].split(";")
-    address, value = parts[part].removeprefix("rom_const:").split("=")
+    address, value = parts[part].strip().removeprefix("rom_const:").split("=")
     if mutation == "short":
         parts[part] = f"rom_const:{address}={value[:-2]}"
     elif mutation == "address":
@@ -123,9 +139,11 @@ def test_canonical_evidence_decodes_the_full_packed_code(prefix, source):
     rows, data = source
     row = dict(next(row for row in rows if row["index"] == "17"))
     parts = row["evidence"].split(";")
-    record = bytearray.fromhex(parts[0].split("=")[1])
+    record_part = next(index for index, part in enumerate(parts)
+                       if part.strip().startswith(f"rom_const:{row['record_addr']}="))
+    record = bytearray.fromhex(parts[record_part].split("=")[1])
     record[6] = ("PCBU".index(prefix) << 6) | 0x04
-    parts[0] = f"rom_const:{row['record_addr']}={record.hex()}"
+    parts[record_part] = f"rom_const:{row['record_addr']}={record.hex()}"
     row.update(dtc=f"{prefix}0420", evidence=";".join(parts))
     tables = dtc_projection.canonical_tables()
     assert dtc_projection.canonical_evidence(row, tables, len(data))[0][1] == record
