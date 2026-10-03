@@ -35,7 +35,7 @@ FEED_KEYS = frozenset({"key", "name", "format", "minimum", "maximum", "step"})
 FEED_KEY = re.compile(r"[a-z][a-z0-9_]*")
 # The spelling of a scale unit on a display; a candidate conversion adds an
 # asterisk.
-DISPLAY_UNITS = {"percent": "%", "ratio": ""}
+DISPLAY_UNITS = {"percent": "%", "ratio": "", "count": "cnt"}
 
 
 def is_producer_restart(previous_tick16, tick16):

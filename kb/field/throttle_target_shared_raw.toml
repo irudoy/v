@@ -8,12 +8,15 @@ page = 8
 offset = 0x1
 
 [dashboard]
-label = "Shared throttle target"
-digits = 2
+label = "Shared area-domain count"
+digits = 0
 group = "Throttle"
 panel = "Torque and requests"
 panel_label = "Throttle area request"
 order = 40
 description = """
-Target opening area of both throttle bodies, candidate 0.0008 cm2 per count; \
-the channel targets derive from it."""
+A shared unsigned area-domain target count used by the two channel-target \
+conversions. Displayed in stored counts. Candidate physical target opening \
+area at x*0.0008 cm2 for the shared throttle-body model. The count-domain \
+role is established. The proposed geometric coefficient and physical \
+aggregation remain unresolved rather than silently removed."""

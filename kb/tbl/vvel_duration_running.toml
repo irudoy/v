@@ -8,10 +8,6 @@ home = "jk78c"
 cols = 16
 rows = 1
 storage = "uint16"
-unit = "deg"
-scale = "x*0.005"
-to_raw = "x/0.005"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Running"
@@ -29,12 +25,20 @@ Mode 15 duration target of the VVEL resolver: the normal running pair. The \
 resolver interpolates it by engine speed and scales the count by the float \
 literal 0.005."""
 note = """
-Read by the resolver FUN_00062FAC at callsite 0x63142 and by FUN_00063CD4 at \
-0x63D1C through the 16-point uint16 leaf 0x2AF88; the 0.005 factor is the \
-float literal 0x3BA3D70A at 0x63404. The resolver stores the value in pair \
-14 of its thirty-float output, the slot that the JK78C resolver FUN_000564A4 \
-and the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair. Stock bytes \
-are identical to 1ND0A 0x000171C2; the unit of the scaled duration is a \
+Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
+proposed editor-grid inverse x/0.005. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
+physical duration unit. The float literal is a binary value described by its \
+nominal decimal factor, not a measurement of degrees. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by the \
+resolver FUN_00062FAC at callsite 0x63142 and by FUN_00063CD4 at 0x63D1C \
+through the 16-point uint16 leaf 0x2AF88; the 0.005 factor is the float \
+literal 0x3BA3D70A at 0x63404. The resolver stores the value in pair 14 of \
+its thirty-float output, the slot that the JK78C resolver FUN_000564A4 and \
+the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair. Stock bytes are \
+identical to 1ND0A 0x000171C2; the unit of the scaled duration is a \
 vendor-catalog candidate."""
 
 [[symbol.evidence]]
@@ -52,18 +56,34 @@ layout = "1nd"
 address = "000171c2"
 note = [
     """
-1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by \
-FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor \
-is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points \
-differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the \
-scaled duration is a vendor-catalog candidate.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.005 \
+deg; proposed editor-grid inverse x/0.005. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
+physical duration unit. The float literal is a binary value described by its \
+nominal decimal factor, not a measurement of degrees. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the \
+16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal \
+0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C \
+curve 0x00016BB4 at the same axis; the unit of the scaled duration is a \
+vendor-catalog candidate.""",
     """
-1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by \
-FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor \
-is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points \
-differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the \
-scaled duration is a vendor-catalog candidate. 1ND3B shares the 1ND0A code \
-layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.005 \
+deg; proposed editor-grid inverse x/0.005. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
+physical duration unit. The float literal is a binary value described by its \
+nominal decimal factor, not a measurement of degrees. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the \
+16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal \
+0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C \
+curve 0x00016BB4 at the same axis; the unit of the scaled duration is a \
+vendor-catalog candidate. 1ND3B shares the 1ND0A code layout and its stock \
+bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -80,11 +100,19 @@ at = "1nd:0005fe5c"
 layout = "jk78c"
 address = "00016bb4"
 note = """
-Read by the resolver FUN_000564A4 at callsite 0x5658C and by FUN_00056DCA at \
-0x56E1E, both through the 16-point uint16 wrapper 0x28320 indexed by \
-0xFFFF11A6 (3.125 RPM per count). The 0.005 factor is the float literal \
-0x3BA3D70A at 0x56690; the unit of the scaled duration is a vendor-catalog \
-candidate. Mode assignment and selector logic are in JK78C.vvel.md."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
+proposed editor-grid inverse x/0.005. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
+physical duration unit. The float literal is a binary value described by its \
+nominal decimal factor, not a measurement of degrees. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by the \
+resolver FUN_000564A4 at callsite 0x5658C and by FUN_00056DCA at 0x56E1E, \
+both through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6 \
+(3.125 RPM per count). The 0.005 factor is the float literal 0x3BA3D70A at \
+0x56690; the unit of the scaled duration is a vendor-catalog candidate. Mode \
+assignment and selector logic are in JK78C.vvel.md."""
 
 [[symbol.evidence]]
 kind = "l0"

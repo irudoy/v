@@ -37,7 +37,7 @@ TARGETS = {
 
 JK78C_MAP_ADDRESSES = {
     "Map 1 - Fuel Compensation - Main - Default": "0x09EBA",
-    "Map 1 - Fuel Compensation - Main - Alternate": "0x09FBA",
+    "Map 1 - Fuel Compensation - Main - Alternate [stored count]": "0x09FBA",
     "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x09040",
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x16BF4",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x137E8",
@@ -50,7 +50,7 @@ JK78C_MAP_ADDRESSES = {
 ONE_ND_MAP_ADDRESSES = {
     "MAF Factor": "0x08939",
     "Map 1 - Fuel Compensation - Main - Default": "0x0A1C0",
-    "Map 1 - Fuel Compensation - Main - Alternate": "0x0A2C0",
+    "Map 1 - Fuel Compensation - Main - Alternate [stored count]": "0x0A2C0",
     "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x091D2",
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x17202",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x13C1A",
@@ -176,16 +176,16 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert len(tables) == 200
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
-    assert tables["Map 1 - Ignition Timing Surface - Hot Coolant"].get(
+    assert tables["Map 1 - Ignition Timing Surface - Hot Coolant [stored count]"].get(
         "storageaddress"
     ) == "0x0A10A"
-    assert tables["Map 1 - Ignition Timing Surface - Cold Coolant"].get(
+    assert tables["Map 1 - Ignition Timing Surface - Cold Coolant [stored count]"].get(
         "storageaddress"
     ) == "0x0A20A"
-    hot_slot = tables["Map 3 - Ignition Timing Surface - Hot Coolant"]
+    hot_slot = tables["Map 3 - Ignition Timing Surface - Hot Coolant [stored count]"]
     assert hot_slot.get("storageaddress") == "0x1D000"
     assert hot_slot.get("mask") == "7F"
-    assert tables["Map 3 - Ignition Timing Surface - Cold Coolant"].get(
+    assert tables["Map 3 - Ignition Timing Surface - Cold Coolant [stored count]"].get(
         "storageaddress"
     ) == "0x1D400"
     assert not any(
@@ -207,7 +207,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
     assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
     assert "Map 2 - Fuel Compensation - Main - Default" in tables
-    assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
+    assert "Map 2 - Fuel Compensation - Main - Alternate [stored count]" in tables
     assert tables["CAN Telemetry at Startup"].get(
         "storageaddress"
     ) == "0x1F803"
@@ -287,12 +287,12 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         # four 8x8 state-code surfaces; the canonical trio reaches only the
         # gated coordinator half.
         assert tables[
-            "Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+            "Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
         ].get("storageaddress") == "0x0A410"
-        assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1"].get(
+        assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1 [stored count]"].get(
             "storageaddress"
         ) == "0x0A510"
-        cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1"]
+        cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1 [stored count]"]
         assert cold_slot.get("storageaddress") == "0x132A00"
         assert cold_slot.get("mask") == "7F"
         assert not any(
@@ -304,16 +304,16 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         )
         assert not any("Knock-State Path Enable" in name for name in tables)
         assert tables[
-            "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+            "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
         ].get("storageaddress") == "0x0A6D0"
         state_slot = tables[
-            "Map 3 - Ignition Timing Surface - VVEL State Code 3"
+            "Map 3 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
         ]
         assert state_slot.get("storageaddress") == "0x1351C0"
         assert (state_slot.get("sizex"), state_slot.get("sizey")) == ("8", "8")
         assert state_slot.get("mask") == "7F"
         assert tables[
-            "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+            "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
         ].get("storageaddress") == "0x135540"
         assert sum(1 for name in tables if name.startswith("DTC ")) == 77
         assert tables["Rolling Launch Enable by Map"].get(
@@ -334,7 +334,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
         assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
         assert "Map 2 - Fuel Compensation - Main - Default" in tables
-        assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
+        assert "Map 2 - Fuel Compensation - Main - Alternate [stored count]" in tables
         assert (
             "Map 2 - Timing-State Addend - Warm DFCO Transition - Default"
             in tables
@@ -428,13 +428,13 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert tables["Map 1 - Fuel Compensation - Main - Default"].get(
         "storageaddress"
     ) == "0x0A0F4"
-    assert tables["Map 1 - Fuel Compensation - Main - Alternate"].get(
+    assert tables["Map 1 - Fuel Compensation - Main - Alternate [stored count]"].get(
         "storageaddress"
     ) == "0x0A1F4"
-    assert tables["VVEL Duration Target - Running"].get(
+    assert tables["VVEL Duration Target - Running [stored count]"].get(
         "storageaddress"
     ) == "0x17276"
-    assert tables["VVEL Duration Target - Hot Intake Idle"].get(
+    assert tables["VVEL Duration Target - Hot Intake Idle [stored count]"].get(
         "storageaddress"
     ) == "0x0E17C"
     assert tables["Base Fuel Schedule K-Value"].get("storageaddress") == "0x09170"
@@ -445,27 +445,27 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     )
     # The coordinator dispatches by the VVEL state code alone: two 16x16 and
     # four 8x8 surfaces are the switched ignition families.
-    hot = tables["Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"]
+    hot = tables["Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"]
     assert hot.get("storageaddress") == "0x0A344"
     assert hot.get("mask") == "7F"
-    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1"].get(
+    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1 [stored count]"].get(
         "storageaddress"
     ) == "0x0A444"
-    cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1"]
+    cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1 [stored count]"]
     assert cold_slot.get("storageaddress") == "0x13BA00"
     assert cold_slot.get("mask") == "7F"
-    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 3"].get(
+    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 3 [stored count]"].get(
         "storageaddress"
     ) == "0x0A544"
     assert tables[
-        "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+        "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
     ].get("storageaddress") == "0x0A604"
-    state_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 3"]
+    state_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 3 [stored count]"]
     assert state_slot.get("storageaddress") == "0x13E1C0"
     assert (state_slot.get("sizex"), state_slot.get("sizey")) == ("8", "8")
     assert state_slot.get("mask") == "7F"
     assert tables[
-        "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+        "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
     ].get("storageaddress") == "0x13E540"
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
@@ -487,7 +487,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
         "storageaddress"
     ) == "0x13C520"
     assert "Map 2 - Fuel Compensation - Main - Default" in tables
-    assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
+    assert "Map 2 - Fuel Compensation - Main - Alternate [stored count]" in tables
 
     xml_text = (DEFS / "1ME3B.xml").read_text(encoding="utf-8")
     assert "defs/JK08A-1ME3B.definition-addresses.csv" in xml_text

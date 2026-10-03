@@ -8,10 +8,6 @@ home = "jk78c"
 cols = 16
 rows = 1
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Start-up"
@@ -30,13 +26,20 @@ temperature byte, scaled by 0.05. With the request argument set, a weighted \
 mix of ROM16[0x94A8] and the eight-point curve 0x00017136 replaces the \
 curve."""
 note = """
-Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf \
-0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to \
-pairs 1 and 10 of its output. With the request argument set, FUN_0006375E \
-publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis \
-0x00017186, scaled by 0.05, where the weight w moves by ROM16[0x9474] / \
-32768 per pass within 0..1; JK78C ramps between two ROM words instead. Stock \
-bytes are identical to JK78C 0x00015E32."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
+startup selector do not establish the ordinate unit. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by \
+FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf 0x2AF88; \
+the resolver FUN_00062FAC copies the result from 0xFFFEF468 to pairs 1 and \
+10 of its output. With the request argument set, FUN_0006375E publishes w * \
+ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled by \
+0.05, where the weight w moves by ROM16[0x9474] / 32768 per pass within \
+0..1; JK78C ramps between two ROM words instead. Stock bytes are identical \
+to JK78C 0x00015E32."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -51,12 +54,26 @@ Start-up duration used by modes 2 and 11: the curve by the selected \
 temperature, scaled by 0.05, with the same ramp alternative as JK78C."""
 note = [
     """
-1ND0A: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 \
-wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
+startup selector do not establish the ordinate unit. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by \
+FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper \
+0x2893C. Stock bytes are identical to JK78C 0x00015E32.""",
     """
-1ND3B: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 \
-wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32. 1ND3B shares \
-the 1ND0A code layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
+startup selector do not establish the ordinate unit. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by \
+FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper \
+0x2893C. Stock bytes are identical to JK78C 0x00015E32. 1ND3B shares the \
+1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -68,7 +85,14 @@ at = "1nd:0005fb08"
 layout = "jk78c"
 address = "00015e32"
 note = """
-Read by FUN_00056AB4 at callsite 0x56B7E through the 16-point uint16 wrapper \
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
+startup selector do not establish the ordinate unit. The returned table \
+quantity is distinct from its axis-coordinate quantity and from the paired \
+command-word domain. Recorded code and catalog interpretation: Read by \
+FUN_00056AB4 at callsite 0x56B7E through the 16-point uint16 wrapper \
 0x28320; the literal pool at 0x56CB8 follows FUN_00056BAA. The axis \
 0x00017204 = 10..160 is -40..110 degC."""
 

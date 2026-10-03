@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "rpm"
 points = 8
 storage = "uint16"
-unit = "RPM"
-scale = "x*3.125"
-to_raw = "x/3.125"
-scale_level = "code"
 
 [editor]
 name = "Engine Speed [RPM]"
@@ -18,8 +14,17 @@ coarse = 12.5
 layout = "1me3b"
 address = "00015636"
 note = """
-Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; stock bytes \
-are identical to JK78C 0x0001528C."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+existing running-axis proof fixes the nominal fine-coordinate count unit, \
+not measured engine-speed accuracy. Its named executable contracts apply \
+only to the two running axes. They do not execute this axis caller or \
+establish every layout-specific argument path. No running-axis TEST is \
+attached to this meaning by analogy. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 1200..6400 RPM of monitor \
+floor A; stock bytes are identical to JK78C 0x0001528C."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -31,12 +36,30 @@ layout = "1nd"
 address = "000157b2"
 note = [
     """
-1ND0A: Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; \
-stock bytes are identical to JK78C 0x0001528C.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
+RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+existing running-axis proof fixes the nominal fine-coordinate count unit, \
+not measured engine-speed accuracy. Its named executable contracts apply \
+only to the two running axes. They do not execute this axis caller or \
+establish every layout-specific argument path. No running-axis TEST is \
+attached to this meaning by analogy. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 1200..6400 RPM of monitor \
+floor A; stock bytes are identical to JK78C 0x0001528C.""",
     """
-1ND3B: Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; \
-stock bytes are identical to JK78C 0x0001528C. 1ND3B shares the 1ND0A code \
-layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
+RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+existing running-axis proof fixes the nominal fine-coordinate count unit, \
+not measured engine-speed accuracy. Its named executable contracts apply \
+only to the two running axes. They do not execute this axis caller or \
+establish every layout-specific argument path. No running-axis TEST is \
+attached to this meaning by analogy. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 1200..6400 RPM of monitor \
+floor A; stock bytes are identical to JK78C 0x0001528C. 1ND3B shares the \
+1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -48,8 +71,17 @@ at = "1nd:0005e588"
 layout = "jk78c"
 address = "0001528c"
 note = """
-Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; the \
-coordinate is 0xFFFF11A6."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+existing running-axis proof fixes the nominal fine-coordinate count unit, \
+not measured engine-speed accuracy. Its named executable contracts apply \
+only to the two running axes. They do not execute this axis caller or \
+establish every layout-specific argument path. No running-axis TEST is \
+attached to this meaning by analogy. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 1200..6400 RPM of monitor \
+floor A; the coordinate is 0xFFFF11A6."""
 
 [[symbol.evidence]]
 kind = "l0"

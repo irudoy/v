@@ -1,15 +1,23 @@
 note = """
-The percentage is the QH0 flow potential, the column coordinate of the \
-requested-torque conversion surfaces."""
+A uint16 forward-conversion column coordinate formed from raw \
+opening-area-domain counts divided by engine speed. Engineering conversion \
+is unestablished. Retained hypothesis: Catalog QH0 Flow Potential at \
+x*0.00152588 percent. The percentage remains candidate coordinate \
+presentation and does not claim a measured physical flow or a bound source \
+on an unresolved layout. Unverified propositions: QH0 Flow Potential has an \
+independently established physical 100-percent reference. The catalog \
+percentage measures actual airflow, throttle-opening percentage, or \
+normalized fuel schedule. The missing 1nd and 1me3b RAM sources follow \
+automatically from their mapped table axes. All homologous target \
+coordinates have a measured common physical scale. Source references: \
+defs/JK08A.throttle-control.md:334-398, \
+defs/JK08A.tuning-telemetry.md:107-113, patches/can-telemetry.md:331-366."""
 width = 16
-unit = "percent"
-scale = "x*0.00152588"
-scale_level = "candidate"
 
 [logparam]
 id = "X_VQ_QH0_Flow_Potential"
-unit = "QH0 Flow Potential [%]"
-scale = "x*0.00152588"
+unit = "QH0 Flow Potential [count]"
+scale = "x"
 
 [[symbol]]
 layout = "7mfk"

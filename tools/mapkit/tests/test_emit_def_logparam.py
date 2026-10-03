@@ -309,17 +309,19 @@ class LogparamDeclarationTest(unittest.TestCase):
                             eval(declared, {"__builtins__": {}}, {"x": raw}),
                         )
             checked[row["addr"]] = (operand, round(multiplier))
-        # Every declaration whose operand the stream carries reaches the check
-        # through its axes, which include the throttle target axis and an axis
-        # whose core multiplies each point by a power of two above one.
+        # Count-valued flow channels do not bind percentage-presented axes.
+        count_sources = {"ffff1170", "ffff1980"}
+        for operand in count_sources:
+            self.assertEqual(declarations[operand].scale, "x")
+            self.assertTrue(declarations[operand].units.endswith("[count]"))
         self.assertEqual(
             {operand for operand, _ in checked.values()},
-            {operand for operand in declarations if int(operand, 16) in fields},
+            {operand for operand in declarations if int(operand, 16) in fields} - count_sources,
         )
         self.assertIn("000155a0", checked)
         self.assertTrue(any(power > 1 for _, power in checked.values()))
 
-    def test_every_tracked_declaration_binds_an_axis(self):
+    def test_count_flow_declarations_do_not_bind_percentage_axes(self):
         overrides = tracked_overrides()
         used = set()
         for row in tracked_axes().values():
@@ -335,7 +337,11 @@ class LogparamDeclarationTest(unittest.TestCase):
             operand = table.get("static_axis_operand")
             if operand:
                 used.add(operand)
-        self.assertEqual(used, set(emit_def.logparam_bindings(overrides)))
+        declarations = emit_def.logparam_bindings(overrides)
+        self.assertEqual(set(declarations) - used, {"ffff1170", "ffff1980"})
+        for row in tracked_axes().values():
+            if row["addr"] in {"00011d4c", "00014114"}:
+                self.assertIsNone(emit_def.axis_logparam(row, overrides))
 
 
 class StaticAxisLogparamRuleTest(unittest.TestCase):
@@ -502,25 +508,24 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
                     params[name], ("X_VQ_Engine_Load", "X_VQ_Engine_Speed")
                 )
 
-    def test_fuel_compensation_surfaces_support_the_overlay(self):
-        # The stream carries column coordinate 0xFFFF1170, and the feed
-        # publishes it at the expression of column axis 0x11D4C.
+    def test_fuel_compensation_count_columns_do_not_bind_percentage_axes(self):
+        # The feed publishes 0xFFFF1170 counts; axis 0x11D4C retains a
+        # candidate percentage presentation with no physical reference.
         params = self.surface_parameters()
         for index in range(1, 6):
             name = f"Map {index} - Fuel Compensation - Main"
             with self.subTest(table=name):
                 self.assertEqual(
-                    params[name], ("X_VQ_QH0_Flow_Quantity", "X_VQ_Engine_Speed")
+                    params[name], (None, "X_VQ_Engine_Speed")
                 )
 
-    def test_requested_torque_conversion_columns_follow_the_streamed_operand(self):
-        # The stream carries primary column coordinate 0xFFFF1980 and not the
-        # trustful coordinate 0xFFFF1D0E, so only the primary surface follows
-        # its column.
+    def test_requested_torque_count_columns_do_not_bind_percentage_axes(self):
+        # The primary feed carries counts and the validation copy is not
+        # streamed. Neither binds an axis presented in candidate percent.
         params = self.surface_parameters()
         self.assertEqual(
             params["Requested Torque Conversion by QH0 - Primary"],
-            ("X_VQ_QH0_Flow_Potential", "X_VQ_Engine_Speed"),
+            (None, "X_VQ_Engine_Speed"),
         )
         self.assertEqual(
             params["Requested Torque Conversion by QH0 - Validation Copy"],

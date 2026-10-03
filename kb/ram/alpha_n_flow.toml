@@ -1,15 +1,25 @@
 note = """
-The percentage is the QH0 flow quantity, the column coordinate of Fuel \
-Compensation Main."""
+A byte curve-result coordinate derived from opening-area-domain counts \
+divided by engine speed, used by the identified map consumer. Engineering \
+conversion is unestablished. Retained hypothesis: Catalog QH0 Flow Quantity \
+at x*0.390625 percent. The expression equals 100*x/256 numerically, but the \
+physical quantity and reference are not established. The candidate \
+percentage describes the retained catalog coordinate presentation, not a \
+physical measurement or a universal target-layout consumer identity. \
+Unverified propositions: QH0 is an independently identified physical flow \
+quantity with a known 100-percent reference. The catalog x*0.390625 \
+percentage is a measured airflow, normalized Base Fuel Schedule, or \
+throttle-opening percentage. The physical interpretation transfers to every \
+homologous layout. The target flow RAM source is located on 1nd or 1me3b. \
+Axis homology does not resolve those missing RAM producers. Source \
+references: defs/JK08A.fuel.md:131-183, \
+defs/JK08A.tuning-telemetry.md:107-113, patches/can-telemetry.md:331-366."""
 width = 8
-unit = "percent"
-scale = "x*0.390625"
-scale_level = "candidate"
 
 [logparam]
 id = "X_VQ_QH0_Flow_Quantity"
-unit = "QH0 Flow Quantity [%]"
-scale = "x*0.390625"
+unit = "QH0 Flow Quantity [count]"
+scale = "x"
 
 [[symbol]]
 layout = "7mfk"

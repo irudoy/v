@@ -1,8 +1,19 @@
-note = "The scaled value is a requested torque."
+note = """
+A final bounded signed internal request used as the inverse torque-surface \
+input. Engineering conversion is unestablished. Retained hypothesis: \
+Candidate requested torque at x*0.1 Nm, dependent on the unresolved physical \
+conversion of the internal torque domain. Requested torque is not actual \
+torque. The hardware actuator and bank boundaries remain explicit. \
+Unverified propositions: The signed request has a confirmed x*0.1 Nm \
+physical scale. A requested raw-domain torque value is a measured delivered \
+engine torque. The code path proves physical throttle movement, motor \
+polarity, channel-to-bank identity, or ECM terminal assignment. The proposed \
+physical multiplier is validated on each homologous layout. Source \
+references: defs/JK08A.throttle-control.md:3-17, \
+defs/JK08A.throttle-control.md:304-330, \
+defs/JK08A.throttle-control.md:400-431, defs/JK08A.can.md:232-236, \
+defs/JK08A.tuning-telemetry.md:107-113."""
 width = 16
-unit = "Nm"
-scale = "x*0.1"
-scale_level = "candidate"
 
 [[symbol]]
 layout = "1me3b"

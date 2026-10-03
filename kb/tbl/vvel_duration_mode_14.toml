@@ -42,10 +42,6 @@ home = "1nd"
 cols = 8
 rows = 8
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Mode 14"
@@ -60,19 +56,34 @@ layout = "1nd"
 address = "0000e6c8"
 note = [
     """
-1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 \
-uint16 wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode \
-byte is 0xFFFEF4D0, published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the \
-constant 50.0 for this mode and carries no table. On this image the \
-hold-counter curve 0x1451E and its axis 0x13618 are zero at every node.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+The 1nd selection and 960*0.05=48.0 numeric interpretation are not a degree \
+proof. Preserve the 1ND0A/1ND3B hold-counter distinction and JK78C \
+absence/unreachability. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F6AC through the 8x8 uint16 wrapper 0x28674 and stored at the \
+mode 14 pair slot. The 1ND0A mode byte is 0xFFFEF4D0, published to \
+0xFFFE992C and 0xFFFEF5D0. JK78C stores the constant 50.0 for this mode and \
+carries no table. On this image the hold-counter curve 0x1451E and its axis \
+0x13618 are zero at every node.""",
     """
-1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 \
-uint16 wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode \
-byte is 0xFFFEF4D0, published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the \
-constant 50.0 for this mode and carries no table. 1ND3B shares the 1ND0A \
-code layout and its stock bytes at this address. On this image the \
-hold-counter curve 0x1451E is 30 at every node over the axis values 50 \
-through 190.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+The 1nd selection and 960*0.05=48.0 numeric interpretation are not a degree \
+proof. Preserve the 1ND0A/1ND3B hold-counter distinction and JK78C \
+absence/unreachability. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F6AC through the 8x8 uint16 wrapper 0x28674 and stored at the \
+mode 14 pair slot. The 1ND0A mode byte is 0xFFFEF4D0, published to \
+0xFFFE992C and 0xFFFEF5D0. JK78C stores the constant 50.0 for this mode and \
+carries no table. 1ND3B shares the 1ND0A code layout and its stock bytes at \
+this address. On this image the hold-counter curve 0x1451E is 30 at every \
+node over the axis values 50 through 190.""",
 ]
 
 [[symbol.evidence]]

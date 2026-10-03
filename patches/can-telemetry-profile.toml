@@ -58,29 +58,28 @@ source = 0xFFFF1980
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.00152588 percent"
+scale = "raw count"
 
 [field.dashboard]
-label = "QH0 flow potential"
-digits = 2
+label = "Requested-torque column count"
+digits = 0
 group = "Throttle"
 panel = "Torque and requests"
 order = 30
 description = """
-QH0 flow potential: the column coordinate of Requested Torque Conversion by \
-QH0 - Primary. The ECU looks it up from the opening area over engine speed \
-through curve 0x15690 or 0x156D0, and the word lookup compares each point of \
-axis 0x14114 with it directly. The percent scale, 0.00152588 per count, is \
-the catalog candidate of that axis. The live value feed sends it as VQ QH0 \
-Flow Potential."""
+A uint16 forward-conversion column coordinate formed from raw \
+opening-area-domain counts divided by engine speed. Displayed in stored \
+counts. Catalog QH0 Flow Potential at x*0.00152588 percent. The percentage \
+remains candidate coordinate presentation and does not claim a measured \
+physical flow or a bound source on an unresolved layout."""
 
 [field.dashboard.feed]
-key = "request_flow_pct"
+key = "request_flow_count"
 name = "VQ QH0 Flow Potential"
-format = "0.00"
+format = "0"
 minimum = 0
-maximum = 100
-step = 10
+maximum = 65535
+step = 4096
 
 [[field]]
 name = "final_timing_raw"
@@ -789,19 +788,21 @@ source = 0xFFFF19C6
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "candidate raw * 0.1 Nm"
+scale = "raw count"
 
 [field.dashboard]
-label = "Bounded throttle request"
-digits = 1
+label = "Bounded request count"
+digits = 0
 group = "Throttle"
 panel = "Torque and requests"
 panel_label = "Torque request"
 order = 20
 description = """
-Bounded torque request that the electronic throttle serves: the pedal demand \
-of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. Transmission \
-requests can bound it during gear changes."""
+A final bounded signed internal request used as the inverse torque-surface \
+input. Displayed in stored counts. Candidate requested torque at x*0.1 Nm, \
+dependent on the unresolved physical conversion of the internal torque \
+domain. Requested torque is not actual torque. The hardware actuator and \
+bank boundaries remain explicit."""
 
 [[field]]
 name = "engine_torque_state_raw"
@@ -812,17 +813,20 @@ source = 0xFFFF18CC
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "candidate raw * 0.1 Nm"
+scale = "raw count"
 
 [field.dashboard]
-label = "Engine torque state"
-digits = 1
+label = "Gross torque-model count"
+digits = 0
 group = "Engine"
 panel = "Torque and requests"
 order = 10
 description = """
-Signed engine torque state of the torque and throttle calibration path, \
-candidate 0.1 Nm per count."""
+A signed gross state in the ECU torque-model raw domain, before the recorded \
+net-state deductions. Displayed in stored counts. Candidate x*0.1 Nm for the \
+internal modeled state, with x*0.08 still compatible for the evaluated net \
+torque chain. A candidate modeled-torque label is not measured flywheel \
+torque. The gross and net terms remain distinct."""
 
 [[field]]
 name = "injection_end_angle_raw"
@@ -876,18 +880,21 @@ source = 0xFFFF19B2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.0008 cm2"
+scale = "raw count"
 
 [field.dashboard]
-label = "Shared throttle target"
-digits = 2
+label = "Shared area-domain count"
+digits = 0
 group = "Throttle"
 panel = "Torque and requests"
 panel_label = "Throttle area request"
 order = 40
 description = """
-Target opening area of both throttle bodies, candidate 0.0008 cm2 per count; \
-the channel targets derive from it."""
+A shared unsigned area-domain target count used by the two channel-target \
+conversions. Displayed in stored counts. Candidate physical target opening \
+area at x*0.0008 cm2 for the shared throttle-body model. The count-domain \
+role is established. The proposed geometric coefficient and physical \
+aggregation remain unresolved rather than silently removed."""
 
 [[field]]
 name = "throttle_target_channel_0_raw"
@@ -1243,29 +1250,30 @@ width = 1
 source = 0xFFFF1170
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.390625 percent"
+scale = "raw count"
 
 [context.field.dashboard]
-label = "QH0 flow quantity"
-digits = 2
+label = "Fuel-compensation column count"
+digits = 0
 group = "Fuel"
 panel = "Air and fuel"
 order = 50
 description = """
-QH0 flow quantity: the column coordinate of the five Fuel Compensation Main \
-surfaces. The ECU writes it as the high byte of curve 0x15042 or 0x15022 \
-over the throttle opening area divided by engine speed, and the byte lookup \
-compares each point of axis 0x11D4C with it directly. The percent scale, \
-0.390625 per count, is the catalog candidate of that axis. The live value \
-feed sends it as VQ QH0 Flow Quantity."""
+A byte curve-result coordinate derived from opening-area-domain counts \
+divided by engine speed, used by the identified map consumer. Displayed in \
+stored counts. Catalog QH0 Flow Quantity at x*0.390625 percent. The \
+expression equals 100*x/256 numerically, but the physical quantity and \
+reference are not established. The candidate percentage describes the \
+retained catalog coordinate presentation, not a physical measurement or a \
+universal target-layout consumer identity."""
 
 [context.field.dashboard.feed]
-key = "alpha_n_flow_pct"
+key = "alpha_n_flow_count"
 name = "VQ QH0 Flow Quantity"
-format = "0.00"
+format = "0"
 minimum = 0
-maximum = 100
-step = 10
+maximum = 255
+step = 16
 
 [[context]]
 page = 9

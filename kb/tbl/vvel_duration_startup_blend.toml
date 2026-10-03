@@ -8,10 +8,6 @@ home = "1me3b"
 cols = 8
 rows = 1
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Start-up Blend"
@@ -25,10 +21,18 @@ coarse = 0.5
 layout = "1me3b"
 address = "00017136"
 note = """
-Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf \
-0x2AEAC indexed by the low byte of its stack argument, the byte that indexes \
-the cold duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight \
-w moves by ROM16[0x9474] / 32768 per pass within 0..1."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+vvel_duration_startup_blend_axis/axis. A normalized blend weight establishes \
+interpolation arithmetic, not the degree unit of either endpoint or \
+ordinate. The returned table quantity is distinct from its axis-coordinate \
+quantity and from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by FUN_0006375E at callsite 0x63866 through the 8-point \
+uint16 leaf 0x2AEAC indexed by the low byte of its stack argument, the byte \
+that indexes the cold duration curve 0x000170F6 in the resolver \
+FUN_00062FAC. The weight w moves by ROM16[0x9474] / 32768 per pass within \
+0..1."""
 
 [[symbol.evidence]]
 kind = "l0"

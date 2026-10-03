@@ -129,14 +129,14 @@ class ProfileCoverageTest(unittest.TestCase):
             for metric in panel
         }
         for key, title, label in (
-            ("alpha_n_flow", "Air and fuel", "QH0 flow quantity"),
-            ("request_flow", "Torque and requests", "QH0 flow potential"),
+            ("alpha_n_flow", "Air and fuel", "Fuel-compensation column count"),
+            ("request_flow", "Torque and requests", "Requested-torque column count"),
         ):
             with self.subTest(key=key):
                 panel, metric = metrics[key]
                 self.assertEqual(panel, title)
                 self.assertEqual(metric.label, label)
-                self.assertEqual(metric.unit, "%*")
+                self.assertEqual(metric.unit, "cnt")
 
 
 class SchemaStatusTest(unittest.TestCase):

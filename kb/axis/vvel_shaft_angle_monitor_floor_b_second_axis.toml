@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "rpm"
 points = 8
 storage = "uint16"
-unit = "RPM"
-scale = "x*3.125"
-to_raw = "x/3.125"
-scale_level = "candidate"
 
 [editor]
 name = "Engine Speed [RPM]"
@@ -18,10 +14,18 @@ coarse = 12.5
 layout = "1me3b"
 address = "0001bd98"
 note = """
-Eight-point engine-speed axis 2400..7200 RPM of the second copy of monitor \
-floor B; the coordinate is the word 0xFFFE81B0, and the count weight rests \
-on the byte identity with the primary axis. Stock bytes are identical to the \
-primary axis 0x00017416."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:530-542, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
+numeric numerator forms and identical grid bytes do not prove equal event \
+angular spans. The second period has no independently bound published \
+parameter. SH7059 notes base the count weight only on byte identity with the \
+primary grids, and use distinct RAM addresses. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 2400..7200 RPM of the second \
+copy of monitor floor B; the coordinate is the word 0xFFFE81B0, and the \
+count weight rests on the byte identity with the primary axis. Stock bytes \
+are identical to the primary axis 0x00017416."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,10 +36,18 @@ at = "1me3b:00066c4c"
 layout = "1nd"
 address = "0001bc3e"
 note = """
-Eight-point engine-speed axis 2400..7200 RPM of the second copy of monitor \
-floor B; the coordinate is the word 0xFFFE81C8, and the count weight rests \
-on the byte identity with the primary axis. Stock bytes are identical to the \
-primary axis 0x00017342."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:530-542, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
+numeric numerator forms and identical grid bytes do not prove equal event \
+angular spans. The second period has no independently bound published \
+parameter. SH7059 notes base the count weight only on byte identity with the \
+primary grids, and use distinct RAM addresses. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 2400..7200 RPM of the second \
+copy of monitor floor B; the coordinate is the word 0xFFFE81C8, and the \
+count weight rests on the byte identity with the primary axis. Stock bytes \
+are identical to the primary axis 0x00017342."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -46,16 +58,24 @@ at = "1nd:00062790"
 layout = "jk78c"
 address = "0001b5ea"
 note = """
-Eight-point engine-speed axis 2400..7200 RPM of the second copy of monitor \
-floor B; the coordinate is the word 0xFFFF11BC, the latched copy of \
-0xFFFF11F0 = (12000000 / (ROM8[0x87AB] * period 0xFFFF2230)) >> 1 that \
-FUN_0003B938 writes with ROM8[0x87AB] = 3. The primary coordinate 0xFFFF11A6 \
-latches 0xFFFF11DA = (32000000 / period 0xFFFF11E8) >> 4; both forms equal \
-2000000 / period, and FUN_0002B548 and FUN_0002B5AC take the two periods \
-from the same timestamp 0xFFFF1864 >> 5 at separate events. The angular span \
-of the second period is not bound to a published parameter, which leaves the \
-count weight a candidate. Stock bytes are identical to the primary axis \
-0x00016D54."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:530-542, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
+numeric numerator forms and identical grid bytes do not prove equal event \
+angular spans. The second period has no independently bound published \
+parameter. SH7059 notes base the count weight only on byte identity with the \
+primary grids, and use distinct RAM addresses. Recorded code and catalog \
+interpretation: Eight-point engine-speed axis 2400..7200 RPM of the second \
+copy of monitor floor B; the coordinate is the word 0xFFFF11BC, the latched \
+copy of 0xFFFF11F0 = (12000000 / (ROM8[0x87AB] * period 0xFFFF2230)) >> 1 \
+that FUN_0003B938 writes with ROM8[0x87AB] = 3. The primary coordinate \
+0xFFFF11A6 latches 0xFFFF11DA = (32000000 / period 0xFFFF11E8) >> 4; both \
+forms equal 2000000 / period, and FUN_0002B548 and FUN_0002B5AC take the two \
+periods from the same timestamp 0xFFFF1864 >> 5 at separate events. The \
+angular span of the second period is not bound to a published parameter, \
+which leaves the count weight a candidate. Stock bytes are identical to the \
+primary axis 0x00016D54."""
 
 [[symbol.evidence]]
 kind = "l0"

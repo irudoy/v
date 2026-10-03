@@ -186,7 +186,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         )
         self.assertAlmostEqual(
             fixed_physical["engine_torque_state"],
-            health.fields["engine_torque_state_raw"] * 0.1,
+            health.fields["engine_torque_state_raw"],
         )
         self.assertAlmostEqual(
             physical["battery_voltage"],
@@ -562,7 +562,7 @@ class HostContractTest(unittest.TestCase):
             "stft_b1_raw": "%",
             "af_state_factor_raw": "",
             "af_adjustment_b1_raw": "*",
-            "engine_torque_state_raw": "Nm*",
+            "engine_torque_state_raw": "cnt",
             "coolant_raw": "degC",
             "knock_margin_min_ch1_raw": "cnt",
             "fuel_inhibit_mask": "",

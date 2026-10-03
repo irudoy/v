@@ -6,14 +6,14 @@ This specification records the VVEL target task, its fifteen-mode target
 selector, the exact sensor and diagnostic bindings of the selector inputs, and
 the unit boundary of the target surfaces of the exact JK78C stock image
 registered in `../rom-images/roms.csv`.
-It separates code-proven selection logic and stored scales from candidate
+It separates code-proven selection logic and count arithmetic from proposed
 engineering units, candidate vendor table names, and physical valve response.
 
 The private VVEL bus, the command-word latch, and the composition of frame
 `0x22B` are in `JK78C.can.md`. Interpolation contracts are in
 `JK78C.interp.csv`. The factory service manual is authoritative for sensor
 roles, DTC names, and CONSULT names. The exact ROM is authoritative for the
-selection logic and the stored scales.
+selection logic and the stored arithmetic.
 
 Addresses are ROM offsets or SH7058 RAM cells. `ROM8[a]` and `ROM16[a]` are
 stock calibration bytes and big-endian words. Periodic-list entries refer to
@@ -485,29 +485,36 @@ Cold branch: `FUN_00054B2C` takes the cold path while the coolant snapshot
 | `0x00016BB4` | 16-point u16, axis `0x00016CA4` | `0xFFFF11A6` | 0.005, stock 33..72 | mode 15 |
 | `0x00016DC4` | 16-point u16, axis `0x00016E74` | `0xFFFF11A6` | VTC, zero at `0x8000`, 0.5 per count | mode 15 |
 | `0x00016D14` | 16-point u16 | `0xFFFF11A6` | 0.05, stock 50..72 | mode 4 |
-| `0x000108CE` | 16x16 u16, axes `0x00016DE4` = `256..2176` and `0x00016E04` = `4100..65535` | `0xFFFF11A6` (800..6800 RPM) and `0xFFFF238A` (6.3..100 %) | VTC, zero at `0x8000`, stock about `0x8000` | mode 4 |
+| `0x000108CE` | 16x16 u16, axes `0x00016DE4` = `256..2176` and `0x00016E04` = `4100..65535` | `0xFFFF11A6` and `0xFFFF238A`, stored coordinate counts | VTC, zero at `0x8000`, stock about `0x8000` | mode 4 |
 | `0x00016A54`, `0x00016A94` | curves by coolant | `0xFFFF1069` | 0.05; VTC | mode 3 |
 | `0x00015E32` | curve, axis `0x00017204` = `10..160` | `0xFFFF1066` | 0.05 | start-up value |
 | `0x000156DC`, `0x000156FC` | pair `0..15536` and `12800..37351` | shaft angle or command | angle to command and back | `FUN_00054FD0`, `FUN_0004D3CE`, `FUN_0005693A` |
 | `0x000160BA`, `0x00016A74` | curves | task inputs | command bound minus `abs(0xFFFF5E8E)` | `FUN_00054FD0` |
 | `0x0001609A`, `0x000160AA` | curves | task inputs | diagnostic floor | `FUN_000BF0C0`, `FUN_000BF122` |
 
-Code-proven scales: engine-speed counts of 3.125, 12.5, and 25 RPM;
-temperature counts of degC + 50; vehicle speed of 2 km/h per count; duration
-floats of 0.05 and 0.005 per stored count; VTC floats of 0.5 per stored count
-with zero at `0x8000`; shaft angle words of 1/512 degree; load fraction
-`0xFFFF238A` with full scale `0xFFFF`.
+Code establishes stored coordinate and ordinate words and the resolver's
+numeric factors: duration floats use nominal 0.05 or 0.005 per stored count,
+and VTC floats use nominal 0.5 per stored count with zero at `0x8000`.
+These arithmetic relationships do not establish a physical unit.
+`VQ37.running-rpm-axis-scale.md`, `VQ37.cold-axis-scale.md`, and
+`VQ37.temperature-axis-scale.md` state the separately executed nominal RPM
+and temperature grids and their sample, clipping, and caller boundaries.
+Their evidence applies to their named axes, not every similar input grid.
 
-Candidate scales: `0xFFFF2E26` as target torque at 0.1 Nm per count (axis
-25..200 Nm); `0xFFFF2350` as demand at 1/8 percent per count (axis
-12.5..100 %); the duration float as camshaft degrees of valve-event duration
-and the VTC float as degrees of intake-cam advance, both taken from vendor
-documentation and not from the code.
+Retained engineering hypotheses include shaft-coordinate words at 1/512
+degree, `0xFFFF238A` at `100*x/65535` percent, `0xFFFF2E26` at 0.1 Nm per
+count, and `0xFFFF2350` at 1/8 percent per count. The duration float as camshaft
+degrees of valve-event duration and the VTC float as degrees of intake-cam
+advance originate in vendor interpretation. An independent physical anchor
+and a target-specific scale binding are missing for these hypotheses.
 
 Every surface, curve, and axis in the table above is registered in
 `vq37-native-tables.toml` with its exact stock block hash, literal-pool
-bindings, editor name, and scale, and reaches the JK78C definition through that
-registry. The 1ND targets register the same roles at their own addresses; their
+bindings and editor name, and reaches the JK78C definition through that
+registry. A supported engineering conversion is optional; otherwise the
+editor displays stored counts. The owning meaning retains each proposed
+conversion, origin, and limitation in its notes. The 1ND targets register
+the same roles at their own addresses; their
 resolver indexes the hot-intake idle surfaces by coolant temperature and
 intake air temperature (degC + 50), reads a mode 14 surface that its machine
 selects on the hot-intake idle request with the knock state set and the idle
@@ -538,8 +545,10 @@ samplers are twins: the event handler `FUN_0002095C` calls `FUN_0002B548`
 which the interrupt handler `FUN_0002B8FA` stores at `0x0002C356`, under the
 same gate (`0xFFFF241E` bit 5 clear and the byte `0xFFFF2544` zero) and shift it right by
 five; they differ only in the previous-capture cells `0xFFFF84D4` and
-`0xFFFF84D8`. Both words therefore span the same crank interval, and
-`0xFFFF11BC` carries the 3.125 RPM count weight of `0xFFFF11A6`.
+`0xFFFF84D8`. Equal numerator forms and adjacent calls do not establish equal
+event intervals for independently retained previous captures. A 3.125 RPM
+count weight for `0xFFFF11BC` is a hypothesis; the second sampler has no
+independently bound diagnostic publication or angular-span reference.
 
 The state-code dispatcher `FUN_000657E4` reads its own hot-intake idle pair
 `0x000102CE` (state code 5) and `0x0001034E` (state codes 6 and 7) over the
@@ -583,7 +592,7 @@ the only names this specification carries.
 
 Code-exact: the mode machine, the fifteen target pairs, the selector
 conditions, the DID bindings, the descriptor records P010A and P0555, the
-stored scales listed as code-proven, the cycle schedule and `PFDR` stepping
+stored count arithmetic and separately bounded nominal grids, the cycle schedule and `PFDR` stepping
 of the ADC sampler, the converter channels of the pressure cells, the
 transfer `S = 20 + floor(7 * W / 408)` of the scaled pressure words, and the
 booster-vacuum logic of `FUN_0005A314`.

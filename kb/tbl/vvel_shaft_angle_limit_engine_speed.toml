@@ -7,10 +7,6 @@ home = "jk78c"
 cols = 8
 rows = 1
 storage = "uint16"
-unit = "deg"
-scale = "x/512"
-to_raw = "x*512"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Shaft Angle Limit - Engine Speed"
@@ -28,6 +24,15 @@ Engine-speed curve of the shaft-angle bound applied in the task before the \
 command conversion: the bound word is the curve value minus abs(0xFFFED40A), \
 clamped at zero. Values are in the shaft-angle domain of axis 0x00015A56."""
 note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
+domain, maximum, subtraction, absolute-value correction or word bound \
+preserves count arithmetic. None independently fixes 512 counts per physical \
+degree. An RPM or CVTC input grid cannot establish the returned \
+shaft-coordinate unit. The upstream coordinate scale itself has no physical \
+grounding in the finite sources. Recorded code and catalog interpretation: \
 Read by the task FUN_00061D46 at callsite 0x61E2E through the 8-point uint16 \
 leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are \
 identical to JK78C 0x000160BA."""
@@ -46,12 +51,30 @@ command conversion. Values are in the shaft-angle domain of axis \
 0x00015C02."""
 note = [
     """
-1ND0A: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point \
-uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x/512 \
+deg; proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
+domain, maximum, subtraction, absolute-value correction or word bound \
+preserves count arithmetic. None independently fixes 512 counts per physical \
+degree. An RPM or CVTC input grid cannot establish the returned \
+shaft-coordinate unit. The upstream coordinate scale itself has no physical \
+grounding in the finite sources. Recorded code and catalog interpretation: \
+Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 \
+wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA.""",
     """
-1ND3B: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point \
-uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA. 1ND3B \
-shares the 1ND0A code layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x/512 \
+deg; proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
+domain, maximum, subtraction, absolute-value correction or word bound \
+preserves count arithmetic. None independently fixes 512 counts per physical \
+degree. An RPM or CVTC input grid cannot establish the returned \
+shaft-coordinate unit. The upstream coordinate scale itself has no physical \
+grounding in the finite sources. Recorded code and catalog interpretation: \
+Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 \
+wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -63,6 +86,15 @@ at = "1nd:0005e5a4"
 layout = "jk78c"
 address = "000160ba"
 note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
+domain, maximum, subtraction, absolute-value correction or word bound \
+preserves count arithmetic. None independently fixes 512 counts per physical \
+degree. An RPM or CVTC input grid cannot establish the returned \
+shaft-coordinate unit. The upstream coordinate scale itself has no physical \
+grounding in the finite sources. Recorded code and catalog interpretation: \
 Read by the task FUN_00054FD0 at callsite 0x550EC through the 8-point uint16 \
 wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF31BA. The 1/512 degree \
 domain follows from the conversion pair; the bound composition is in \

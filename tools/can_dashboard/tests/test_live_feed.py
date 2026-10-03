@@ -72,7 +72,7 @@ class ChannelTableTest(unittest.TestCase):
         self.assertEqual(units["coolant_c"], "degC")
         self.assertEqual(units["load"], "%")
         self.assertEqual(units["bfs_ms"], "ms")
-        self.assertEqual(units["alpha_n_flow_pct"], "%*")
+        self.assertEqual(units["alpha_n_flow_count"], "cnt")
 
     def test_published_fields_name_the_telemetry_source_of_each_channel(self):
         fields = live_feed.published_fields()
@@ -112,21 +112,21 @@ class ChannelTableTest(unittest.TestCase):
         self.assertEqual(ids["rpm"], "X_VQ_Engine_Speed")
         self.assertEqual(ids["load"], "X_VQ_Engine_Load")
         self.assertEqual(ids["throttle_target_pct"], "X_VQ_Throttle_Target")
-        self.assertEqual(ids["request_flow_pct"], "X_VQ_QH0_Flow_Potential")
-        self.assertEqual(ids["alpha_n_flow_pct"], "X_VQ_QH0_Flow_Quantity")
+        self.assertEqual(ids["request_flow_count"], "X_VQ_QH0_Flow_Potential")
+        self.assertEqual(ids["alpha_n_flow_count"], "X_VQ_QH0_Flow_Quantity")
 
-    def test_the_column_coordinate_channels_carry_the_axis_scales(self):
+    def test_the_column_coordinate_channels_preserve_stored_counts(self):
         # Word core 00026984 compares the stored points of axis 00014114 with
         # ffff1980, and byte core 00026944 those of axis 00011d4c with
-        # ffff1170, so each channel publishes its coordinate at the candidate
-        # percent scale of the axis, and the largest stored point fits.
+        # ffff1170. The host publishes counts while their physical percent
+        # hypotheses lack an independent reference.
         channels = {
             channel.key: channel for channel in live_feed.default_channels()
         }
         calibrations = schema_calibrations()
         for key, field, factor, largest in (
-            ("request_flow_pct", "request_flow_raw", 0.00152588, 65535),
-            ("alpha_n_flow_pct", "alpha_n_flow_raw", 0.390625, 255),
+            ("request_flow_count", "request_flow_raw", 1, 65535),
+            ("alpha_n_flow_count", "alpha_n_flow_raw", 1, 255),
         ):
             with self.subTest(channel=key):
                 calibration = calibrations[field]
@@ -137,7 +137,7 @@ class ChannelTableTest(unittest.TestCase):
                 self.assertLessEqual(
                     calibration.apply(largest), channels[key].maximum
                 )
-                self.assertTrue(channels[key].units.endswith("*"))
+                self.assertEqual(channels[key].units, "cnt")
 
     def test_the_throttle_target_channel_carries_the_axis_scale(self):
         # Overlay Log compares the published value with the stored points of

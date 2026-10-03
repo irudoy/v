@@ -159,7 +159,7 @@ class DashboardModelTest(unittest.TestCase):
                     dashboard.value(f"secondary_tps_b{bank}"), raw / 200
                 )
 
-    def test_converted_fields_display_engineering_units(self):
+    def test_converted_fields_preserve_counts_and_engineering_units(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         values = {
             "tick16": 1,
@@ -180,8 +180,8 @@ class DashboardModelTest(unittest.TestCase):
 
         expected = {
             "apc_command": 20,
-            "throttle_request_bounded": 256.5,
-            "throttle_target_shared": 21.476,
+            "throttle_request_bounded": 2565,
+            "throttle_target_shared": 26845,
             "throttle_target_channel_0": 2143 * 34285 / 1114112,
             "throttle_target_channel_1": 2149 * 34285 / 1114112,
             "front_af_sensor_b1_word": 2.2,

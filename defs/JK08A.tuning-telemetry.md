@@ -104,13 +104,16 @@ their coordinate table `0x155A0`, and the front A/F sensor words at
 `raw / 200 V`. The
 command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
 pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
-torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared
-throttle target at `raw * 0.0008 cm2`, both A/F adjustment states at
-signed `raw * 0.002`, and the column coordinates `FFFF1980` and `FFFF1170` at
-the catalog percent scales `raw * 0.00152588` and `raw * 0.390625` of their
-axes `0x14114` and `0x11D4C` keep candidate conversions; the dashboard and MLG schema
-mark them, and each requires synchronized target validation before its
-engineering unit is treated as measured fact.
+torque state, the bounded throttle request, the shared throttle target, and
+the column coordinates `FFFF1980` and `FFFF1170` are displayed in stored
+counts. Their owning meanings retain the hypotheses `x*0.1 Nm`,
+`x*0.0008 cm2`, `x*0.00152588 percent`, and `x*0.390625 percent`, with their
+origins and unresolved references. The gross torque state is distinct from
+the net state; neither 0.1 nor 0.08 Nm/count is selected by the retained road
+evidence. Direct map-coordinate equality does not establish a physical
+percentage. The A/F adjustment states keep the signed candidate `raw * 0.002`
+conversion, marked in the dashboard and MLG schema. Engineering
+interpretations require synchronized target validation.
 
 ## Remaining semantic gaps
 

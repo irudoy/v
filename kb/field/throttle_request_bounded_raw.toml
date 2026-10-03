@@ -8,13 +8,15 @@ page = 7
 offset = 0x1
 
 [dashboard]
-label = "Bounded throttle request"
-digits = 1
+label = "Bounded request count"
+digits = 0
 group = "Throttle"
 panel = "Torque and requests"
 panel_label = "Torque request"
 order = 20
 description = """
-Bounded torque request that the electronic throttle serves: the pedal demand \
-of table 0xE98E minus 0x8000, candidate 0.1 Nm per count. Transmission \
-requests can bound it during gear changes."""
+A final bounded signed internal request used as the inverse torque-surface \
+input. Displayed in stored counts. Candidate requested torque at x*0.1 Nm, \
+dependent on the unresolved physical conversion of the internal torque \
+domain. Requested torque is not actual torque. The hardware actuator and \
+bank boundaries remain explicit."""

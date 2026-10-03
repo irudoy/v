@@ -7,10 +7,6 @@ home = "jk78c"
 cols = 8
 rows = 1
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Floor - Hot Intake Idle"
@@ -28,10 +24,16 @@ Eight-point lower bound of the mode 12 duration: the resolver takes the \
 maximum of this curve and the surface 0x0000E17C. Stock values are 1000 = \
 50.0 at every point."""
 note = """
-Read by the resolver FUN_00062FAC at callsite 0x63120 through the 8-point \
-uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool \
-word. JK78C holds 900 = 45.0 at every point of its floor 0x0001600A; the 1ND \
-resolver carries no floor."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+The physical degree unit is not supplied by 900, 45.0 or the maximum \
+operation. The returned table quantity is distinct from its axis-coordinate \
+quantity and from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by the resolver FUN_00062FAC at callsite 0x63120 \
+through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its \
+own literal pool word. JK78C holds 900 = 45.0 at every point of its floor \
+0x0001600A; the 1ND resolver carries no floor."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,10 +44,16 @@ at = "1me3b:000633f4"
 layout = "jk78c"
 address = "0001600a"
 note = """
-Read by the resolver FUN_000564A4 at callsite 0x5655E through the 8-point \
-uint16 wrapper 0x282F4 as GBR + 0x10 with the axis at GBR + 0; GBR holds the \
-literal 0x00015FFA loaded at 0x564BC from 0x56678. The coordinate is the \
-demand word 0xFFFF2350 (DID 0x1218)."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+The physical degree unit is not supplied by 900, 45.0 or the maximum \
+operation. The returned table quantity is distinct from its axis-coordinate \
+quantity and from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by the resolver FUN_000564A4 at callsite 0x5655E \
+through the 8-point uint16 wrapper 0x282F4 as GBR + 0x10 with the axis at \
+GBR + 0; GBR holds the literal 0x00015FFA loaded at 0x564BC from 0x56678. \
+The coordinate is the demand word 0xFFFF2350 (DID 0x1218)."""
 
 [[symbol.evidence]]
 kind = "indirect"

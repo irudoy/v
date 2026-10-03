@@ -753,6 +753,14 @@ Fields:
   renders the scale, the values, or the named bits of its source meaning
   ([Telemetry, signals, and
   presentation](#205-telemetry-signals-and-presentation)).
+- A numeric source file owns its unit, including its absence; the legacy
+  RAM ledger does not supply a replacement. Enumerations and bit fields
+  without a file unit retain the ledger's storage description. If no unit,
+  scale, values, or named bits are established, the profile presents
+  `raw count` with identity conversion. This host storage view does not
+  assert semantic scale keys or evidence, including when the profile
+  converts again. A partial or unrenderable
+  conversion refuses projection.
 - `width`, in bytes, and `signed` describe the field on the wire. On every
   layout that a feature requiring the field targets, the `widths` check
   requires the width to fit the symbol that the field reads there, and the
@@ -2887,7 +2895,9 @@ The service 0x22 table of `7mfk`:
 - The regenerated profile renders each `ecu_ram` scale from its meaning:
   the scale and unit, or else `enumeration: <n> <NAME>, ...` from its values
   or `bits: <n> <NAME>, ...` from its named bits, each list by number, and
-  the `[dashboard]` table of each field as its `[field.dashboard]`; the
+  uses the host `raw count` view when the source has no conversion keys.
+  It renders the `[dashboard]` table of each field as its
+  `[field.dashboard]`; the
   conversion commit lists every string that changes, and the consumers pass
   their tests on the regenerated file.
 

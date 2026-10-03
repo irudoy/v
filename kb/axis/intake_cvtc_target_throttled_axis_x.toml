@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "rpm"
 points = 16
 storage = "uint16"
-unit = "RPM"
-scale = "x*3.125"
-to_raw = "x/3.125"
-scale_level = "code"
 
 [editor]
 name = "Engine Speed [RPM]"
@@ -18,8 +14,17 @@ coarse = 12.5
 layout = "1me3b"
 address = "000174b6"
 note = """
-First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes are \
-identical to JK78C 0x00016DE4."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/JK78C.vvel.md:488, vvel_duration_running_axis/axis, \
+intake_cvtc_target_running_axis/axis. The existing running-axis proof fixes \
+the nominal fine-coordinate count unit, not measured engine-speed accuracy. \
+Its named executable contracts apply only to the two running axes. They do \
+not execute this axis caller or establish every layout-specific argument \
+path. No running-axis TEST is attached to this meaning by analogy. Recorded \
+code and catalog interpretation: First axis of the throttled CVTC surface, \
+800..6800 RPM; stock bytes are identical to JK78C 0x00016DE4."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -31,12 +36,30 @@ layout = "1nd"
 address = "000173e2"
 note = [
     """
-1ND0A: First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes \
-are identical to JK78C 0x00016DE4.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
+RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/JK78C.vvel.md:488, vvel_duration_running_axis/axis, \
+intake_cvtc_target_running_axis/axis. The existing running-axis proof fixes \
+the nominal fine-coordinate count unit, not measured engine-speed accuracy. \
+Its named executable contracts apply only to the two running axes. They do \
+not execute this axis caller or establish every layout-specific argument \
+path. No running-axis TEST is attached to this meaning by analogy. Recorded \
+code and catalog interpretation: First axis of the throttled CVTC surface, \
+800..6800 RPM; stock bytes are identical to JK78C 0x00016DE4.""",
     """
-1ND3B: First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes \
-are identical to JK78C 0x00016DE4. 1ND3B shares the 1ND0A code layout and \
-its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
+RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/JK78C.vvel.md:488, vvel_duration_running_axis/axis, \
+intake_cvtc_target_running_axis/axis. The existing running-axis proof fixes \
+the nominal fine-coordinate count unit, not measured engine-speed accuracy. \
+Its named executable contracts apply only to the two running axes. They do \
+not execute this axis caller or establish every layout-specific argument \
+path. No running-axis TEST is attached to this meaning by analogy. Recorded \
+code and catalog interpretation: First axis of the throttled CVTC surface, \
+800..6800 RPM; stock bytes are identical to JK78C 0x00016DE4. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -48,8 +71,17 @@ at = "1nd:0005f78c"
 layout = "jk78c"
 address = "00016de4"
 note = """
-First axis of the throttled CVTC surface, 800..6800 RPM; the coordinate is \
-0xFFFF11A6 in r7."""
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the retained layout \
+interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/JK78C.vvel.md:488, vvel_duration_running_axis/axis, \
+intake_cvtc_target_running_axis/axis. The existing running-axis proof fixes \
+the nominal fine-coordinate count unit, not measured engine-speed accuracy. \
+Its named executable contracts apply only to the two running axes. They do \
+not execute this axis caller or establish every layout-specific argument \
+path. No running-axis TEST is attached to this meaning by analogy. Recorded \
+code and catalog interpretation: First axis of the throttled CVTC surface, \
+800..6800 RPM; the coordinate is 0xFFFF11A6 in r7."""
 
 [[symbol.evidence]]
 kind = "l0"

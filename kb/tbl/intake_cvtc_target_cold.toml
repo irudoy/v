@@ -7,10 +7,6 @@ home = "jk78c"
 cols = 8
 rows = 1
 storage = "uint16"
-unit = "degCA"
-scale = "(x-32768)*0.5"
-to_raw = "x*2+32768"
-scale_level = "candidate"
 
 [editor]
 name = "Intake CVTC Target - Cold"
@@ -29,11 +25,19 @@ coolant-coded byte of the cold axis and gated by the flag 0xFFFEF5A6 with \
 hysteresis ROM8[0x8BD3] = 53 and ROM8[0x8BD4] = 0. Stock values are 0x8000 = \
 0 at every point."""
 note = """
-Read by the resolver FUN_00062FAC at callsite 0x6322A through the 8-point \
-uint16 leaf 0x2AEAC with its own literal pool word and the cold axis \
-0x00017176. The uniform stock block repeats elsewhere in the image; the \
-binding rests on the call that follows the cold duration curve and on pair 2 \
-of the output. Stock bytes are identical to JK78C 0x00016A94."""
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. \
+The resolver arithmetic establishes a centered numeric output only where the \
+recorded conversion path is given. It does not establish physical \
+camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
+proved RPM or temperature coordinate does not prove the table output unit. \
+Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC \
+at callsite 0x6322A through the 8-point uint16 leaf 0x2AEAC with its own \
+literal pool word and the cold axis 0x00017176. The uniform stock block \
+repeats elsewhere in the image; the binding rests on the call that follows \
+the cold duration curve and on pair 2 of the output. Stock bytes are \
+identical to JK78C 0x00016A94."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -49,14 +53,30 @@ coolant-coded byte of the cold axis. Stock values are 0x8000 = 0 at every \
 point."""
 note = [
     """
-1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the \
-8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes \
-are identical to JK78C 0x00016A94.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: \
+(x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
+retained layout interpretation and defs/JK78C.vvel.md:409-428, \
+defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered \
+numeric output only where the recorded conversion path is given. It does not \
+establish physical camshaft/crankshaft degrees. Uniform zero counts cannot \
+prove a slope. A proved RPM or temperature coordinate does not prove the \
+table output unit. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper \
+0x28910 with its own literal pool word. Stock bytes are identical to JK78C \
+0x00016A94.""",
     """
-1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the \
-8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes \
-are identical to JK78C 0x00016A94. 1ND3B shares the 1ND0A code layout and \
-its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: \
+(x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
+retained layout interpretation and defs/JK78C.vvel.md:409-428, \
+defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered \
+numeric output only where the recorded conversion path is given. It does not \
+establish physical camshaft/crankshaft degrees. Uniform zero counts cannot \
+prove a slope. A proved RPM or temperature coordinate does not prove the \
+table output unit. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper \
+0x28910 with its own literal pool word. Stock bytes are identical to JK78C \
+0x00016A94. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address.""",
 ]
 
 [[symbol.evidence]]
@@ -68,8 +88,16 @@ at = "1nd:0005f7bc"
 layout = "jk78c"
 address = "00016a94"
 note = """
-Read by FUN_00056A14 at callsite 0x56A4A through the 8-point uint16 wrapper \
-0x282F4 as the base literal 0x00016A54 + 0x40 with the axis at + 0x70."""
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. \
+The resolver arithmetic establishes a centered numeric output only where the \
+recorded conversion path is given. It does not establish physical \
+camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
+proved RPM or temperature coordinate does not prove the table output unit. \
+Recorded code and catalog interpretation: Read by FUN_00056A14 at callsite \
+0x56A4A through the 8-point uint16 wrapper 0x282F4 as the base literal \
+0x00016A54 + 0x40 with the axis at + 0x70."""
 
 [[symbol.evidence]]
 kind = "indirect"

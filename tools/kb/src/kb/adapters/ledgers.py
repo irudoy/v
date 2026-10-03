@@ -7,9 +7,9 @@ evidence. A token target without a row becomes an implicit symbol. An axis
 that a call of the accessor census passes is `code` with `l0` identity
 evidence at the first such call, and `candidate` otherwise.
 
-The `units` of a `vars` row becomes `unit` unless the telemetry profile states
-the unit of the symbol's meaning, which the scale of its field does
-(`telemetry_units` of the stash).
+The `units` of a `vars` row becomes `unit` unless the converted numeric
+telemetry source owns its unit, including its absence, or a legacy telemetry
+profile states it (`telemetry_units` of the stash).
 """
 
 import csv

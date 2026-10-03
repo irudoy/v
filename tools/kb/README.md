@@ -558,7 +558,13 @@ the `7mfk` symbol of its meaning, and its `scale` the string that the unit,
 the scale, and the scale level of the meaning give, or else its values as
 an enumeration or its named bits as `bits: <n> <NAME>, ...`, each by number;
 another field has the address of its allocation on a `7mfk` target and the
-scale of its file. The
+scale of its file. When a numeric source meaning has no unit, scale, values,
+or named bits, the profile presents `raw count` with identity conversion.
+This host storage view adds no scale, unit, or evidence to the source
+meaning, including during repeat conversion of the profile. A partial or
+unrenderable conversion refuses projection. Numeric
+telemetry source files own their units, including absence; the legacy RAM
+ledger does not restore a storage description as a semantic unit. The
 conversion lists each `ecu_ram` scale that the projection renders in
 another string and refuses any other change of the file.
 

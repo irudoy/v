@@ -1140,20 +1140,20 @@ class OverlayLookupOperandTest(unittest.TestCase):
         for register in ("ffff1702", "ffff1cca", "ffff11d0", "ffff1208"):
             self.assertEqual(self.vars[register]["units"], "rpm/3.125")
         self.assertEqual(self.vars["ffff1206"]["units"], "rpm*0.64")
-        # The streamed column coordinates repeat the candidate expressions of
-        # the axes they index directly.
-        for axis, column, parameter in (
-            ("00011d4c", "ffff1170", "X_VQ_QH0_Flow_Quantity"),
-            ("00014114", "ffff1980", "X_VQ_QH0_Flow_Potential"),
+        # The streamed coordinates use counts. Candidate percentage axes
+        # retain their separate hypotheses and do not bind these channels.
+        for axis, column, parameter, units in (
+            ("00011d4c", "ffff1170", "X_VQ_QH0_Flow_Quantity", "QH0 Flow Quantity [count]"),
+            ("00014114", "ffff1980", "X_VQ_QH0_Flow_Potential", "QH0 Flow Potential [count]"),
         ):
             with self.subTest(column=column):
-                record = self.axes[axis]
+                self.assertEqual(self.axes[axis]["scale_conf"], "candidate")
                 self.assertEqual(
                     logparam[column],
                     {
                         "id": parameter,
-                        "units": record["units"],
-                        "scale": record["scale_expr"],
+                        "units": units,
+                        "scale": "x",
                     },
                 )
         # The trustful and inverse coordinates and the MAF-table inputs are

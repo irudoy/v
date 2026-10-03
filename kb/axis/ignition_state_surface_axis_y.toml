@@ -3,10 +3,6 @@ home = "1nd"
 quantity = "load"
 points = 8
 storage = "uint8"
-unit = "Normalized BFS [%]"
-scale = "x*0.78125"
-to_raw = "x/0.78125"
-scale_level = "candidate"
 
 [editor]
 name = "Engine Load"
@@ -18,10 +14,17 @@ coarse = 3.125
 layout = "1me3b"
 address = "00013dc6"
 note = """
-Second axis of the four 8x8 state-code ignition surfaces; the lookup \
-receives the same load byte as the 16x16 surfaces. The literal words 0x793F8 \
-hold the same address; the structure export recovers no instruction that \
-reads them."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.78125 \
+Normalized BFS [%]; proposed editor-grid inverse x/0.78125. Origin: the \
+retained layout interpretation and cryptic-bloodhound/axis, \
+normalized_load/ram. normalized_load/ram is unresolved on both 1nd and \
+1me3b. The projected 16x16 axis and resemblance of the load-byte role do not \
+identify either target byte as that fixed-reference ratio. Neither \
+normalized-BFS percentage nor cylinder filling follows from the 8x8 identity \
+evidence. Recorded code and catalog interpretation: Second axis of the four \
+8x8 state-code ignition surfaces; the lookup receives the same load byte as \
+the 16x16 surfaces. The literal words 0x793F8 hold the same address; the \
+structure export recovers no instruction that reads them."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,8 +35,16 @@ at = "1me3b:000799c4"
 layout = "1nd"
 address = "00013fda"
 note = """
-Second axis of the four 8x8 state-code ignition surfaces; the lookup \
-receives the same load byte as the 16x16 surfaces."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.78125 \
+Normalized BFS [%]; proposed editor-grid inverse x/0.78125. Origin: the \
+retained layout interpretation and cryptic-bloodhound/axis, \
+normalized_load/ram. normalized_load/ram is unresolved on both 1nd and \
+1me3b. The projected 16x16 axis and resemblance of the load-byte role do not \
+identify either target byte as that fixed-reference ratio. Neither \
+normalized-BFS percentage nor cylinder filling follows from the 8x8 identity \
+evidence. Recorded code and catalog interpretation: Second axis of the four \
+8x8 state-code ignition surfaces; the lookup receives the same load byte as \
+the 16x16 surfaces."""
 
 [[symbol.evidence]]
 kind = "l0"

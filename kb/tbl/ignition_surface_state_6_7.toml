@@ -13,10 +13,6 @@ home = "1nd"
 cols = 8
 rows = 8
 storage = "uint8"
-unit = "deg"
-scale = "x-64"
-to_raw = "x+64"
-scale_level = "candidate"
 
 [editor]
 name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
@@ -41,10 +37,18 @@ other mode code 1. The coordinator takes the low seven bits of the lookup \
 and crossfades the previous and current state values by the progress word \
 0xFFFEB824, where 0x8000 is 1.0."""
 note = """
-Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves \
-the four state-code surfaces of this coordinator. The literal words 0x79400 \
-hold the same address; the structure export recovers no instruction that \
-reads them."""
+Engineering conversion is unestablished. Retained hypothesis: x-64 deg; \
+proposed editor-grid inverse x+64. Origin: the retained layout \
+interpretation and defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. \
+The canonical PID0E closure is not the executed target-native path. Equal \
+surface bytes and a common field/coordinator role do not reproduce that \
+complete target arithmetic and diagnostic publication. x-64 applies to the \
+low-seven field only; applying it to the full byte would include the \
+independent flag. This is an adjustment hypothesis, not absolute spark \
+angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A \
+surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code \
+surfaces of this coordinator. The literal words 0x79400 hold the same \
+address; the structure export recovers no instruction that reads them."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -58,8 +62,17 @@ hooked 8x8 lookup literal and has no source counterpart"""
 layout = "1nd"
 address = "0000a6d0"
 note = """
-Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves \
-the four state-code surfaces of this coordinator."""
+Engineering conversion is unestablished. Retained hypothesis: x-64 deg; \
+proposed editor-grid inverse x+64. Origin: the retained layout \
+interpretation and defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. \
+The canonical PID0E closure is not the executed target-native path. Equal \
+surface bytes and a common field/coordinator role do not reproduce that \
+complete target arithmetic and diagnostic publication. x-64 applies to the \
+low-seven field only; applying it to the full byte would include the \
+independent flag. This is an adjustment hypothesis, not absolute spark \
+angle. Recorded code and catalog interpretation: Byte-identical to the 1ME3B \
+surface 0xA604. The 8x8 lookup 0x000285B4 serves the four state-code \
+surfaces of this coordinator."""
 
 [[symbol.evidence]]
 kind = "l0"

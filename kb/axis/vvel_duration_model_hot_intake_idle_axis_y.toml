@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "load"
 points = 8
 storage = "uint16"
-unit = "Normalized BFS [%]"
-scale = "x*0.0030517578125"
-to_raw = "x/0.0030517578125"
-scale_level = "candidate"
 
 [editor]
 name = "Engine Load"
@@ -18,11 +14,21 @@ coarse = 3.125
 layout = "1me3b"
 address = "000173a6"
 note = """
-Second axis of the state-word hot-intake idle surfaces, 6144..20480 = load \
-byte 24..80; the coordinate is the load byte 0xFFFE8034 << 8, the byte that \
-indexes the ignition mode surfaces in FUN_000797CC. The 100/128 percent \
-weight per byte count is the projected scale of the ignition load axis. \
-Stock bytes are identical to JK78C 0x00016CE4."""
+Engineering conversion is unestablished. Retained hypothesis: \
+x*0.0030517578125 Normalized BFS [%]; proposed editor-grid inverse \
+x/0.0030517578125. Origin: the retained layout interpretation and \
+defs/JK78C.vvel.md:544-548, defs/JK08A.axes.csv:9, normalized_load/ram, \
+cryptic-bloodhound/axis. The integer shift does not create a physical \
+percentage by itself. JK78C has an existing normalized-BFS source identity, \
+but no current scale evidence connects this model axis to the source claim. \
+normalized_load remains unresolved on 1me3b, so the JK78C normalization must \
+not be inherited onto fffe8034 by similar use or axis bytes. Recorded code \
+and catalog interpretation: Second axis of the state-word hot-intake idle \
+surfaces, 6144..20480 = load byte 24..80; the coordinate is the load byte \
+0xFFFE8034 << 8, the byte that indexes the ignition mode surfaces in \
+FUN_000797CC. The 100/128 percent weight per byte count is the projected \
+scale of the ignition load axis. Stock bytes are identical to JK78C \
+0x00016CE4."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -33,10 +39,20 @@ at = "1me3b:0007523c"
 layout = "jk78c"
 address = "00016ce4"
 note = """
-Second axis of the state-word hot-intake idle surfaces, 6144..20480 = load \
-byte 24..80; the coordinate is the load byte 0xFFFF1032 << 8, the byte that \
-indexes the ignition mode surfaces in FUN_00069AB8. The 100/128 percent \
-weight per byte count is the projected scale of the ignition load axis."""
+Engineering conversion is unestablished. Retained hypothesis: \
+x*0.0030517578125 Normalized BFS [%]; proposed editor-grid inverse \
+x/0.0030517578125. Origin: the retained layout interpretation and \
+defs/JK78C.vvel.md:544-548, defs/JK08A.axes.csv:9, normalized_load/ram, \
+cryptic-bloodhound/axis. The integer shift does not create a physical \
+percentage by itself. JK78C has an existing normalized-BFS source identity, \
+but no current scale evidence connects this model axis to the source claim. \
+normalized_load remains unresolved on 1me3b, so the JK78C normalization must \
+not be inherited onto fffe8034 by similar use or axis bytes. Recorded code \
+and catalog interpretation: Second axis of the state-word hot-intake idle \
+surfaces, 6144..20480 = load byte 24..80; the coordinate is the load byte \
+0xFFFF1032 << 8, the byte that indexes the ignition mode surfaces in \
+FUN_00069AB8. The 100/128 percent weight per byte count is the projected \
+scale of the ignition load axis."""
 
 [[symbol.evidence]]
 kind = "l0"

@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint16"
-unit = "%"
-scale = "x/8"
-to_raw = "x*8"
-scale_level = "candidate"
 
 [editor]
 name = "Demand [%]"
@@ -18,9 +14,15 @@ coarse = 1
 layout = "1me3b"
 address = "000165cc"
 note = """
-Eight-point axis 100..800 of the two floor curves, loaded from its own \
-literal pool word; stock bytes are identical to JK78C 0x00015FFA, where 1/8 \
-percent per count of the demand word is a catalog candidate."""
+Engineering conversion is unestablished. Retained hypothesis: x/8 %; \
+proposed editor-grid inverse x*8. Origin: the retained layout interpretation \
+and defs/JK78C.vvel.md:179, defs/JK78C.vvel.md:501-505. A DID source address \
+and stored points 100..800 do not prove that 800 is 100 percent, that one \
+count is 1/8 percent, or the physical meaning of the demand coordinate. \
+Recorded code and catalog interpretation: Eight-point axis 100..800 of the \
+two floor curves, loaded from its own literal pool word; stock bytes are \
+identical to JK78C 0x00015FFA, where 1/8 percent per count of the demand \
+word is a catalog candidate."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -31,9 +33,15 @@ at = "1me3b:000633ec"
 layout = "jk78c"
 address = "00015ffa"
 note = """
-Eight-point axis 100..800 of the two floor curves, the GBR base of the \
-resolver; the coordinate is the demand word 0xFFFF2350 published by DID \
-0x1218. 1/8 percent per count is a catalog candidate."""
+Engineering conversion is unestablished. Retained hypothesis: x/8 %; \
+proposed editor-grid inverse x*8. Origin: the retained layout interpretation \
+and defs/JK78C.vvel.md:179, defs/JK78C.vvel.md:501-505. A DID source address \
+and stored points 100..800 do not prove that 800 is 100 percent, that one \
+count is 1/8 percent, or the physical meaning of the demand coordinate. \
+Recorded code and catalog interpretation: Eight-point axis 100..800 of the \
+two floor curves, the GBR base of the resolver; the coordinate is the demand \
+word 0xFFFF2350 published by DID 0x1218. 1/8 percent per count is a catalog \
+candidate."""
 
 [[symbol.evidence]]
 kind = "l0"

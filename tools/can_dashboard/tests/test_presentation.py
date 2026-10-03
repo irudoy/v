@@ -74,7 +74,7 @@ class PresentationTest(unittest.TestCase):
             for panel in rows.values()
             for metric in panel
         }
-        self.assertEqual(metrics["alpha_n_flow"].unit, "%*")
+        self.assertEqual(metrics["alpha_n_flow"].unit, "cnt")
         self.assertEqual(metrics["iat"].unit, "degC")
         self.assertEqual(metrics["knock_margin_min_ch1"].unit, "cnt")
         self.assertEqual(metrics["profile_crc16"].unit, "")

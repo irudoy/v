@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from kb import checks, compile, names, repo, store
-from kb.adapters import files
+from kb.adapters import files, ledgers, telemetry
 from kb.model import Builder, SymbolKey
 
 WRITER = 0x3BD1C
@@ -77,6 +77,32 @@ class FilesTest(unittest.TestCase):
         self.assertEqual((meaning.name, meaning.props["summary"]),
                          ("normalized_bfs", "From the ledger."))
         self.assertEqual([tier for _, tier, _ in meaning.other_names], ["curated"])
+
+    def test_a_numeric_telemetry_source_owns_an_absent_or_partial_unit(self):
+        address = 0xFFFF11F4
+        key = SymbolKey("7mfk", "ram", address)
+
+        def ledger(b):
+            b.symbol("7mfk", "ram", address, "defs/JK08A.vars.csv")
+            b.stash[ledgers.UNITS] = [(key, "signed torque raw", "defs/JK08A.vars.csv")]
+            ledgers.relate(b, self.root)
+
+        for props, unit, scale in (({}, None, "raw count"),
+                                   ({"unit": "Nm"}, "Nm", None),
+                                   ({"scale": "x"}, None, None)):
+            with self.subTest(props=props):
+                self.write("ram", "probe", {
+                    "title": "Probe", **props,
+                    "symbol": [{"layout": "7mfk", "address": f"{address:08x}"}]})
+                self.write("field", "probe_raw", {
+                    "source": "probe/ram", "origin": "ecu_ram", "width": 2,
+                    "signed": True, "page": 0, "offset": 1, "profiles": ["tuning"]})
+                b, model = self.build(ledger)
+                self.assertEqual(b.issues, [])
+                self.assertEqual(model.meaning_of(key).props.get("unit"), unit)
+                field = model.entities[("field", "probe_raw")]
+                self.assertEqual(telemetry._source(model, field, {}),
+                                 {"source": address, "scale": scale})
 
     def test_references_resolve_once_the_meanings_are_named(self):
         self.write("fn", "bfs_producer", {"title": "Producer", "symbol": [

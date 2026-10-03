@@ -1324,7 +1324,7 @@
       <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
                to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x164E6"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Potential">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Potential [%] [cand]" expression="x*0.00152588"
                  to_byte="x/0.00152588" format="0"/>
       </table>
@@ -1679,7 +1679,7 @@
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x14019"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Quantity">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
                  to_byte="x/0.390625" format="0"/>
       </table>
@@ -2144,7 +2144,7 @@
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x14019"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Quantity">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
                  to_byte="x/0.390625" format="0"/>
       </table>
@@ -2619,7 +2619,7 @@
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x14019"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Quantity">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
                  to_byte="x/0.390625" format="0"/>
       </table>
@@ -3094,7 +3094,7 @@
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x14019"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Quantity">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
                  to_byte="x/0.390625" format="0"/>
       </table>
@@ -3569,7 +3569,7 @@
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x14019"
-             sizex="16" endian="big" logparam="X_VQ_QH0_Flow_Quantity">
+             sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
                  to_byte="x/0.390625" format="0"/>
       </table>

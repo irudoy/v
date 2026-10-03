@@ -25,8 +25,8 @@ static_axis_name = "Coolant Temperature [deg C]"
 
 [logparam.ffff1170]
 id = "X_VQ_QH0_Flow_Quantity"
-units = "QH0 Flow Quantity [%]"
-scale = "x*0.390625"
+units = "QH0 Flow Quantity [count]"
+scale = "x"
 
 [logparam.ffff11ae]
 id = "X_VQ_Engine_Speed"
@@ -62,8 +62,8 @@ units = "RPM"
 
 [logparam.ffff1980]
 id = "X_VQ_QH0_Flow_Potential"
-units = "QH0 Flow Potential [%]"
-scale = "x*0.00152588"
+units = "QH0 Flow Potential [count]"
+scale = "x"
 
 [logparam.ffff1cca]
 id = "X_VQ_Engine_Speed"

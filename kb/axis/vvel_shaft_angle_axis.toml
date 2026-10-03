@@ -3,10 +3,6 @@ home = "jk78c"
 quantity = "raw"
 points = 16
 storage = "uint16"
-unit = "deg"
-scale = "x/512"
-to_raw = "x*512"
-scale_level = "code"
 
 [editor]
 name = "VVEL Shaft Angle [deg]"
@@ -18,9 +14,18 @@ coarse = 0.5
 layout = "1me3b"
 address = "00015a56"
 note = """
-Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
-conversion, also the value array of the reverse lookup; stock bytes are \
-identical to JK78C 0x000156DC."""
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
+defs/VQ37.command-count-scales.md:5-10, \
+defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
+vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
+lookup, identical pair bytes or a later command-domain mean multiplied by \
+1/512 does not establish 1/512 physical degree per coordinate count. No \
+independent angular decoder or hardware reference appears in the finite \
+sources. Recorded code and catalog interpretation: Control-shaft angle axis \
+0..15536 = 0..30.3 degrees of the command conversion, also the value array \
+of the reverse lookup; stock bytes are identical to JK78C 0x000156DC."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -47,14 +52,32 @@ layout = "1nd"
 address = "00015c02"
 note = [
     """
-1ND0A: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
-conversion, also the value array of the reverse lookup; stock bytes are \
-identical to JK78C 0x000156DC.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x/512 \
+deg; proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
+defs/VQ37.command-count-scales.md:5-10, \
+defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
+vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
+lookup, identical pair bytes or a later command-domain mean multiplied by \
+1/512 does not establish 1/512 physical degree per coordinate count. No \
+independent angular decoder or hardware reference appears in the finite \
+sources. Recorded code and catalog interpretation: Control-shaft angle axis \
+0..15536 = 0..30.3 degrees of the command conversion, also the value array \
+of the reverse lookup; stock bytes are identical to JK78C 0x000156DC.""",
     """
-1ND3B: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
-conversion, also the value array of the reverse lookup; stock bytes are \
-identical to JK78C 0x000156DC. 1ND3B shares the 1ND0A code layout and its \
-stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x/512 \
+deg; proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
+defs/VQ37.command-count-scales.md:5-10, \
+defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
+vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
+lookup, identical pair bytes or a later command-domain mean multiplied by \
+1/512 does not establish 1/512 physical degree per coordinate count. No \
+independent angular decoder or hardware reference appears in the finite \
+sources. Recorded code and catalog interpretation: Control-shaft angle axis \
+0..15536 = 0..30.3 degrees of the command conversion, also the value array \
+of the reverse lookup; stock bytes are identical to JK78C 0x000156DC. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -76,10 +99,19 @@ at = "1nd:0005f584"
 layout = "jk78c"
 address = "000156dc"
 note = """
-Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command \
-conversion; the same block serves as the value array when the task converts \
-a command word back to an angle. FUN_0004D3CE loads it into GBR from \
-0x4D58C."""
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
+defs/VQ37.command-count-scales.md:5-10, \
+defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
+vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
+lookup, identical pair bytes or a later command-domain mean multiplied by \
+1/512 does not establish 1/512 physical degree per coordinate count. No \
+independent angular decoder or hardware reference appears in the finite \
+sources. Recorded code and catalog interpretation: Control-shaft angle axis \
+0..15536 = 0..30.3 degrees of the command conversion; the same block serves \
+as the value array when the task converts a command word back to an angle. \
+FUN_0004D3CE loads it into GBR from 0x4D58C."""
 
 [[symbol.evidence]]
 kind = "l0"

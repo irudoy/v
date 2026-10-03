@@ -8,10 +8,6 @@ home = "jk78c"
 cols = 8
 rows = 8
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Hot Intake Idle"
@@ -29,13 +25,20 @@ Mode 12 duration surface of the VVEL resolver: the hot-intake idle pair. The \
 pair value is the maximum of this surface and the eight-point floor \
 0x000165DC, scaled by 0.05. Stock values are 1000 = 50.0 at every cell."""
 note = """
-Read by the resolver FUN_00062FAC at callsite 0x63188 through the 8x8 uint16 \
-leaf 0x29EC0 with the r7 word argument that also indexes the running CVTC \
-curve on the first axis and a signed word argument clamped at zero in the \
-stack slot on the second axis, the coordinate form of the JK78C surface \
-0x0000E1CE. The maximum goes to pair 11 of the output with the float literal \
-0x3D4CCCCC at 0x63428. FUN_0007448C reads the separate uniform surfaces \
-0x0001027C and 0x000102FC over its own axes 0x000173B6 and 0x000173A6."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+Coordinate semantics and maximum composition do not establish degrees for \
+the ordinate. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_00062FAC at \
+callsite 0x63188 through the 8x8 uint16 leaf 0x29EC0 with the r7 word \
+argument that also indexes the running CVTC curve on the first axis and a \
+signed word argument clamped at zero in the stack slot on the second axis, \
+the coordinate form of the JK78C surface 0x0000E1CE. The maximum goes to \
+pair 11 of the output with the float literal 0x3D4CCCCC at 0x63428. \
+FUN_0007448C reads the separate uniform surfaces 0x0001027C and 0x000102FC \
+over its own axes 0x000173B6 and 0x000173A6."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -52,20 +55,34 @@ directly; there is no floor lookup. Stock values are 1000 = 50.0 at every \
 cell."""
 note = [
     """
-1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F664 through the 8x8 \
-uint16 wrapper 0x28674 with two byte coordinates: r7 is the byte 0xFFFE8073 \
-(coolant temperature latch, DID 0x1101) and the stack slot is the byte \
-0xFFFE9796 (intake air temperature latch, DID 0x1106), both degC + 50. \
-FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. \
-JK78C indexes its surface 0x0000E1CE by engine speed and torque instead.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+Coordinate semantics and maximum composition do not establish degrees for \
+the ordinate. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte \
+coordinates: r7 is the byte 0xFFFE8073 (coolant temperature latch, DID \
+0x1101) and the stack slot is the byte 0xFFFE9796 (intake air temperature \
+latch, DID 0x1106), both degC + 50. FUN_00070514 reads the surface at \
+0x7106A and 0x71132 with the same axes. JK78C indexes its surface 0x0000E1CE \
+by engine speed and torque instead.""",
     """
-1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F664 through the 8x8 \
-uint16 wrapper 0x28674 with two byte coordinates: r7 is the byte 0xFFFE8073 \
-(coolant temperature latch, DID 0x1101) and the stack slot is the byte \
-0xFFFE9796 (intake air temperature latch, DID 0x1106), both degC + 50. \
-FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. \
-JK78C indexes its surface 0x0000E1CE by engine speed and torque instead. \
-1ND3B shares the 1ND0A code layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+Coordinate semantics and maximum composition do not establish degrees for \
+the ordinate. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte \
+coordinates: r7 is the byte 0xFFFE8073 (coolant temperature latch, DID \
+0x1101) and the stack slot is the byte 0xFFFE9796 (intake air temperature \
+latch, DID 0x1106), both degC + 50. FUN_00070514 reads the surface at \
+0x7106A and 0x71132 with the same axes. JK78C indexes its surface 0x0000E1CE \
+by engine speed and torque instead. 1ND3B shares the 1ND0A code layout and \
+its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -82,11 +99,17 @@ at = "1nd:0007129c"
 layout = "jk78c"
 address = "0000e1ce"
 note = """
-Read by the resolver FUN_000564A4 at callsite 0x565D8 through the 8x8 uint16 \
-wrapper 0x28058 with r7 = 0xFFFF11A6 on the first axis and the stack \
-coordinate max(0, torque word 0xFFFF2E26) on the second axis. Both axes are \
-reached from the GBR base literal 0x00015FFA at 0x56678. Stock values are \
-identical to the knock surface 0x0000E24E."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
+Coordinate semantics and maximum composition do not establish degrees for \
+the ordinate. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_000564A4 at \
+callsite 0x565D8 through the 8x8 uint16 wrapper 0x28058 with r7 = 0xFFFF11A6 \
+on the first axis and the stack coordinate max(0, torque word 0xFFFF2E26) on \
+the second axis. Both axes are reached from the GBR base literal 0x00015FFA \
+at 0x56678. Stock values are identical to the knock surface 0x0000E24E."""
 
 [[symbol.evidence]]
 kind = "l0"

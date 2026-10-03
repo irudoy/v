@@ -349,7 +349,8 @@ def test_apply_target_publishes_every_registered_table_and_axis():
             assert model["note"].startswith(
                 f"Exact {rom} target-native table at {table.address:#x}"
             )
-            assert overrides["table"][key]["name"] == table.name
+            expected_name = table.name if table.scale_conf in {"code", "candidate"} else table.name + " [stored count]"
+            assert overrides["table"][key]["name"] == expected_name
             assert overrides["table"][key]["emit"] is True
             assert overrides["table"][key].get("mask", "") == table.mask
             assert model["accessors"] == sorted({
@@ -367,17 +368,22 @@ def test_apply_target_publishes_every_registered_table_and_axis():
             assert len(model["values"]) == axis.length
             assert model["values"] == sorted(model["values"])
             assert model["confidence"] == axis.confidence
-            assert model["scale_expr"] == axis.scale_expr
-            assert model["scale_evidence"] == "registry:target-native"
+            established_view = axis.scale_conf in {"code", "candidate"}
+            assert model["scale_expr"] == (axis.scale_expr if established_view else "x")
+            assert model["scale_evidence"] == ("registry:target-native" if established_view else "")
             assert model["note"].startswith(
                 f"Exact {rom} target-native axis at {axis.address:#x}"
             )
-            assert overrides["axis"][key] == {
+            expected = {
                 "name": axis.name,
                 "format": axis.format,
                 "fine": axis.fine,
                 "coarse": axis.coarse,
             }
+            if not established_view:
+                expected = {"name": axis.name.split(" [")[0] + " [stored count]",
+                            "format": "0", "fine": 1, "coarse": 10}
+            assert overrides["axis"][key] == expected
 
 
 def test_apply_target_describes_a_displaced_base_literal():
@@ -426,7 +432,10 @@ def test_apply_target_rejects_a_repeated_table_name():
     rom = "JK78C"
     target = vq37_native_tables.load_registry()[rom]
     image = romkit.load(rom)
-    projected = {"table": {"0000ffff": {"name": target.tables[0].name}}}
+    name = target.tables[0].name
+    if target.tables[0].scale_conf not in {"code", "candidate"}:
+        name += " [stored count]"
+    projected = {"table": {"0000ffff": {"name": name}}}
 
     with pytest.raises(
         vq37_native_tables.NativeTableError,

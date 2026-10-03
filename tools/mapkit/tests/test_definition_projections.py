@@ -409,7 +409,8 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     } | registered_addresses
     for table in registered.tables:
         key = f"{table.address:08x}"
-        assert result.overrides["table"][key]["name"] == table.name
+        name = table.name + (" [stored count]" if table.units is None else "")
+        assert result.overrides["table"][key]["name"] == name
         for axis in result.maps[key]["axis_x"] + result.maps[key]["axis_y"]:
             assert axis in result.axes
     assert result.overrides["table"][caps_address]["name"] == (

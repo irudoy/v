@@ -7,10 +7,6 @@ home = "jk78c"
 cols = 8
 rows = 8
 storage = "uint16"
-unit = "deg"
-scale = "x*0.05"
-to_raw = "x/0.05"
-scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Target - Hot Intake Idle, Knock"
@@ -29,10 +25,16 @@ pair, which the JK78C selector takes in the high-detonation state. The pair \
 value is the maximum of this surface and the eight-point floor 0x000165EC, \
 scaled by 0.05. Stock values are 1000 = 50.0 at every cell."""
 note = """
-Read by the resolver FUN_00062FAC at callsite 0x631BE through the 8x8 uint16 \
-leaf 0x29EC0 with the coordinates and axes of the mode 12 surface \
-0x0000E17C; the maximum goes to pair 12 of the output. Stock values are \
-identical to that surface."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A \
+knock-state selector and identical stock bytes do not establish physical \
+duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_00062FAC at \
+callsite 0x631BE through the 8x8 uint16 leaf 0x29EC0 with the coordinates \
+and axes of the mode 12 surface 0x0000E17C; the maximum goes to pair 12 of \
+the output. Stock values are identical to that surface."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -47,14 +49,28 @@ Mode 13 duration surface of the VVEL selector: hot-intake idle with the \
 high-detonation state set. Stock values are 1000 = 50.0 at every cell."""
 note = [
     """
-1ND0A: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 \
-uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode \
-12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A.""",
+1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A \
+knock-state selector and identical stock bytes do not establish physical \
+duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte \
+coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 \
+at 0x7108E and 0x7115A.""",
     """
-1ND3B: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 \
-uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode \
-12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A. 1ND3B \
-shares the 1ND0A code layout and its stock bytes at this address.""",
+1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
+deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A \
+knock-state selector and identical stock bytes do not establish physical \
+duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte \
+coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 \
+at 0x7108E and 0x7115A. 1ND3B shares the 1ND0A code layout and its stock \
+bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -71,10 +87,16 @@ at = "1nd:000712a4"
 layout = "jk78c"
 address = "0000e24e"
 note = """
-Read by the resolver FUN_000564A4 at callsite 0x5664A through the 8x8 uint16 \
-wrapper 0x28058 with the same coordinates and axes as the mode 12 surface \
-0x0000E1CE. Stock values are identical to that surface; only the knock state \
-selects between them."""
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the retained layout \
+interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A \
+knock-state selector and identical stock bytes do not establish physical \
+duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_000564A4 at \
+callsite 0x5664A through the 8x8 uint16 wrapper 0x28058 with the same \
+coordinates and axes as the mode 12 surface 0x0000E1CE. Stock values are \
+identical to that surface; only the knock state selects between them."""
 
 [[symbol.evidence]]
 kind = "l0"

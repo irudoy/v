@@ -108,7 +108,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
     running_duration = next(
         item
         for item in rom["objects"]
-        if item["label"] == "VVEL Duration Target - Running"
+        if item["label"] == "VVEL Duration Target - Running [stored count]"
     )
     assert running_duration["start"] == 0x17276
     assert running_duration["source"] == "defs/1ME3B.xml"

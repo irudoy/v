@@ -8,11 +8,14 @@ page = 7
 offset = 0x3
 
 [dashboard]
-label = "Engine torque state"
-digits = 1
+label = "Gross torque-model count"
+digits = 0
 group = "Engine"
 panel = "Torque and requests"
 order = 10
 description = """
-Signed engine torque state of the torque and throttle calibration path, \
-candidate 0.1 Nm per count."""
+A signed gross state in the ECU torque-model raw domain, before the recorded \
+net-state deductions. Displayed in stored counts. Candidate x*0.1 Nm for the \
+internal modeled state, with x*0.08 still compatible for the evaluated net \
+torque chain. A candidate modeled-torque label is not measured flywheel \
+torque. The gross and net terms remain distinct."""

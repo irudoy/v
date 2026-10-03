@@ -15,6 +15,7 @@
   enumeration becomes `value` entries and a list of named bits `bit` entries,
   and the remaining text joins the summary. A string that the parser cannot
   split fails the `fields` check, which refuses the conversion.
+  The host `raw count` storage view declares no semantic conversion keys.
   `telemetry_units` of the stash lists the symbols whose unit the profile
   states.
 - The source of a field of another origin is the allocation, named after
@@ -55,6 +56,7 @@ RESERVATIONS = Path("patches/jk08a-runtime-reservations.toml")
 SCHEMA_VERSION = 2
 CANONICAL = "7mfk"
 FEATURE = "can_telemetry"
+STORED_COUNT_SCALE = "raw count"
 WIRE_KEYS = ("protocol_version", "byte_order", "candidate_can_id", "candidate_tick_divisor",
              "base_tick_numerator", "pphi_hz", "fixed_page_count", "context_pages",
              "context_count", "header_sequence_bits")
@@ -195,7 +197,9 @@ def declare_profile(b, document, regions, src):
             if key is None:
                 continue
             refs["source"] = [key]
-            parsed = parse_scale(item["scale"], units)
+            # The host storage view is not a semantic scale declaration.
+            parsed = ({} if item["scale"] == STORED_COUNT_SCALE
+                      else parse_scale(item["scale"], units))
             if parsed is None:
                 b.issue("fields", src, subject, f"scale {item['scale']!r} gives the source "
                         "meaning no keys")
@@ -386,8 +390,12 @@ def _source(model, entity, allocations):
     if len(keys) != 1 or not isinstance(keys[0], SymbolKey) or keys[0].layout != CANONICAL:
         raise KbError(f"{entity.key}: the source names no {CANONICAL} symbol", code=3)
     meaning = model.meaning_of(keys[0])
-    return {"source": keys[0].address,
-            "scale": scale_text(meaning.props) if meaning else None}
+    scale = scale_text(meaning.props) if meaning else None
+    if meaning is not None and not any(
+            key in meaning.props for key in ("scale", "unit", "value", "bit")):
+        # This host storage view supplies no semantic scale or evidence.
+        scale = STORED_COUNT_SCALE
+    return {"source": keys[0].address, "scale": scale}
 
 
 def _toml(key, value):

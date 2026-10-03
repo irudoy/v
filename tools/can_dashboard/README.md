@@ -263,22 +263,24 @@ unit of the field scale:
 | `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
 | `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
 | `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw * 34285 / 1114112` |
-| `request_flow_pct` | `X_VQ_QH0_Flow_Potential` | %* | `request_flow_raw * 0.00152588` |
-| `alpha_n_flow_pct` | `X_VQ_QH0_Flow_Quantity` | %* | `alpha_n_flow_raw * 0.390625` |
+| `request_flow_count` | `X_VQ_QH0_Flow_Potential` | cnt | `request_flow_raw` |
+| `alpha_n_flow_count` | `X_VQ_QH0_Flow_Quantity` | cnt | `alpha_n_flow_raw` |
 
 `throttle_target_pct` carries the channel 0 throttle target, which is the
 coordinate of throttle opening table `0x155A0`. Its factor is the code scale of
 that axis, so Overlay Log compares the live value with the stored points
 directly.
 
-`request_flow_pct` and `alpha_n_flow_pct` carry the column coordinates of the
+`request_flow_count` and `alpha_n_flow_count` carry the stored column coordinates of the
 requested-torque conversion surfaces and of Fuel Compensation Main. Each lookup
 compares the stored points of its column axis, `0x14114` and `0x11D4C`, with
-the coordinate directly, so each factor is the expression of that axis. The
-percent unit of both axes is a catalog candidate, which the `*` marks. The
-window shows the same values in the `QH0 flow potential` row of the
-`Torque and requests` panel and the `QH0 flow quantity` row of the
-`Air and fuel` panel.
+the coordinate directly. The percentage hypotheses `x*0.00152588` and
+`x*0.390625` remain in the source notes without a proven physical reference.
+The feed and the dashboard use counts. An axis presented in candidate
+percent units does not bind to the count-valued Logger channel. The window
+shows the coordinates in the `Requested-torque column count` row of the
+`Torque and requests` panel and the `Fuel-compensation column count` row of
+the `Air and fuel` panel.
 
 ### RomRaider table overlay
 
@@ -722,11 +724,10 @@ The A/F adjustment words hold signed producer values, and the profile declares
 their slots signed. The MLG recorder stores the signed value, because
 MegaLogViewer applies only scale and transform.
 
-A field marked with `*` uses a candidate transform: engine torque state and
-torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
-A/F ADJ at signed `raw * 0.002`, and the requested-torque and Fuel
-Compensation Main column coordinates at `raw * 0.00152588` and
-`raw * 0.390625` percent. The current conversions are:
+A field marked with `*` uses a candidate transform, including A/F ADJ at
+signed `raw * 0.002`. Torque-model state, bounded request, shared area target,
+and both flow-column coordinates use stored counts; the physical-unit
+hypotheses remain in the source notes. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
@@ -759,10 +760,11 @@ Compensation Main column coordinates at `raw * 0.00152588` and
 | intake CVTC duty live pair and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion; the command pair is the scheduler block-copy latch of the live pair, both pairs share context tag 1 and come from one capture pass, and the recorded drives hold them equal in every record |
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
 | throttle target B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw * 34285 / 1114112 percent` | each target is `4 * (TPS counts - learned closed position)`, the coordinate of throttle opening table `0x155A0`; `FUN_0006F236` publishes that coordinate, divided by four and less idle base `0xFFFF28F8`, as J1979 PID 0x11 absolute throttle at gradient `0x505B / 65536`, so one count is `34285 / 1114112` percent of throttle opening and 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
-| throttle area request | `0xFFFF19B2` word | candidate `raw * 0.0008 cm2` | opening area of both throttle bodies in the counts of table `0x13202`; the unit rests on the catalog scale of that table |
-| requested-torque column coordinate | `0xFFFF1980` word | candidate `raw * 0.00152588 percent` | `FUN_00073948` looks the coordinate up from an opening area over engine speed and passes it to requested-torque surface `0xE98E`, whose word core `0x26984` compares each point of column axis `0x14114` with it directly; the percent unit is the catalog scale of that axis |
-| Fuel Compensation Main column coordinate | `0xFFFF1170` byte | candidate `raw * 0.390625 percent` | `FUN_0003B498` writes the high byte of curve `0x15042` or `0x15022` over an opening area divided by engine speed, and byte core `0x26944` compares each point of column axis `0x11D4C` with it directly; the percent unit is the catalog scale of that axis |
-| torque request | `0xFFFF19C6` signed word | candidate `raw * 0.1 Nm` | output of table `0xE98E` minus `0x8000`; at full pedal the recorded request follows the maximum of the table row at the recorded engine speed |
+| shared throttle area-domain target | `0xFFFF19B2` word | stored counts, `cnt` | table-domain target for both channel conversions; the `x*0.0008 cm2` hypothesis has no independent geometric reference |
+| requested-torque column coordinate | `0xFFFF1980` word | stored counts, `cnt` | `FUN_00073948` produces the direct column input of surface `0xE98E`; the `x*0.00152588 percent` hypothesis has no established physical normalization reference |
+| Fuel Compensation Main column coordinate | `0xFFFF1170` byte | stored counts, `cnt` | `FUN_0003B498` writes the curve high byte compared directly with axis `0x11D4C`; the `x*0.390625 percent` hypothesis has no established physical normalization reference |
+| bounded torque-model request | `0xFFFF19C6` signed word | stored counts, `cnt` | signed inverse-surface request in the internal torque domain; `x*0.1 Nm` is an unresolved hypothesis, not delivered engine torque |
+| gross torque-model state | `0xFFFF18CC` signed word | stored counts, `cnt` | gross internal state before net-state deductions; the retained road evidence does not distinguish 0.08 from 0.1 Nm/count or identify gross state as flywheel torque |
 | A/F sensor 1 B1/B2 | `0xFFFF2780`, `0xFFFF2782` | `raw / 200 V` | the ADC count re-based so that the filtered sensor reference reads 440, which is 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm; lower is richer; under sustained enrichment both words read lean of 440, which is unexplained, so the channel does not validate full-load fuelling without an independent wideband |
 | A/F ADJ B1/B2 | `0xFFFF45A0`, `0xFFFF45A2` | candidate signed `raw * 0.002` | signed integrators bounded to -500..500 counts, read as signed by every consumer; the factor maps the bounds to -1..1 and the factory running range of -0.330..0.330 to 165 counts; every recording reads 0 |
 | end of injection after intake TDC | `0xFFFF192E` word | `raw * 2 - 590 degCA` | the word holds `2 * min(y, 209)` and `raw * 2` is the code-proven delay in crank degrees after the reference tooth; the intake-TDC anchor rests on the reference-tooth and cylinder-order analysis and is a firmware coordinate, not a measured injector event; JK00C, JK00D, JK78C, 1ND, and 1ME3B stream their homologous word with the same anchor |

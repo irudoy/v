@@ -319,7 +319,7 @@ masks, so the same anchor holds; [`JK08A.fuel.md`](../defs/JK08A.fuel.md) lists
 the homologous stages and the 1ND and 1ME3B boundary. The timing fields are software coordinates rather
 than an independent crank-referenced spark measurement.
 
-A scale string without the word `candidate` is fixed by code, by ROM constants
+A non-count engineering scale string without the word `candidate` is fixed by code, by ROM constants
 against factory limits, or by the ECU's own J1979 declaration: MAF voltage and
 airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, the
 end-of-injection angle, CVTC targets and positions, the intake duty command
@@ -328,12 +328,14 @@ temperatures, battery voltage, absolute throttle, the pedal and throttle
 sensor voltages, the APC command at `110 - raw` degrees BTDC, both final
 channel throttle targets at `raw * 34285 / 1114112` percent of throttle opening
 above the learned closed position, and the front A/F sensor voltage at
-`raw / 200 V`. Engine torque state, the
-bounded throttle request, the shared throttle target area, both A/F
-adjustment states, and the two column coordinates keep candidate conversions:
-the coordinates carry the catalog percent scales of the axes they index,
-`raw * 0.00152588` for `FFFF1980` and `raw * 0.390625` for `FFFF1170`. The A/F adjustment words occupy
-signed slots, because their producers are signed.
+`raw / 200 V`. Engine torque state, the bounded throttle request, the shared
+throttle target area, and both column coordinates use `raw count`: a host
+storage view separate from a semantic engineering-scale claim. Their
+Nm, cm2, and catalog-percent hypotheses remain in the source meanings with
+their origins and limits. The gross and net torque states are distinct;
+the retained road evidence does not separate 0.08 from 0.1 Nm/count. The
+A/F adjustment states retain candidate conversions and occupy signed slots,
+because their producers are signed.
 
 The stock VQ37 images program the intake solenoids from 16-bit duty words,
 and their intake duty command cells and live duty bytes hold the high byte `x`

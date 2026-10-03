@@ -694,7 +694,7 @@
 
     <!-- 0x15A76  16 uint16  map [code]
          accessor 0x58FAA, 0x61D46, 0x62FAC, 0x66A18; r4 operand: reviewed-target
-         scaling x count [code]; axis 0x15A56 raw [code]
+         scaling x count [code]; axis 0x15A56 raw
          Exact 1ME3B target-native table at 0x15a76 bound to accessor 0x58faa through literal
          0x59184, accessor 0x61d46 through literal 0x62504, accessor 0x62fac through literal
          0x630e4, accessor 0x66a18 through literal 0x66bd8. Read by the task FUN_00061D46 at
@@ -710,30 +710,38 @@
            storageaddress="0x15A76" sizex="16" endian="big">
       <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="64"/>
-      <table type="X Axis" name="VVEL Shaft Angle [deg]" storagetype="uint16"
+      <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x15A56" sizex="16" endian="big">
-        <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00"
-                 fineincrement="0.05" coarseincrement="0.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x17276  16 uint16  map [code]
          accessor 0x62FAC, 0x63CD4; r4 operand: reviewed-target
-         scaling x*0.005 deg [candidate]; axis 0x17366 rpm [code]
+         scaling x Stored count; axis 0x17366 rpm [code]
          Exact 1ME3B target-native table at 0x17276 bound to accessor 0x62fac through literal
-         0x63400, accessor 0x63cd4 through literal 0x63ee0. Read by the resolver FUN_00062FAC at
+         0x63400, accessor 0x63cd4 through literal 0x63ee0. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005.
+         Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441,
+         defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic
+         factor is not the physical duration unit. The float literal is a binary value described
+         by its nominal decimal factor, not a measurement of degrees. The returned table
+         quantity is distinct from its axis-coordinate quantity and from the paired command-word
+         domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at
          callsite 0x63142 and by FUN_00063CD4 at 0x63D1C through the 16-point uint16 leaf
          0x2AF88; the 0.005 factor is the float literal 0x3BA3D70A at 0x63404. The resolver
          stores the value in pair 14 of its thirty-float output, the slot that the JK78C
          resolver FUN_000564A4 and the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair.
          Stock bytes are identical to 1ND0A 0x000171C2; the unit of the scaled duration is a
-         vendor-catalog candidate.
+         vendor-catalog candidate. Editor values are stored counts; no engineering conversion is
+         established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Target - Running"
+    <table type="2D" name="VVEL Duration Target - Running [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x17276" sizex="16" endian="big">
-      <scaling units="deg [cand]" expression="x*0.005" to_byte="x/0.005" format="0.000"
-               fineincrement="0.005" coarseincrement="0.05"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17366" sizex="16" endian="big">
         <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
@@ -760,78 +768,98 @@
 
     <!-- 0x166AC  8 uint16  map [code]
          accessor 0x61D46; r4 operand: reviewed-target
-         scaling x/512 deg [candidate]; axis 0x17426 rpm [code]
+         scaling x Stored count; axis 0x17426 rpm
          Exact 1ME3B target-native table at 0x166ac bound to accessor 0x61d46 through literal
-         0x61fa4. Read by the task FUN_00061D46 at callsite 0x61E2E through the 8-point uint16
-         leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are identical
-         to JK78C 0x000160BA.
+         0x61fa4. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by the task
+         FUN_00061D46 at callsite 0x61E2E through the 8-point uint16 leaf 0x2AEAC indexed by the
+         word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are identical to JK78C 0x000160BA. Editor
+         values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Limit - Engine Speed"
+    <table type="2D" name="VVEL Shaft Angle Limit - Engine Speed [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x166AC" sizex="8" endian="big">
-      <scaling units="deg [cand]" expression="x/512" to_byte="x*512" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x17426" sizex="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x173D6  16 uint16  map [code]
          accessor 0x63534, 0x7448C; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x17346 rpm [code]
+         scaling x Stored count; axis 0x17346 rpm
          Exact 1ME3B target-native table at 0x173d6 bound to accessor 0x63534 through literal
          0x637c8, accessor 0x7448c through literal 0x74fdc, accessor 0x7448c through literal
-         0x7525c. Read by FUN_00063534 at callsite 0x63570 through the 16-point uint16 leaf
-         0x2AF88 and by FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same axis; the
-         resolver FUN_00062FAC calls FUN_00063534 after the hot-intake idle pair. The 0.05
-         factor is the float literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps the scaled curve
-         value at 0xFFFEF458 and publishes the pair 3 duration slot 0xFFFEF460 as that value or
-         as 50.0 plus an offset that steps by ROM16[0x9384] * 0.001 = 0.05 toward the curve
-         value within +/-50.0; the delay helper FUN_0002861E gates the offset with a time from
-         the byte curve 0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store the
-         curve value directly. Stock bytes are identical to JK78C 0x00016D14.
+         0x7525c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset
+         arithmetic and shared dispatcher word domain do not establish physical duration
+         degrees. The returned table quantity is distinct from its axis-coordinate quantity and
+         from the paired command-word domain. Recorded code and catalog interpretation: Read by
+         FUN_00063534 at callsite 0x63570 through the 16-point uint16 leaf 0x2AF88 and by
+         FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same axis; the resolver
+         FUN_00062FAC calls FUN_00063534 after the hot-intake idle pair. The 0.05 factor is the
+         float literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps the scaled curve value at
+         0xFFFEF458 and publishes the pair 3 duration slot 0xFFFEF460 as that value or as 50.0
+         plus an offset that steps by ROM16[0x9384] * 0.001 = 0.05 toward the curve value within
+         +/-50.0; the delay helper FUN_0002861E gates the offset with a time from the byte curve
+         0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store the curve value
+         directly. Stock bytes are identical to JK78C 0x00016D14. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Target - Throttled"
+    <table type="2D" name="VVEL Duration Target - Throttled [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x173D6" sizex="16" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x17346" sizex="16" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x0E17C  8x8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; Y Axis 0x166BC rpm [code]; X Axis 0x166CC raw
-         [candidate]
+         scaling x Stored count; Y Axis 0x166BC rpm; X Axis 0x166CC raw
          Exact 1ME3B target-native table at 0xe17c bound to accessor 0x62fac through literal
-         0x63420. Read by the resolver FUN_00062FAC at callsite 0x63188 through the 8x8 uint16
-         leaf 0x29EC0 with the r7 word argument that also indexes the running CVTC curve on the
-         first axis and a signed word argument clamped at zero in the stack slot on the second
-         axis, the coordinate form of the JK78C surface 0x0000E1CE. The maximum goes to pair 11
-         of the output with the float literal 0x3D4CCCCC at 0x63428. FUN_0007448C reads the
-         separate uniform surfaces 0x0001027C and 0x000102FC over its own axes 0x000173B6 and
-         0x000173A6.
+         0x63420. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Coordinate semantics and
+         maximum composition do not establish degrees for the ordinate. The returned table
+         quantity is distinct from its axis-coordinate quantity and from the paired command-word
+         domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at
+         callsite 0x63188 through the 8x8 uint16 leaf 0x29EC0 with the r7 word argument that
+         also indexes the running CVTC curve on the first axis and a signed word argument
+         clamped at zero in the stack slot on the second axis, the coordinate form of the JK78C
+         surface 0x0000E1CE. The maximum goes to pair 11 of the output with the float literal
+         0x3D4CCCCC at 0x63428. FUN_0007448C reads the separate uniform surfaces 0x0001027C and
+         0x000102FC over its own axes 0x000173B6 and 0x000173A6. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="VVEL Duration Target - Hot Intake Idle"
+    <table type="3D" name="VVEL Duration Target - Hot Intake Idle [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x0E17C" sizex="8" sizey="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Target Torque [Nm]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Target Torque [stored count]" storagetype="uint16"
              storageaddress="0x166CC" sizex="8" endian="big">
-        <scaling units="Nm [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
-                 fineincrement="0.1" coarseincrement="1"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x166BC" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -861,137 +889,180 @@
 
     <!-- 0x17116  16 uint16  map [code]
          accessor 0x61D46; r4 operand: reviewed-target
-         scaling x/512 deg [candidate]; axis 0x17466 raw [candidate]
+         scaling x Stored count; axis 0x17466 raw
          Exact 1ME3B target-native table at 0x17116 bound to accessor 0x61d46 through literal
-         0x62088. Read by the task FUN_00061D46 at callsite 0x61FD2 through the 16-point uint16
-         leaf 0x2AF88 indexed by the larger of the words 0xFFFE9432 and 0xFFFE9434, or by
-         ROM16[0x8EF8] = 0x808C on the branch at 0x61F60. Stock bytes are identical to JK78C
-         0x00016A74.
+         0x62088. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by the task
+         FUN_00061D46 at callsite 0x61FD2 through the 16-point uint16 leaf 0x2AF88 indexed by
+         the larger of the words 0xFFFE9432 and 0xFFFE9434, or by ROM16[0x8EF8] = 0x808C on the
+         branch at 0x61F60. Stock bytes are identical to JK78C 0x00016A74. Editor values are
+         stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Limit - Intake CVTC Angle"
+    <table type="2D" name="VVEL Shaft Angle Limit - Intake CVTC Angle [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x17116" sizex="16" endian="big">
-      <scaling units="deg [cand]" expression="x/512" to_byte="x*512" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Intake CVTC Angle [degCA]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Intake CVTC Angle [stored count]" storagetype="uint16"
              storageaddress="0x17466" sizex="16" endian="big">
-        <scaling units="degCA [cand]" expression="(x-32768)*0.5" to_byte="x*2+32768"
-                 format="0.0" fineincrement="0.5" coarseincrement="2.0"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x0E1FC  8x8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; Y Axis 0x166BC rpm [code]; X Axis 0x166CC raw
-         [candidate]
+         scaling x Stored count; Y Axis 0x166BC rpm; X Axis 0x166CC raw
          Exact 1ME3B target-native table at 0xe1fc bound to accessor 0x62fac through literal
-         0x6342c. Read by the resolver FUN_00062FAC at callsite 0x631BE through the 8x8 uint16
-         leaf 0x29EC0 with the coordinates and axes of the mode 12 surface 0x0000E17C; the
-         maximum goes to pair 12 of the output. Stock values are identical to that surface.
+         0x6342c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and
+         identical stock bytes do not establish physical duration degrees. The returned table
+         quantity is distinct from its axis-coordinate quantity and from the paired command-word
+         domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at
+         callsite 0x631BE through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of
+         the mode 12 surface 0x0000E17C; the maximum goes to pair 12 of the output. Stock values
+         are identical to that surface. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="VVEL Duration Target - Hot Intake Idle, Knock"
+    <table type="3D" name="VVEL Duration Target - Hot Intake Idle, Knock [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x0E1FC" sizex="8" sizey="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Target Torque [Nm]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Target Torque [stored count]" storagetype="uint16"
              storageaddress="0x166CC" sizex="8" endian="big">
-        <scaling units="Nm [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
-                 fineincrement="0.1" coarseincrement="1"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x166BC" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x1668C  8 uint16  map [code]
          accessor 0x61D46; r4 operand: reviewed-target
-         scaling x/512 deg [code]; axis 0x15636 rpm [code]
+         scaling x Stored count; axis 0x15636 rpm
          Exact 1ME3B target-native table at 0x1668c bound to accessor 0x61d46 through literal
-         0x61f8c. Read by the task FUN_00061D46 at callsite 0x61E00 through the 8-point uint16
-         leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4DE. Stock bytes are identical
-         to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the
-         domain. FUN_00066C30 reads a byte-identical second pair 0x0001B9B8 over 0x0001B438.
+         0x61f8c. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by the task
+         FUN_00061D46 at callsite 0x61E00 through the 8-point uint16 leaf 0x2AEAC indexed by the
+         word 0xFFFE8198 into 0xFFFEA4DE. Stock bytes are identical to JK78C 0x0001609A; the
+         JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain. FUN_00066C30 reads a
+         byte-identical second pair 0x0001B9B8 over 0x0001B438. Editor values are stored counts;
+         no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A"
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1668C" sizex="8" endian="big">
-      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
-               coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x15636" sizex="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x165DC  8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x165CC raw [candidate]
+         scaling x Stored count; axis 0x165CC raw
          Exact 1ME3B target-native table at 0x165dc bound to accessor 0x62fac through literal
-         0x633f4. Read by the resolver FUN_00062FAC at callsite 0x63120 through the 8-point
-         uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool word. JK78C
-         holds 900 = 45.0 at every point of its floor 0x0001600A; the 1ND resolver carries no
-         floor.
+         0x633f4. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The physical degree unit is not
+         supplied by 900, 45.0 or the maximum operation. The returned table quantity is distinct
+         from its axis-coordinate quantity and from the paired command-word domain. Recorded
+         code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63120
+         through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal
+         pool word. JK78C holds 900 = 45.0 at every point of its floor 0x0001600A; the 1ND
+         resolver carries no floor. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Floor - Hot Intake Idle"
+    <table type="2D" name="VVEL Duration Floor - Hot Intake Idle [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x165DC" sizex="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Demand [%]" storagetype="uint16" storageaddress="0x165CC"
-             sizex="8" endian="big">
-        <scaling units="% [cand]" expression="x/8" to_byte="x*8" format="0.0"
-                 fineincrement="0.125" coarseincrement="1"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Demand [stored count]" storagetype="uint16"
+             storageaddress="0x165CC" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x1669C  8 uint16  map [code]
          accessor 0x61D46; r4 operand: reviewed-target
-         scaling x/512 deg [code]; axis 0x17416 rpm [code]
+         scaling x Stored count; axis 0x17416 rpm
          Exact 1ME3B target-native table at 0x1669c bound to accessor 0x61d46 through literal
-         0x61f9c. Read by the task FUN_00061D46 at callsite 0x61E12 through the 8-point uint16
-         leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4E0. Stock bytes are identical
-         to JK78C 0x000160AA. FUN_00066C18 reads a byte-identical second pair 0x0001B9C8 over
-         0x0001BD98.
+         0x61f9c. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by the task
+         FUN_00061D46 at callsite 0x61E12 through the 8-point uint16 leaf 0x2AEAC indexed by the
+         word 0xFFFE8198 into 0xFFFEA4E0. Stock bytes are identical to JK78C 0x000160AA.
+         FUN_00066C18 reads a byte-identical second pair 0x0001B9C8 over 0x0001BD98. Editor
+         values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B"
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1669C" sizex="8" endian="big">
-      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
-               coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x17416" sizex="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x165EC  8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x165CC raw [candidate]
+         scaling x Stored count; axis 0x165CC raw
          Exact 1ME3B target-native table at 0x165ec bound to accessor 0x62fac through literal
-         0x633f8. Read by the resolver FUN_00062FAC at callsite 0x63130 through the 8-point
-         uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool word. JK78C
-         holds 900 = 45.0 at every point of its floor 0x0001601A.
+         0x633f8. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared coordinate and identical
+         floor values do not establish the output engineering unit. The returned table quantity
+         is distinct from its axis-coordinate quantity and from the paired command-word domain.
+         Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite
+         0x63130 through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own
+         literal pool word. JK78C holds 900 = 45.0 at every point of its floor 0x0001601A.
+         Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Floor - Hot Intake Idle, Knock"
+    <table type="2D" name="VVEL Duration Floor - Hot Intake Idle, Knock [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x165EC" sizex="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Demand [%]" storagetype="uint16" storageaddress="0x165CC"
-             sizex="8" endian="big">
-        <scaling units="% [cand]" expression="x/8" to_byte="x*8" format="0.0"
-                 fineincrement="0.125" coarseincrement="1"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Demand [stored count]" storagetype="uint16"
+             storageaddress="0x165CC" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x1B738  16 uint16  map [code]
          accessor 0x5C7D4; r4 operand: reviewed-target
-         scaling x count [code]; axis 0x1B718 raw [code]
+         scaling x count [code]; axis 0x1B718 raw
          Exact 1ME3B target-native table at 0x1b738 bound to accessor 0x5c7d4 through literal
          0x5c974. Read by FUN_0005C7D4 at callsites 0x5C7E6 and 0x5C7FA through the 16-point
          uint16 leaf 0x2BCD4; the primary conversion 0x00015A76 goes through the leaf 0x2AF88.
@@ -1004,48 +1075,63 @@
            storageaddress="0x1B738" sizex="16" endian="big">
       <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="64"/>
-      <table type="X Axis" name="VVEL Shaft Angle [deg]" storagetype="uint16"
+      <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x1B718" sizex="16" endian="big">
-        <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00"
-                 fineincrement="0.05" coarseincrement="0.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x1B9B8  8 uint16  map [code]
          accessor 0x66C30; r4 operand: reviewed-target
-         scaling x/512 deg [code]; axis 0x1B438 rpm [candidate]
+         scaling x Stored count; axis 0x1B438 rpm
          Exact 1ME3B target-native table at 0x1b9b8 bound to accessor 0x66c30 through literal
-         0x66c60. Read by FUN_00066C30 at callsite 0x66C3C through the 8-point uint16 leaf
-         0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x22240 of
-         a function-pointer list. The maximum with the primary floor words fixes the 1/512
-         degree domain. Stock bytes are identical to the primary table 0x0001668C.
+         0x66c60. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by FUN_00066C30
+         at callsite 0x66C3C through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the
+         reader; its entry address is the word at 0x22240 of a function-pointer list. The
+         maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are
+         identical to the primary table 0x0001668C. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A, Second Copy"
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A, Second Copy [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1B9B8" sizex="8" endian="big">
-      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
-               coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x1B438" sizex="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x170F6  8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x17176 temp [code]
+         scaling x Stored count; axis 0x17176 temp [code]
          Exact 1ME3B target-native table at 0x170f6 bound to accessor 0x62fac through literal
-         0x63434. Read by the resolver FUN_00062FAC at callsite 0x6320E through the 8-point
-         uint16 leaf 0x2AEAC with its own literal pool words for the curve and the axis; the
-         value goes to pair 2 of the output. JK78C reads its curve in the separate function
-         FUN_00056A14. Stock bytes are identical to JK78C 0x00016A54.
+         0x63434. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The coolant-coordinate proof
+         does not prove the duration output unit. The returned table quantity is distinct from
+         its axis-coordinate quantity and from the paired command-word domain. Recorded code and
+         catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6320E through
+         the 8-point uint16 leaf 0x2AEAC with its own literal pool words for the curve and the
+         axis; the value goes to pair 2 of the output. JK78C reads its curve in the separate
+         function FUN_00056A14. Stock bytes are identical to JK78C 0x00016A54. Editor values are
+         stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Target - Cold"
+    <table type="2D" name="VVEL Duration Target - Cold [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x170F6" sizex="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17176" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
@@ -1055,41 +1141,57 @@
 
     <!-- 0x1B9C8  8 uint16  map [code]
          accessor 0x66C18; r4 operand: reviewed-target
-         scaling x/512 deg [code]; axis 0x1BD98 rpm [candidate]
+         scaling x Stored count; axis 0x1BD98 rpm
          Exact 1ME3B target-native table at 0x1b9c8 bound to accessor 0x66c18 through literal
-         0x66c50. Read by FUN_00066C18 at callsite 0x66C24 through the 8-point uint16 leaf
-         0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x2223C of
-         a function-pointer list. The maximum with the primary floor words fixes the 1/512
-         degree domain. Stock bytes are identical to the primary table 0x0001669C.
+         0x66c50. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis,
+         vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-
+         value correction or word bound preserves count arithmetic. None independently fixes 512
+         counts per physical degree. An RPM or CVTC input grid cannot establish the returned
+         shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding
+         in the finite sources. Recorded code and catalog interpretation: Read by FUN_00066C18
+         at callsite 0x66C24 through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the
+         reader; its entry address is the word at 0x2223C of a function-pointer list. The
+         maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are
+         identical to the primary table 0x0001669C. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B, Second Copy"
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B, Second Copy [stored count]"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1B9C8" sizex="8" endian="big">
-      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
-               coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x1BD98" sizex="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x163E4  16 uint16  map [code]
          accessor 0x6375E; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x178D6 temp [code]
+         scaling x Stored count; axis 0x178D6 temp [code]
          Exact 1ME3B target-native table at 0x163e4 bound to accessor 0x6375e through literal
-         0x639e4. Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf
-         0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to pairs 1 and 10
-         of its output. With the request argument set, FUN_0006375E publishes w * ROM16[0x94A8]
-         + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled by 0.05, where the weight w
-         moves by ROM16[0x9474] / 32768 per pass within 0..1; JK78C ramps between two ROM words
-         instead. Stock bytes are identical to JK78C 0x00015E32.
+         0x639e4. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505,
+         vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup
+         selector do not establish the ordinate unit. The returned table quantity is distinct
+         from its axis-coordinate quantity and from the paired command-word domain. Recorded
+         code and catalog interpretation: Read by FUN_0006375E at callsite 0x63894 through the
+         16-point uint16 leaf 0x2AF88; the resolver FUN_00062FAC copies the result from
+         0xFFFEF468 to pairs 1 and 10 of its output. With the request argument set, FUN_0006375E
+         publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled
+         by 0.05, where the weight w moves by ROM16[0x9474] / 32768 per pass within 0..1; JK78C
+         ramps between two ROM words instead. Stock bytes are identical to JK78C 0x00015E32.
+         Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Target - Start-up"
+    <table type="2D" name="VVEL Duration Target - Start-up [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x163E4" sizex="16" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Selected Temperature [degC]" storagetype="uint16"
              storageaddress="0x178D6" sizex="16" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
@@ -1099,58 +1201,68 @@
 
     <!-- 0x1027C  8x8 uint16  map [code]
          accessor 0x7448C; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; Y Axis 0x173B6 rpm [code]; X Axis 0x173A6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x173B6 rpm; X Axis 0x173A6 load
          Exact 1ME3B target-native table at 0x1027c bound to accessor 0x7448c through literal
-         0x75244. Read by FUN_0007448C at callsites 0x750AE and 0x75176 through the 8x8 uint16
-         leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E << 2), the 12.5 RPM per count engine-
-         speed word in the 3.125 RPM domain on the first axis and the stack coordinate the load
-         byte 0xFFFE8034 << 8, the byte that indexes the ignition mode surfaces in FUN_000797CC
-         on the second axis. The same dispatcher takes the throttled curve 0x000173D6 for state
-         codes 1 and 3, so the word shares the 0.05 domain of that curve. The resolver pair of
-         modes 12 and 13 is a separate pair of surfaces with its own axes.
+         0x75244. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The common word-domain channel
+         supports a numeric relationship to the throttled curve, not a physical degree unit or
+         execution of a float multiply at this lookup. The returned table quantity is distinct
+         from its axis-coordinate quantity and from the paired command-word domain. Recorded
+         code and catalog interpretation: Read by FUN_0007448C at callsites 0x750AE and 0x75176
+         through the 8x8 uint16 leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E << 2), the 12.5
+         RPM per count engine-speed word in the 3.125 RPM domain on the first axis and the stack
+         coordinate the load byte 0xFFFE8034 << 8, the byte that indexes the ignition mode
+         surfaces in FUN_000797CC on the second axis. The same dispatcher takes the throttled
+         curve 0x000173D6 for state codes 1 and 3, so the word shares the 0.05 domain of that
+         curve. The resolver pair of modes 12 and 13 is a separate pair of surfaces with its own
+         axes. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle"
+    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x1027C" sizex="8" sizey="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x173A6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.0030517578125"
-                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
-                 coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x173A6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x173B6" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x102FC  8x8 uint16  map [code]
          accessor 0x7448C; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; Y Axis 0x173B6 rpm [code]; X Axis 0x173A6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x173B6 rpm; X Axis 0x173A6 load
          Exact 1ME3B target-native table at 0x102fc bound to accessor 0x7448c through literal
-         0x7524c. Read by FUN_0007448C at callsites 0x750CC and 0x75198 through the 8x8 uint16
-         leaf 0x29EC0 with the coordinates and axes of the state code 5 surface 0x0001027C.
+         0x7524c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared dispatcher and axis
+         inputs do not establish physical degrees for this returned word. The returned table
+         quantity is distinct from its axis-coordinate quantity and from the paired command-word
+         domain. Recorded code and catalog interpretation: Read by FUN_0007448C at callsites
+         0x750CC and 0x75198 through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes
+         of the state code 5 surface 0x0001027C. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle, Knock"
+    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle, Knock [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x102FC" sizex="8" sizey="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x173A6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.0030517578125"
-                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
-                 coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x173A6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x173B6" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1196,18 +1308,26 @@
 
     <!-- 0x17136  8 uint16  map [code]
          accessor 0x6375E; r4 operand: reviewed-target
-         scaling x*0.05 deg [candidate]; axis 0x17186 temp [code]
+         scaling x Stored count; axis 0x17186 temp [code]
          Exact 1ME3B target-native table at 0x17136 bound to accessor 0x6375e through literal
-         0x639d0. Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf
-         0x2AEAC indexed by the low byte of its stack argument, the byte that indexes the cold
-         duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight w moves by
-         ROM16[0x9474] / 32768 per pass within 0..1.
+         0x639d0. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and
+         defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505,
+         vvel_duration_startup_blend_axis/axis. A normalized blend weight establishes
+         interpolation arithmetic, not the degree unit of either endpoint or ordinate. The
+         returned table quantity is distinct from its axis-coordinate quantity and from the
+         paired command-word domain. Recorded code and catalog interpretation: Read by
+         FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf 0x2AEAC indexed by the
+         low byte of its stack argument, the byte that indexes the cold duration curve
+         0x000170F6 in the resolver FUN_00062FAC. The weight w moves by ROM16[0x9474] / 32768
+         per pass within 0..1. Editor values are stored counts; no engineering conversion is
+         established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="VVEL Duration Target - Start-up Blend"
+    <table type="2D" name="VVEL Duration Target - Start-up Blend [stored count]"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
            storageaddress="0x17136" sizex="8" endian="big">
-      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
-               fineincrement="0.05" coarseincrement="0.5"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17186" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
@@ -1217,19 +1337,27 @@
 
     <!-- 0x17496  16 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling (x-32768)*0.5 degCA [candidate]; axis 0x17546 rpm [code]
+         scaling x Stored count; axis 0x17546 rpm [code]
          Exact 1ME3B target-native table at 0x17496 bound to accessor 0x62fac through literal
-         0x6340c. Read by the resolver FUN_00062FAC at callsite 0x6315E through the 16-point
-         uint16 leaf 0x2AF88 and converted with the float literals 0xC6800000 at 0x63410 and
-         0x3F000000 at 0x63414. Stock bytes are identical to 1ND0A 0x000173C2: the curve peaks
-         at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. Degrees of cam advance are a
-         vendor-catalog candidate for the scaled value.
+         0x6340c. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5
+         degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout
+         interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505,
+         intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered
+         numeric output only where the recorded conversion path is given. It does not establish
+         physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A
+         proved RPM or temperature coordinate does not prove the table output unit. Recorded
+         code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6315E
+         through the 16-point uint16 leaf 0x2AF88 and converted with the float literals
+         0xC6800000 at 0x63410 and 0x3F000000 at 0x63414. Stock bytes are identical to 1ND0A
+         0x000173C2: the curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0.
+         Degrees of cam advance are a vendor-catalog candidate for the scaled value. Editor
+         values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Intake CVTC Target - Running"
+    <table type="2D" name="Intake CVTC Target - Running [stored count]"
            category="Variable Valve Timing//Intake Cam" storagetype="uint16"
            storageaddress="0x17496" sizex="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-32768)*0.5" to_byte="x*2+32768" format="0.0"
-               fineincrement="0.5" coarseincrement="2.0"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17546" sizex="16" endian="big">
         <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
@@ -1239,46 +1367,60 @@
 
     <!-- 0x1087C  16x16 uint16  map [code]
          accessor 0x63534; r4 operand: reviewed-target
-         scaling (x-32768)*0.5 degCA [candidate]; Y Axis 0x174B6 rpm [code]; X Axis 0x174D6 load
-         [code]
+         scaling x Stored count; Y Axis 0x174B6 rpm; X Axis 0x174D6 load
          Exact 1ME3B target-native table at 0x1087c bound to accessor 0x63534 through literal
-         0x637dc. Read by FUN_00063534 at callsite 0x63590 through the 16x16 uint16 leaf 0x2A0B4
-         with r7 on the first axis and the stack coordinate on the second axis; the converted
-         value goes to the pair 3 slot 0xFFFEF45C with the float literals 0xC6800000 at 0x637E4
-         and 0x3F000000 at 0x637E8. Stock bytes are identical to JK78C 0x000108CE.
+         0x637dc. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5
+         degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout
+         interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver
+         arithmetic establishes a centered numeric output only where the recorded conversion
+         path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero
+         counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the
+         table output unit. Recorded code and catalog interpretation: Read by FUN_00063534 at
+         callsite 0x63590 through the 16x16 uint16 leaf 0x2A0B4 with r7 on the first axis and
+         the stack coordinate on the second axis; the converted value goes to the pair 3 slot
+         0xFFFEF45C with the float literals 0xC6800000 at 0x637E4 and 0x3F000000 at 0x637E8.
+         Stock bytes are identical to JK78C 0x000108CE. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Intake CVTC Target - Throttled"
+    <table type="3D" name="Intake CVTC Target - Throttled [stored count]"
            category="Variable Valve Timing//Intake Cam" storagetype="uint16"
            storageaddress="0x1087C" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-32768)*0.5" to_byte="x*2+32768" format="0.0"
-               fineincrement="0.5" coarseincrement="2.0"/>
-      <table type="X Axis" name="Engine Load [%]" storagetype="uint16" storageaddress="0x174D6"
-             sizex="16" endian="big">
-        <scaling units="%" expression="x/655.35" to_byte="x*655.35" format="0.0"
-                 fineincrement="0.5" coarseincrement="5"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x174D6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x174B6" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
-                 fineincrement="3.125" coarseincrement="12.5"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
     <!-- 0x17146  8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
-         scaling (x-32768)*0.5 degCA [candidate]; axis 0x17176 temp [code]
+         scaling x Stored count; axis 0x17176 temp [code]
          Exact 1ME3B target-native table at 0x17146 bound to accessor 0x62fac through literal
-         0x63438. Read by the resolver FUN_00062FAC at callsite 0x6322A through the 8-point
-         uint16 leaf 0x2AEAC with its own literal pool word and the cold axis 0x00017176. The
-         uniform stock block repeats elsewhere in the image; the binding rests on the call that
-         follows the cold duration curve and on pair 2 of the output. Stock bytes are identical
-         to JK78C 0x00016A94.
+         0x63438. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5
+         degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout
+         interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver
+         arithmetic establishes a centered numeric output only where the recorded conversion
+         path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero
+         counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the
+         table output unit. Recorded code and catalog interpretation: Read by the resolver
+         FUN_00062FAC at callsite 0x6322A through the 8-point uint16 leaf 0x2AEAC with its own
+         literal pool word and the cold axis 0x00017176. The uniform stock block repeats
+         elsewhere in the image; the binding rests on the call that follows the cold duration
+         curve and on pair 2 of the output. Stock bytes are identical to JK78C 0x00016A94.
+         Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Intake CVTC Target - Cold"
+    <table type="2D" name="Intake CVTC Target - Cold [stored count]"
            category="Variable Valve Timing//Intake Cam" storagetype="uint16"
            storageaddress="0x17146" sizex="8" endian="big">
-      <scaling units="degCA [cand]" expression="(x-32768)*0.5" to_byte="x*2+32768" format="0.0"
-               fineincrement="0.5" coarseincrement="2.0"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17176" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
@@ -1700,30 +1842,36 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
-         0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
-         accessor directly after the default surface 0x0000A0F4 with the same coordinates and
-         the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
-         identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this
-         surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5.
-         FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with
-         the default channel. FUN_000486E0 selects a channel by a state code, where code 2
-         selects this surface, code 8 selects the curve, and every other code selects the
-         default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte
-         0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte
-         0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is
-         set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A
-         accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from
-         the JK78C surface 0x00009FBA.
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
+         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
+         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
+         candidate interpretation, not code-level physical unity. The default registry record
+         does not name the alternate table. It must not be copied as if it did. No engine-bank
+         identity follows from the table pair. Recorded code and catalog interpretation: Read by
+         FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8
+         leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the
+         same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface
+         carries an engine-bank identity. Both accessors store the default result in the channel
+         byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis
+         0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the
+         held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a
+         state code, where code 2 selects this surface, code 8 selects the curve, and every
+         other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the
+         channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel
+         of state byte 0xFFFEB850, or against the held output while the transition flag
+         0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair
+         reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock
+         cells differ from the JK78C surface 0x00009FBA. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate"
+    <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A1F4"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
-               fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D26"
              sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
@@ -1852,18 +2000,27 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
-         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
-         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
-         address; the structure export recovers no instruction that reads them.
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Engineering conversion is
+         unestablished. Retained hypothesis: x-64 deg; proposed editor-grid inverse x+64.
+         Origin: the retained layout interpretation and defs/JK08A.findings.csv:41,
+         ignition_gated_surface_1/tbl. The canonical PID0E closure is not the executed target-
+         native path. Equal surface bytes and a common field/coordinator role do not reproduce
+         that complete target arithmetic and diagnostic publication. x-64 applies to the low-
+         seven field only; applying it to the full byte would include the independent flag. This
+         is an adjustment hypothesis, not absolute spark angle. Recorded code and catalog
+         interpretation: Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal
+         words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no
+         instruction that reads them. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+    <table type="3D"
+           name="Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A344" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1879,18 +2036,25 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
-         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
-         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
-         that reads them.
+         0x79ca8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the JK78C
+         cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address;
+         the structure export recovers no instruction that reads them. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 1"
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 1 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A444" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1906,27 +2070,35 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
-         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79410 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 3"
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A544" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1934,27 +2106,35 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
-         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d4. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x7940C hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 4"
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 4 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A644" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1962,27 +2142,35 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
-         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d0. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79408 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 5"
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 5 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A5C4" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1990,27 +2178,36 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
-         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799cc. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79400 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    <table type="3D"
+           name="Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x0A604" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2220,30 +2417,36 @@
          project map-switching patch
          canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
-         0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
-         accessor directly after the default surface 0x0000A0F4 with the same coordinates and
-         the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
-         identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this
-         surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5.
-         FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with
-         the default channel. FUN_000486E0 selects a channel by a state code, where code 2
-         selects this surface, code 8 selects the curve, and every other code selects the
-         default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte
-         0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte
-         0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is
-         set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A
-         accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from
-         the JK78C surface 0x00009FBA.
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
+         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
+         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
+         candidate interpretation, not code-level physical unity. The default registry record
+         does not name the alternate table. It must not be copied as if it did. No engine-bank
+         identity follows from the table pair. Recorded code and catalog interpretation: Read by
+         FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8
+         leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the
+         same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface
+         carries an engine-bank identity. Both accessors store the default result in the channel
+         byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis
+         0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the
+         held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a
+         state code, where code 2 selects this surface, code 8 selects the curve, and every
+         other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the
+         channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel
+         of state byte 0xFFFEB850, or against the held output while the transition flag
+         0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair
+         reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock
+         cells differ from the JK78C surface 0x00009FBA. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate"
+    <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BD00"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
-               fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D26"
              sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
@@ -2377,18 +2580,27 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
-         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
-         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
-         address; the structure export recovers no instruction that reads them.
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Engineering conversion is
+         unestablished. Retained hypothesis: x-64 deg; proposed editor-grid inverse x+64.
+         Origin: the retained layout interpretation and defs/JK08A.findings.csv:41,
+         ignition_gated_surface_1/tbl. The canonical PID0E closure is not the executed target-
+         native path. Equal surface bytes and a common field/coordinator role do not reproduce
+         that complete target arithmetic and diagnostic publication. x-64 applies to the low-
+         seven field only; applying it to the full byte would include the independent flag. This
+         is an adjustment hypothesis, not absolute spark angle. Recorded code and catalog
+         interpretation: Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal
+         words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no
+         instruction that reads them. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+    <table type="3D"
+           name="Map 2 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13B500" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2405,18 +2617,25 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
-         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
-         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
-         that reads them.
+         0x79ca8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the JK78C
+         cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address;
+         the structure export recovers no instruction that reads them. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 1"
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 1 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13B900" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2433,27 +2652,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
-         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79410 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 3"
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E180" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2462,27 +2689,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
-         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d4. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x7940C hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 4"
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 4 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E280" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2491,27 +2726,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
-         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d0. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79408 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 5"
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 5 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E380" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2520,27 +2763,36 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
-         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799cc. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79400 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    <table type="3D"
+           name="Map 2 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E480" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2756,30 +3008,36 @@
          project map-switching patch
          canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
-         0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
-         accessor directly after the default surface 0x0000A0F4 with the same coordinates and
-         the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
-         identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this
-         surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5.
-         FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with
-         the default channel. FUN_000486E0 selects a channel by a state code, where code 2
-         selects this surface, code 8 selects the curve, and every other code selects the
-         default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte
-         0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte
-         0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is
-         set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A
-         accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from
-         the JK78C surface 0x00009FBA.
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
+         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
+         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
+         candidate interpretation, not code-level physical unity. The default registry record
+         does not name the alternate table. It must not be copied as if it did. No engine-bank
+         identity follows from the table pair. Recorded code and catalog interpretation: Read by
+         FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8
+         leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the
+         same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface
+         carries an engine-bank identity. Both accessors store the default result in the channel
+         byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis
+         0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the
+         held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a
+         state code, where code 2 selects this surface, code 8 selects the curve, and every
+         other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the
+         channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel
+         of state byte 0xFFFEB850, or against the held output while the transition flag
+         0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair
+         reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock
+         cells differ from the JK78C surface 0x00009FBA. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate"
+    <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BE00"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
-               fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D26"
              sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
@@ -2913,18 +3171,27 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
-         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
-         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
-         address; the structure export recovers no instruction that reads them.
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Engineering conversion is
+         unestablished. Retained hypothesis: x-64 deg; proposed editor-grid inverse x+64.
+         Origin: the retained layout interpretation and defs/JK08A.findings.csv:41,
+         ignition_gated_surface_1/tbl. The canonical PID0E closure is not the executed target-
+         native path. Equal surface bytes and a common field/coordinator role do not reproduce
+         that complete target arithmetic and diagnostic publication. x-64 applies to the low-
+         seven field only; applying it to the full byte would include the independent flag. This
+         is an adjustment hypothesis, not absolute spark angle. Recorded code and catalog
+         interpretation: Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal
+         words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no
+         instruction that reads them. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+    <table type="3D"
+           name="Map 3 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13B600" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2941,18 +3208,25 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
-         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
-         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
-         that reads them.
+         0x79ca8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the JK78C
+         cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address;
+         the structure export recovers no instruction that reads them. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 1"
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 1 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13BA00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2969,27 +3243,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
-         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79410 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 3"
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E1C0" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -2998,27 +3280,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
-         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d4. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x7940C hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 4"
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 4 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E2C0" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3027,27 +3317,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
-         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d0. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79408 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 5"
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 5 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E3C0" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3056,27 +3354,36 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
-         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799cc. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79400 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    <table type="3D"
+           name="Map 3 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E4C0" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3292,30 +3599,36 @@
          project map-switching patch
          canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
-         0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
-         accessor directly after the default surface 0x0000A0F4 with the same coordinates and
-         the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
-         identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this
-         surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5.
-         FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with
-         the default channel. FUN_000486E0 selects a channel by a state code, where code 2
-         selects this surface, code 8 selects the curve, and every other code selects the
-         default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte
-         0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte
-         0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is
-         set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A
-         accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from
-         the JK78C surface 0x00009FBA.
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
+         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
+         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
+         candidate interpretation, not code-level physical unity. The default registry record
+         does not name the alternate table. It must not be copied as if it did. No engine-bank
+         identity follows from the table pair. Recorded code and catalog interpretation: Read by
+         FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8
+         leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the
+         same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface
+         carries an engine-bank identity. Both accessors store the default result in the channel
+         byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis
+         0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the
+         held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a
+         state code, where code 2 selects this surface, code 8 selects the curve, and every
+         other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the
+         channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel
+         of state byte 0xFFFEB850, or against the held output while the transition flag
+         0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair
+         reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock
+         cells differ from the JK78C surface 0x00009FBA. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate"
+    <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BF00"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
-               fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D26"
              sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
@@ -3449,18 +3762,27 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
-         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
-         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
-         address; the structure export recovers no instruction that reads them.
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Engineering conversion is
+         unestablished. Retained hypothesis: x-64 deg; proposed editor-grid inverse x+64.
+         Origin: the retained layout interpretation and defs/JK08A.findings.csv:41,
+         ignition_gated_surface_1/tbl. The canonical PID0E closure is not the executed target-
+         native path. Equal surface bytes and a common field/coordinator role do not reproduce
+         that complete target arithmetic and diagnostic publication. x-64 applies to the low-
+         seven field only; applying it to the full byte would include the independent flag. This
+         is an adjustment hypothesis, not absolute spark angle. Recorded code and catalog
+         interpretation: Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal
+         words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no
+         instruction that reads them. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+    <table type="3D"
+           name="Map 4 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13B700" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3477,18 +3799,25 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
-         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
-         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
-         that reads them.
+         0x79ca8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the JK78C
+         cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address;
+         the structure export recovers no instruction that reads them. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 1"
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 1 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13BB00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3505,27 +3834,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
-         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79410 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 3"
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E200" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3534,27 +3871,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
-         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d4. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x7940C hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 4"
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 4 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E300" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3563,27 +3908,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
-         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d0. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79408 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 5"
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 5 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E400" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3592,27 +3945,36 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
-         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799cc. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79400 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    <table type="3D"
+           name="Map 4 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E500" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -3828,30 +4190,36 @@
          project map-switching patch
          canonical accessor 0x3357C, 0x48564; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13D06 rpm [candidate]; X Axis 0x13D26 load [candidate]
          Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal
-         0x33ed8, accessor 0x48564 through literal 0x48b7c. Read by FUN_0003357C at callsite
-         0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each
-         accessor directly after the default surface 0x0000A0F4 with the same coordinates and
-         the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank
-         identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this
-         surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5.
-         FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with
-         the default channel. FUN_000486E0 selects a channel by a state code, where code 2
-         selects this surface, code 8 selects the curve, and every other code selects the
-         default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte
-         0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte
-         0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is
-         set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A
-         accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from
-         the JK78C surface 0x00009FBA.
+         0x33ed8, accessor 0x48564 through literal 0x48b7c. Engineering conversion is
+         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
+         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
+         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
+         candidate interpretation, not code-level physical unity. The default registry record
+         does not name the alternate table. It must not be copied as if it did. No engine-bank
+         identity follows from the table pair. Recorded code and catalog interpretation: Read by
+         FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8
+         leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the
+         same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface
+         carries an engine-bank identity. Both accessors store the default result in the channel
+         byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis
+         0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the
+         held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a
+         state code, where code 2 selects this surface, code 8 selects the curve, and every
+         other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the
+         channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel
+         of state byte 0xFFFEB850, or against the held output while the transition flag
+         0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair
+         reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock
+         cells differ from the JK78C surface 0x00009FBA. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate"
+    <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13C000"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
-               fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D26"
              sizex="16" endian="big">
         <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
@@ -3985,18 +4353,27 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
-         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
-         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
-         address; the structure export recovers no instruction that reads them.
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Engineering conversion is
+         unestablished. Retained hypothesis: x-64 deg; proposed editor-grid inverse x+64.
+         Origin: the retained layout interpretation and defs/JK08A.findings.csv:41,
+         ignition_gated_surface_1/tbl. The canonical PID0E closure is not the executed target-
+         native path. Equal surface bytes and a common field/coordinator role do not reproduce
+         that complete target arithmetic and diagnostic publication. x-64 applies to the low-
+         seven field only; applying it to the full byte would include the independent flag. This
+         is an adjustment hypothesis, not absolute spark angle. Recorded code and catalog
+         interpretation: Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal
+         words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no
+         instruction that reads them. Editor values are stored counts; no engineering conversion
+         is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+    <table type="3D"
+           name="Map 5 - Ignition Timing Surface - VVEL State Codes 2 and 8 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13B800" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -4013,18 +4390,25 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
          Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
-         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
-         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
-         that reads them.
+         0x79ca8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the JK78C
+         cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address;
+         the structure export recovers no instruction that reads them. Editor values are stored
+         counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 1"
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 1 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13BC00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -4041,27 +4425,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
-         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d8. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79410 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 3"
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 3 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E240" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -4070,27 +4462,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
-         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d4. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x7940C hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 4"
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 4 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E340" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -4099,27 +4499,35 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
-         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799d0. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79408 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 5"
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 5 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E440" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -4128,27 +4536,36 @@
          project map-switching patch
          canonical accessor 0x797CC; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
-         [candidate]
+         scaling x Stored count; Y Axis 0x13DCE rpm; X Axis 0x13DC6 load
          Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
-         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
-         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
-         same address; the structure export recovers no instruction that reads them.
+         0x799cc. Engineering conversion is unestablished. Retained hypothesis: x-64 deg;
+         proposed editor-grid inverse x+64. Origin: the retained layout interpretation and
+         defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. The canonical PID0E closure
+         is not the executed target-native path. Equal surface bytes and a common
+         field/coordinator role do not reproduce that complete target arithmetic and diagnostic
+         publication. x-64 applies to the low-seven field only; applying it to the full byte
+         would include the independent flag. This is an adjustment hypothesis, not absolute
+         spark angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A
+         surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this
+         coordinator. The literal words 0x79400 hold the same address; the structure export
+         recovers no instruction that reads them. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    <table type="3D"
+           name="Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x13E540" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
+             storageaddress="0x13DC6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
              storageaddress="0x13DCE" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 

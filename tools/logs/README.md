@@ -322,6 +322,11 @@ fixed and rotating telemetry value, and six stock-CAN context values. Missing
 rotating contexts use IEEE 754 `NaN`. Candidate engineering transforms carry
 `*` in the channel units, matching the dashboard.
 
+The gross torque-model state, bounded torque request, shared area-domain
+target, and both flow-column coordinates use `cnt` and identity transforms.
+This is a storage presentation without an engineering-scale assertion. Their
+source notes retain the unresolved physical-unit hypotheses and references.
+
 No verified latitude or longitude encoding exists in the captured primary CAN
 traffic, so this converter and the dashboard recorder declare no GPS channels.
 `csv_to_mlg.py` still emits `gps_lat` and `gps_lon` for CONSULT recordings that

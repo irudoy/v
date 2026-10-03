@@ -819,10 +819,13 @@ class AscdMainVehicleTest(unittest.TestCase):
         with VARS.open(encoding="utf-8", newline="") as source:
             variables = {row["addr"]: row for row in csv.DictReader(source)}
         stable = variables[f"{self.symbols['button_state']:08x}"]
-        self.assertIn(f"spec:hardware-results:{KEY_MAIN}", stable["evidence"].split(";"))
-        self.assertIn(f"0x{main:02X} as MAIN", stable["semantics"])
+        self.assertNotIn(f"spec:hardware-results:{KEY_MAIN}", stable["evidence"].split(";"))
+        self.assertEqual(stable["confidence"], "code")
+        self.assertIn(KEY_MAIN, stable["note"])
+        self.assertIn(f"accepted code 0x{main:02X} to physical MAIN presses", stable["note"])
+        self.assertIn("Those RAM/flag bindings are code-derived", stable["note"])
         self.assertIn(
-            f"the MAIN state that each press toggles is {MAIN_STATE:08x} bit "
+            f"The toggled state {MAIN_STATE:08x}.bit"
             f"{mask.bit_length() - 1}",
             stable["note"],
         )

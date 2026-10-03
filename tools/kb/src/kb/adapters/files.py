@@ -24,8 +24,9 @@
   source names the `7mfk` symbol of its meaning; the `fields` check verifies
   the signal, the source, and the scale of each field. The `can_telemetry`
   feature requires every field, and `telemetry_units` of the stash holds the
-  `7mfk` symbols of the source meanings whose files state their unit, whose
-  unit the ledgers leave to the file.
+  `7mfk` symbols whose numeric source meanings own their unit, including an
+  absent unit. Enumerations and bit fields without a file unit retain the
+  ledger's storage description.
 - A signal file `signal/<slug>.toml` gives the signal entity with its keys;
   `observes` lists meaning references, which name the `7mfk` symbols of
   their meanings, and allocation references `<feature>.<allocation>`, which
@@ -62,7 +63,7 @@ def inputs(root):
 
 
 def declare(b, root):
-    # {(kind, name): (symbol keys by layout, whether the file states a unit)}
+    # {(kind, name): (symbol keys by layout, whether the file owns the unit)}
     # of the meaning files, and [(name, source reference)] of the `ecu_ram`
     # fields.
     meanings, sources, fields = {}, [], []
@@ -76,7 +77,9 @@ def declare(b, root):
         if kind in vocab.MEANING_KINDS:
             _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
             keys = _meaning(b, kind, name, document, src)
-            meanings[(kind, name)] = (keys, "unit" in document)
+            owns_unit = "unit" in document or not any(
+                key in document for key in ("value", "bit"))
+            meanings[(kind, name)] = (keys, owns_unit)
         elif kind == "feature":
             _feature(b, name, document, src)
         elif kind == "field":

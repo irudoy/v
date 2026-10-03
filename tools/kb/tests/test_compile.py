@@ -865,11 +865,15 @@ class NativeAdapterTest(unittest.TestCase):
 
     def test_a_layout_that_differs_keeps_its_keys_as_overrides(self):
         meaning = model().meaning_of(SymbolKey("jk78c", "axis", 0x000160CA))
-        self.assertEqual((meaning.key, meaning.props["quantity"], meaning.props["unit"]),
-                         ("vvel_duration_hot_intake_idle_axis_x/axis", "rpm", "RPM"))
+        self.assertEqual((meaning.key, meaning.props["quantity"]),
+                         ("vvel_duration_hot_intake_idle_axis_x/axis", "rpm"))
+        self.assertNotIn("unit", meaning.props)
         own = meaning.symbols["1nd"].props
-        self.assertEqual((own["quantity"], own["unit"], own["scale"], own["editor"]["name"]),
-                         ("temp", "degC", "x-50", "Coolant Temperature [degC]"))
+        self.assertEqual((own["quantity"], own["editor"]["name"]),
+                         ("temp", "Coolant Temperature [degC]"))
+        self.assertNotIn("scale", own)
+        self.assertNotIn("unit", own)
+        self.assertTrue(all("x-50 degC" in note for note in own["note"]))
         self.assertNotIn("quantity", meaning.symbols["jk78c"].props)
 
     def test_a_pointer_binding_gives_evidence_and_a_reader_link(self):
@@ -1320,6 +1324,14 @@ class TelemetryAdapterTest(unittest.TestCase):
                            "scale 'Q14 factor' gives the source meaning no keys")])
         self.assertNotIn("scale", b.entities[("field", "loose_raw")].props)
 
+    def test_a_host_count_view_declares_no_semantic_scale(self):
+        b = _declare_telemetry(_telemetry([_field(name="count_raw", scale="raw count")]),
+                               {"count_raw": "probe"})
+        self.assertEqual(b.issues, [])
+        source = b.entities[("field", "count_raw")].refs["source"][0]
+        meaning = b.finish().meaning_of(source)
+        self.assertFalse({"unit", "scale", "to_raw", "scale_level"} & meaning.props.keys())
+
     def test_a_field_carries_its_presentation_and_another_key_fails_the_schema(self):
         presentation = {"label": "Probe", "digits": 2, "group": "Probe",
                         "feed": {"key": "probe", "name": "VQ Probe", "format": "0.00",
@@ -1434,6 +1446,22 @@ class TelemetryAdapterTest(unittest.TestCase):
                         {"bit": 0, "name": "cylinder_1", "summary": "Channel 0"}]}
         self.assertEqual(telemetry.scale_text(bits), "bits: 0 CYLINDER_1, 5 CYLINDER_6")
 
+    def test_an_unscaled_ecu_source_has_only_a_host_count_view(self):
+        key = SymbolKey("7mfk", "ram", 0xFFFF18CC)
+        entity = SimpleNamespace(props={"origin": "ecu_ram"}, refs={"source": (key,)})
+        for props, expected in (({}, "raw count"),
+                                ({"unit": "Nm"}, None),
+                                ({"scale": "x"}, None),
+                                ({"scale": "x*(1/4)", "unit": "V"}, None)):
+            with self.subTest(props=props):
+                held = dict(props)
+                meaning = SimpleNamespace(props=props)
+                source_model = SimpleNamespace(meaning_of=lambda source: meaning)
+                self.assertEqual(telemetry._source(source_model, entity, {}),
+                                 {"source": key.address, "scale": expected})
+                self.assertEqual(props, held)
+                self.assertNotIn("scale_level", props)
+
     def test_the_projection_changes_only_the_scales_of_ecu_ram_fields(self):
         text = (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8")
         document = tomllib.loads(text)
@@ -1479,8 +1507,8 @@ class OverridesAdapterTest(unittest.TestCase):
     def test_a_logger_parameter_takes_units_as_unit(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1980))
         self.assertEqual(meaning.props["logparam"],
-                         {"id": "X_VQ_QH0_Flow_Potential", "unit": "QH0 Flow Potential [%]",
-                          "scale": "x*0.00152588"})
+                         {"id": "X_VQ_QH0_Flow_Potential", "unit": "QH0 Flow Potential [count]",
+                          "scale": "x"})
 
     def test_the_jk08a_entry_carries_the_keys_of_a_projection_entry(self):
         m = model()

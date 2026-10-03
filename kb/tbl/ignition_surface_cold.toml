@@ -12,10 +12,6 @@ home = "jk78c"
 cols = 16
 rows = 16
 storage = "uint8"
-unit = "deg"
-scale = "x-64"
-to_raw = "x+64"
-scale_level = "candidate"
 
 [editor]
 name = "Ignition Timing Surface - Cold Coolant"
@@ -40,9 +36,17 @@ code 7, mode 15 code 8, and every other mode code 1. The coordinator takes \
 the low seven bits of the lookup and crossfades the previous and current \
 state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."""
 note = """
-Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words \
-0x7941C, 0x7971C hold the same address; the structure export recovers no \
-instruction that reads them."""
+Engineering conversion is unestablished. Retained hypothesis: x-64 deg; \
+proposed editor-grid inverse x+64. Origin: the retained layout \
+interpretation and defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. \
+The canonical PID0E closure is not the executed target-native path. Equal \
+surface bytes and a common field/coordinator role do not reproduce that \
+complete target arithmetic and diagnostic publication. x-64 applies to the \
+low-seven field only; applying it to the full byte would include the \
+independent flag. This is an adjustment hypothesis, not absolute spark \
+angle. Recorded code and catalog interpretation: Byte-identical to the JK78C \
+cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the \
+same address; the structure export recovers no instruction that reads them."""
 
 [symbol.editor]
 name = "Ignition Timing Surface - VVEL State Code 1"
@@ -76,10 +80,18 @@ coordinator takes the low seven bits of the lookup and crossfades the \
 previous and current state values by the progress word 0xFFFEB6DC, where \
 0x8000 is 1.0."""
 note = """
-Byte-identical to the JK78C cold-coolant surface 0xA20A. The projected JK08A \
-surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the \
-gated half of the same coordinator, which the stock configuration byte \
-leaves unexecuted."""
+Engineering conversion is unestablished. Retained hypothesis: x-64 deg; \
+proposed editor-grid inverse x+64. Origin: the retained layout \
+interpretation and defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. \
+The canonical PID0E closure is not the executed target-native path. Equal \
+surface bytes and a common field/coordinator role do not reproduce that \
+complete target arithmetic and diagnostic publication. x-64 applies to the \
+low-seven field only; applying it to the full byte would include the \
+independent flag. This is an adjustment hypothesis, not absolute spark \
+angle. Recorded code and catalog interpretation: Byte-identical to the JK78C \
+cold-coolant surface 0xA20A. The projected JK08A surfaces 0x9880, 0x9980, \
+and 0x9A80 are three byte-identical copies in the gated half of the same \
+coordinator, which the stock configuration byte leaves unexecuted."""
 
 [symbol.editor]
 name = "Ignition Timing Surface - VVEL State Code 1"
@@ -107,10 +119,19 @@ at = "1nd:000752b4"
 layout = "jk78c"
 address = "0000a20a"
 note = """
-Byte-identical to the 1ND0A surface 0xA510 and the 1ME3B surface 0xA444. The \
-projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical \
-copies in the gated half of the same coordinator, which the stock \
-configuration byte leaves unexecuted."""
+Engineering conversion is unestablished. Retained hypothesis: x-64 deg; \
+proposed editor-grid inverse x+64. Origin: the retained layout \
+interpretation and defs/JK08A.findings.csv:41, ignition_gated_surface_1/tbl. \
+The canonical PID0E closure is not the executed target-native path. Equal \
+surface bytes and a common field/coordinator role do not reproduce that \
+complete target arithmetic and diagnostic publication. x-64 applies to the \
+low-seven field only; applying it to the full byte would include the \
+independent flag. This is an adjustment hypothesis, not absolute spark \
+angle. Recorded code and catalog interpretation: Byte-identical to the 1ND0A \
+surface 0xA510 and the 1ME3B surface 0xA444. The projected JK08A surfaces \
+0x95CA, 0x96CA, and 0x97CA are three byte-identical copies in the gated half \
+of the same coordinator, which the stock configuration byte leaves \
+unexecuted."""
 
 [[symbol.evidence]]
 kind = "l0"
