@@ -18,13 +18,28 @@ coarse = 5
 layout = "1me3b"
 address = "00017186"
 note = """
-Eight-point axis 100..170 = 50..120 degC of the start-up blend target; the \
-coordinate is the coolant-coded byte of the cold duration curve."""
+1ME3B: 8-point nominal encoded-temperature axis 100..170 = 50..120 degC \
+under x-50, inverse x+50. The coordinate is current coolant. Current coolant \
+is the snapshot of P; selected temperature uses P on refresh or a retained \
+previous selected byte. Equality with the retained community PID05 decoder \
+requires T>=10, x=T, and corresponding samples. The grid is not a sensor \
+inverse; no hardware proof."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "1me3b:000639cc"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+key = "test_vvel_duration_startup_blend_axis_nominal_temperature"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.temperature-axis-scale.md"
 
 [[status]]
 layout = "1nd"

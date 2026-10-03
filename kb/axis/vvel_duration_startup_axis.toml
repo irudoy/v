@@ -18,25 +18,47 @@ coarse = 5
 layout = "1me3b"
 address = "000178d6"
 note = """
-Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; \
-stock bytes are identical to JK78C 0x00017204."""
+1ME3B: 16-point nominal encoded-temperature axis 10..160 = -40..110 degC \
+under x-50, inverse x+50. The coordinate is selected temperature. Current \
+coolant is the snapshot of P; selected temperature uses P on refresh or a \
+retained previous selected byte. Equality with the retained community PID05 \
+decoder requires T>=10, x=T, and corresponding samples. The grid is not a \
+sensor inverse; no hardware proof."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "1me3b:000639e0"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+key = "test_vvel_duration_startup_axis_nominal_temperature"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.temperature-axis-scale.md"
+
 [[symbol]]
 layout = "1nd"
 address = "00017812"
 note = [
     """
-1ND0A: Sixteen-point axis 10..160 = -40..110 degC of the start-up duration \
-curve; stock bytes are identical to JK78C 0x00017204.""",
+1ND0A: 16-point nominal encoded-temperature axis 10..160 = -40..110 degC \
+under x-50, inverse x+50. The coordinate is selected temperature. Current \
+coolant is the snapshot of P; selected temperature uses P on refresh or a \
+retained previous selected byte. Equality with the retained community PID05 \
+decoder requires T>=10, x=T, and corresponding samples. The grid is not a \
+sensor inverse; no hardware proof.""",
     """
-1ND3B: Sixteen-point axis 10..160 = -40..110 degC of the start-up duration \
-curve; stock bytes are identical to JK78C 0x00017204. 1ND3B shares the 1ND0A \
-code layout and its stock bytes at this address.""",
+1ND3B: 16-point nominal encoded-temperature axis 10..160 = -40..110 degC \
+under x-50, inverse x+50. The coordinate is selected temperature. Current \
+coolant is the snapshot of P; selected temperature uses P on refresh or a \
+retained previous selected byte. Equality with the retained community PID05 \
+decoder requires T>=10, x=T, and corresponding samples. The grid is not a \
+sensor inverse; no hardware proof.""",
 ]
 
 [[symbol.evidence]]
@@ -44,17 +66,43 @@ kind = "l0"
 supports = "identity"
 at = "1nd:0005fb04"
 
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+key = "test_vvel_duration_startup_axis_nominal_temperature"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.temperature-axis-scale.md"
+
 [[symbol]]
 layout = "jk78c"
 address = "00017204"
 note = """
-Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; \
-the coordinate is the selected temperature 0xFFFF1066."""
+JK78C: 16-point nominal encoded-temperature axis 10..160 = -40..110 degC \
+under x-50, inverse x+50. The coordinate is selected temperature. Current \
+coolant is the snapshot of P; selected temperature uses P on refresh or a \
+retained previous selected byte. Equality with the retained community PID05 \
+decoder requires T>=10, x=T, and corresponding samples. The grid is not a \
+sensor inverse; no hardware proof."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056cbc"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+key = "test_vvel_duration_startup_axis_nominal_temperature"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/VQ37.temperature-axis-scale.md"
 
 [[link]]
 type = "reader"

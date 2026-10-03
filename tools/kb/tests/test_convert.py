@@ -47,5 +47,69 @@ class ConvertTest(unittest.TestCase):
         self.assertEqual(convert.differences(expected, expected), [])
 
 
+class NativeNoteConversionTest(unittest.TestCase):
+    def test_equivalent_image_notes_keep_the_owner_paragraphs(self):
+        cases = (
+            (("JK78C",), "JK78C: Bounded grid.", "Bounded grid."),
+            (("1ME3B",), "1ME3B: Current snapshot.", "Current snapshot."),
+            (("1ND0A", "1ND3B"),
+             ["1ND0A: Same nominal grid.", "1ND3B: Same nominal grid."],
+             "Same nominal grid."),
+            (("1ND0A", "1ND3B"),
+             ["1ND0A: First image boundary.", "1ND3B: Second image boundary."],
+             ["1ND0A: First image boundary.", "1ND3B: Second image boundary."]),
+            (("1ND3B",), "1ND3B: Carrier-only boundary.", "Carrier-only boundary."),
+        )
+        for carriers, held, incoming in cases:
+            with self.subTest(carriers=carriers, held=held):
+                expected = convert._notes(held)
+                found = convert._native_notes(held, incoming, carriers, "probe/axis")
+                self.assertEqual(found, expected)
+                for image in carriers:
+                    self.assertEqual(native._note(found, carriers, image, "probe/axis"),
+                                     native._note(convert._notes(incoming), carriers, image,
+                                                  "probe/axis"))
+
+    def test_notes_without_an_owner_keep_the_registry_text(self):
+        cases = ("Shared boundary.",
+                 ["1ND0A: First boundary.", "1ND3B: Second boundary."])
+        for incoming in cases:
+            with self.subTest(incoming=incoming):
+                self.assertEqual(convert._native_notes(None, incoming,
+                                                       ("1ND0A", "1ND3B"), "probe/axis"),
+                                 convert._notes(incoming))
+
+    def test_notes_without_registry_text_keep_the_owner(self):
+        held = ["1ND0A: First boundary.", "1ND3B: Second boundary."]
+        self.assertEqual(convert._native_notes(held, None,
+                                               ("1ND0A", "1ND3B"), "probe/axis"), held)
+
+    def test_different_or_incomplete_notes_are_not_discarded(self):
+        cases = (
+            (("JK78C",), ["JK78C: Original boundary."], ["Different boundary."]),
+            (("1ND0A", "1ND3B"), ["1ND0A: Shared boundary."], ["Shared boundary."]),
+            (("1ND0A", "1ND3B"),
+             ["1ND0A: First boundary.", "1ND3B: Second boundary."],
+             ["1ND0A: First boundary.", "1ND3B: Changed boundary."]),
+            (("JK78C",), ["JK78C: Exact boundary."], ["Exact boundary. "]),
+        )
+        for carriers, held, incoming in cases:
+            with self.subTest(carriers=carriers, held=held):
+                found = convert._native_notes(held, incoming, carriers, "probe/axis")
+                self.assertEqual(found, held + [note for note in incoming if note not in held])
+                with self.assertRaises(KbError) as error:
+                    native._note(found, carriers, carriers[-1], "probe/axis")
+                self.assertEqual(error.exception.code, 3)
+
+    def test_ambiguous_owner_notes_still_refuse(self):
+        cases = (["JK78C: First boundary.", "Unlabelled boundary."],
+                 ["JK78C: First boundary.", "JK78C: Second boundary."])
+        for held in cases:
+            with self.subTest(held=held):
+                with self.assertRaises(KbError) as error:
+                    convert._native_notes(held, "First boundary.", ("JK78C",), "probe/axis")
+                self.assertEqual(error.exception.code, 3)
+
+
 if __name__ == "__main__":
     unittest.main()

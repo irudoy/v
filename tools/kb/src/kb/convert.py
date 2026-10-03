@@ -183,6 +183,22 @@ def _notes(value):
     return [value] if isinstance(value, str) else list(value)
 
 
+def _native_notes(held, stated, carriers, subject):
+    """Keep owner notes when every carrier projects to the registry text.
+
+    Image prefixes identify separate owner paragraphs. Their removal in the
+    projection does not create another fact to append on reconversion.
+    Non-equivalent or incomplete notes retain the ordinary strict rendering.
+    """
+    kept, incoming = _notes(held), _notes(stated)
+    if kept and incoming and all(
+            native._note(kept, carriers, image, subject)
+            == native._note(incoming, carriers, image, subject)
+            for image in carriers):
+        return kept
+    return kept + [note for note in incoming if note not in kept]
+
+
 def _stating(items, item):
     """The item of an entry that states an item of a registry: the item
     itself, or the item with the note of a correspondence row that states its
@@ -416,12 +432,18 @@ class Conversion:
                 entry[name] = symbol.props[name]
         if fact.props.get("images"):
             entry["images"] = fact.props["images"]
-        notes = entry.get("note", [])
-        notes = [notes] if isinstance(notes, str) else list(notes)
-        notes += [note for note in fact.props.get("note", ()) if note not in notes]
+        carriers = entry.get("images") or list(self.before.layouts[key.layout].images)
+        incoming = _notes(fact.props.get("note"))
+        notes = _native_notes(entry.get("note"), incoming, carriers,
+                              f"{meaning.key}@{key.layout}")
         if notes:
             entry["note"] = notes[0] if len(notes) == 1 else notes
             self.notes[key] = notes
+        # Only redundant registry prose leaves the comparison model. The
+        # owner's image-specific paragraphs and all evidence remain intact.
+        dropped = [note for note in incoming if note not in notes]
+        if dropped:
+            self.dropped[key] = dropped
         found = list(entry.get("evidence", ()))
         items = [_stating(found, _location(item)) or _location(item) for item in fact.evidence]
         self.evidence[key] = (items, fact.evidence)

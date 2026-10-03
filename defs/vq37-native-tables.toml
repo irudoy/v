@@ -910,7 +910,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; the coordinate is the selected temperature 0xFFFF1066."
+note = "16-point nominal encoded-temperature axis 10..160 = -40..110 degC under x-50, inverse x+50. The coordinate is selected temperature. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.JK78C.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_second_axis"
@@ -1903,7 +1903,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; stock bytes are identical to JK78C 0x00017204."
+note = "16-point nominal encoded-temperature axis 10..160 = -40..110 degC under x-50, inverse x+50. The coordinate is selected temperature. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ND0A.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_second_axis"
@@ -2896,7 +2896,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; stock bytes are identical to JK78C 0x00017204. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+note = "16-point nominal encoded-temperature axis 10..160 = -40..110 degC under x-50, inverse x+50. The coordinate is selected temperature. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ND3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_second_axis"
@@ -3758,7 +3758,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point axis 20..90 = -30..40 degC of the throttled ramp delay; the coordinate is the selected-temperature byte argument of FUN_00063534."
+note = "8-point nominal encoded-temperature axis 20..90 = -30..40 degC under x-50, inverse x+50. The coordinate is selected temperature. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ME3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_axis"
@@ -3891,7 +3891,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Eight-point axis 100..170 = 50..120 degC of the start-up blend target; the coordinate is the coolant-coded byte of the cold duration curve."
+note = "8-point nominal encoded-temperature axis 100..170 = 50..120 degC under x-50, inverse x+50. The coordinate is current coolant. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_throttled_axis"
@@ -4100,7 +4100,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; stock bytes are identical to JK78C 0x00017204."
+note = "16-point nominal encoded-temperature axis 10..160 = -40..110 degC under x-50, inverse x+50. The coordinate is selected temperature. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ME3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_second_axis"
