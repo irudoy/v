@@ -96,6 +96,25 @@ value = {named = ["0003deec", "0003e150", "0003e1da", "ffff114a", "ffff11f4", "f
 key = "body"
 
 [[link]]
+type = "copy"
+to = "authentic-wasp/ram"
+via = ["natural-roadrunner/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+The producer copies this word when ffff417f.bit5 is clear and ffff24c9.bit5 \
+is set."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df06"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_conditions.py"
+key = "test_rpm_override_masks_branches_and_operands_match_stock"
+
+[[link]]
 type = "input"
 to = "authentic-wasp/ram"
 layouts = ["7mfk"]
@@ -118,6 +137,46 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit5"
+via = ["natural-roadrunner/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+When bit 5 is set and ffff417f.bit5 is clear, the producer copies ffff11f4 \
+instead of the conversion."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df00"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_conditions.py"
+key = "test_rpm_override_masks_branches_and_operands_match_stock"
+
+[[link]]
+type = "selector"
+to = "nice-silkworm/ram"
+slot = "bit5"
+via = ["natural-roadrunner/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+When bit 5 is set, the producer writes zero. This branch precedes the \
+ffff24c9.bit5 test."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003def8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_conditions.py"
+key = "test_rpm_override_masks_branches_and_operands_match_stock"
 
 [[link]]
 type = "writer"

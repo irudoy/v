@@ -1670,9 +1670,7 @@ to = "ffff114a"
 effect = "converts"
 sign = "negative"
 via = ["0003deec"]
-note = """
-ffff114a = floor(0xA2C2/ffff22bc) in RPM/12.5; ffff24c9.bit5 copies ffff11f4 \
-instead and ffff417f.bit5 writes zero."""
+note = "ffff114a = floor(0xA2C2 / ffff22bc)"
 
 [[chain.step]]
 from = "ffff22bc"
