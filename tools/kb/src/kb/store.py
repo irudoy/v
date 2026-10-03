@@ -32,6 +32,7 @@ ESCAPES = {'"': '\\"', "\\": "\\\\", "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f"
 # table), an integer in hexadecimal, or a DID number in four hexadecimal
 # digits.
 PLAIN, HEX, DID = "plain", "hex", "did"
+TEXT, INTEGER, BOOLEAN, STRINGS = "text", "integer", "boolean", "strings"
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,10 @@ class Named:
 
 def _plain(*names):
     return tuple((name, PLAIN) for name in names)
+
+
+def _text(*names):
+    return tuple((name, TEXT) for name in names)
 
 
 EVIDENCE = Table(_plain(*vocab.EVIDENCE_KEYS))
@@ -128,17 +133,22 @@ ARRAYS = (("symbol", Array(SYMBOL)), ("status", Array(STATUS)), ("link", Array(L
           ("analog", Array(ANALOG)))
 
 TARGET = Table(_plain("layout", "status", "note"), sort=("layout",))
-STEP = Table(_plain("from", "to", "effect", "sign", "via", "note", "specs"))
+STEP = Table(_text("from", "to", "effect", "sign")
+             + (("via", STRINGS), ("note", TEXT), ("specs", STRINGS)))
 FEED = Table(_plain("key", "name", "format", "minimum", "maximum", "step"))
 DASHBOARD = Table(_plain("label", "digits", "unit", "hexadecimal", "group", "panel",
                          "panel_label", "order", "description") + (("feed", FEED),))
 DESIGNED = {
-    "stage": Table(_plain("title", "lane", "order", "summary")),
-    "block": Table(_plain("title", "stage", "summary", "generic", "specs", "home", "order")),
-    "endpoint": Table(_plain("title", "direction", "block", "peripheral", "summary",
-                             "registers", "functions", "specs", "order")),
-    "chain": Table(_plain("title", "summary", "quantity", "output", "specs", "home", "order")
-                   + (("step", Array(STEP)),)),
+    "stage": Table(_text("title", "lane") + (("order", INTEGER),) + _text("summary")),
+    "block": Table(_text("title", "stage", "summary")
+                   + (("generic", BOOLEAN), ("specs", STRINGS), ("home", TEXT),
+                      ("order", INTEGER))),
+    "endpoint": Table(_text("title", "direction", "block", "peripheral", "summary")
+                      + (("registers", STRINGS), ("functions", STRINGS), ("specs", STRINGS),
+                         ("order", INTEGER))),
+    "chain": Table(_text("title", "summary", "quantity", "output")
+                   + (("specs", STRINGS), ("home", TEXT), ("order", INTEGER),
+                      ("step", Array(STEP)))),
     "signal": Table(_plain("title", "domain", "priority", "coverage", "basis", "observes",
                            "note")),
     "field": Table(_plain("signal", "source", "origin", "width", "signed", "scale",

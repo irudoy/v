@@ -1397,8 +1397,7 @@ references.
   `step` array replaces the held steps in the stated order, with repeated
   calls in `via` preserved. A batch can replace steps and their meanings'
   conditions together, and the chain checks run before any file is written.
-  A key
-  outside those, a value against its schema, and an unset key that the table
+  A key outside those, a value against its schema, and an unset key that the table
   lacks are refused.
 - `kb new <kind> <layout>:<address>` starts the file of a meaning with the
   symbol at a location that holds no symbol of a meaning. The `--evidence`
@@ -1570,8 +1569,8 @@ gates keep running until the stage that replaces them.
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
-| `blocks` | Every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
-| `chains` | Every step resolves; `effect` and `sign` are in their vocabularies; a step note matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
+| `blocks` | Stages, blocks, and endpoints carry the required text metadata of the generated view; order is a positive integer where stated; named specifications are repository files; every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage | 6 |
+| `chains` | Required metadata is nonempty text, and named specifications are repository files; every step resolves; `effect` and `sign` are in their vocabularies; a step note is text and matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step | 6 |
 | `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns | 4 |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered | 2 |
 | `guard` | `.claude/settings.json` and `.codex/hooks.json` are tracked and run `tools/kb/hook.py` synchronously before every guarded tool, including the Codex `apply_patch`; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies | 2 |

@@ -6,6 +6,7 @@ while reading a registry under the check that owns them.
 """
 
 from collections import Counter, defaultdict
+from pathlib import Path
 import re
 
 from kb import match, names, repo, store, vocab
@@ -733,9 +734,55 @@ def _entity_ref(value, kind, model):
             and value[0] == kind and value in model.entities)
 
 
+def _architecture_specs(value, model):
+    if value is None:
+        return []
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        return ['specs must be an array of paths']
+    root = Path(getattr(model, 'root', repo.ROOT)).resolve()
+    found = []
+    for spec in value:
+        path = Path(spec)
+        try:
+            target = (root / path).resolve()
+            valid = (not path.is_absolute() and target.is_relative_to(root)
+                     and target.is_file())
+        except (OSError, ValueError):
+            valid = False
+        if not valid:
+            found.append(f'specs names no repository file: {spec!r}')
+    return found
+
+
+def _architecture_metadata(entity, model, check):
+    """The scalar metadata that the generated architecture view requires."""
+    required = {'stage': ('title', 'summary', 'lane'),
+                'block': ('title', 'summary'),
+                'endpoint': ('title', 'summary', 'direction', 'peripheral'),
+                'chain': ('title', 'summary', 'quantity')}[entity.kind]
+    found = [f'{field} must be a nonempty string' for field in required
+             if not isinstance(entity.props.get(field), str)
+             or not entity.props[field].strip()]
+    order = entity.props.get('order')
+    if order is not None and (isinstance(order, bool) or not isinstance(order, int) or order < 1):
+        found.append('order must be a positive integer')
+    home = entity.props.get('home')
+    if home is not None and (not isinstance(home, str) or home not in model.layouts):
+        found.append('home must name a declared layout')
+    if entity.kind == 'block' and entity.props.get('generic') is not None \
+            and not isinstance(entity.props['generic'], bool):
+        found.append('generic must be a boolean')
+    found += _architecture_specs(entity.props.get('specs'), model)
+    path = ';'.join(sorted(entity.sources))
+    return [Issue(check, path, entity.key, message) for message in found]
+
+
 def blocks(model):
     """Declared placements and endpoints resolve before a write is accepted."""
     issues = []
+    for (kind, _), entity in model.entities.items():
+        if kind in ('stage', 'block', 'endpoint'):
+            issues += _architecture_metadata(entity, model, 'blocks')
     declared = {entity.key: entity for (kind, _), entity in model.entities.items()
                 if kind == 'block'}
     for entity in declared.values():
@@ -781,6 +828,7 @@ def chains(model):
     for (kind, _), entity in model.entities.items():
         if kind != 'chain':
             continue
+        issues += _architecture_metadata(entity, model, 'chains')
         path = ';'.join(sorted(entity.sources))
         home = entity.props.get('home', CANONICAL)
         output = entity.refs.get('output', [])
@@ -791,6 +839,10 @@ def chains(model):
         pairs, destinations, following = set(), set(), defaultdict(set)
         for index, step in enumerate(entity.steps, 1):
             subject = f'{entity.key} step {index}'
+            if step.get('note') is not None and not isinstance(step['note'], str):
+                issues.append(Issue('chains', path, subject, 'note must be a string'))
+            issues += [Issue('chains', path, subject, message)
+                       for message in _architecture_specs(step.get('specs'), model)]
             if step.get('effect') not in vocab.STEP_EFFECTS:
                 issues.append(Issue('chains', path, subject, f'effect {step.get("effect")!r}'))
             if step.get('sign') not in vocab.STEP_SIGNS:

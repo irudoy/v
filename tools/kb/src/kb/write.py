@@ -311,6 +311,15 @@ def checked(spec, name, value):
                           f"{', '.join(known)}", code=2)
         return {key: checked(spec.spec(key), f"{name}.{key}", item)
                 for key, item in value.items()}
+    if spec == store.TEXT and not isinstance(value, str):
+        raise KbError(f"{name} is a string", code=2)
+    if spec == store.INTEGER and (isinstance(value, bool) or not isinstance(value, int)):
+        raise KbError(f"{name} is an integer", code=2)
+    if spec == store.BOOLEAN and not isinstance(value, bool):
+        raise KbError(f"{name} is a boolean", code=2)
+    if spec == store.STRINGS and (not isinstance(value, list)
+                                 or any(not isinstance(item, str) for item in value)):
+        raise KbError(f"{name} is an array of strings", code=2)
     if spec in (store.HEX, store.DID) and (isinstance(value, bool) or not isinstance(value, int)):
         raise KbError(f"{name} is an integer", code=2)
     if name.rpartition(".")[2] in checks.LEVEL_KEYS and value not in vocab.LEVELS:

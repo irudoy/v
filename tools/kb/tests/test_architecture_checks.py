@@ -19,11 +19,18 @@ def model():
     b.symbol('7mfk', 'fn', 0x2642c, 'fixture')
     b.symbol('jk00d', 'fn', 0x27344, 'fixture')
     b.props(function, {'level': 'code', 'block': 'calculation/block'}, 'fixture')
-    b.entity('stage', 'control', 'fixture')
-    b.entity('block', 'calculation', 'fixture', refs={'stage': [('stage', 'control')]})
-    b.entity('endpoint', 'observed', 'fixture', refs={
+    b.entity('stage', 'control', 'fixture', props={
+        'title': 'Control', 'summary': 'Control calculations.', 'lane': 'flow'})
+    b.entity('block', 'calculation', 'fixture', props={
+        'title': 'Calculation', 'summary': 'A fixture calculation.'},
+        refs={'stage': [('stage', 'control')]})
+    b.entity('endpoint', 'observed', 'fixture', props={
+        'title': 'Observed', 'summary': 'A logical observation.',
+        'direction': 'output', 'peripheral': 'RAM'}, refs={
         'block': [('block', 'calculation')], 'registers': [result], 'functions': [function]})
-    chain = b.entity('chain', 'calculation', 'fixture', props={'home': '7mfk'},
+    chain = b.entity('chain', 'calculation', 'fixture', props={
+        'home': '7mfk', 'title': 'Calculation', 'summary': 'A fixture flow.',
+        'quantity': 'Load counts'},
                      refs={'output': [result]})
     chain.steps = [{'from': source, 'to': result, 'via': [function],
                     'effect': 'converts', 'sign': 'positive'}]
@@ -41,6 +48,74 @@ def chain(model):
 def test_a_placed_function_and_logical_ram_endpoint_pass(model):
     assert checks.blocks(model) == []
     assert checks.chains(model) == []
+
+
+@pytest.mark.parametrize(('kind', 'slug', 'field'), [
+    ('stage', 'control', 'title'), ('stage', 'control', 'summary'),
+    ('stage', 'control', 'lane'), ('block', 'calculation', 'title'),
+    ('block', 'calculation', 'summary'), ('endpoint', 'observed', 'title'),
+    ('endpoint', 'observed', 'summary'), ('endpoint', 'observed', 'direction'),
+    ('endpoint', 'observed', 'peripheral'), ('chain', 'calculation', 'title'),
+    ('chain', 'calculation', 'summary'), ('chain', 'calculation', 'quantity'),
+])
+def test_architecture_entities_require_the_metadata_of_their_view(model, kind, slug, field):
+    model.entities[(kind, slug)].props.pop(field)
+    check = checks.chains if kind == 'chain' else checks.blocks
+    assert f'{field} must be a nonempty string' in messages(check, model)
+
+
+@pytest.mark.parametrize('value', ['', False, 3, {}, ['text']])
+def test_metadata_text_is_a_nonempty_string(model, value):
+    chain(model).props['title'] = value
+    assert 'title must be a nonempty string' in messages(checks.chains, model)
+
+
+@pytest.mark.parametrize('value', [0, -1, True, 1.5, '1'])
+def test_architecture_order_is_a_positive_integer(model, value):
+    chain(model).props['order'] = value
+    assert 'order must be a positive integer' in messages(checks.chains, model)
+
+
+@pytest.mark.parametrize('value', ['missing', {}, False])
+def test_architecture_home_names_a_declared_layout(model, value):
+    chain(model).props['home'] = value
+    assert 'home must name a declared layout' in messages(checks.chains, model)
+
+
+def test_generic_block_is_a_boolean(model):
+    model.entities[('block', 'calculation')].props['generic'] = 'false'
+    assert 'generic must be a boolean' in messages(checks.blocks, model)
+
+
+@pytest.mark.parametrize('value', ['defs/spec.md', [3]])
+def test_named_specs_are_an_array_of_paths(model, value):
+    chain(model).props['specs'] = value
+    assert 'specs must be an array of paths' in messages(checks.chains, model)
+
+
+def test_specs_use_the_models_repository_root(model, tmp_path):
+    model.root = tmp_path
+    (tmp_path / 'spec.md').write_text('Fixture specification.')
+    chain(model).props['specs'] = ['spec.md']
+    chain(model).steps[0]['specs'] = ['spec.md']
+    assert checks.chains(model) == []
+    chain(model).steps[0]['specs'] = ['missing.md']
+    assert 'specs names no repository file' in messages(checks.chains, model)
+
+
+@pytest.mark.parametrize('absolute', [False, True])
+def test_specs_refuse_files_outside_the_repository(model, tmp_path, absolute):
+    model.root = tmp_path / 'repo'
+    model.root.mkdir()
+    outside = tmp_path / 'outside.md'
+    outside.write_text('Outside specification.')
+    chain(model).props['specs'] = [str(outside) if absolute else '../outside.md']
+    assert 'specs names no repository file' in messages(checks.chains, model)
+
+
+def test_step_notes_are_text(model):
+    chain(model).steps[0]['note'] = {'value': 'x'}
+    assert 'note must be a string' in messages(checks.chains, model)
 
 
 @pytest.mark.parametrize('reference', [[], ['control/stage'], [('block', 'calculation')],

@@ -73,9 +73,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   leave an invalid view index, and `kb unlink` withdraws the removed relation's
   selected dependency tokens at both claiming ends.
   `blocks` verifies declared stages, placements of reviewed home functions,
-  and typed endpoint members. `chains` verifies symbols on the home layout,
+  and typed endpoint members. Architecture entities require the metadata of
+  their generated view, positive order values, and repository-local named
+  specification files. `chains` verifies symbols on the home layout,
   ordered function paths, effects, signs, a destination output, unique step
-  pairs, and acyclic flow. The migration of prose conditions and the
+  pairs, acyclic flow, and text notes. The migration of prose conditions and the
   arithmetic-only note grammar remain stage-6 work.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the

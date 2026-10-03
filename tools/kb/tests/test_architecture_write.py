@@ -91,6 +91,36 @@ def test_one_batch_replaces_steps_and_adds_a_typed_condition(model, document):
     assert rpm.props.get('level') == before.props.get('level')
 
 
+def test_unset_refuses_the_required_chain_summary(model):
+    with pytest.raises(KbError) as refused:
+        plan(model, {'cmd': 'set', 'ref': CHAIN, 'unset': ['summary']})
+    assert refused.value.code == 3
+    assert 'summary must be a nonempty string' in str(refused.value)
+
+
+@pytest.mark.parametrize(('home', 'code'), [({}, 2), ([], 2), (False, 2),
+                                           ('no_layout_fixture', 3)])
+def test_invalid_home_is_refused_before_reference_resolution(model, home, code):
+    with pytest.raises(KbError) as refused:
+        plan(model, assign({'home': home}))
+    assert refused.value.code == code
+    assert ('home is a string' if code == 2 else 'home must name a declared layout') \
+        in str(refused.value)
+
+
+@pytest.mark.parametrize(('keys', 'message'), [
+    ({'order': []}, 'order is an integer'),
+    ({'order': True}, 'order is an integer'),
+    ({'summary': {}}, 'summary is a string'),
+    ({'specs': {}}, 'specs is an array of strings'),
+])
+def test_typed_metadata_is_checked_before_canonical_omission(model, keys, message):
+    with pytest.raises(KbError) as refused:
+        plan(model, assign(keys))
+    assert refused.value.code == 2
+    assert message in str(refused.value)
+
+
 @pytest.mark.parametrize(('steps', 'message'), [
     ({'from': 'rpm/ram'}, 'step is an array of tables'),
     (['rpm/ram'], 'step is a table'),

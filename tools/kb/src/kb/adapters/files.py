@@ -305,6 +305,9 @@ def _architecture(b, kind, slug, document, src):
               'chain': ('output',)}.get(kind, ())
     props = {key: value for key, value in document.items() if key not in (*fields, 'step')}
     home = document.get('home', '7mfk')
+    if not isinstance(home, str) or home not in b.layouts:
+        b.issue('schema', src, f'{slug}/{kind}', 'home must name a declared layout')
+        return
     references = {}
     for field in fields:
         value = document.get(field)
