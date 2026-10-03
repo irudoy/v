@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kb import checks, compile, names, repo, store
+from kb import checks, compile, graph, names, repo, store
 from kb.adapters import files, ledgers, telemetry
 from kb.model import Builder, SymbolKey
 
@@ -165,6 +165,38 @@ class FilesTest(unittest.TestCase):
                                           SymbolKey('7mfk', 'fn', WRITER)])
         self.assertEqual(steps[1]['from'], SymbolKey('7mfk', 'ram', 0xFFFF1048))
         self.assertEqual(steps[0]['note'], 'y = 100 / x')
+
+    def test_an_analog_resolves_a_meaning_without_joining_or_inheriting_it(self):
+        self.write('ram', 'speed', {'home': '7mfk', 'level': 'code', 'symbol': [
+            {'layout': '7mfk', 'address': 'ffff1048'}], 'analog': [
+            {'to': 'alternative/ram', 'note': 'Similar output; separate mechanism.'}]})
+        self.write('ram', 'alternative', {'home': 'jk78c', 'level': 'pattern'})
+        b, model = self.build()
+        self.assertEqual(b.issues, [])
+        speed = model.files['ram', 'speed'][0]
+        alternative = model.files['ram', 'alternative'][0]
+        self.assertEqual(speed.tables['analog'], [
+            {'to': 'alternative/ram', 'note': 'Similar output; separate mechanism.'}])
+        self.assertIsNot(speed, alternative)
+        self.assertEqual((speed.props['level'], alternative.props['level']), ('code', 'pattern'))
+        self.assertEqual(alternative.symbols, {})
+        self.assertEqual(speed.links, [])
+        rows = graph.claim_rows(model)
+        self.assertEqual([(item['from'], item['to'], item['props']['note'])
+                          for item in rows['analogs']],
+                         [('speed/ram', 'alternative/ram', 'Similar output; separate mechanism.')])
+        self.assertEqual(rows['links'], {})
+        self.assertEqual(rows['symbol_links'], {})
+
+    def test_an_analog_requires_a_meaning_reference_and_explanatory_note(self):
+        for entry, message in (({'to': 'alternative/ram/jk78c', 'note': 'Similar role.'},
+                                 'an analog must name a meaning'),
+                                ({'to': 'alternative/ram', 'note': ' '},
+                                 'an analog needs a note about similarities and differences')):
+            with self.subTest(entry=entry):
+                self.write('ram', 'speed', {'analog': [entry]})
+                b, _ = self.build()
+                self.assertIn(message, [issue.message for issue in b.issues])
 
     def test_an_architecture_reference_cannot_borrow_a_foreign_layout_symbol(self):
         self.write('ram', 'speed', {'symbol': [

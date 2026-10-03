@@ -9,9 +9,7 @@ definition_xml = "defs/1ND3B.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 
 [architecture]
-source = "defs/JK08A.architecture.toml"
-mode = "reference"
-note = "VQ37VHR on SH7059: the JK08A VQ25HR architecture is a reference model. Only the maps and axes of the reviewed correspondence relocate; function and RAM addresses are JK08A reference addresses. Valve event and lift (VVEL) control has no JK08A counterpart."
+layout = "1nd"
 
 [[patch]]
 id = "runtime-address-profile"

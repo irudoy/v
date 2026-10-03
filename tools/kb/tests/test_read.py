@@ -75,6 +75,14 @@ def detour():
 
 
 class PhraseTest(unittest.TestCase):
+    def test_analogs_are_separate_bidirectional_hints_with_their_notes(self):
+        hint = {'to': 'foreign_output/ram', 'name': 'foreign_output',
+                'note': 'Similar role; separate mechanism.'}
+        store = mock.Mock()
+        store.run.return_value = [hint, dict(hint)]
+        self.assertEqual(read.analogs_of(store, {'key': 'output/ram'}), [hint])
+        self.assertEqual(store.run.call_args.kwargs, {'key': 'output/ram'})
+
     def test_a_depends_link_reads_by_its_role(self):
         self.assertEqual(read.phrase("out", "DEPENDS", ["indexed_by"]), "depends on (indexed_by)")
         self.assertEqual(read.phrase("in", "DEPENDS", ["indexed_by"]), "needed by (indexed_by)")

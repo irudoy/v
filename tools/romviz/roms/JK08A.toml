@@ -14,8 +14,7 @@ overrides = "defs/JK08A.overrides.toml"
 checksum_registry = "patches/checksum-layouts.toml"
 
 [architecture]
-source = "defs/JK08A.architecture.toml"
-mode = "exact"
+layout = "7mfk"
 
 [[patch]]
 id = "map-switching"

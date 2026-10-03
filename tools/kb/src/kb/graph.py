@@ -215,12 +215,15 @@ def claim_rows(model):
     meanings, symbols, has = [], [], []
     links = defaultdict(list)
     symbol_links = defaultdict(list)
-    statuses, cites = [], defaultdict(list)
+    statuses, analogs, cites = [], [], defaultdict(list)
     entity_links = defaultdict(list)
     for meaning in model.meanings:
         if not meaning.name:
             continue
         meanings.append(meaning_node(model, meaning))
+        for item in meaning.tables.get('analog', ()):
+            analogs.append({'from': meaning.key, 'to': item['to'], 'props': {
+                'note': item['note'], 'producer': 'claim', 'src': _src(meaning.sources)}})
         block = meaning.props.get("block")
         if block:
             entity_links[("BLOCK", "Meaning", "Entity")].append(
@@ -327,7 +330,7 @@ def claim_rows(model):
     return {"meanings": meanings, "symbols": symbols, "has": has, "links": dict(links),
             "symbol_links": dict(symbol_links), "statuses": statuses, "cites": dict(cites),
             "entities": entities, "steps": steps, "entity_links": dict(entity_links),
-            "targets": targets}
+            "targets": targets, 'analogs': analogs}
 
 
 def _named_keys(model, refs):
@@ -473,6 +476,7 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
             "symbol links": sum(_create_links(graph, kind, "Symbol", "Symbol", items)
                                 for kind, items in rows["symbol_links"].items()),
             "statuses": _create_links(graph, "STATUS", "Meaning", "Layout", rows["statuses"]),
+            'analogs': _create_links(graph, 'ANALOG', 'Meaning', 'Meaning', rows['analogs']),
             "citations": sum(_create_links(graph, "CITES", left, right, items)
                              for (left, right), items in rows["cites"].items()),
             "entities": _create_nodes(graph, "Entity", rows["entities"]),

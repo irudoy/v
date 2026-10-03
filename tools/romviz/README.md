@@ -51,11 +51,22 @@ image. The architecture view draws the firmware itself: functional blocks, the
 data flow between them, the actuator and bus endpoints, and the calculation
 chains that lead from the crank events and the sensors to each command.
 
-`defs/JK08A.architecture.toml` is the source and `tools/romviz/architecture.py`
-is its gate. Blocks, endpoints, and chain steps are declared over addresses of
-the reviewed ledgers, and the gate binds every step either to a relation those
-ledgers record or to a specification the step names. `make check` runs the gate
-and rebuilds the atlas, so the view follows the ledgers on every build.
+Stages, blocks, endpoints, chains, and meaning placements belong to `kb`.
+`tools/romviz/graph_atlas.py` reads one graph snapshot under the writer lock
+after its fingerprint check. Every architecture node binds an actual symbol
+of the selected layout. Its meaning carries the semantic or generated name,
+cross-layout symbols, statuses, and analog hints. Analogs do not join meanings
+or inherit knowledge levels.
+Relations retain their origins: declared links, L0 calls, and L0 accesses.
+A literal or a parameter is an address reference, distinct from an actual
+load or store. No citation or analog establishes a data-flow relationship.
+The details identify the home layout of shared summaries and notes when
+their address references describe that layout rather than the selected one.
+
+`defs/JK08A.architecture.toml` is the generated JK08A view, whose
+`tools/romviz/architecture.py` gate binds every step either to a relation of
+the generated ledgers or to a specification the step names. `make check`
+reproduces the canonical inventory and rebuilds the atlas.
 
 The view opens on the system map: input endpoints, the block columns of every
 stage, output endpoints, and the support lane below them. Opening a block shows
@@ -63,19 +74,22 @@ its functions and tables with its upstream and downstream partners. Opening a
 table, signal, or function shows its neighborhood. Opening a chain draws the
 calculation from the sensors to the published quantity and gives every node the
 sign of the effect that an increase has on that output: a raise, a lowering, no
-established sign, or paths that disagree. A dashed edge is a step that a named
-specification states rather than a ledger relation. The trace route walks the
+established sign, or paths that disagree. A dashed edge has no connecting
+relation within its source, destination, and function nodes in the displayed
+graph. Its badge states named specification support or a declared step.
+Connectivity is structural support, not proof of arithmetic. The trace route walks the
 derived relations from one node to the registers that drive the actuators; a
 relation records evidence rather than a signed effect, and the view labels it
 as such.
 
-Each manifest declares `[architecture]` with `source`, `mode`, and, outside
-exact mode, a `note` that the view shows as a banner. `exact` requires the
-reviewed function ledger of the architecture source and refuses a ROM with a
-relocated definition projection. `projected` and `reference` relocate the maps
-and axes of the reviewed correspondence in `defs/definition-projections.toml`
-and keep JK08A function and RAM addresses; a table without a target address is
-marked unsupported on that ROM.
+Each manifest declares `[architecture]` with `layout`. The graph's image
+membership must agree with it. ROMs of one layout share its architecture
+snapshot while retaining their independent stock identities and address-map
+layers. A calculation chain is available only when its output and every
+source, destination, and intervening function have symbols on that layout.
+The chain list reports incomplete binding counts and missing meanings with
+their statuses. The atlas requires the configured graph; an unavailable graph
+fails the build.
 
 ## Architecture command line
 
@@ -123,7 +137,7 @@ remains absent and produces a visible warning in the atlas.
 | JK00C, JK00D | Target L0 structure, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
 | 1ND0A, 1ND3B | Exact-family 1ND0A L0 structure, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
 | JK78C | Target L0 structure, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
-| 1ME3B | Target L0 structure and projected DTC records and attributes read from the stock image; every other layer is undeclared and warned about |
+| 1ME3B | Target L0 structure, reviewed target definitions, projected DTC records and attributes, composed production runtime profile, checksum layout, stock-image metrics, and architecture from its bound symbols |
 
 Every registered image declares its DTC registry, so the diagnostics layer is
 populated independently of how much structure a target carries. The reviewed

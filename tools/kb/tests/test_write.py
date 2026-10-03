@@ -101,6 +101,15 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(symbol.former, ("probe-heron", "probe-otter"))
         self.assertEqual(symbol.meaning.key, SELECTOR)
 
+    def test_set_refuses_to_remove_the_block_of_a_reviewed_function(self):
+        error = self.refused({'cmd': 'set', 'ref': SELECTOR, 'unset': ['block']})
+        self.assertIn('reviewed function needs a block', error)
+
+    def test_set_refuses_a_block_that_no_entity_declares(self):
+        error = self.refused({'cmd': 'set', 'ref': SELECTOR,
+                              'keys': {'block': 'missing/block'}})
+        self.assertIn('is not a declared block', error)
+
     def test_a_batch_writes_the_statuses_of_one_meaning_into_its_file(self):
         change, texts, result = self.plan(
             {"cmd": "unresolved", "meaning": INHIBIT, "layout": "1nd"},

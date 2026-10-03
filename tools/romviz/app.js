@@ -123,6 +123,7 @@
 
   function searchableText(item) {
     const metadata = item.meta.map((entry) => `${entry.label} ${entry.value}`).join(" ");
+    const binding = item.binding || {};
     return [
       item.label,
       item.description,
@@ -135,6 +136,11 @@
       item.patchStatus,
       item.tags.join(" "),
       metadata,
+      binding.meaning,
+      binding.name,
+      binding.reference,
+      ...(binding.former || []),
+      ...(binding.symbols || []).map((symbol) => symbol.name || ""),
       formatAddress(item.start),
       item.start.toString(16),
     ].join(" ").toLowerCase();
@@ -748,6 +754,14 @@
       {label: "End", value: formatAddress(item.end)},
       {label: "Size", value: formatBytes(item.end - item.start)},
       ...item.meta,
+      ...(item.binding ? [
+        {label: "Meaning", value: item.binding.meaning},
+        {label: "Symbol", value: item.binding.reference},
+        ...item.binding.symbols.map((symbol) => ({label: symbol.layout, value: symbol.ref})),
+        ...item.binding.statuses.map((status) => ({label: status.layout,
+          value: `${status.state}${status.note ? `: ${status.note}` : ""}`})),
+        ...item.binding.analogs.map((analog) => ({label: "Analog", value: `${analog.to}: ${analog.note}`})),
+      ] : []),
     ];
     for (const entry of metadata) {
       const term = document.createElement("dt");

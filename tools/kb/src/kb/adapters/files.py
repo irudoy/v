@@ -201,6 +201,16 @@ def _meaning(b, kind, name, document, src):
     for binding in document.get("diagnostic", ()):
         b.table(group, "diagnostic", {**binding, "evidence": _evidence(
             binding.get("evidence", ()), src)}, src)
+    for entry in document.get('analog', ()):
+        to, note = entry.get('to'), entry.get('note')
+        if (not isinstance(to, str) or not MEANING_REF.fullmatch(to)
+                or to.rsplit('/', 1)[1] not in vocab.MEANING_KINDS):
+            b.issue('schema', src, subject, 'an analog must name a meaning')
+            continue
+        if not isinstance(note, str) or not note.strip():
+            b.issue('schema', src, subject, 'an analog needs a note about similarities and differences')
+            continue
+        b.table(group, 'analog', {'to': Ref(to, src, meaning_only=True), 'note': note}, src)
     for index, entry in enumerate(document.get("symbol", ())):
         place = _address(b, src, f"{subject} symbol {index}", entry)
         if place is None:

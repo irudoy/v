@@ -98,12 +98,14 @@ class Symbol:
 class Ref:
     """A reference that a file states, which `Builder.finish` resolves;
     `layout` is the layout of its context, whose symbol a meaning reference
-    names there."""
+    names there. `meaning_only` resolves an analog to a meaning key without
+    selecting or joining any symbol."""
 
     text: str
     src: str
     layout: str | None = None
     strict: bool = False
+    meaning_only: bool = False
 
 
 @dataclass
@@ -859,6 +861,9 @@ class Resolver:
     def value(self, item):
         """A value with each reference replaced by the symbol key it names."""
         if isinstance(item, Ref):
+            if item.meaning_only:
+                found = self.meaning(item)
+                return found.key if found is not None else item.text
             return self._symbol(item)
         if isinstance(item, dict):
             found = {key: self.value(entry) for key, entry in item.items()}

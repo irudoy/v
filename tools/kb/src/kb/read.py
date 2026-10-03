@@ -563,6 +563,15 @@ def _access_data(entry):
 
 # kb show ----------------------------------------------------------------------------------
 
+def analogs_of(graph, meaning):
+    """Hints in either direction; they are not dataflow or homology edges."""
+    rows = graph.run(
+        'MATCH (:Kb:Meaning {key: $key})-[r:ANALOG]-(m:Kb:Meaning) '
+        'RETURN m.key AS to, m.name AS name, r.note AS note ORDER BY to, note',
+        key=meaning['key'])
+    return [dict(item) for item in {tuple(sorted(row.items())): row for row in rows}.values()]
+
+
 def show(graph, text, layout=None, root=repo.ROOT):
     ref = refs.resolve(graph, text, layout, root)
     if ref.kind == "location":
@@ -624,6 +633,9 @@ def show(graph, text, layout=None, root=repo.ROOT):
     rows = (symbol_links(graph, ref.node["key"]) if ref.kind == "symbol"
             else meaning_links(graph, meaning["key"]))
     answer.section("links", LINKS, link_lines(rows, lambda row: node_ref(row["other"])))
+    data['analogs'] = analogs_of(graph, meaning)
+    answer.section('analogs', DETAIL,
+                   [f'  {item["to"]}: {item["note"]}' for item in data['analogs']])
     data["links"] = [{"dir": row["dir"], "type": row["type"].lower(),
                       "other": node_ref(row["other"]), "verified": row.get("verified")}
                      for row in rows]
@@ -649,7 +661,8 @@ def show(graph, text, layout=None, root=repo.ROOT):
 
 ENTITY_OWN = ("key", "kind", "slug", "title", "summary", "note", "producer", "src")
 STEP_ROWS = ("MATCH (s)-[:FROM]->(f:Kb:Meaning) MATCH (s)-[:TO]->(t:Kb:Meaning) "
-             "OPTIONAL MATCH (s)-[:THROUGH]->(v:Kb:Meaning) "
+             "OPTIONAL MATCH (s)-[call:THROUGH]->(v:Kb:Meaning) "
+             "WITH c, st, s, f, t, v, call.order AS via_order ORDER BY via_order "
              "WITH c, st, s, f, t, collect(v.key) AS via "
              "RETURN c.key AS chain, st.order AS order, f.key AS from, t.key AS to, "
              "s.effect AS effect, s.sign AS sign, s.note AS note, via "
@@ -845,6 +858,9 @@ def where(graph, text, root=repo.ROOT):
         else:
             lines.append(f"{layout:<6}  -")
     answer.section(None, FACTS, lines)
+    data['analogs'] = analogs_of(graph, meaning)
+    answer.section('analogs', DETAIL,
+                   [f'  {item["to"]}: {item["note"]}' for item in data['analogs']])
     answer.data = data
     return answer
 

@@ -57,7 +57,7 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
 - `kb check` runs the active checks, which `make check` includes: `l0`;
   `sites` over the function ledgers ([L0](#l0)); the
   model checks `schema`, `canonical`, `names`, `references`, `symbols`,
-  `links`, `widths`, `fields`, and `ledgers` over the entity files and the compiled
+  `links`, `widths`, `fields`, `ledgers`, `blocks`, and `chains` over the entity files and the compiled
   registries; the matcher
   checks `homology`, `image-bytes`, `statuses`, and `writers`, and the
   claim check `levels`
@@ -72,6 +72,11 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   The `ledgers` check also runs before a write: an evidence replacement cannot
   leave an invalid view index, and `kb unlink` withdraws the removed relation's
   selected dependency tokens at both claiming ends.
+  `blocks` verifies declared stages, placements of reviewed home functions,
+  and typed endpoint members. `chains` verifies symbols on the home layout,
+  ordered function paths, effects, signs, a destination output, unique step
+  pairs, and acyclic flow. The migration of prose conditions and the
+  arithmetic-only note grammar remain stage-6 work.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -191,6 +196,11 @@ name resolves with a note that names the current reference.
   numeric and hexadecimal string representations share one address.
   History entries are previous declarations; `kb show` states current facts
   and their evidence.
+- `kb show` and `kb where` show analog hints in either direction with their
+  required similarities-and-differences note. An analog names a meaning,
+  including one without a symbol, without joining symbols, inheriting levels,
+  or entering dataflow, homology, or claim dependencies. The atlas reads the
+  same `ANALOG` relations.
 - `kb bench` answers every question of `bench.toml` that the current stage
   activates, with `--full`, and passes a question when its answer exits with
   0, matches every `expect` pattern, fits its budget, and stays below its

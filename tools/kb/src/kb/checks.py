@@ -727,6 +727,115 @@ def ledgers_check(model):
     return []
 
 
+def _entity_ref(value, kind, model):
+    return (isinstance(value, tuple) and len(value) == 2
+            and all(isinstance(part, str) for part in value)
+            and value[0] == kind and value in model.entities)
+
+
+def blocks(model):
+    """Declared placements and endpoints resolve before a write is accepted."""
+    issues = []
+    declared = {entity.key: entity for (kind, _), entity in model.entities.items()
+                if kind == 'block'}
+    for entity in declared.values():
+        stage = entity.refs.get('stage', [])
+        if len(stage) != 1 or not _entity_ref(stage[0], 'stage', model):
+            issues.append(Issue('blocks', ';'.join(sorted(entity.sources)), entity.key,
+                                'a block needs exactly one declared stage'))
+    for meaning in model.meanings:
+        block = meaning.props.get('block')
+        if block is not None and (not isinstance(block, str) or block not in declared):
+            issues.append(Issue('blocks', _sources(meaning), _subject(meaning),
+                                f'block {block!r} is not a declared block'))
+        home = meaning.symbols.get(meaning.home)
+        reviewed = home.value('level') if home else meaning.props.get('level')
+        if (meaning.kind == 'fn' and reviewed in ('code', 'silicon')
+                and not block):
+            issues.append(Issue('blocks', _sources(meaning), _subject(meaning),
+                                'a reviewed function needs a block'))
+    for (kind, _), entity in model.entities.items():
+        if kind != 'endpoint':
+            continue
+        path = ';'.join(sorted(entity.sources))
+        target = entity.refs.get('block', [])
+        if len(target) != 1 or not _entity_ref(target[0], 'block', model):
+            issues.append(Issue('blocks', path, entity.key, 'an endpoint needs one declared block'))
+        members = entity.refs.get('registers', []) + entity.refs.get('functions', [])
+        if not members:
+            issues.append(Issue('blocks', path, entity.key, 'an endpoint needs registers or functions'))
+        for field, kinds in (('registers', ('reg', 'ram')), ('functions', ('fn',))):
+            if any(not isinstance(key, SymbolKey) or key not in model.symbols
+                   or key.kind not in kinds for key in entity.refs.get(field, [])):
+                issues.append(Issue('blocks', path, entity.key, f'{field} contain an invalid member'))
+    return issues
+
+
+def chains(model):
+    """Ordered chain references, vocabulary, output, and acyclic flow.
+
+    Arithmetic-only notes and the migration of prose conditions remain a
+    separate stage-6 requirement. Connectivity never proves arithmetic.
+    """
+    issues = []
+    for (kind, _), entity in model.entities.items():
+        if kind != 'chain':
+            continue
+        path = ';'.join(sorted(entity.sources))
+        home = entity.props.get('home', CANONICAL)
+        output = entity.refs.get('output', [])
+        if len(output) != 1 or not isinstance(output[0], SymbolKey):
+            issues.append(Issue('chains', path, entity.key, 'a chain needs one symbol output'))
+        if not entity.steps:
+            issues.append(Issue('chains', path, entity.key, 'a chain needs ordered steps'))
+        pairs, destinations, following = set(), set(), defaultdict(set)
+        for index, step in enumerate(entity.steps, 1):
+            subject = f'{entity.key} step {index}'
+            if step.get('effect') not in vocab.STEP_EFFECTS:
+                issues.append(Issue('chains', path, subject, f'effect {step.get("effect")!r}'))
+            if step.get('sign') not in vocab.STEP_SIGNS:
+                issues.append(Issue('chains', path, subject, f'sign {step.get("sign")!r}'))
+            via = step.get('via', [])
+            if not isinstance(via, list):
+                issues.append(Issue('chains', path, subject, 'via must be an ordered array'))
+                via = []
+            refs = [step.get('from'), step.get('to'), *via]
+            valid = all(isinstance(key, SymbolKey) and key in model.symbols
+                        and key.layout == home for key in refs)
+            if not valid:
+                issues.append(Issue('chains', path, subject, f'every reference needs a symbol on {home}'))
+                continue
+            if any(key.kind != 'fn' for key in via):
+                issues.append(Issue('chains', path, subject, 'via must name functions'))
+            first, second = refs[:2]
+            pair = first, second
+            if pair in pairs:
+                issues.append(Issue('chains', path, subject, 'a source/destination pair is repeated'))
+            pairs.add(pair)
+            destinations.add(second)
+            following[first].add(second)
+        if (len(output) == 1 and isinstance(output[0], SymbolKey)
+                and (output[0] not in destinations or output[0].layout != home)):
+            issues.append(Issue('chains', path, entity.key, 'the output must be a step destination on the home layout'))
+        reached, active = set(), set()
+
+        def cyclic(key):
+            if key in active:
+                return True
+            if key in reached:
+                return False
+            active.add(key)
+            if any(cyclic(child) for child in following[key]):
+                return True
+            active.remove(key)
+            reached.add(key)
+            return False
+
+        if any(cyclic(key) for key in list(following)):
+            issues.append(Issue('chains', path, entity.key, 'steps form a cycle'))
+    return issues
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -742,6 +851,8 @@ CHECKS = {
     "fields": fields,
     "levels": levels_check,
     "ledgers": ledgers_check,
+    'blocks': blocks,
+    'chains': chains,
 }
 
 # Reports of a check that do not fail it.

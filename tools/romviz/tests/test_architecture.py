@@ -10,6 +10,8 @@ import pytest
 from tools.romviz import architecture
 from tools.romviz import build
 from tools.romviz import model
+from tools.romviz import graph_atlas
+from kb.repo import KbError
 
 
 SOURCE = architecture.DEFAULT_SOURCE
@@ -33,16 +35,9 @@ IMPACT_CLAIMS = (
 
 # ROM: architecture mode, relocated tables and axes, unsupported tables and axes.
 ROM_BINDINGS = {
-    "1ME3B": ("reference", 40, 18),
-    "1ND0A": ("reference", 40, 18),
-    "1ND3B": ("reference", 40, 18),
-    "JK00A": ("exact", 0, 0),
-    "JK00C": ("projected", 283, 2),
-    "JK00D": ("projected", 284, 2),
-    "JK03A": ("exact", 0, 0),
-    "JK03B": ("exact", 0, 0),
-    "JK08A": ("exact", 0, 0),
-    "JK78C": ("reference", 45, 16),
+    'JK08A': '7mfk', 'JK00A': '7mfk', 'JK03A': '7mfk', 'JK03B': '7mfk',
+    'JK00C': 'jk00c', 'JK00D': 'jk00d', 'JK78C': 'jk78c',
+    '1ND0A': '1nd', '1ND3B': '1nd', '1ME3B': '1me3b',
 }
 
 
@@ -237,67 +232,67 @@ def test_the_output_carries_no_impact_of_its_own(tracked):
 
 
 def test_atlas_ships_the_gated_architecture(atlas, tracked):
-    assert list(atlas["architectures"]) == ["JK08A"]
-    assert atlas["architectures"]["JK08A"] == tracked.export()
-    assert "architecture JK08A=" in build.summary(atlas)
+    assert set(atlas['architectures']) == set(ROM_BINDINGS.values())
+    home = atlas['architectures']['7mfk']
+    assert len(home['blocks']) == len(tracked.blocks)
+    assert len(home['endpoints']) == len(tracked.endpoints)
+    assert len(home['chains']) == len(tracked.chains)
+    assert sum(len(chain['steps']) for chain in home['chains']) == 387
+    assert '7mfk=47 blocks, 17 chains' in build.summary(atlas)
     document = build.render(atlas)
     assert '"architectures"' in document
     assert "arch-canvas" in document
 
 
-def test_every_rom_binds_the_architecture(atlas, tracked):
+def test_every_rom_binds_the_architecture(atlas):
     bindings = {rom["id"]: rom["architecture"] for rom in atlas["roms"]}
     assert set(bindings) == set(ROM_BINDINGS)
-    for rom, (mode, relocated, unsupported) in ROM_BINDINGS.items():
-        binding = bindings[rom]
-        assert binding["source"] == tracked.rom
-        assert binding["mode"] == mode
-        assert len(binding["relocation"]) == relocated
-        assert len(binding["unsupported"]) == unsupported
-        assert bool(binding["note"]) is (mode != "exact")
-        for node_id in list(binding["relocation"]) + binding["unsupported"]:
-            assert tracked.nodes[node_id].kind in ("map", "axis", "rom")
+    for rom, layout in ROM_BINDINGS.items():
+        assert bindings[rom] == {'source': layout, 'mode': 'layout', 'layout': layout}
+        view = atlas['architectures'][layout]
+        for node in view['nodes']:
+            binding = node['meta']['binding']
+            assert binding['layout'] == layout
+            assert binding['symbol'] == f'{layout}-{node["addr"]}/{node["meta"]["kbKind"]}'
+        for chain in view['chainAvailability']:
+            if chain['missing']:
+                assert chain['id'] not in {item['id'] for item in view['chains']}
 
 
 def test_manifest_architecture_table_is_validated():
-    valid = {
-        "source": "defs/JK08A.architecture.toml",
-        "mode": "projected",
-        "note": "Near-code relative.",
-    }
+    valid = {'layout': '7mfk'}
     model._check_architecture_table("manifest.toml", valid)
     for table, message in (
         ([], "must be a table"),
-        ({"mode": "exact"}, "fields differ"),
+        ({}, "fields differ"),
         ({**valid, "extra": 1}, "fields differ"),
-        ({**valid, "source": " "}, "must name a tracked file"),
-        ({**valid, "mode": "guess"}, "must be one of"),
-        ({"source": valid["source"], "mode": "reference"}, "requires a note"),
-        ({**valid, "note": ""}, "nonempty string"),
+        ({'layout': ' '}, "layout"),
+        ({'layout': 7}, "layout"),
+        ({'source': 'defs/JK08A.architecture.toml', 'mode': 'exact'}, "fields differ"),
     ):
         with pytest.raises(model.ModelError, match=message):
             model._check_architecture_table("manifest.toml", table)
 
 
-def test_exact_mode_requires_the_reviewed_function_ledger(tmp_path):
+def test_a_manifest_cannot_borrow_another_layout(tmp_path):
     manifest = model.ROOT / "tools" / "romviz" / "roms" / "JK00A.toml"
     text = manifest.read_text(encoding="utf-8")
     broken = tmp_path / manifest.name
     broken.write_text(
-        text.replace('reviewed_functions = "defs/JK08A.funcs.csv"\n', ""),
+        text.replace('layout = "7mfk"', 'layout = "jk78c"'),
         encoding="utf-8",
     )
-    with pytest.raises(model.ModelError, match="exact mode requires reviewed_functions"):
+    with pytest.raises(model.ModelError, match="belongs to 7mfk, not to jk78c"):
         model.build_rom_model(broken)
 
 
-def test_a_relocated_rom_cannot_claim_exact_mode(tmp_path):
-    manifest = model.ROOT / "tools" / "romviz" / "roms" / "JK78C.toml"
-    text = manifest.read_text(encoding="utf-8")
-    broken = tmp_path / manifest.name
-    broken.write_text(text.replace('mode = "reference"', 'mode = "exact"'), encoding="utf-8")
-    with pytest.raises(model.ModelError, match="cannot use exact mode"):
-        model.build_rom_model(broken)
+def test_an_unavailable_graph_refuses_the_atlas_without_a_legacy_fallback(monkeypatch):
+    def unavailable(*args, **kwargs):
+        raise KbError('no graph answers', code=6)
+
+    monkeypatch.setattr(graph_atlas, 'snapshot', unavailable)
+    with pytest.raises(model.ModelError, match='no graph answers'):
+        model.build_rom_model(model.resolve_manifest('JK78C'))
 
 
 def test_command_line_reports_the_model(capsys, tracked):

@@ -105,19 +105,20 @@ engines.
 | An external reflash tool with an OBD interface it supports | Reading a stock image and writing a built image |
 
 `make setup` installs the locked environment with `uv sync --frozen`. The
-repository declares no runtime Python dependencies; the graph client and the
-test runner are development dependencies of the tracked tooling. The dashboard
+workspace package `kb` supplies the knowledge API, graph client, name
+generator, and text matcher. The test runner is a development dependency. The dashboard
 installs its own platform dependencies from
 `tools/can_dashboard/requirements-*.txt`. Component versions and their local
 locations are in the deployment table of
 [`tools/README.md`](tools/README.md#local-deployment), which
 `tools/version_index.py --check` holds to the files that execute them.
 
-Ghidra is needed for structure export alone. `make check` and
-`make defs-generate` both query a running, populated Memgraph instance, because
-the definition model is validated against the graph. `make test`,
-`make verify-firmware`, and the ROM builder read tracked inputs and need
-neither.
+Ghidra is needed for structure export alone. `make check`,
+`make defs-generate`, and the ROM-atlas tests query a running, populated
+Memgraph instance. The definition model is validated against the graph, and
+the atlas reads its layout symbols after a fingerprint check.
+`make verify-firmware` and the ROM builder read tracked inputs and need
+neither Ghidra nor Memgraph.
 
 ## From a stock read to a flashed image
 

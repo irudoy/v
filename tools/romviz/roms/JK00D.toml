@@ -9,9 +9,7 @@ definition_xml = "defs/JK00D.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 
 [architecture]
-source = "defs/JK08A.architecture.toml"
-mode = "projected"
-note = "Near-code JK08A relative: map and axis addresses relocate through the reviewed correspondence of defs/definition-projections.toml; function and RAM addresses are JK08A reference addresses."
+layout = "jk00d"
 
 [[patch]]
 id = "runtime-address-profile"

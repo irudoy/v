@@ -35,7 +35,7 @@
     none: "has no established signed effect on",
     mixed: "has path-dependent effects on",
   };
-  const MODE_LABELS = {exact: "Exact code", projected: "Projected", reference: "Reference model"};
+  const MODE_LABELS = {layout: "Layout"};
   const TRACE_DEPTH = 16;
   // Initial scale of the detailed views: a wide diagram opens at a readable
   // scale on its input side, and Fit shows all of it.
@@ -98,6 +98,18 @@
   function prepare(raw) {
     const nodes = raw.nodes;
     const count = nodes.length;
+    const nodeById = new Map(nodes.map((node, index) => [node.id, index]));
+    const relationOrigins = Array.from({length: count}, () => new Map());
+    for (const edge of raw.edgeEvidence || []) {
+      for (const id of [edge.from, edge.to]) {
+        const index = nodeById.get(id);
+        if (index === undefined) continue;
+        for (const origin of edge.origins) {
+          const counts = relationOrigins[index];
+          counts.set(origin, (counts.get(origin) || 0) + 1);
+        }
+      }
+    }
     const inFlow = Array.from({length: count}, () => []);
     const outFlow = Array.from({length: count}, () => []);
     const inOther = Array.from({length: count}, () => []);
@@ -160,7 +172,8 @@
       outFlow,
       inOther,
       outOther,
-      nodeById: new Map(nodes.map((node, index) => [node.id, index])),
+      nodeById,
+      relationOrigins,
       blockById: new Map(raw.blocks.map((block) => [block.id, block])),
       stageById: new Map(raw.stages.map((stage) => [stage.id, stage])),
       endpointById: new Map(raw.endpoints.map((endpoint) => [endpoint.id, endpoint])),
@@ -179,25 +192,22 @@
         node.block || "",
         node.role || "",
         node.units || "",
+        node.text || "",
+        node.meta?.binding?.meaning || "",
+        node.meta?.binding?.name || "",
+        node.meta?.binding?.reference || "",
+        ...(node.meta?.binding?.former || []),
+        ...(node.meta?.binding?.symbols || []).map((symbol) => symbol.name || ""),
       ].join(" ").toLowerCase()),
     };
   }
 
   function prepareBinding(binding, model) {
-    const relocation = new Map();
     const reverse = new Map();
-    for (const [nodeId, targets] of Object.entries(binding.relocation || {})) {
-      const index = model.nodeById.get(nodeId);
-      if (index === undefined) continue;
-      relocation.set(index, targets);
-      for (const target of targets) reverse.set(target.target, index);
+    for (const [index, node] of model.nodes.entries()) {
+      if (!reverse.has(node.addr)) reverse.set(node.addr, index);
     }
-    const unsupported = new Set(
-      (binding.unsupported || [])
-        .map((nodeId) => model.nodeById.get(nodeId))
-        .filter((index) => index !== undefined),
-    );
-    return {...binding, relocation, reverse, unsupported};
+    return {...binding, reverse};
   }
 
   function bezier(a, b) {
@@ -428,28 +438,8 @@
       const item = node(index);
       const value = Number.parseInt(item.addr, 16);
       const reference = hex(value);
-      const binding = state.binding;
       const inFlash = value < state.rom.size && CODE_KINDS.has(item.kind);
-      if (binding.mode === "exact") {
-        return {text: reference, reference, jump: inFlash ? value : null, status: "exact"};
-      }
-      const targets = binding.relocation.get(index);
-      if (targets) {
-        const text = targets
-          .map((target) => `${hex(Number.parseInt(target.target, 16))}${target.variant ? ` (${target.variant})` : ""}`)
-          .join(", ");
-        return {
-          text,
-          reference,
-          jump: Number.parseInt(targets[0].target, 16),
-          status: targets.map((target) => target.status).join(", "),
-          relocated: true,
-        };
-      }
-      if (binding.unsupported.has(index)) {
-        return {text: reference, reference, jump: null, status: "unsupported"};
-      }
-      return {text: reference, reference, jump: null, status: "reference"};
+      return {text: reference, reference, jump: inFlash ? value : null, status: "bound"};
     }
 
     function nodeTitle(index) {
@@ -536,6 +526,7 @@
       if (type === "block" && state.model.blockById.has(value)) return text;
       if (type === "endpoint" && state.model.endpointById.has(value)) return text;
       if (type === "chain" && state.model.chainById.has(value)) return text;
+      if (type === "unavailable" && state.model.raw.chainAvailability?.some((chain) => chain.id === value)) return text;
       if (type === "flow" || type === "step" || type === "edge" || type === "ext") return text;
       return null;
     }
@@ -547,17 +538,9 @@
       const raw = state.model.raw;
       elements.banner.replaceChildren();
       elements.banner.dataset.mode = binding.mode;
-      const relocated = binding.relocation.size;
-      const tables = state.model.nodes.filter((item) => item.kind === "map" || item.kind === "axis").length;
       const lead = html("strong", {text: `${MODE_LABELS[binding.mode]}: `});
-      let text;
-      if (binding.mode === "exact") {
-        text = `${raw.id} architecture with the addresses of ${state.rom.id}. `
-          + "Blocks, relations, and chains come from the tracked ledgers on every build.";
-      } else {
-        text = `${binding.note} ${relocated} of ${tables} ${raw.id} tables and axes carry a target address`
-          + `${binding.unsupported.size ? `; ${binding.unsupported.size} are unsupported on ${state.rom.id}` : ""}.`;
-      }
+      const text = `${raw.layout}: ${raw.nodes.length.toLocaleString()} bound symbols for ${state.rom.id}. `
+        + "Calculation chains require every binding on this layout.";
       elements.banner.append(lead, text);
 
       elements.crumbs.replaceChildren();
@@ -622,7 +605,23 @@
       } else {
         elements.chains.append(html("span", {
           className: "arch-chains-label",
-          text: "No calculation chains are declared in the architecture source.",
+          text: "No complete calculation chains are bound on this layout.",
+        }));
+      }
+      for (const chain of raw.chainAvailability || []) {
+        if (state.model.chainById.has(chain.id)) continue;
+        elements.chains.append(html("button", {
+          type: "button", className: "arch-chain-chip",
+          text: `${chain.name}: ${chain.bound}/${chain.total}`,
+          title: chain.missing.map((binding) => {
+            const status = binding.statuses.find((item) => item.layout === raw.layout);
+            return `${binding.meaning}: ${status?.state || "unknown"}`;
+          }).join("\n"),
+          onclick: () => {
+            state.selection = `unavailable:${chain.id}`;
+            renderDetails();
+            bridge.updateHash(true);
+          },
         }));
       }
       elements.options.hidden = route.type !== "system";
@@ -1164,7 +1163,7 @@
           const key = `step:${chainIndex}:${link.position}`;
           const touches = selectedNode !== null && (link.step.from === selectedNode || link.step.to === selectedNode);
           const classes = ["arch-flow", `sign-${link.step.sign}`];
-          if (link.step.support !== "ledger") classes.push("is-spec");
+          if (link.step.support !== "graph") classes.push("is-spec");
           if (selected === key) classes.push("is-selected");
           else if (touches) classes.push("is-hot");
           else if (selectedNode !== null) classes.push("is-dimmed");
@@ -1199,20 +1198,22 @@
         }
       }
 
-      const specSteps = chain.steps.filter((step) => step.support !== "ledger").length;
+      const graphSteps = chain.steps.filter((step) => step.support === "graph").length;
+      const specSteps = chain.steps.filter((step) => step.support === "specification").length;
+      const claimSteps = chain.steps.length - graphSteps - specSteps;
       return {
         width: layout.width,
         height: layout.height,
         draw,
         title: chain.name,
-        subtitle: `${chain.steps.length} steps to ${node(chain.output).label} (${chain.quantity}); ${chain.steps.length - specSteps} ledger-bound and ${specSteps} specification-bound. `
+        subtitle: `${chain.steps.length} steps to ${node(chain.output).label} (${chain.quantity}); ${graphSteps} graph-connected, ${specSteps} specification-bound, ${claimSteps} declared. `
           + "A badge is the sign of the effect of an increase on the output.",
         legend: [
           ["sign sign-positive", "An increase raises the output"],
           ["sign sign-negative", "An increase lowers the output"],
           ["sign sign-none", "No established sign: selection, gate, index, or closed loop"],
           ["sign sign-mixed", "Paths with different signs"],
-          ["line is-dashed", "Step bound by a specification"],
+          ["line is-dashed", "Step without a visible graph relation"],
         ],
         table: (container) => renderStepTable(container, chainIndex),
       };
@@ -1341,7 +1342,7 @@
         empty: result.paths.length ? null : `No derived relation path within ${TRACE_DEPTH} steps reaches a ${word} endpoint.`,
         title: `${direction === "down" ? "Trace to actuators" : "Trace from sensors"}: ${node(index).label}`,
         subtitle: `Shortest derived relation paths to ${result.paths.length} ${word} endpoints (${result.visited} nodes reachable within ${TRACE_DEPTH} steps). `
-          + "Derived relations come from ledger evidence tokens and carry no sign; a declared chain carries the signs.",
+          + "Relations come from declared links, L0 calls, and L0 accesses and carry no sign; calculation signs come from declared steps.",
         legend: [
           ["swatch kind-function", "Function"],
           ["swatch kind-map", "Map"],
@@ -1905,9 +1906,24 @@
         list.append(html("li", {}, html("strong", {text: hit.endpoint.name}), ` in ${hit.depth} relations via ${node(hit.node).label}`));
       }
       return section("Derived reach, unsigned",
-        html("p", {className: "detail-copy secondary", text: "Shortest ledger-relation paths to actuator and link registers. A relation records evidence, not a signed effect; the calculation chains carry the signs."}),
+        html("p", {className: "detail-copy secondary", text: "Shortest graph-relation paths to actuator and link registers. A relation records structural evidence; calculation signs come from declared steps."}),
         list,
         actions(action("Trace to actuators", () => navigate({type: "trace", direction: "down", node: index}, `node:${index}`))));
+    }
+
+    function bindingDetails(binding) {
+      if (!binding) return null;
+      return section("Meaning bindings", metaList([
+        ["Meaning", binding.meaning], ["Selected layout", binding.layout],
+        ["Symbol", binding.reference || binding.statuses.find((item) => item.layout === binding.layout)?.state || "unknown"],
+        ["Home layout", binding.home],
+        ...binding.symbols.map((symbol) => [symbol.layout,
+          `${symbol.ref}${symbol.level ? ` [${symbol.level}]` : ""}`]),
+        ...binding.statuses.map((status) => [status.layout,
+          `${status.state}${status.stale ? " (stale search)" : ""}${status.note ? `: ${status.note}` : ""}`]),
+      ]), binding.analogs.length ? html("ul", {className: "arch-reach-list"},
+        ...binding.analogs.map((analog) => html("li", {},
+          html("strong", {text: `Analog: ${analog.to}`}), ` ${analog.note || ""}`))) : null);
     }
 
     function nodeDetails(index) {
@@ -1920,9 +1936,12 @@
       const callers = neighborhood(state.model.inOther[index].filter((entry) => entry.kind === "call"), Infinity).shown.map(([other]) => other);
       const endpoints = state.model.endpointsByNode.get(index) || [];
       const addressRows = [["Address", info.text]];
-      if (info.relocated) addressRows.push([`${state.binding.source} address`, info.reference], ["Correspondence", info.status]);
-      else if (info.status === "reference") addressRows.push(["Address scope", `${state.binding.source} reference address`]);
-      else if (info.status === "unsupported") addressRows.push(["Address scope", `Unsupported on ${state.rom.id}`]);
+      if (meta.summaryLayout && meta.summaryLayout !== meta.binding?.layout) {
+        addressRows.push(["Summary layout", meta.summaryLayout]);
+      }
+      if (item.note && meta.noteLayout && meta.noteLayout !== meta.binding?.layout) {
+        addressRows.push(["Notes layout", meta.noteLayout]);
+      }
       return [
         heading(`${KIND_LABELS[item.kind]}${item.block ? ` / ${blockName(item.block)}` : ""}`, item.label),
         html("p", {className: "detail-range", text: info.text}),
@@ -1940,6 +1959,8 @@
         ]),
         item.text ? html("p", {className: "detail-copy", text: item.text}) : null,
         item.note ? html("p", {className: "detail-copy secondary", text: item.note}) : null,
+        bindingDetails(meta.binding),
+        section("Relation origins", metaList([...state.model.relationOrigins[index]])),
         meta.contract ? section("Contract", html("p", {className: "detail-copy secondary", text: meta.contract})) : null,
         actions(
           state.route.type === "node" && state.route.node === index ? null : action("Open neighborhood", () => navigate({type: "node", node: index}, `node:${index}`), true),
@@ -2114,9 +2135,15 @@
         else if (type === "endpoint") content = endpointDetails(value);
         else if (type === "flow") content = flowDetails(key);
         else if (type === "chain") content = chainDetails(value);
+        else if (type === "unavailable") {
+          const chain = state.model.raw.chainAvailability.find((item) => item.id === value);
+          if (chain) content = [heading("Unavailable calculation chain", chain.name),
+            html("p", {className: "detail-copy", text: `${chain.bound} of ${chain.total} steps are bound on ${state.model.raw.layout}.`}),
+            ...chain.missing.map((binding) => bindingDetails(binding))];
+        }
         else if (type === "step") content = stepDetails(key);
         else if (type === "edge") content = blockEdgeDetails(key);
-        else if (type === "ext") content = [heading("Upstream", "No reviewed writer"), html("p", {className: "detail-copy", text: "These signals have no reviewed writer function in the ledgers; their writers are unreviewed code or peripherals."})];
+        else if (type === "ext") content = [heading("Upstream", "No bound writer"), html("p", {className: "detail-copy", text: "These symbols have no writer function bound in this layout's graph. The view does not establish their producer."})];
       }
       elements.details.replaceChildren(...(content || overviewDetails()).filter(Boolean));
     }
@@ -2138,7 +2165,7 @@
           html("td", {}, nodeButton(step.to)),
           html("td", {}, html("span", {className: `arch-sign-pill sign-${step.sign}`, text: SIGN_GLYPHS[step.sign], title: step.sign})),
           html("td", {}, ...step.via.map((via) => nodeButton(via))),
-          html("td", {className: "arch-step-note"}, step.note, step.support !== "ledger" ? html("span", {className: "badge", text: "specification"}) : null));
+          html("td", {className: "arch-step-note"}, step.note, step.support !== "graph" ? html("span", {className: "badge", text: step.support === "specification" ? "specification" : "declared"}) : null));
         row.addEventListener("click", (event) => {
           if (!event.target.closest("button")) select(key);
         });
