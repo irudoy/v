@@ -1,8 +1,10 @@
 summary = """
-Engine-speed word RPM*5.12. FUN 00038272, reached from 00038260, stores \
-floor(32000000 / ffff11fc) at 0003829c through unsigned divider 00021ce0 \
-from the 3.2 us event interval; FUN 000384fe forms RPM/50 byte ffff11e6 as \
-min(255, ffff1196 >> 8), which scheduler 00020dfe copies to ffff11ae."""
+Engine-speed word RPM*5.12. With ffff417f.bit5 clear and a nonzero 32-bit \
+unsigned event interval, FUN 00038272 stores \
+min(65535,floor(32000000/ffff11fc)) through unsigned divider 00021ce0. Bit 5 \
+set selects zero without calling the divider. A zero interval returns zero \
+and records 0x44e at ffff9818. FUN 000384fe forms RPM/50 byte ffff11e6, \
+which scheduler 00020dfe copies to ffff11ae."""
 note = [
     """
 The constant 32000000 = 6250000 * 5.12 binds the 3.2 us count (312500 counts \
@@ -97,6 +99,46 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "imported-kudu/ram"
+via = ["roaring-hippo/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+With ffff417f.bit5 clear, a zero interval selects zero and records 0x44e at \
+ffff9818 through the divider; a nonzero interval selects the saturated \
+quotient."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00038284"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_division.py"
+key = "test_rpm_division_modes_zero_and_saturation_match_stock"
+
+[[link]]
+type = "selector"
+to = "nice-silkworm/ram"
+slot = "bit5"
+via = ["roaring-hippo/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+Bit 5 set selects zero without calling the unsigned divider; clear selects \
+the event-interval conversion."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00038276"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_division.py"
+key = "test_rpm_division_modes_zero_and_saturation_match_stock"
 
 [[link]]
 type = "writer"

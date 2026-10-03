@@ -122,7 +122,19 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A region `0x0003e1fe..0x0003e26b`
+   (`verify_stock_code.py`). The JK08A primary RPM producer
+   `0x00038272..0x0003829d` and its unsigned divider
+   `0x00021ce0..0x00021dc5` share an independent reconstruction at their
+   stock addresses. The harness takes the mode flags, event interval,
+   output word, and divider entry from the meaning files. It executes
+   inhibit selection, zero-divisor recording, quotient truncation,
+   saturation, and the unsigned word/longword divisor boundary. Direct
+   divider entries also exercise the short-quotient branch, its boundary,
+   and the maximum unsigned return value. Only the declared high-RAM
+   pool words change in the simulator; both functions return through their
+   stock instructions. The output window and mode flags retain all other
+   bytes, and zero division writes the stock diagnostic record.
+   The JK08A region `0x0003e1fe..0x0003e26b`
    contains the enabled non-fault arithmetic of the RPM-drop producer.
    Its GNU reconstruction links on `0x0003e1fc`, with two padding bytes
    outside the region, to preserve PC-relative longword alignment.

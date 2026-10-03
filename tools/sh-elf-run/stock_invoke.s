@@ -31,3 +31,13 @@ _stock_invoke_gbr:
     nop
     .size _stock_invoke,.-_stock_invoke
     .size _stock_invoke_gbr,.-_stock_invoke_gbr
+
+! stock_invoke_r1(entry, r1, r0): supply the unsigned divider's operands.
+    .global _stock_invoke_r1
+    .type _stock_invoke_r1,@function
+_stock_invoke_r1:
+    mov r5,r1
+    mov #0,r5
+    bra _stock_invoke
+    nop
+    .size _stock_invoke_r1,.-_stock_invoke_r1

@@ -614,10 +614,8 @@ mov #0x5,r1
                         VERIFIER.alias_high_ram(value).to_bytes(4, "big"),
                     )
                 self.assertLessEqual(changed, allowed)
-                self.assertEqual(
-                    fixture[region.start:region.end],
-                    image[region.start:region.end],
-                )
+                for start, end in region.code_spans:
+                    self.assertEqual(fixture[start:end], image[start:end])
                 self.assertEqual(
                     fixture[region.end:region.end + 4],
                     STOCK_VERIFIER.RETURN_STUB if region.boundary
@@ -632,6 +630,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-rpm-division": {
+                "REGION_ENTRY": 0x00038272,
+                "MODE_FLAGS": 0xFFFF417F,
+                "EVENT_INTERVAL": 0xFFFF11FC,
+                "ENGINE_SPEED": 0xFFFF1196,
+                "DIVIDER_ENTRY": 0x00021CE0,
+                "FAULT_POINTER": 0x00021DC8,
+                "FAULT_VALUE": 0x00021DCC,
+            },
             "jk08a-rpm-drop-arithmetic": {
                 "REGION_ENTRY": 0x0003E1FE,
                 "DROP_WORD": 0xFFFF1E50,
@@ -679,9 +686,8 @@ mov #0x5,r1
                 harness = (
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
-                cases = harness[harness.index("stock_cases[] = {"):]
-                cases = cases[:cases.index("};")]
-                self.assertEqual(cases.count('{"'), region.cases)
+                cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
+                self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
         region = regions["jk78c-ascd-main"]
         image = STOCK_VERIFIER.stock_image(region.rom)
         with self.assertRaisesRegex(
@@ -751,6 +757,37 @@ mov #0x5,r1
             self.assertIn("--entry=0x3e1fe", calls[1])
 
             for address in (region.start, 0x3E20C, 0x3E3CC, 0x3E3DC):
+                changed = bytearray(image)
+                changed[address] ^= 1
+
+                def mismatched(command):
+                    if command[0] == VERIFIER.OBJCOPY:
+                        Path(command[-1]).write_bytes(changed[origin:])
+
+                with self.subTest(address=address), patch.object(
+                    STOCK_VERIFIER.base_verifier, "run_command", mismatched
+                ), self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "differs"):
+                    STOCK_VERIFIER.require_reconstruction(region, image, build)
+
+    def test_rpm_producer_and_divider_share_an_exact_reconstruction(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-rpm-division")
+        image = STOCK_VERIFIER.stock_image(region.rom)
+        origin = 0x21CE0
+        calls = []
+        self.assertEqual(region.code_spans, ((0x38272, 0x3829E), (0x21CE0, 0x21DC6)))
+        with tempfile.TemporaryDirectory() as directory:
+            build = Path(directory)
+
+            def reconstruct(command):
+                calls.append(command)
+                if command[0] == VERIFIER.OBJCOPY:
+                    Path(command[-1]).write_bytes(image[origin:])
+
+            with patch.object(STOCK_VERIFIER.base_verifier, "run_command", reconstruct):
+                self.assertEqual(STOCK_VERIFIER.require_reconstruction(region, image, build), 137)
+            self.assertIn("-Ttext=0x21ce0", calls[1])
+            for address in (0x38282, 0x21CE4, 0x21D80, 0x21DC8, 0x3837C):
                 changed = bytearray(image)
                 changed[address] ^= 1
 

@@ -1623,9 +1623,9 @@ id = "engine-speed"
 name = "Engine speed"
 summary = """
 The ICI0A crank handler forms the 10-degree tooth time ffff22bc on every \
-tooth and, on the tooth-7 engine event, the 120-degree interval ffff11fc; \
-ffff1196 = 32000000/ffff11fc is engine speed, and its shifted words and \
-scheduler snapshots index the maps."""
+tooth and, on the tooth-7 engine event, the 120-degree interval ffff11fc. \
+The interval feeds saturated primary engine-speed word ffff1196; its shifted \
+words and scheduler snapshots index the maps."""
 quantity = "Engine speed, RPM*5.12 counts"
 output = "ffff1196"
 specs = [
@@ -1707,9 +1707,7 @@ to = "ffff1196"
 effect = "converts"
 sign = "negative"
 via = ["00038272"]
-note = """
-ffff1196 = floor(32000000/ffff11fc) through unsigned divider 00021ce0; the \
-interval is 6250000/RPM counts, so ffff1196 is RPM*5.12."""
+note = "ffff1196 = min(65535, floor(32000000 / ffff11fc))"
 
 [[chain.step]]
 from = "ffff1196"

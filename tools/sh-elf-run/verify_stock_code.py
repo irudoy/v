@@ -71,6 +71,13 @@ class Region:
     # Harness definitions of the addresses inside the region that no entity
     # file names, as (definition, value).
     constants: tuple[tuple[str, int], ...] = ()
+    # Additional stock instruction spans executed by this region, with
+    # their independently assembled callees at the original addresses.
+    callees: tuple[tuple[int, int], ...] = ()
+
+    @property
+    def code_spans(self):
+        return ((self.start, self.end), *self.callees)
 
 
 FUEL_CUT_SYMBOLS = (
@@ -84,6 +91,26 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(
+        key="jk08a-rpm-division",
+        rom="JK08A",
+        source="stock_jk08a_rpm_division.s",
+        harness="stock_rpm_division_harness.c",
+        start=0x00038272,
+        end=0x0003829E,
+        pools=((0x00021DC8, 8), (0x00038370, 0x14)),
+        ram_literals=(0x00021DC8, 0x00038370, 0x00038374, 0x00038380),
+        cases=20,
+        boundary=False,
+        symbols=(
+            ("MODE_FLAGS", "nice-silkworm/ram"),
+            ("EVENT_INTERVAL", "imported-kudu/ram"),
+            ("ENGINE_SPEED", "classic-caracal/ram"),
+            ("DIVIDER_ENTRY", "unsigned_divide/fn"),
+        ),
+        constants=(("FAULT_POINTER", 0x00021DC8), ("FAULT_VALUE", 0x00021DCC)),
+        callees=((0x00021CE0, 0x00021DC6),),
+    ),
     Region(
         key="jk08a-rpm-drop-arithmetic",
         rom="JK08A",
@@ -198,11 +225,13 @@ def base_register(region, image):
 
 
 def require_reconstruction(region, image, build_dir):
-    """Link on the four-byte boundary at or before the region and require
+    """Link on the four-byte boundary at or before the first code or pool and require
     the image bytes of the region and of its pool words. A two-byte-aligned
     entry has two padding bytes before its reconstruction, outside the region.
     This preserves the alignment of PC-relative longword loads."""
-    origin = region.start & ~3
+    starts = [start for start, _ in region.code_spans]
+    starts.extend(address for address, _ in region.pools)
+    origin = min(starts) & ~3
     stem = build_dir / region.key
     base_verifier.run_command([
         base_verifier.AS, "--big", "--isa=sh2e",
@@ -219,7 +248,7 @@ def require_reconstruction(region, image, build_dir):
     ])
     raw = stem.with_suffix(".raw").read_bytes()
     spans = (
-        (region.start, region.end),
+        *region.code_spans,
         *((address, address + size) for address, size in region.pools),
     )
     for start, end in spans:
@@ -229,7 +258,7 @@ def require_reconstruction(region, image, build_dir):
                 f"{region.key}: the reconstruction of {start:#010x}.."
                 f"{end:#010x} differs from the {region.rom} image"
             )
-    return (region.end - region.start) // 2
+    return sum((end - start) // 2 for start, end in region.code_spans)
 
 
 def build_fixture(region, image):
@@ -247,8 +276,9 @@ def build_fixture(region, image):
         ).to_bytes(4, "big")
     if region.boundary:
         fixture[region.end : region.end + len(RETURN_STUB)] = RETURN_STUB
-    if fixture[region.start : region.end] != image[region.start : region.end]:
-        raise VerificationError(f"{region.key}: the fixture alters the region")
+    for start, end in region.code_spans:
+        if fixture[start:end] != image[start:end]:
+            raise VerificationError(f"{region.key}: the fixture alters the region")
     return bytes(fixture)
 
 
