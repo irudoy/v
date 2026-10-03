@@ -192,6 +192,21 @@ note = "both target compensation accessors share the reviewed 16-point X axis"
 [[link]]
 type = "index"
 to = "authentic-wasp/ram"
+via = ["startup_initializer/fn", "fuel_compensation_coordinator/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"
+note = """
+The row argument is uint16(ffff11f4), passed in R7 to byte wrapper 000261f0 \
+by 0002c648 and 0003bd74. Core 000269c4 multiplies each unsigned stored \
+point by four before comparison. Its fraction retains quarter-point \
+resolution and clamps outside the stored endpoints."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002cc92"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_axes.py"
+key = "test_rpm_axis_arguments_widths_and_fraction_scaling_match_stock"

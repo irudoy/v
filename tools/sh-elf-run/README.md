@@ -122,7 +122,15 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A crank-capture fixture reconstructs
+   (`verify_stock_code.py`). The JK08A axis-search fixtures reconstruct the
+   byte and word kernels and their unsigned fraction divider. Cases use the
+   stock fuel, ignition, and torque row axes and independent literal offsets
+   and fractions. They check clamping, exact points, unequal intervals,
+   quarter-count coordinates of the byte kernel, unsigned word boundaries,
+   both divider outcomes, output guards, and read-only axis data. The byte
+   kernel multiplies each stored point by four; the word kernel compares
+   the stored unsigned word directly. Both return through stock instructions.
+   The JK08A crank-capture fixture reconstructs
    the word read of OSBR1, capture-history update, initialization branches,
    and both period stores. The earlier MMIO-base load and its signed pool
    word stay bound outside the executable slice; the harness supplies the

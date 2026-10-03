@@ -631,6 +631,21 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-byte-axis": {
+                "REGION_ENTRY": 0x000269C4,
+                "LAST_OFFSET": 15,
+                "AXIS_BYTES": 16,
+                "DIVIDER_ENTRY": 0x00026C78,
+                "FUEL_AXIS": 0x00011CF0,
+                "IGNITION_AXIS": 0x00011ECE,
+            },
+            "jk08a-word-axis": {
+                "REGION_ENTRY": 0x00026984,
+                "LAST_OFFSET": 30,
+                "AXIS_BYTES": 32,
+                "DIVIDER_ENTRY": 0x00026C78,
+                "TORQUE_AXIS": 0x00014B4A,
+            },
             "jk08a-crank-capture": {
                 "REGION_ENTRY": 0x00028F16,
                 "CRANK_BASE": 0xFFFF128C,

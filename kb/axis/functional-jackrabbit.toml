@@ -204,6 +204,21 @@ note = "unique structural axis pair preserves normalized geometry"
 [[link]]
 type = "index"
 to = "private-sloth/ram"
+via = ["primitive-lizard/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"
+note = """
+Function 00065928 passes uint16(ffff11b6) in R7 to word wrapper 000262a8 for \
+Engine Torque Map 00010b8e. Core 00026984 compares the unsigned stored word \
+directly, without a point multiplier. Its fraction retains word-count \
+resolution and clamps outside the stored endpoints."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00065986"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_axes.py"
+key = "test_rpm_axis_arguments_widths_and_fraction_scaling_match_stock"

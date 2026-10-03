@@ -174,18 +174,14 @@ from = "authentic-wasp/ram"
 to = "fascinating-hog/axis"
 effect = "indexes"
 sign = "none"
-note = """
-Row axis 0x11CF0 of Fuel Compensation Map 0xA29A: the byte core compares \
-each point times four with ffff11f4, so one count is 50 RPM."""
+note = "x = uint16(ffff11f4)"
 
 [[step]]
 from = "rpm/ram"
 to = "able-butterfly/axis"
 effect = "indexes"
 sign = "none"
-note = """
-Shared row axis 0x11ECE of ignition maps 0x991A, 0x9A1A, and 0x9B1A: each \
-point times four is compared with ffff11bc, 400..7400 RPM."""
+note = "x = uint16(ffff11bc)"
 
 [[step]]
 from = "private-sloth/ram"
@@ -193,9 +189,7 @@ to = "functional-jackrabbit/axis"
 effect = "indexes"
 sign = "none"
 via = ["primitive-lizard/fn"]
-note = """
-00065928 passes ffff11b6 through wrapper 000262a8 as the row input of Engine \
-Torque Map 0x10B8E; axis 0x14B4A spans 400..7600 RPM."""
+note = "x = uint16(ffff11b6)"
 
 [[step]]
 from = "tough-earwig/ram"

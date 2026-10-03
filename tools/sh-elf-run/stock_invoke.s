@@ -89,3 +89,26 @@ crank_period_return:
     .balign 4
 crank_period_return_pointer:
     .long crank_period_return
+
+! stock_invoke_axis(entry, last_offset, coordinate, axis, result): preserve
+! the caller's R8 and PR, supply the kernel's R0/R4/R5 inputs, and return
+! its offset and fraction registers through the fifth argument on the stack.
+    .global _stock_invoke_axis
+    .type _stock_invoke_axis,@function
+_stock_invoke_axis:
+    mov.l r8,@-r15
+    mov.l @(4,r15),r8
+    sts.l pr,@-r15
+    mov r4,r2
+    mov r5,r4
+    mov r6,r5
+    mov r7,r0
+    jsr @r2
+    nop
+    mov.l r4,@r8
+    mov.l r5,@(4,r8)
+    lds.l @r15+,pr
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_axis,.-_stock_invoke_axis
