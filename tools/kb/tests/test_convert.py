@@ -1,7 +1,9 @@
 import unittest
+from types import SimpleNamespace
 
 from kb import adapters, convert, repo
 from kb.adapters import definitions, interp, ledgers, native, overrides, profiles, signals, telemetry
+from kb.model import Entity
 from kb.repo import KbError
 
 
@@ -65,6 +67,27 @@ class ConvertTest(unittest.TestCase):
         second = {**first, "dependency": list(reversed(first["dependency"]))}
         self.assertTrue(convert._ledger_equal(first, second))
         self.assertFalse(convert._ledger_equal(first, {**second, "identity": [1, 0]}))
+
+    def test_the_model_comparison_binds_chain_step_order_and_arithmetic(self):
+        first = {"from": "a/ram", "to": "b/ram", "effect": "converts", "sign": "positive",
+                 "via": ["producer/fn"], "note": "b = a * 2"}
+        second = {"from": "b/ram", "to": "c/ram", "effect": "adds", "sign": "positive",
+                  "via": ["producer/fn"], "note": "c = b + 1"}
+
+        def model(steps):
+            return SimpleNamespace(symbols={}, meanings=[], links=[], targets={},
+                                   entities={("chain", "probe"): Entity("chain", "probe",
+                                                                        steps=steps)})
+
+        expected = convert.dump(model([first, second]))
+        self.assertEqual(convert.differences(expected, convert.dump(model([first, second]))), [])
+        for steps in ([second, first], [first],
+                      [first, {**second, "note": "c = b + 2"}],
+                      [first, {**second, "via": ["other/fn"]}]):
+            with self.subTest(steps=steps):
+                changes = convert.differences(expected, convert.dump(model(steps)))
+                self.assertEqual(len(changes), 1)
+                self.assertTrue(changes[0].startswith("entities ('chain', 'probe'):"))
 
 
 class NativeNoteConversionTest(unittest.TestCase):

@@ -1581,7 +1581,7 @@ def dump(model):
                for key, target in model.targets.items()}
     entities = {key: (_value(model, entity.props), tuple(sorted(
         (name, frozenset(_value(model, item) for item in items))
-        for name, items in entity.refs.items())))
+        for name, items in entity.refs.items())), _value(model, entity.steps))
         for key, entity in model.entities.items()}
     return {"symbols": symbols, "meanings": meanings, "links": links, "targets": targets,
             "entities": entities}
